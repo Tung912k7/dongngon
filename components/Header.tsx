@@ -27,7 +27,7 @@ const Header = ({ user }: HeaderProps) => {
   const navLinks = [
     { name: "Trang chủ", href: "/" },
     { name: "Đồng ngôn", href: "/dong-ngon" },
-    { name: "Tài khoản", href: user ? "/profile" : "/login" },
+    { name: "Tài khoản", href: user ? "/profile" : "/dang-ky" },
   ];
 
   // Determine which link is active

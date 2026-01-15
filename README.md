@@ -17,3 +17,28 @@
                 - Cấm những hành động, câu viết có nội dung xuyên tạc, bịa đặt, chống phá, không phù hợp với thuần phong mỹ tục và trái với luật hiện hành của Việt Nam.
         4. Bộ lọc: 
             Lọc theo thể loại -> Thể loại thơ (văn)/Thời kì (Cổ đại, trung đại, cận đại, hiện đại).
+
+## Tech Stack (Công nghệ sử dụng)
+
+- **Core**: [Next.js 14+](https://nextjs.org/) (App Router), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animation**: 
+  - [Framer Motion](https://www.framer.com/motion/) (Hiệu ứng chuyển cảnh, tương tác)
+  - [react-pageflip](https://github.com/Nodlik/react-pageflip) (Hiệu ứng lật trang sách 3D)
+- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Fonts**: 
+  - [Google Fonts](https://fonts.google.com/) (Lora, Geist)
+  - Custom Fonts (Roboto Slab Light)
+
+## Cập nhật Kỹ thuật (Technical Highlights)
+
+### Trang Đăng ký (/dang-ky)
+- **Thiết kế**: Mô phỏng cuốn sách ma thuật 3D.
+- **Công nghệ**: `react-pageflip` kết hợp `framer-motion`.
+- **Đặc điểm**:
+  - **Hiệu ứng lật trang**: Sách mở từ phải sang trái, bìa sách lật ra sau để lộ trang nội dung.
+  - **Layout Thông minh**: 
+    - Khi đóng: Bìa sách (Màu đen) được căn giữa màn hình.
+    - Khi mở: Sách mở rộng ra 2 bên, tự động căn giữa lại để hiển thị toàn bộ nội dung.
+  - **Tương tác**: Các nút điều hướng ("Trang trước", "Bắt Đầu") được tối ưu với lớp Overlay vô hình để đảm bảo nhận diện click chính xác trên bề mặt 3D.
+  - **Giao diện**: Màu đen chủ đạo (#1a1a1a), font chữ `Roboto Slab Light` tạo cảm giác cổ điển, trang trọng.
