@@ -38,7 +38,6 @@ export default async function Home({
 
   return (
     <div className="min-h-screen bg-white font-serif text-black">
-      <Header user={user} />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Hero Section */}

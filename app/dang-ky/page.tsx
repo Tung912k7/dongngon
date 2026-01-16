@@ -1,5 +1,5 @@
-import SignUpBook from "@/components/SignUpBook";
+import AuthBook from "@/components/AuthBook";
 
 export default function SignUpPage() {
-  return <SignUpBook />;
+  return <AuthBook initialMode="signup" />;
 }

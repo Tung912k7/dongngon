@@ -143,7 +143,7 @@ export default function SignUpBook() {
           maxShadowOpacity={0.5}
           showPageCorners={false}
           disableFlipByClick={true}
-          useMouseEvents={true}
+          useMouseEvents={false}
           swipeDistance={30}
           clickEventForward={true}
           onFlip={onFlip}
@@ -165,7 +165,7 @@ export default function SignUpBook() {
             {/* Spine Highlight (Right Edge) - Reduced width */}
             <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-white/10 to-transparent pointer-events-none z-10"></div>
             
-            <div className="p-10 h-full flex flex-col pt-16 relative z-0">
+            <div className="p-10 h-full flex flex-col pt-16 relative z-30">
                {/* Title */}
                <h1 className="text-right text-white text-xl mb-12 leading-relaxed">
                 Chào mừng tới<br />
@@ -214,7 +214,7 @@ export default function SignUpBook() {
              {/* Spine Highlight (Left Edge) - Reduced width */}
              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-white/10 to-transparent pointer-events-none z-10"></div>
 
-            <div className="p-10 h-full flex flex-col pt-16 relative z-0">
+            <div className="p-10 h-full flex flex-col pt-16 relative z-30">
               <div className="space-y-6 mb-16">
                 <div>
                   <label className="block text-white text-lg mb-2 text-right">Mật khẩu</label>
@@ -298,7 +298,7 @@ export default function SignUpBook() {
                     onClick={handleSubmit}
                     className="bg-white text-black text-2xl py-3 px-8 rounded-lg min-w-[200px] hover:bg-gray-100 transition-colors"
                   >
-                    Ghi Danh
+                    Đăng ký
                   </button>
                   
                   <Link

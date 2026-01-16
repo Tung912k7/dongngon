@@ -5,13 +5,8 @@ import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-import localFont from "next/font/local";
+// Load custom font handled in layout.tsx via global style
 
-// Load custom font
-const customFont = localFont({
-  src: "../public/fonts/roboto-slab-light.ttf",
-  display: "swap",
-});
 
 interface HeaderProps {
   user: User | null;
@@ -53,7 +48,7 @@ const Header = ({ user }: HeaderProps) => {
                     key={link.href}
                     href={link.href}
                     className={`
-                      relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200
+                      relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
                       ${isActive ? "text-white" : "text-black hover:opacity-70"}
                     `}
                   >
@@ -69,7 +64,7 @@ const Header = ({ user }: HeaderProps) => {
                         }}
                       />
                     )}
-                    <span className={`${customFont.className} relative z-10 whitespace-nowrap font-bold`}>
+                    <span className="font-roboto font-light tracking-wide leading-none relative z-10 whitespace-nowrap">
                       {link.name}
                     </span>
                   </Link>

@@ -1,39 +1,33 @@
 import type { Metadata } from "next";
-import { Lora, Geist, Geist_Mono } from "next/font/google";
+// Font defined in globals.css
 import "./globals.css";
-
-const lora = Lora({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-lora",
-  display: "swap",
-});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { createClient } from "@/utils/supabase/server";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Đồng ngôn",
   description: "Nơi lưu trữ những áng thơ văn",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html lang="vi">
       <body
-        className={`${lora.variable} ${geistSans.variable} ${geistMono.variable} antialiased font-serif`}
+        className="antialiased font-serif min-h-screen flex flex-col"
       >
-        {children}
+        <Header user={user} />
+        <main className="flex-1 w-full">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

@@ -13,9 +13,10 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Arial", "Helvetica", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
-        serif: ["var(--font-lora)", "serif"],
+        sans: ["'Roboto'", "sans-serif"],
+        mono: ["monospace"],
+        serif: ["'Roboto'", "serif"],
+        roboto: ["'Roboto'", "serif"],
       },
     },
   },
