@@ -31,18 +31,45 @@ const InputField = ({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
   type?: string;
   name: string;
-}) => (
-  <div className="mb-6 group">
-    <label className="block text-black text-lg mb-2 font-bold font-sans">{label}</label>
-    <input 
-      type={type} 
-      name={name}
-      value={value} 
-      onChange={onChange}
-      className="w-full px-5 py-3 border-[3px] border-black bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem]"
-    />
-  </div>
-);
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+  const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+  return (
+    <div className="mb-6 group">
+      <label className="block text-black text-lg mb-2 font-bold font-sans">{label}</label>
+      <div className="relative">
+        <input 
+          type={inputType} 
+          name={name}
+          value={value} 
+          onChange={onChange}
+          className="w-full px-5 py-3 border-[3px] border-black bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12"
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:opacity-70 transition-opacity p-1"
+          >
+            {showPassword ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Checkbox = ({ 
   label, 
@@ -58,6 +85,7 @@ const Checkbox = ({
   <div className="flex items-center gap-4 mb-3 group cursor-pointer">
     <div className="relative flex items-center">
       <input 
+        id={name}
         type="checkbox" 
         name={name}
         checked={checked} 
@@ -78,7 +106,7 @@ const Checkbox = ({
       </svg>
     </div>
     <div className="text-black text-base font-sans select-none">
-      <label className="cursor-pointer font-bold">{label}</label>
+      <label htmlFor={name} className="cursor-pointer font-bold">{label}</label>
     </div>
   </div>
 );
@@ -178,7 +206,6 @@ export function SignUpForm() {
     email: "",
     penName: "",
     password: "",
-    confirmPassword: "",
     agreedToTerms: false,
     agreedToRegulations: false,
   });
@@ -193,7 +220,6 @@ export function SignUpForm() {
     data.email.trim() !== "" &&
     data.penName.trim() !== "" &&
     data.password.trim() !== "" &&
-    data.confirmPassword.trim() !== "" &&
     data.agreedToTerms &&
     data.agreedToRegulations,
   [data]);
