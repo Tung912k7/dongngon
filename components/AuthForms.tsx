@@ -155,7 +155,7 @@ export function LoginForm() {
       });
 
       if (error) {
-        alert(error.message);
+        alert(error.message || "Lỗi đăng nhập.");
         setLoading(false);
         return;
       }
@@ -263,26 +263,27 @@ export function SignUpForm() {
       });
 
       if (authError) {
-        alert(authError.message);
+        alert(authError.message || "Lỗi đăng ký tài khoản.");
         setLoading(false);
         return;
       }
 
       if (authData.user) {
-        // 2. Create Profile
+        // 2. Create Profile (Only use columns we are sure exist: id, nickname)
         const { error: profileError } = await supabase.from("profiles").upsert({
           id: authData.user.id,
-          full_name: data.fullName,
           nickname: data.penName,
-          email: data.email,
           updated_at: new Date().toISOString(),
         });
 
         if (profileError) {
-          console.error("Profile creation error:", profileError);
+          console.error("Profile creation detailed error:", profileError);
+          // If profile fails, we still let them proceed but warn them
+          alert("Tài khoản đã tạo nhưng không thể cập nhật bút danh. Bạn có thể cập nhật sau trong trang Cá nhân.");
+        } else {
+          alert("Đăng ký thành công! Hãy đăng nhập để tiếp tục.");
         }
-
-        alert("Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản (nếu cần).");
+        
         router.push("/dang-nhap");
       }
     } catch (err) {
