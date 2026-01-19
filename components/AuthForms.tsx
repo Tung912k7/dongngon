@@ -131,8 +131,26 @@ export function LoginForm() {
 
     try {
       const supabase = createClient();
+      let emailToUse = data.identifier;
+
+      // Handle pen name login
+      if (!data.identifier.includes("@")) {
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("nickname", data.identifier)
+          .single();
+
+        if (profileError || !profileData?.email) {
+          alert("Bút danh không tồn tại hoặc chưa được cập nhật email.");
+          setLoading(false);
+          return;
+        }
+        emailToUse = profileData.email;
+      }
+
       const { data: { user }, error } = await supabase.auth.signInWithPassword({
-        email: data.identifier,
+        email: emailToUse,
         password: data.password,
       });
 
@@ -229,11 +247,50 @@ export function SignUpForm() {
     if (!isValid) return;
     setLoading(true);
 
-    setTimeout(() => {
-        alert("Đăng ký thành công! (Chức năng đang phát triển)");
+    try {
+      const supabase = createClient();
+      
+      // 1. Sign Up
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.fullName,
+            nickname: data.penName,
+          }
+        }
+      });
+
+      if (authError) {
+        alert(authError.message);
         setLoading(false);
+        return;
+      }
+
+      if (authData.user) {
+        // 2. Create Profile
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: authData.user.id,
+          full_name: data.fullName,
+          nickname: data.penName,
+          email: data.email,
+          updated_at: new Date().toISOString(),
+        });
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+        }
+
+        alert("Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản (nếu cần).");
         router.push("/dang-nhap");
-    }, 1000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Đã xảy ra lỗi trong quá trình đăng ký.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -308,7 +365,7 @@ export function SignUpForm() {
 
         {/* Right Side: Illustration */}
         <div className="hidden lg:flex relative h-full items-center">
-          <div className="absolute right-[-30%] w-[135%] aspect-square pointer-events-none translate-y-[-5%]">
+          <div className="absolute right-[-25%] w-[125%] aspect-square pointer-events-none translate-y-[-5%]">
             {/* Love Hand Background */}
             <img 
               src="/lovehand.png" 
@@ -316,7 +373,7 @@ export function SignUpForm() {
               className="w-full h-full object-contain"
             />
             {/* Cow Centered in Heart */}
-            <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-56 h-56 flex items-center justify-center">
+            <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-52 h-52 flex items-center justify-center">
               <img 
                 src="/cow.png" 
                 alt="Cow" 
