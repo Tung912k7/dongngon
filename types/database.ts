@@ -20,9 +20,13 @@ export type Contribution = {
   created_at: string;
 };
 
+export type UserRole = 'admin' | 'mod' | 'user';
+
 export type Profile = {
   id: string; // UUID
   nickname: string;
   avatar_url?: string;
+  role?: UserRole; // 'admin', 'mod', 'user'
   updated_at: string;
 };
+

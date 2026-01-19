@@ -34,9 +34,17 @@ Tài liệu này tổng hợp toàn bộ các chức năng cốt lõi và lộ t
 ## 3. Cá Nhân Hóa & Riêng Tư (Privacy & Personalization)
 
 - **Private Mode (Chế độ Riêng tư):** Khu vực dành riêng cho các cặp đôi hoặc nhóm nhỏ, chỉ những người được cấp quyền mới có thể đọc và viết.
-- **Bộ lọc & Tìm kiếm:**
-    - Lọc theo thể loại (Thơ, Văn, Tiểu thuyết).
-    - Lọc theo thời kỳ (Cổ đại, Trung đại, Hiện đại).
+- **Bộ lọc & Tìm kiếm Nâng cao:**
+    - **Cơ chế lọc (Strict Filtering):** Lọc theo cơ chế "VÀ" (AND logic) - chỉ hiển thị các tác phẩm thỏa mãn TẤT CẢ các tiêu chí đã chọn.
+    - **Các tiêu chí lọc:**
+        - Loại văn bản (Thơ, Văn xuôi, Tiểu thuyết).
+        - Hình thức (Hiện đại, Cổ đại).
+        - Quy tắc viết (1 kí tự, 1 câu).
+        - Tiến độ (Đang viết, Hoàn thành, Tạm dừng).
+        - Sắp xếp (Mới nhất, Cũ nhất).
+        - Số lượng hiển thị.
+    - **Tương tác nhanh (Clickable Tags):** Người dùng có thể click trực tiếp vào các thẻ (Tag) trên bài viết để lọc ngay lập tức theo thuộc tính đó.
+    - **Đặt lại (Reset):** Nút reset giúp nhanh chóng xóa toàn bộ bộ lọc về trạng thái mặc định.
 
 ## 4. Công Nghệ & Hiệu Năng (Tech & Performance)
 

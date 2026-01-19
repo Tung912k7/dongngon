@@ -1,5 +1,10 @@
-import AuthBook from "@/components/AuthBook";
+import AuthLayout from "@/components/AuthLayout";
+import { LoginForm } from "@/components/AuthForms";
 
 export default function LoginPage() {
-  return <AuthBook initialMode="login" />;
+  return (
+    <AuthLayout>
+      <LoginForm />
+    </AuthLayout>
+  );
 }

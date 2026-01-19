@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,20 +11,27 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full bg-white border-t border-black py-8 mt-auto">
+      <footer className="w-full bg-white border-t border-black py-4 mt-auto">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Brand */}
-          <div className="text-xl font-roboto tracking-widest">
-            ĐỒNG NGÔN
-          </div>
+            <div className="relative w-12 h-12 mb-2">
+        <Image
+          src="/logo.webp"
+          alt="Đồng Ngôn Logo"
+          fill
+          sizes="48px"
+          className="object-contain opacity-80"
+        />
+      </div>
+            
 
           {/* Copyright */}
-          <div className="text-sm text-gray-500 font-roboto">
+          <div className="text-sm text-gray-500 font-sans">
             © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai.
           </div>
 
           {/* Links */}
-          <nav className="flex gap-8 font-roboto text-sm uppercase tracking-wider items-center">
+          <nav className="flex gap-8 font-sans text-sm uppercase tracking-wider items-center">
             <a 
               href="https://forms.gle/2ENzFe3rdUhkXTP59" 
               target="_blank" 
@@ -36,7 +44,7 @@ export default function Footer() {
               onClick={() => setIsDonateOpen(true)}
               className="hover:opacity-70 transition-opacity uppercase"
             >
-              Ủng hộ
+              Giải cứu admin
             </button>
           </nav>
         </div>
@@ -74,21 +82,17 @@ export default function Footer() {
                 </svg>
               </button>
 
-              <h3 className="text-xl font-serif mb-6">Ủng hộ Đồng ngôn</h3>
-              
-              <div className="w-64 h-64 bg-gray-100 flex items-center justify-center mb-4 border border-gray-200 rounded-lg">
-                <span className="text-gray-400 font-roboto text-center px-4">
-                  (Mã QR Ngân hàng sẽ được cập nhật ở đây)
-                </span>
-                {/* 
-                  To replace with real QR code:
-                  <img src="/path-to-qr-code.png" alt="Banking QR Code" className="w-full h-full object-contain" /> 
-                */}
-              </div>
-
-              <p className="text-center font-roboto text-sm text-gray-600">
-                Cảm ơn bạn đã đồng hành cùng chúng mình!
+              <p className="text-center font-sans text-xl font-medium text-black mb-4">
+                Cảm ơn bạn đã đồng hành cùng Đồng ngôn!
               </p>
+              
+              <div className="w-64 h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
+                <img 
+                  src="/qr.png" 
+                  alt="Mã QR Ủng hộ" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
             </motion.div>
           </div>
         )}

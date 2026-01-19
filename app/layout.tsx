@@ -4,10 +4,24 @@ import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import localFont from "next/font/local";
+
+const ariaPro = localFont({
+  src: "../public/fonts/Aria Pro.ttf",
+  display: "swap",
+  variable: "--font-aria",
+});
+
+const aquus = localFont({
+  src: "../public/fonts/hlt-aquus-regular.ttf",
+  display: "swap",
+  variable: "--font-aquus",
+});
 
 export const metadata: Metadata = {
   title: "Đồng ngôn",
   description: "Nơi lưu trữ những áng thơ văn",
+
 };
 
 export default async function RootLayout({
@@ -21,7 +35,7 @@ export default async function RootLayout({
   return (
     <html lang="vi">
       <body
-        className="antialiased font-serif min-h-screen flex flex-col"
+        className={`${ariaPro.variable} ${aquus.variable} antialiased font-sans min-h-screen flex flex-col`}
       >
         <Header user={user} />
         <main className="flex-1 w-full">

@@ -12,11 +12,20 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        'subtle-zoom': {
+          '0%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1.15)' },
+        }
+      },
+      animation: {
+        'subtle-zoom': 'subtle-zoom 20s ease-in-out infinite alternate',
+      },
       fontFamily: {
-        sans: ["'Roboto'", "sans-serif"],
-        mono: ["monospace"],
-        serif: ["'Roboto'", "serif"],
-        roboto: ["'Roboto'", "serif"],
+        sans: ["var(--font-aria)", "sans-serif"],
+        serif: ["var(--font-aria)", "serif"],
+        roboto: ["var(--font-aria)", "sans-serif"],
+        aquus: ["var(--font-aquus)", "serif"],
       },
     },
   },

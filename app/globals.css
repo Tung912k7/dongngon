@@ -1,17 +1,15 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Roboto';
-  src: url('/fonts/roboto-slab-light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+@theme {
+  --font-sans: var(--font-aria), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-aria), ui-serif, Georgia, serif;
+  --font-aquus: var(--font-aquus), serif;
+  --font-roboto: var(--font-aria), sans-serif;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-roboto: 'Roboto';
 }
 
 
@@ -28,8 +26,12 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Roboto', serif;
-  font-weight: 300;
+  font-family: var(--font-aria), sans-serif;
+}
+
+/* Ensure inputs and buttons use the global font */
+input, button, select, textarea {
+  font-family: inherit;
 }
 
 @keyframes wave {

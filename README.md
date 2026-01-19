@@ -42,3 +42,10 @@
     - Khi mở: Sách mở rộng ra 2 bên, tự động căn giữa lại để hiển thị toàn bộ nội dung.
   - **Tương tác**: Các nút điều hướng ("Trang trước", "Bắt Đầu") được tối ưu với lớp Overlay vô hình để đảm bảo nhận diện click chính xác trên bề mặt 3D.
   - **Giao diện**: Màu đen chủ đạo (#1a1a1a), font chữ `Roboto Slab Light` tạo cảm giác cổ điển, trang trọng.
+
+### Trang Đồng Ngôn (/dong-ngon)
+- **Giao diện**: Grid Layout responsive, hiển thị tác phẩm dưới dạng thẻ (Card).
+- **Tính năng lọc (Advanced Filter)**:
+  - **Client-side Filtering**: Sử dụng `React State` và `useMemo` để lọc dữ liệu tức thì không cần reload trang.
+  - **Interactive Tags**: Thẻ metadata trên card có thể click được để kích hoạt bộ lọc tương ứng.
+  - **UX**: Hỗ trợ nút "Áp dụng" để người dùng kiểm soát thời điểm lọc và nút "Đặt lại" để xóa bộ lọc nhanh.

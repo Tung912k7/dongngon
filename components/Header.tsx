@@ -22,14 +22,14 @@ const Header = ({ user }: HeaderProps) => {
   const navLinks = [
     { name: "Trang chủ", href: "/" },
     { name: "Đồng ngôn", href: "/dong-ngon" },
-    { name: "Tài khoản", href: user ? "/profile" : "/dang-ky" },
+    { name: "Tài khoản", href: user ? "/profile" : "/dang-nhap" },
   ];
 
   // Determine which link is active
   const getIsActive = (href: string) => {
     if (href === "/") return pathname === "/";
-    if (href === "/profile" || href === "/login") {
-      return pathname === "/profile" || pathname === "/login";
+    if (href === "/profile" || href === "/dang-nhap" || href === "/dang-ky") {
+      return pathname === "/profile" || pathname === "/dang-nhap" || pathname === "/dang-ky";
     }
     return pathname === href;
   };
@@ -64,7 +64,7 @@ const Header = ({ user }: HeaderProps) => {
                         }}
                       />
                     )}
-                    <span className="font-roboto font-light tracking-wide leading-none relative z-10 whitespace-nowrap">
+                    <span className="font-sans font-normal text-lg md:text-xl tracking-wide leading-none relative z-10 whitespace-nowrap">
                       {link.name}
                     </span>
                   </Link>

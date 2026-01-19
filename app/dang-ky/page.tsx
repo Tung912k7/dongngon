@@ -1,5 +1,10 @@
-import AuthBook from "@/components/AuthBook";
+import AuthLayout from "@/components/AuthLayout";
+import { SignUpForm } from "@/components/AuthForms";
 
-export default function SignUpPage() {
-  return <AuthBook initialMode="signup" />;
+export default function RegisterPage() {
+  return (
+    <AuthLayout>
+      <SignUpForm />
+    </AuthLayout>
+  );
 }

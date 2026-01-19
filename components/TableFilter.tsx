@@ -3,8 +3,14 @@
 import { useState, useRef, useEffect } from "react";
 import WorkFilter from "./WorkFilter";
 import { motion, AnimatePresence } from "framer-motion";
+import { FilterState } from "@/app/dong-ngon/page";
 
-export default function TableFilter() {
+interface TableFilterProps {
+  filters: FilterState;
+  onApplyFilters: (filters: FilterState) => void;
+}
+
+export default function TableFilter({ filters, onApplyFilters }: TableFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -21,6 +27,11 @@ export default function TableFilter() {
     };
   }, []);
 
+  const handleApply = (newFilters: FilterState) => {
+    onApplyFilters(newFilters);
+    setIsOpen(false);
+  };
+
   return (
     <div className="relative inline-block z-20" ref={filterRef}>
       <div className="relative">
@@ -34,7 +45,7 @@ export default function TableFilter() {
             width="20"
             height="20"
             viewBox="0 0 24 24"
-            fill={isOpen ? "black" : "none"} // Filled when open
+            fill={isOpen ? "black" : "none"}
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
@@ -53,7 +64,7 @@ export default function TableFilter() {
               transition={{ duration: 0.2 }}
               className="absolute top-full left-0 mt-2 min-w-[300px]"
             >
-              <WorkFilter />
+              <WorkFilter filters={filters} onApply={handleApply} />
             </motion.div>
           )}
         </AnimatePresence>

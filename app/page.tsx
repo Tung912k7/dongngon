@@ -5,6 +5,7 @@ import NicknameForm from "@/components/NicknameForm";
 import Header from "@/components/Header";
 import FadeIn from "@/components/FadeIn";
 import BrandHeader from "@/components/BrandHeader";
+import Image from "next/image";
 
 export default async function Home({
   searchParams,
@@ -42,9 +43,21 @@ export default async function Home({
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Hero Section */}
         <FadeIn>
-          <div className="flex flex-col items-center justify-center pt-6 sm:pt-10 pb-12 sm:pb-20">
+          <div className="flex flex-col items-center justify-center pt-8 sm:pt-16 pb-12 sm:pb-20">
             <BrandHeader />
-            <p className="text-2xl sm:text-3xl md:text-5xl font-serif font-normal tracking-wide mt-1 text-center">[Slogan]</p>
+            <div className="mt-4 z-10 mb-10">
+               <div className="relative w-[150px] h-[150px] md:w-[220px] md:h-[220px] animate-fade-in">
+        <Image
+          src="/logo.webp"
+          alt="Đồng Ngôn Logo"
+          fill
+          sizes="(max-width: 768px) 150px, 220px"
+          className="object-contain"
+          priority
+        />
+      </div>
+            </div>
+            <p className="text-2xl sm:text-3xl md:text-5xl font-serif font-normal tracking-wide text-center">[Slogan]</p>
           </div>
         </FadeIn>
 
