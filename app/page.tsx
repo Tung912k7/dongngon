@@ -61,11 +61,6 @@ export default async function Home({
           </div>
         </FadeIn>
 
-        {user && (
-            <div className="flex justify-center mb-10">
-               <NicknameForm initialNickname={profile?.nickname} />
-            </div>
-        )}
   
 
         

@@ -32,12 +32,24 @@ export default async function RootLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  let nickname = null;
+  let role = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("nickname, role")
+      .eq("id", user.id)
+      .single();
+    nickname = profile?.nickname;
+    role = profile?.role;
+  }
+
   return (
     <html lang="vi">
       <body
         className={`${ariaPro.variable} ${aquus.variable} antialiased font-sans min-h-screen flex flex-col`}
       >
-        <Header user={user} />
+        <Header user={user} nickname={nickname} role={role} />
         <main className="flex-1 w-full">
           {children}
         </main>

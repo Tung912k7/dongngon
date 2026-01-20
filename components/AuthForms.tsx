@@ -135,18 +135,38 @@ export function LoginForm() {
 
       // Handle pen name login
       if (!data.identifier.includes("@")) {
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("email")
-          .eq("nickname", data.identifier)
-          .single();
+        try {
+          const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("email")
+            .ilike("nickname", data.identifier) // Case-insensitive lookup
+            .single();
 
-        if (profileError || !profileData?.email) {
-          alert("Bút danh không tồn tại hoặc chưa được cập nhật email.");
+          if (profileError) {
+            console.error("Pen name lookup failed:", profileError);
+            if (profileError.code === "PGRST116") {
+              alert("Bút danh này chưa được đăng ký.");
+            } else if (profileError.message.includes("column \"email\" does not exist")) {
+              alert("Hệ thống chưa hỗ trợ đăng nhập bằng bút danh. Vui lòng sử dụng Email.\n(Lỗi: Thiếu cột 'email' trong bảng profiles)");
+            } else {
+              alert(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`);
+            }
+            setLoading(false);
+            return;
+          }
+
+          if (!profileData?.email) {
+            alert("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.");
+            setLoading(false);
+            return;
+          }
+          emailToUse = profileData.email;
+        } catch (lookupErr) {
+          console.error("Unexpected lookup error:", lookupErr);
+          alert("Lỗi hệ thống khi tìm kiếm bút danh.");
           setLoading(false);
           return;
         }
-        emailToUse = profileData.email;
       }
 
       const { data: { user }, error } = await supabase.auth.signInWithPassword({
@@ -250,6 +270,15 @@ export function SignUpForm() {
     try {
       const supabase = createClient();
       
+      // 0. Check Blacklist for Pen Name
+      const { checkBlacklist } = await import("@/utils/blacklist");
+      const violation = await checkBlacklist(data.penName);
+      if (violation) {
+        alert(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`);
+        setLoading(false);
+        return;
+      }
+
       // 1. Sign Up
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
@@ -268,22 +297,12 @@ export function SignUpForm() {
         return;
       }
 
-      if (authData.user) {
-        // 2. Create Profile (Only use columns we are sure exist: id, nickname)
-        const { error: profileError } = await supabase.from("profiles").upsert({
-          id: authData.user.id,
-          nickname: data.penName,
-          updated_at: new Date().toISOString(),
-        });
+      if (!authError) {
+        console.log("Đã tạo tài khoản và Trigger sẽ tự động tạo hồ sơ!");
+      }
 
-        if (profileError) {
-          console.error("Profile creation detailed error:", profileError);
-          // If profile fails, we still let them proceed but warn them
-          alert("Tài khoản đã tạo nhưng không thể cập nhật bút danh. Bạn có thể cập nhật sau trong trang Cá nhân.");
-        } else {
-          alert("Đăng ký thành công! Hãy đăng nhập để tiếp tục.");
-        }
-        
+      if (authData.user) {
+        alert("Đăng ký thành công! Hãy kiểm tra email (nếu có yêu cầu xác nhận) và đăng nhập để bắt đầu.");
         router.push("/dang-nhap");
       }
     } catch (err) {

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { containsBadWords } from "@/utils/blacklist";
+import { checkBlacklist } from "@/utils/blacklist";
 
 export async function submitContribution(workId: string, content: string) {
   const supabase = await createClient();
@@ -25,8 +25,20 @@ export async function submitContribution(workId: string, content: string) {
        return { error: "Nội dung quá dài (tối đa 200 ký tự)." };
   }
 
-  if (containsBadWords(content)) {
-    return { error: "Nội dung chứa từ ngữ không phù hợp." };
+  const blacklistViolation = await checkBlacklist(content);
+  if (blacklistViolation) {
+    // If blacklisted, we still allow the contribution but mark the work as pending
+    console.log(`Blacklist violation detected: "${blacklistViolation}". Marking work ${workId} as pending.`);
+    
+    // Update work status to pending
+    const { error: statusError } = await supabase
+      .from("works")
+      .update({ status: "pending" })
+      .eq("id", workId);
+
+    if (statusError) {
+      console.error("Error updating work status:", statusError);
+    }
   }
 
   // 3. Check Daily Limit
