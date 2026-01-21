@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import AdminWelcome from "@/components/AdminWelcome";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -73,7 +74,10 @@ export default async function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
               </svg>
             </button>
-            <button className="w-full text-left px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between group">
+            <button 
+              id="admin-moderation-btn"
+              className="w-full text-left px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between group"
+            >
               <span>Kiểm duyệt tác phẩm</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400 group-hover:text-slate-600">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -97,6 +101,7 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
+      <AdminWelcome />
     </div>
   );
 }

@@ -18,6 +18,12 @@ const aquus = localFont({
   variable: "--font-aquus",
 });
 
+const montserrat = localFont({
+  src: "../public/fonts/Montserrat.ttf",
+  display: "swap",
+  variable: "--font-montserrat",
+});
+
 export const metadata: Metadata = {
   title: "Đồng ngôn",
   description: "Nơi lưu trữ những áng thơ văn",
@@ -46,8 +52,12 @@ export default async function RootLayout({
 
   return (
     <html lang="vi">
+      <head>
+        <link rel="preconnect" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
+        <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
+      </head>
       <body
-        className={`${ariaPro.variable} ${aquus.variable} antialiased font-sans min-h-screen flex flex-col`}
+        className={`${ariaPro.variable} ${aquus.variable} ${montserrat.variable} antialiased font-sans min-h-screen flex flex-col`}
       >
         <Header user={user} nickname={nickname} role={role} />
         <main className="flex-1 w-full">

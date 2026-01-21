@@ -16,6 +16,17 @@ export async function submitContribution(workId: string, content: string) {
     return { error: "Bạn cần đăng nhập để viết tiếp." };
   }
 
+  // 1.1 Check Work Status
+  const { data: work } = await supabase
+    .from("works")
+    .select("status")
+    .eq("id", workId)
+    .single();
+
+  if (work?.status === "completed") {
+    return { error: "Tác phẩm này đã hoàn thành, không thể đóng góp thêm." };
+  }
+
   // 2. Validate Content
   if (!content || content.trim().length === 0) {
     return { error: "Nội dung không được để trống." };

@@ -36,15 +36,23 @@ export default async function WorkPage({
     .from("finish_votes")
     .select("*", { count: "exact", head: true })
     .eq("work_id", id);
+
+  // Fetch Unique Contributors Count
+  const { data: contributorsData } = await supabase
+    .from("contributions")
+    .select("user_id")
+    .eq("work_id", id);
+  
+  const uniqueContributors = new Set(contributorsData?.map(c => c.user_id) || []).size;
     
   const isCompleted = work.status === "completed";
 
   return (
-    <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col font-sans">
+    <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col font-montserrat">
       <header className="mb-8 border-b pb-4">
         <Link
-          href="/"
-          className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block font-sans"
+          href="/dong-ngon"
+          className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block font-montserrat"
         >
           &larr; Quay lại
         </Link>
@@ -54,10 +62,11 @@ export default async function WorkPage({
                 workId={work.id} 
                 initialCount={voteCount || 0} 
                 isCompleted={isCompleted} 
+                contributorCount={uniqueContributors}
             />
         </div>
         
-        <div className="text-sm text-gray-500 mt-2 font-sans">
+        <div className="text-sm text-gray-500 mt-2 font-montserrat">
           Trạng thái:{" "}
           <span
             className={

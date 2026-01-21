@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
 
 export default function Editor({ workId }: { workId: string }) {
+  const router = useRouter();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,7 @@ export default function Editor({ workId }: { workId: string }) {
       setError(result.error);
     } else {
       setContent("");
+      router.refresh();
       // Optional: Add a success toast or vibration
     }
     
@@ -64,7 +67,7 @@ export default function Editor({ workId }: { workId: string }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Viết tiếp câu chuyện..."
-          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-sans"
+          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-montserrat"
           disabled={isSubmitting}
         />
         <button

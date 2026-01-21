@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
+import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
+import NotificationModal from "./NotificationModal";
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -117,6 +119,20 @@ export function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ identifier: "", password: "" });
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "error" | "success" | "info";
+    title?: string;
+  }>({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+    setNotification({ isOpen: true, message, type, title });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -145,25 +161,25 @@ export function LoginForm() {
           if (profileError) {
             console.error("Pen name lookup failed:", profileError);
             if (profileError.code === "PGRST116") {
-              alert("Bút danh này chưa được đăng ký.");
+              showNotification("Bút danh này chưa được đăng ký.", "error");
             } else if (profileError.message.includes("column \"email\" does not exist")) {
-              alert("Hệ thống chưa hỗ trợ đăng nhập bằng bút danh. Vui lòng sử dụng Email.\n(Lỗi: Thiếu cột 'email' trong bảng profiles)");
+              showNotification("Hệ thống chưa hỗ trợ đăng nhập bằng bút danh. Vui lòng sử dụng Email.\n(Lỗi: Thiếu cột 'email' trong bảng profiles)", "info", "Thông báo");
             } else {
-              alert(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`);
+              showNotification(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`, "error");
             }
             setLoading(false);
             return;
           }
 
           if (!profileData?.email) {
-            alert("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.");
+            showNotification("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.", "info");
             setLoading(false);
             return;
           }
           emailToUse = profileData.email;
         } catch (lookupErr) {
           console.error("Unexpected lookup error:", lookupErr);
-          alert("Lỗi hệ thống khi tìm kiếm bút danh.");
+          showNotification("Lỗi hệ thống khi tìm kiếm bút danh.", "error");
           setLoading(false);
           return;
         }
@@ -175,7 +191,7 @@ export function LoginForm() {
       });
 
       if (error) {
-        alert(error.message || "Lỗi đăng nhập.");
+        showNotification(error.message || "Lỗi đăng nhập.", "error");
         setLoading(false);
         return;
       }
@@ -186,7 +202,7 @@ export function LoginForm() {
       }
     } catch (err) {
       console.error(err);
-      alert("Đã xảy ra lỗi.");
+      showNotification("Đã xảy ra lỗi.", "error");
       setLoading(false);
     }
   };
@@ -229,6 +245,14 @@ export function LoginForm() {
           Chưa có tài khoản?
         </Link>
       </div>
+      
+      <NotificationModal 
+        isOpen={notification.isOpen} 
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        message={notification.message}
+        type={notification.type}
+        title={notification.title}
+      />
     </form>
   );
 }
@@ -248,6 +272,21 @@ export function SignUpForm() {
     agreedToRegulations: false,
   });
 
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "error" | "success" | "info";
+    title?: string;
+  }>({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+    setNotification({ isOpen: true, message, type, title });
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
@@ -257,14 +296,18 @@ export function SignUpForm() {
     data.fullName.trim() !== "" &&
     data.email.trim() !== "" &&
     data.penName.trim() !== "" &&
-    data.password.trim() !== "" &&
-    data.agreedToTerms &&
-    data.agreedToRegulations,
+    data.password.trim() !== "",
   [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
+
+    if (!data.agreedToTerms || !data.agreedToRegulations) {
+      showNotification("Vui lòng đồng ý với các điều khoản và quy định để tiếp tục.", "info", "Thông báo");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -274,7 +317,23 @@ export function SignUpForm() {
       const { checkBlacklist } = await import("@/utils/blacklist");
       const violation = await checkBlacklist(data.penName);
       if (violation) {
-        alert(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`);
+        showNotification(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`, "error");
+        setLoading(false);
+        return;
+      }
+
+      // 0.4 Check Email Duplicate
+      const isEmailTaken = await isEmailRegistered(data.email);
+      if (isEmailTaken) {
+        showNotification(`Email "${data.email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.`, "info", "Thông báo");
+        setLoading(false);
+        return;
+      }
+
+      // 0.5 Check Uniqueness for Pen Name
+      const isAvailable = await isNicknameAvailable(data.penName);
+      if (!isAvailable) {
+        showNotification(`Bút danh "${data.penName}" đã được sử dụng. Vui lòng chọn tên khác.`, "error");
         setLoading(false);
         return;
       }
@@ -292,7 +351,7 @@ export function SignUpForm() {
       });
 
       if (authError) {
-        alert(authError.message || "Lỗi đăng ký tài khoản.");
+        showNotification(authError.message || "Lỗi đăng ký tài khoản.", "error");
         setLoading(false);
         return;
       }
@@ -302,12 +361,15 @@ export function SignUpForm() {
       }
 
       if (authData.user) {
-        alert("Đăng ký thành công! Hãy kiểm tra email (nếu có yêu cầu xác nhận) và đăng nhập để bắt đầu.");
+        // We use the same modal state, but need to handle redirect after close if we want, 
+        // but simple alert-replacement is to just show it.
+        // Actually, user might want to redirect. Let's just show success for now.
+        showNotification("Đăng ký thành công! Hãy kiểm tra email (nếu có yêu cầu xác nhận) và đăng nhập để bắt đầu.", "success");
         router.push("/dang-nhap");
       }
     } catch (err) {
       console.error(err);
-      alert("Đã xảy ra lỗi trong quá trình đăng ký.");
+      showNotification("Đã xảy ra lỗi trong quá trình đăng ký.", "error");
     } finally {
       setLoading(false);
     }
@@ -430,6 +492,14 @@ export function SignUpForm() {
           </div>
         </Portal>
       )}
+
+      <NotificationModal 
+        isOpen={notification.isOpen} 
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        message={notification.message}
+        type={notification.type}
+        title={notification.title}
+      />
     </>
   );
 }

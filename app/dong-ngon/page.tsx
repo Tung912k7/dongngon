@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import WorkFilter from "@/components/WorkFilter";
 import TableFilter from "@/components/TableFilter";
+import CreateWorkModal from "@/components/CreateWorkModal";
+import { createClient } from "@/utils/supabase/client";
 
 // Filter State Type
 export interface FilterState {
@@ -28,24 +31,115 @@ export default function DongNgonPage() {
   const router = useRouter();
   // Local filter state - resets on page reload
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  
-  // Mock Auth State (Set to true to test logged-in behavior)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [allWorks, setAllWorks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    // Fetch user session
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const fetchWorks = async () => {
+      console.log("Fetching works from Supabase...");
+      const { data, error } = await supabase
+        .from("works")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Supabase fetch error:", error);
+      }
+      
+      if (data) {
+        console.log(`Fetched ${data.length} works:`, data);
+        const mappedWorks = data.map((work: any) => ({
+          ...work,
+          type: work.category_type, // "Thơ", "Văn xuôi"
+          format: work.period, // "Hiện đại", "Cổ đại"
+          rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+          status: work.status === "writing" ? "Đang viết" : 
+                  work.status === "finished" ? "Hoàn thành" : 
+                  work.status === "pending" ? "Đợi duyệt" : work.status,
+          date: new Date(work.created_at).toLocaleDateString("vi-VN"),
+          rawDate: new Date(work.created_at)
+        }));
+        setAllWorks(mappedWorks);
+      }
+      setIsLoading(false);
+    };
+
+    fetchWorks();
+
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel("public:works")
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: "public",
+          table: "works",
+        },
+        (payload) => {
+          console.log("Real-time change received:", payload);
+          
+          if (payload.eventType === "INSERT") {
+            const newWork = payload.new;
+            const mappedNewWork = {
+              ...newWork,
+              type: newWork.category_type,
+              format: newWork.period,
+              rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+              status: newWork.status === "writing" ? "Đang viết" : 
+                      newWork.status === "finished" ? "Hoàn thành" : 
+                      newWork.status === "pending" ? "Đợi duyệt" : newWork.status,
+              date: new Date(newWork.created_at).toLocaleDateString("vi-VN"),
+              rawDate: new Date(newWork.created_at)
+            };
+            setAllWorks((prev) => [mappedNewWork, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            const updatedWork = payload.new;
+            const mappedUpdatedWork = {
+              ...updatedWork,
+              type: updatedWork.category_type,
+              format: updatedWork.period,
+              rule: updatedWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+              status: updatedWork.status === "writing" ? "Đang viết" : 
+                      updatedWork.status === "finished" ? "Hoàn thành" : 
+                      updatedWork.status === "pending" ? "Đợi duyệt" : updatedWork.status,
+              date: new Date(updatedWork.created_at).toLocaleDateString("vi-VN"),
+              rawDate: new Date(updatedWork.created_at)
+            };
+            setAllWorks((prev) => 
+              prev.map(w => w.id === updatedWork.id ? mappedUpdatedWork : w)
+            );
+          } else if (payload.eventType === "DELETE") {
+            setAllWorks((prev) => prev.filter(w => w.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleAuthAction = (action: () => void) => {
-    if (!isLoggedIn) {
+    if (!user) {
       router.push('/dang-ky');
     } else {
       action();
     }
   };
 
-  // Mock Data
-  const allWorks: any[] = [];
-
   // Filtered and Sorted Works
   const filteredWorks = useMemo(() => {
+    console.log(`Filtering ${allWorks.length} works with filters:`, filters);
 
     let works = [...allWorks];
 
@@ -53,45 +147,47 @@ export default function DongNgonPage() {
     works = works.filter((work) => {
       // Category
       if (filters.category_type) {
-        if (filters.category_type === "Poetry" && work.type !== "Thơ") return false;
-        if (filters.category_type === "Prose" && work.type !== "Văn xuôi") return false;
-        if (filters.category_type === "Novel" && work.type !== "Tiểu thuyết") return false;
+        const catMap: { [key: string]: string } = { "Poetry": "Thơ", "Prose": "Văn xuôi", "Novel": "Tiểu thuyết" };
+        if (work.type !== catMap[filters.category_type]) return false;
       }
 
       // Period
       if (filters.period) {
-        if (filters.period === "Modern" && work.format !== "Hiện đại") return false;
-        if (filters.period === "Ancient" && work.format !== "Cổ đại") return false;
+        const periodMap: { [key: string]: string } = { "Modern": "Hiện đại", "Ancient": "Cổ đại" };
+        if (work.format !== periodMap[filters.period]) return false;
       }
 
       // Rule
       if (filters.writing_rule) {
-        if (filters.writing_rule === "OneChar" && work.rule !== "1 kí tự") return false;
-        if (filters.writing_rule === "OneSentence" && work.rule !== "1 câu") return false;
+        const ruleMap: { [key: string]: string } = { "OneChar": "1 kí tự", "OneSentence": "1 câu" };
+        if (work.rule !== ruleMap[filters.writing_rule]) return false;
       }
 
       // Status
       if (filters.status) {
-        if (filters.status === "In Progress" && work.status !== "Đang viết") return false;
-        if (filters.status === "Completed" && work.status !== "Hoàn thành") return false;
-        if (filters.status === "Paused" && work.status !== "Tạm dừng") return false;
+        const statusMap: { [key: string]: string } = { "In Progress": "Đang viết", "Completed": "Hoàn thành", "Paused": "Tạm dừng" };
+        if (work.status !== statusMap[filters.status]) return false;
       }
 
       return true;
     });
 
+    console.log(`Remaining works after filtering: ${works.length}`);
+
     // 2. Sorting (Date only)
     works.sort((a, b) => {
+      const timeA = a.rawDate?.getTime() || 0;
+      const timeB = b.rawDate?.getTime() || 0;
       if (filters.sort_date === 'oldest') {
-        return a.rawDate.getTime() - b.rawDate.getTime();
+        return timeA - timeB;
       }
-      return b.rawDate.getTime() - a.rawDate.getTime();
+      return timeB - timeA;
     });
 
     // 3. Limit Logic
     const limit = parseInt(filters.limit) || 10;
     return works.slice(0, limit);
-  }, [filters]);
+  }, [allWorks, filters]);
 
   // Handle Tag Click
   const handleTagClick = (type: 'category' | 'period' | 'rule' | 'status', value: string) => {
@@ -148,19 +244,21 @@ export default function DongNgonPage() {
                 </button>
               )}
             </div>
-            {/* Sort or other controls could go here */}
+            {user && <CreateWorkModal />}
           </div>
 
-            {filteredWorks.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center py-20">
+                <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : filteredWorks.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
                 {filteredWorks.map((work) => (
-                  <div 
+                  <Link 
                     key={work.id} 
-                    onClick={() => setSelectedWork(work)}
+                    href={`/work/${work.id}`}
                     className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[320px] justify-between relative group cursor-pointer"
                   >
-
-
                     {/* Header */}
                     <div>
                       <h3 className="text-3xl font-bold font-sans line-clamp-2 leading-tight mb-2">
@@ -174,25 +272,25 @@ export default function DongNgonPage() {
                     {/* Tags Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <span 
-                        onClick={() => handleTagClick('period', work.format)}
+                        onClick={(e) => { e.preventDefault(); handleTagClick('period', work.format); }}
                         className="border border-black rounded-full px-3 py-2 text-center text-sm font-sans truncate hover:bg-black hover:text-white transition-colors cursor-pointer"
                       >
                         {work.format}
                       </span>
                       <span 
-                        onClick={() => handleTagClick('rule', work.rule)}
+                        onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}
                         className="border border-black rounded-full px-3 py-2 text-center text-sm font-sans truncate hover:bg-black hover:text-white transition-colors cursor-pointer"
                       >
                         {work.rule}
                       </span>
                       <span 
-                        onClick={() => handleTagClick('category', work.type)}
+                        onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}
                         className="border border-black rounded-full px-3 py-2 text-center text-sm font-sans truncate hover:bg-black hover:text-white transition-colors cursor-pointer"
                       >
                         {work.type}
                       </span>
                       <span 
-                        onClick={() => handleTagClick('status', work.status)}
+                        onClick={(e) => { e.preventDefault(); handleTagClick('status', work.status); }}
                         className={`border rounded-full px-3 py-2 text-center text-sm font-sans truncate transition-colors cursor-pointer ${
                           work.status === "Hoàn thành" ? "bg-green-100 border-green-600 text-green-800 hover:bg-green-200" :
                           work.status === "Đang viết" ? "bg-blue-100 border-blue-600 text-blue-800 hover:bg-blue-200" :
@@ -203,21 +301,34 @@ export default function DongNgonPage() {
                       </span>
                     </div>
 
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
               // Empty State
               <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
-                 <button 
-                  onClick={() => handleAuthAction(() => alert("Open Create Work Dialog"))}
-                  className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black hover:scale-110 transition-all duration-300 bg-white"
-                  title="Tạo tác phẩm mới"
-                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                 </button>
+                 {user ? (
+                   <CreateWorkModal customTrigger={
+                     <button 
+                      className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black hover:scale-110 transition-all duration-300 bg-white"
+                      title="Tạo tác phẩm mới"
+                     >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                     </button>
+                   } />
+                 ) : (
+                   <button 
+                    onClick={() => router.push('/dang-ky')}
+                    className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black hover:scale-110 transition-all duration-300 bg-white"
+                    title="Đăng ký để tạo tác phẩm"
+                   >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                   </button>
+                 )}
                  <p className="mt-6 text-xl font-sans text-gray-400 font-light">Chưa có tác phẩm nào.</p>
                  <p className="text-sm font-sans text-gray-400 mt-1">Hãy là người đầu tiên sáng tạo!</p>
               </div>
@@ -226,79 +337,6 @@ export default function DongNgonPage() {
 
       </main>
 
-      {/* Read Work Modal */}
-      {selectedWork && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedWork(null)}>
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[85vh] overflow-y-auto relative flex flex-col" onClick={(e) => e.stopPropagation()}>
-            
-            {/* Close Button */}
-            <button 
-              onClick={() => setSelectedWork(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-black transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Header */}
-            <div className="mb-6 pr-8">
-              <h2 className="text-3xl font-bold font-sans mb-2">{selectedWork.title}</h2>
-              <div className="flex items-center gap-4 text-gray-500 font-sans text-sm">
-                <span>{selectedWork.date}</span>
-                <span>•</span>
-                <span>{selectedWork.type}</span>
-                <span>•</span>
-                <span>{selectedWork.format}</span>
-              </div>
-            </div>
-
-            {/* Mock Content */}
-            <div className="font-sans text-lg leading-relaxed text-gray-800 space-y-4 mb-8 overflow-y-auto flex-1">
-              <p>
-                Đây là nội dung mô phỏng của tác phẩm "{selectedWork.title}". 
-                Trong thực tế, nội dung này sẽ được tải từ cơ sở dữ liệu.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <p>
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-              {selectedWork.type === "Thơ" && (
-                <div className="pl-4 border-l-4 border-gray-200 italic my-6 text-gray-600">
-                  <p>Gió cuốn mây trôi về phương ấy</p>
-                  <p>Để lại nơi đây một khoảng trời</p>
-                  <p>Người đi xa vắng hồn cỏ cây</p>
-                  <p>Mãi mãi ngàn năm tình chẳng phai.</p>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-              <button 
-                onClick={() => setSelectedWork(null)}
-                className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors font-bold font-sans"
-              >
-                Đóng
-              </button>
-              <button 
-                onClick={() => handleAuthAction(() => alert(`Editing: ${selectedWork.title}`))}
-                className="px-6 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition-colors font-bold font-sans flex items-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-                Chỉnh sửa
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

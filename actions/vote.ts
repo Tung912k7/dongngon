@@ -3,8 +3,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-const VOTE_THRESHOLD = 5; // Reduced for easier testing, can be 10
-
 export async function voteEndWork(workId: string) {
   const supabase = await createClient();
 
@@ -17,7 +15,19 @@ export async function voteEndWork(workId: string) {
     return { error: "Bạn cần đăng nhập để bình chọn." };
   }
 
-  // 2. Check if already voted
+  // 2. Check if user is a contributor
+  const { data: contribution } = await supabase
+    .from("contributions")
+    .select("id")
+    .eq("work_id", workId)
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (!contribution || contribution.length === 0) {
+    return { error: "Bạn cần đóng góp nội dung trước khi bình chọn kết thúc." };
+  }
+
+  // 3. Check if already voted
   const { data: existingVote } = await supabase
     .from("finish_votes")
     .select("id")
@@ -29,7 +39,7 @@ export async function voteEndWork(workId: string) {
     return { error: "Bạn đã bình chọn rồi." };
   }
 
-  // 3. Insert Vote
+  // 4. Insert Vote
   const { error: voteError } = await supabase.from("finish_votes").insert({
     work_id: workId,
     user_id: user.id,
@@ -40,23 +50,30 @@ export async function voteEndWork(workId: string) {
     return { error: "Lỗi hệ thống." };
   }
 
-  // 4. Check Threshold and Auto-Complete
+  // 5. Calculate Threshold and Auto-Complete
+  // Get unique contributors
+  const { data: contributorsData } = await supabase
+    .from("contributions")
+    .select("user_id")
+    .eq("work_id", workId);
+  
+  const uniqueContributors = new Set(contributorsData?.map((c: any) => c.user_id) || []).size;
+  const threshold = Math.max(1, Math.floor(uniqueContributors / 2) + 1);
+
+  // Get current votes
   const { count } = await supabase
     .from("finish_votes")
     .select("*", { count: "exact", head: true })
     .eq("work_id", workId);
 
-  if (count && count >= VOTE_THRESHOLD) {
+  if (count && count >= threshold) {
     // Mark Work as Completed
     await supabase
       .from("works")
       .update({ status: "completed" })
       .eq("id", workId);
       
-    // Add [End] marker to contributions
-    // We need a system nickname or current user nickname. 
-    // For now, we'll use a hardcoded system name string if possible or fetch current user profile.
-    // Ideally, catch this in a real app, but for now:
+    // Add [End] marker
     await supabase.from("contributions").insert({
         work_id: workId,
         user_id: user.id,

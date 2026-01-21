@@ -39,7 +39,7 @@ const SearchBar = () => {
       <input
         type="text"
         placeholder=""
-        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-serif bg-white"
+        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-montserrat bg-white"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get("query")?.toString()}
       />

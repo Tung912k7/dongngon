@@ -5,11 +5,16 @@
   --font-serif: var(--font-aria), ui-serif, Georgia, serif;
   --font-aquus: var(--font-aquus), serif;
   --font-roboto: var(--font-aria), sans-serif;
+  --font-montserrat: var(--font-montserrat), sans-serif;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif !important;
 }
 
 

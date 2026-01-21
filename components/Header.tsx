@@ -82,7 +82,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                       />
                     )}
-                    <span className="font-sans font-normal text-lg md:text-xl tracking-wide leading-none relative z-10 whitespace-nowrap">
+                    <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
                       {link.name}
                     </span>
                   </Link>
@@ -105,7 +105,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <span className="font-sans font-normal text-lg md:text-xl tracking-wide leading-none relative z-10 whitespace-nowrap">
+                  <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
                     {nickname || "Tài khoản"}
                   </span>
                   {user && (
@@ -131,30 +131,30 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         <Link 
                           href="/admin" 
                           onClick={() => setIsDropdownOpen(false)}
-                          className="block px-6 py-3 text-sm font-bold font-sans text-blue-600 hover:bg-blue-600 hover:text-white transition-colors border-b border-black/10"
+                          className="block px-6 py-3 text-xl font-normal font-montserrat text-blue-600 hover:bg-blue-600 hover:text-white transition-colors border-b border-black/10"
                         >
-                          HỆ THỐNG
+                          Hệ thống
                         </Link>
                       )}
                       <Link 
                         href="/profile" 
                         onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-sm font-bold font-sans text-black hover:bg-black hover:text-white transition-colors"
+                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors"
                       >
-                        HỒ SƠ
+                        Hồ sơ
                       </Link>
                       <Link 
                         href="/settings" 
                         onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-sm font-bold font-sans text-black hover:bg-black hover:text-white transition-colors border-t border-black/10"
+                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors border-t border-black/10"
                       >
-                        CÀI ĐẶT
+                        Cài đặt
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-6 py-3 text-sm font-bold font-sans text-red-600 hover:bg-red-600 hover:text-white transition-colors border-t border-black/10"
+                        className="w-full text-left px-6 py-3 text-xl font-normal font-montserrat text-red-600 hover:bg-red-600 hover:text-white transition-colors border-t border-black/10"
                       >
-                        ĐĂNG XUẤT
+                        Đăng xuất
                       </button>
                     </motion.div>
                   )}

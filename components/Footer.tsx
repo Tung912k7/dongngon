@@ -26,19 +26,19 @@ export default function Footer() {
             
 
           {/* Copyright */}
-          <div className="text-sm text-gray-500 font-sans">
+          <div className="text-base font-medium text-slate-900 font-montserrat">
             © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai.
           </div>
 
           {/* Links */}
-          <nav className="flex gap-8 font-sans text-sm uppercase tracking-wider items-center">
+          <nav className="flex gap-8 font-montserrat text-base font-normal uppercase tracking-wider items-center">
             <a 
               href="https://forms.gle/2ENzFe3rdUhkXTP59" 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:opacity-70 transition-opacity uppercase"
             >
-              Liên hệ
+              Góp ý
             </a>
             <button 
               onClick={() => setIsDonateOpen(true)}
@@ -82,7 +82,7 @@ export default function Footer() {
                 </svg>
               </button>
 
-              <p className="text-center font-sans text-xl font-medium text-black mb-4">
+              <p className="text-center font-montserrat text-xl font-medium text-black mb-4">
                 Cảm ơn bạn đã đồng hành cùng Đồng ngôn!
               </p>
               

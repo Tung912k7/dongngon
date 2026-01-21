@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function CreateWorkModal() {
+interface CreateWorkModalProps {
+  customTrigger?: React.ReactNode;
+}
+
+export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +32,7 @@ export default function CreateWorkModal() {
 
     if (result.success) {
       setIsOpen(false);
+      router.refresh();
       setFormData({
         title: "",
         category_type: "Văn xuôi",
@@ -41,15 +48,21 @@ export default function CreateWorkModal() {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-all transform hover:scale-110 active:scale-95"
-        title="Tạo tác phẩm mới"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-      </button>
+      {customTrigger ? (
+        <div onClick={() => setIsOpen(true)} className="cursor-pointer">
+          {customTrigger}
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-all transform hover:scale-110 active:scale-95"
+          title="Tạo tác phẩm mới"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </button>
+      )}
 
       <AnimatePresence>
         {isOpen && (
@@ -78,7 +91,7 @@ export default function CreateWorkModal() {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm"
+                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black"
                     placeholder="Tên tác phẩm của bạn..."
                   />
                 </div>
@@ -89,7 +102,7 @@ export default function CreateWorkModal() {
                     <select
                       value={formData.category_type}
                       onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm"
+                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option>Văn xuôi</option>
                       <option>Thơ</option>
@@ -101,7 +114,7 @@ export default function CreateWorkModal() {
                     <select
                       value={formData.period}
                       onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm"
+                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option>Hiện đại</option>
                       <option>Cổ đại</option>
@@ -115,7 +128,7 @@ export default function CreateWorkModal() {
                     <select
                       value={formData.writing_rule}
                       onChange={(e) => setFormData({ ...formData, writing_rule: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm"
+                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option>1 câu</option>
                       <option>1 kí tự</option>
@@ -126,7 +139,7 @@ export default function CreateWorkModal() {
                     <select
                       value={formData.license}
                       onChange={(e) => setFormData({ ...formData, license: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm"
+                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option value="public">Cộng đồng</option>
                       <option value="private">Riêng tư</option>
