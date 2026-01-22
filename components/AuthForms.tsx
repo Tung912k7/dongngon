@@ -483,6 +483,7 @@ export function SignUpForm() {
               </div>
               
               <button 
+                type="button"
                 onClick={() => setActiveModal(null)} 
                 className="w-full bg-white border-[3px] border-black text-black py-3 text-sm font-bold tracking-[0.2em] hover:bg-black hover:text-white transition-all uppercase rounded-xl"
               >

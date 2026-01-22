@@ -55,11 +55,14 @@ export default function Feed({
   }, [supabase, workId]);
 
   return (
-    <div className="space-y-4 text-lg leading-relaxed text-gray-800 font-montserrat">
+    <div className="text-lg leading-[1.8] text-gray-800 font-montserrat">
       {contributions.map((contribution) => (
-        <div key={contribution.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-             <span>{contribution.content}</span>
-        </div>
+        <span 
+          key={contribution.id} 
+          className="animate-in fade-in slide-in-from-bottom-2 duration-500 mr-1.5"
+        >
+          {contribution.content}
+        </span>
       ))}
       {contributions.length === 0 && (
           <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy là người đầu tiên đóng góp.</p>

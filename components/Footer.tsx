@@ -27,7 +27,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-base font-medium text-slate-900 font-montserrat">
-            © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai.
+            © {new Date().getFullYear()} Đồng ngôn bởi tôi và người yêu.
           </div>
 
           {/* Links */}

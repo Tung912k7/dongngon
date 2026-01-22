@@ -1,6 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface NotificationModalProps {
   isOpen: boolean;
@@ -20,8 +22,16 @@ export default function NotificationModal({
   const bgColor = type === "error" ? "bg-red-50" : type === "success" ? "bg-green-50" : "bg-white";
   const borderColor = type === "error" ? "border-red-500" : type === "success" ? "border-green-500" : "border-black";
   const iconColor = type === "error" ? "text-red-500" : type === "success" ? "text-green-500" : "text-black";
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
@@ -62,6 +72,7 @@ export default function NotificationModal({
               </p>
               
               <button
+                type="button"
                 onClick={onClose}
                 className="mt-6 w-full py-2 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:opacity-80 transition-all border-2 border-black"
               >
@@ -71,6 +82,7 @@ export default function NotificationModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

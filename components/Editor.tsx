@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
+import NotificationModal from "./NotificationModal";
 
 export default function Editor({ workId }: { workId: string }) {
   const router = useRouter();
@@ -11,6 +12,20 @@ export default function Editor({ workId }: { workId: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "error" | "success" | "info";
+    title?: string;
+  }>({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+    setNotification({ isOpen: true, message, type, title });
+  };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -31,7 +46,19 @@ export default function Editor({ workId }: { workId: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    const trimmedContent = content.trim();
+    if (!trimmedContent) return;
+
+    // Punctuation validation
+    const hasPunctuation = /[.!?…]$/.test(trimmedContent);
+    if (!hasPunctuation) {
+      showNotification(
+        "Câu của bạn cần kết thúc bằng dấu câu (vd: . ! ? ...).",
+        "info",
+        "Thiếu dấu câu"
+      );
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
@@ -78,9 +105,17 @@ export default function Editor({ workId }: { workId: string }) {
           {isSubmitting ? "..." : "Gửi"}
         </button>
       </div>
-       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
+      <p className="text-xs text-gray-400 mt-2 text-center pl-2">
         Mỗi ngày chỉ được đóng góp 1 câu.
       </p>
+
+      <NotificationModal 
+        isOpen={notification.isOpen} 
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        message={notification.message}
+        type={notification.type}
+        title={notification.title}
+      />
     </form>
   );
 }
