@@ -227,7 +227,7 @@ export default function DongNgonPage() {
           
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
-              <TableFilter filters={filters} onApplyFilters={setFilters} />
+              <TableFilter id="tour-filters" filters={filters} onApplyFilters={setFilters} />
               <span className="font-sans font-bold uppercase tracking-wider text-sm">Bộ lọc</span>
               
               {/* Reset Filter Button - Visible when filters are active */}
@@ -252,7 +252,7 @@ export default function DongNgonPage() {
                 <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : filteredWorks.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
+              <div id="tour-work-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
                 {filteredWorks.map((work) => (
                   <Link 
                     key={work.id} 

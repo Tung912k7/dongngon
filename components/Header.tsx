@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
+import OnboardingModal from "./OnboardingModal";
 // Load custom font handled in layout.tsx via global style
 
 
@@ -15,13 +16,14 @@ interface HeaderProps {
   user: User | null;
   nickname: string | null;
   role?: string | null;
+  hasSeenTour?: boolean;
 }
 
 /**
  * Header Component with Sliding Pill Animation
  * Uses Framer Motion's layoutId for smooth pill transition between nav items
  */
-const Header = ({ user, nickname, role }: HeaderProps) => {
+const Header = ({ user, nickname, role, hasSeenTour }: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -59,6 +61,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
 
   return (
     <header className="w-full bg-white sticky top-0 z-50">
+      {user && !hasSeenTour && <OnboardingModal />}
       <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         
         {/* Row 1: Navigation with Sliding Pill */}
@@ -69,6 +72,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                 return (
                   <Link
                     key={link.href}
+                    id={link.href === "/dong-ngon" ? "tour-feed" : undefined}
                     href={link.href}
                     className={`
                       relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
@@ -90,7 +94,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
               })}
 
               {/* User Section / Dropdown */}
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef} id="tour-profile">
                 <button
                   onClick={() => user ? setIsDropdownOpen(!isDropdownOpen) : router.push("/dang-nhap")}
                   className={`

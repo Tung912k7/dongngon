@@ -27,6 +27,7 @@ export type Profile = {
   nickname: string;
   avatar_url?: string;
   role?: UserRole; // 'admin', 'mod', 'user'
+  has_seen_tour?: boolean;
   updated_at: string;
 };
 

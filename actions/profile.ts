@@ -94,6 +94,26 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
   return { success: true };
 }
 
+export async function completeOnboarding() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ has_seen_tour: true })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Error marking onboarding as complete:", error);
+    return { error: "Failed to update onboarding status" };
+  }
+
+  revalidatePath("/");
+  return { success: true };
+}
+
 export async function updateNickname(nickname: string) {
     return updateProfile(nickname);
 }

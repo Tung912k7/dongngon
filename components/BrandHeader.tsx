@@ -7,6 +7,7 @@ const BrandHeader = () => {
   return (
     <header className="relative w-full h-auto flex items-center justify-center bg-white">
       <h1
+        id="tour-brand"
         className={`
           flex items-center justify-center
           font-serif

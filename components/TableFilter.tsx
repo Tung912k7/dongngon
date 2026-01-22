@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FilterState } from "@/app/dong-ngon/page";
 
 interface TableFilterProps {
+  id?: string;
   filters: FilterState;
   onApplyFilters: (filters: FilterState) => void;
 }
 
-export default function TableFilter({ filters, onApplyFilters }: TableFilterProps) {
+export default function TableFilter({ id, filters, onApplyFilters }: TableFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +34,7 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
   };
 
   return (
-    <div className="relative inline-block z-20" ref={filterRef}>
+    <div id={id} className="relative inline-block z-20" ref={filterRef}>
       <div className="relative">
         <button 
           onClick={() => setIsOpen(!isOpen)}

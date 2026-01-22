@@ -19,7 +19,7 @@ const SearchBar = () => {
   }, 300);
 
   return (
-    <div className="relative w-full md:w-96">
+    <div id="tour-search" className="relative w-full md:w-96">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black pointer-events-none">
         <svg
           xmlns="http://www.w3.org/2000/svg"

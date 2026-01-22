@@ -191,7 +191,11 @@ export function LoginForm() {
       });
 
       if (error) {
-        showNotification(error.message || "Lỗi đăng nhập.", "error");
+        let msg = error.message;
+        if (msg === "Email not confirmed") {
+          msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận.";
+        }
+        showNotification(msg || "Lỗi đăng nhập.", "error");
         setLoading(false);
         return;
       }
@@ -364,7 +368,7 @@ export function SignUpForm() {
         // We use the same modal state, but need to handle redirect after close if we want, 
         // but simple alert-replacement is to just show it.
         // Actually, user might want to redirect. Let's just show success for now.
-        showNotification("Đăng ký thành công! Hãy kiểm tra email (nếu có yêu cầu xác nhận) và đăng nhập để bắt đầu.", "success");
+        showNotification("Đăng ký thành công! Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
         router.push("/dang-nhap");
       }
     } catch (err) {
