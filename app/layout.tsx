@@ -30,7 +30,9 @@ const montserrat = localFont({
 export const metadata: Metadata = {
   title: "Đồng ngôn",
   description: "Nơi lưu trữ những áng thơ văn",
-
+  verification:{
+    google: '<meta name="google-site-verification" content="ka9n2768UYd1YIxNC96kuOCvTBP6MfVqmUyFHRxSOvw" />',
+  },
 };
 
 import { CSPostHogProvider } from "./providers";
