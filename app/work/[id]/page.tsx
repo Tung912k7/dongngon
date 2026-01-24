@@ -57,15 +57,13 @@ export default async function WorkPage({
           &larr; Quay lại
         </Link>
         <div className="flex justify-between items-start">
-            <h1 id="tour-work-title" className="text-3xl font-bold">{work.title}</h1>
-            <div id="tour-vote">
-                <VoteButton 
-                    workId={work.id} 
-                    initialCount={voteCount || 0} 
-                    isCompleted={isCompleted} 
-                    contributorCount={uniqueContributors}
-                />
-            </div>
+            <h1 className="text-3xl font-bold">{work.title}</h1>
+            <VoteButton 
+                workId={work.id} 
+                initialCount={voteCount || 0} 
+                isCompleted={isCompleted} 
+                contributorCount={uniqueContributors}
+            />
         </div>
         
         <div className="text-sm text-gray-500 mt-2 font-montserrat">
@@ -81,14 +79,14 @@ export default async function WorkPage({
       </header>
 
       {/* Real-time Feed */}
-      <section id="tour-work-content" className="flex-grow mb-12">
+      <section className="flex-grow mb-12">
         <Feed initialContributions={contributions || []} workId={work.id} />
       </section>
 
       {/* Editor - Sticky at bottom */}
       {!isCompleted && (
         <footer className="sticky bottom-6">
-            <div id="tour-editor" className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+            <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
                 <Editor workId={work.id} />
             </div>
         </footer>

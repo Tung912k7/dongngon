@@ -30,6 +30,8 @@ export const metadata: Metadata = {
 
 };
 
+import { CSPostHogProvider } from "./providers";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -37,19 +39,16 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   let nickname = null;
   let role = null;
-  let hasSeenTour = true; // Default to true to avoid showing it to non-logged users inappropriately or during load
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("nickname, role, has_seen_tour")
+      .select("nickname, role")
       .eq("id", user.id)
       .single();
     nickname = profile?.nickname;
     role = profile?.role;
-    hasSeenTour = profile?.has_seen_tour;
   }
 
   return (
@@ -61,11 +60,13 @@ export default async function RootLayout({
       <body
         className={`${ariaPro.variable} ${aquus.variable} ${montserrat.variable} antialiased font-sans min-h-screen flex flex-col`}
       >
-        <Header user={user} nickname={nickname} role={role} hasSeenTour={hasSeenTour} />
-        <main className="flex-1 w-full">
-          {children}
-        </main>
-        <Footer />
+        <CSPostHogProvider>
+          <Header user={user} nickname={nickname} role={role} />
+          <main className="flex-1 w-full">
+            {children}
+          </main>
+          <Footer />
+        </CSPostHogProvider>
       </body>
     </html>
   );

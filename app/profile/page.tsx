@@ -68,7 +68,7 @@ export default async function ProfilePage() {
           </div>
 
           {/* Info */}
-          <div id="tour-user-info" className="w-full space-y-8 text-left px-2">
+          <div className="w-full space-y-8 text-left px-2">
             <div className="border-b border-gray-100 pb-2">
               <p className="text-[10px] text-gray-400 font-sans font-bold uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
               <p className="text-3xl font-black text-black leading-none">{profile?.nickname}</p>
@@ -79,12 +79,10 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          <div id="tour-edit-profile" className="w-full">
-            <EditProfileModal 
-              initialNickname={profile?.nickname || ""} 
-              initialAvatarUrl={profile?.avatar_url || "/default_avatar.png"} 
-            />
-          </div>
+          <EditProfileModal 
+            initialNickname={profile?.nickname || ""} 
+            initialAvatarUrl={profile?.avatar_url || "/default_avatar.png"} 
+          />
         </div>
 
         {/* Main Content */}
