@@ -28,10 +28,64 @@ const montserrat = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn",
-  description: "Nơi lưu trữ những áng thơ văn",
+  title: {
+    default: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+    template: "%s | Đồng ngôn",
+  },
+  description: "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.",
+  keywords: ["thơ văn", "ngẫu hứng", "sáng tác", "văn học", "lưu trữ", "đồng ngôn", "tâm hồn"],
+  authors: [{ name: "Đồng ngôn" }],
+  creator: "Đồng ngôn",
+  publisher: "Đồng ngôn",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://dongngon.com"), // Replace with your actual domain
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Đồng ngôn",
+    description: "Nơi lưu trữ những áng thơ văn và cảm xúc.",
+    url: "https://dongngon.com",
+    siteName: "Đồng ngôn",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 600,
+        alt: "Đồng ngôn Logo",
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Đồng ngôn",
+    description: "Nơi lưu trữ những áng thơ văn và cảm xúc.",
+    images: ["/logo.png"],
+  },
+  icons: {
+    icon: "/logo.webp",
+    shortcut: "/logo.webp",
+    apple: "/logo.webp",
+  },
   verification: {
     google: "ka9n2768UYd1YIxNC96kuOCvTBP6MfVqmUyFHRxSOvw",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
