@@ -10,18 +10,21 @@ const ariaPro = localFont({
   src: "../public/fonts/Aria Pro.ttf",
   display: "swap",
   variable: "--font-aria",
+  preload: true,
 });
 
 const aquus = localFont({
   src: "../public/fonts/hlt-aquus-regular.ttf",
   display: "swap",
   variable: "--font-aquus",
+  preload: true,
 });
 
 const montserrat = localFont({
   src: "../public/fonts/Montserrat.ttf",
   display: "swap",
   variable: "--font-montserrat",
+  preload: true,
 });
 
 export const metadata: Metadata = {
