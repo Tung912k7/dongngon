@@ -38,12 +38,12 @@ export default async function Home({
   }
 
   return (
-    <div className="min-h-screen bg-white font-serif text-black">
+    <div className="bg-white font-serif text-black">
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Hero Section */}
         <FadeIn>
-          <div className="flex flex-col items-center justify-center pt-8 sm:pt-16 pb-12 sm:pb-20">
+          <div className="flex flex-col items-center justify-center pt-8 sm:pt-12 pb-8 sm:pb-12">
             <BrandHeader />
             <div className="mt-4 z-10 mb-10">
                <div className="relative w-[150px] h-[150px] md:w-[220px] md:h-[220px] animate-fade-in">

@@ -24,160 +24,179 @@ interface HeaderProps {
 const Header = ({ user, nickname, role }: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  };
 
   const navLinks = [
     { name: "Trang chủ", href: "/" },
     { name: "Đồng ngôn", href: "/dong-ngon" },
   ];
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  };
-
-  // Determine which link is active
-  const getIsActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href;
-  };
-
-  const isUserSectionActive = pathname === "/profile" || pathname === "/settings" || pathname === "/dang-nhap" || pathname === "/dang-ky";
+  if (!mounted) {
+    return (
+      <header className="w-full bg-white sticky top-0 z-50">
+        <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center gap-4">
+            <div className="p-2 -ml-2 w-12 h-12" />
+            <div className="flex-1 max-w-sm">
+              <SearchBar />
+            </div>
+          </div>
+        </div>
+        <div className="w-full border-b border-black"></div>
+      </header>
+    );
+  }
 
   return (
-    <header className="w-full bg-white sticky top-0 z-50">
-      <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
-        
-        {/* Row 1: Navigation with Sliding Pill */}
-        <div className="flex justify-center items-center mb-6">
-           <nav className="flex items-center gap-2 sm:gap-8 md:gap-16">
-              {navLinks.map((link) => {
-                const isActive = getIsActive(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`
-                      relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
-                      ${isActive ? "text-white" : "text-black hover:opacity-70"}
-                    `}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="active-pill"
-                        className="absolute inset-0 bg-black rounded-full"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                    <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
-                      {link.name}
-                    </span>
-                  </Link>
-                );
-              })}
+    <>
+      <header className="w-full bg-white sticky top-0 z-50">
+        <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center gap-4">
+            {/* Hamburger Menu Icon */}
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="p-2 -ml-2 hover:opacity-70 transition-opacity"
+              aria-label="Toggle menu"
+            >
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="text-black"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
 
-              {/* User Section / Dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => user ? setIsDropdownOpen(!isDropdownOpen) : router.push("/dang-nhap")}
-                  className={`
-                    relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center gap-2
-                    ${isUserSectionActive ? "text-white" : "text-black hover:opacity-70"}
-                  `}
-                >
-                  {isUserSectionActive && (
-                    <motion.div
-                      layoutId="active-pill"
-                      className="absolute inset-0 bg-black rounded-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
-                    {nickname || "Tài khoản"}
-                  </span>
-                  {user && (
-                    <svg 
-                      className={`w-4 h-4 relative z-10 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                </button>
-
-                <AnimatePresence>
-                  {isDropdownOpen && user && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
-                    >
-                      {role === "admin" && (
-                        <Link 
-                          href="/admin" 
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="block px-6 py-3 text-xl font-normal font-montserrat text-blue-600 hover:bg-blue-600 hover:text-white transition-colors border-b border-black/10"
-                        >
-                          Hệ thống
-                        </Link>
-                      )}
-                      <Link 
-                        href="/profile" 
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors"
-                      >
-                        Hồ sơ
-                      </Link>
-                      <Link 
-                        href="/settings" 
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors border-t border-black/10"
-                      >
-                        Cài đặt
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-6 py-3 text-xl font-normal font-montserrat text-red-600 hover:bg-red-600 hover:text-white transition-colors border-t border-black/10"
-                      >
-                        Đăng xuất
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-           </nav>
-        </div>
-
-        {/* Row 2: Horizontal Line with Centered Search Bar */}
-        <div className="relative flex justify-center items-center">
-           {/* The horizontal line */}
-           <div className="absolute inset-0 flex items-center" aria-hidden="true">
-             <div className="w-full border-t-2 border-black"></div>
-           </div>
-           
-           {/* The Search Bar (on top of line) */}
-           <div className="relative bg-white px-4 z-10">
+            {/* Search Bar */}
+            <div className="flex-1 max-w-sm">
               <SearchBar />
-           </div>
+            </div>
+          </div>
         </div>
+        {/* Horizontal Line */}
+        <div className="w-full border-b border-black"></div>
+      </header>
 
-      </div>
-    </header>
+      {/* Full-screen Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "-100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "-100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[100] bg-white flex flex-col p-4 sm:p-6"
+          >
+            {/* Close Button */}
+            <div className="flex justify-start">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 -ml-2 hover:opacity-70 transition-opacity"
+                aria-label="Close menu"
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  className="text-black"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Menu Links */}
+            <nav className="flex-1 flex flex-col items-center justify-center gap-8 -mt-20">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-3xl sm:text-4xl font-montserrat font-normal text-black hover:opacity-70 transition-opacity"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              
+              {/* Account Section */}
+              <div className="flex flex-col items-center gap-8">
+                {user ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-3xl sm:text-4xl font-montserrat font-normal text-black hover:opacity-70 transition-opacity"
+                    >
+                      {nickname || "Hồ sơ"}
+                    </Link>
+                    {role === "admin" && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="text-3xl sm:text-4xl font-montserrat font-normal text-blue-600 hover:opacity-70 transition-opacity"
+                      >
+                        Hệ thống
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="text-3xl sm:text-4xl font-montserrat font-normal text-red-600 hover:opacity-70 transition-opacity"
+                    >
+                      Đăng xuất
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/dang-nhap"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-3xl sm:text-4xl font-montserrat font-normal text-black hover:opacity-70 transition-opacity"
+                  >
+                    Tài khoản
+                  </Link>
+                )}
+              </div>
+            </nav>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
