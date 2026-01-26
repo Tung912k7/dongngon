@@ -1,0 +1,7 @@
+﻿Starting diagnostic test for 'works' table constraints...
+Test [Current Mapping (sentence)]: CODE 42501 | MSG: new row violates row-level security policy for table "works"
+Test [Alt Mapping (OneSentence)]: CODE 42501 | MSG: new row violates row-level security policy for table "works"
+Test [Legacy Status (writing)]: CODE 42501 | MSG: new row violates row-level security policy for table "works"
+Test [Upper Case Category]: CODE 42501 | MSG: new row violates row-level security policy for table "works"
+Test [Upper Case Period]: CODE 42501 | MSG: new row violates row-level security policy for table "works"
+Test [Minimal Set]: CODE 42501 | MSG: new row violates row-level security policy for table "works"

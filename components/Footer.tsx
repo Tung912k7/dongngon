@@ -1,37 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
 
-
   return (
     <>
       <footer className="w-full bg-white border-t border-black py-8 mt-auto">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* Brand */}
-            <div className="relative w-12 h-12 mb-2">
-        <Image
-          src="/logo.webp"
-          alt="Đồng Ngôn Logo"
-          fill
-          sizes="48px"
-          className="object-contain opacity-80"
-        />
-      </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 items-center gap-4">
+          {/* Empty div to maintain grid spacing for centering */}
+          <div className="hidden md:block" />
             
 
           {/* Copyright */}
-          <div className="text-base font-medium text-slate-900 font-montserrat">
-            © {new Date().getFullYear()} Đồng ngôn bởi tôi và người yêu.
+          <div className="text-base font-medium text-slate-900 font-montserrat text-center justify-self-center whitespace-nowrap">
+            © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai
           </div>
 
           {/* Links */}
-          <nav className="flex gap-8 font-montserrat text-base font-normal uppercase tracking-wider items-center">
+          <nav className="flex gap-8 font-montserrat text-base font-normal uppercase tracking-wider items-center justify-self-end">
             <a 
               href="https://forms.gle/2ENzFe3rdUhkXTP59" 
               target="_blank" 
@@ -49,8 +38,6 @@ export default function Footer() {
           </nav>
         </div>
       </footer>
-
-
 
       {/* Donation Modal */}
       <AnimatePresence>

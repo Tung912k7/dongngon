@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["http://192.168.0.100:3000"],
   compress: true,
   images: {
     remotePatterns: [
@@ -46,7 +47,6 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
             ].join("; "),
           },
           {

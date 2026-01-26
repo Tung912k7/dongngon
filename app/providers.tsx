@@ -13,7 +13,8 @@ if (typeof window !== 'undefined') {
     capture_pageview: false,
     enable_recording_console_log: true,
     capture_performance: true,
-  })
+    enable_exception_autocapture: true,
+  } as Parameters<typeof posthog.init>[1])
 }
 
 function PostHogPageView() : null {

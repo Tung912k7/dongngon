@@ -19,12 +19,12 @@ const SearchBar = () => {
   }, 300);
 
   return (
-    <div id="tour-search" className="relative w-full">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black/50 pointer-events-none">
+    <div id="tour-search" className="relative w-full md:w-96">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black pointer-events-none">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -39,7 +39,7 @@ const SearchBar = () => {
       <input
         type="text"
         placeholder=""
-        className="w-full border border-black/30 rounded-full py-1.5 pl-10 pr-4 focus:outline-none focus:border-black transition-colors font-montserrat bg-white text-sm"
+        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-montserrat bg-white"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get("query")?.toString()}
       />

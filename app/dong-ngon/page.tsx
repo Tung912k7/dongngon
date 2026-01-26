@@ -223,7 +223,7 @@ export default function DongNgonPage() {
         
 
         {/* Data Grid & Filter */}
-        <div className="w-full max-w-6xl relative mt-6">
+        <div className="w-full max-w-6xl relative">
           
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
