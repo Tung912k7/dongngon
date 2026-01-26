@@ -74,11 +74,19 @@ export default function Footer() {
               </p>
               
               <div className="w-64 h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
-                <img 
-                  src="/qr.png" 
-                  alt="Mã QR Ủng hộ" 
-                  className="w-full h-full object-contain" 
-                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="w-full h-full p-2"
+                >
+                  <img 
+                    src="/qr.png" 
+                    alt="Mã QR Ủng hộ" 
+                    className="w-full h-full object-contain" 
+                    loading="lazy"
+                  />
+                </motion.div>
               </div>
             </motion.div>
           </div>

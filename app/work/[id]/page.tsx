@@ -87,7 +87,11 @@ export default async function WorkPage({
       {!isCompleted && (
         <footer className="sticky bottom-6">
             <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
-                <Editor workId={work.id} />
+                <Editor 
+                  workId={work.id} 
+                  writingRule={work.limit_type === "sentence" ? "1 câu" : "1 kí tự"} 
+                  hinhThuc={work.sub_category} 
+                />
             </div>
         </footer>
       )}

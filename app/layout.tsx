@@ -4,6 +4,7 @@ import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import GuideNotification from "@/components/GuideNotification";
 import localFont from "next/font/local";
 
 const ariaPro = localFont({
@@ -100,14 +101,17 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
   let nickname = null;
   let role = null;
+  let has_seen_tour = true; // Default to true so we don't show it to unauthed or if error
+  
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("nickname, role")
+      .select("nickname, role, has_seen_tour")
       .eq("id", user.id)
       .single();
     nickname = profile?.nickname;
     role = profile?.role;
+    has_seen_tour = profile?.has_seen_tour ?? false;
   }
 
   return (
@@ -125,6 +129,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <GuideNotification hasSeenTour={has_seen_tour} />
         </CSPostHogProvider>
       </body>
     </html>

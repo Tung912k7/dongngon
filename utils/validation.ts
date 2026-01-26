@@ -7,7 +7,8 @@ export function validateWritingRule(content: string, rule: string): string | nul
   if (trimmed.length === 0) return "Nội dung không được để trống.";
 
   if (rule === "1 kí tự") {
-    if (trimmed.length !== 1) {
+    const nonWhitespace = trimmed.replace(/\s+/g, "");
+    if (nonWhitespace.length !== 1) {
       return "Quy tắc của tác phẩm này là '1 kí tự'. Vui lòng chỉ nhập đúng một chữ cái hoặc kí tự.";
     }
   } else {

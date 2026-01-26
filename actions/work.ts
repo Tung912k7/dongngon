@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 export async function createWork(formData: {
   title: string;
   category_type: string;
-  period: string;
+  hinh_thuc: string;
   license: string;
   writing_rule: string;
 }) {
@@ -37,10 +37,6 @@ export async function createWork(formData: {
       "Thơ": "Thơ",
       "Tiểu thuyết": "Tiểu thuyết"
     },
-    period: {
-      "Hiện đại": "Hiện đại",
-      "Cổ đại": "Cổ đại"
-    },
     rule: {
       "1 câu": "sentence",
       "1 kí tự": "character"
@@ -51,7 +47,7 @@ export async function createWork(formData: {
   const { data, error } = await supabase.from("works").insert({
     title: formData.title.trim(),
     category_type: mapping.category[formData.category_type as keyof typeof mapping.category] || formData.category_type,
-    period: mapping.period[formData.period as keyof typeof mapping.period] || formData.period,
+    sub_category: formData.hinh_thuc,
     license: formData.license,
     limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
     created_by: user.id,

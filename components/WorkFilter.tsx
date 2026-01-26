@@ -37,7 +37,6 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           <option value="">Tất cả</option>
           <option value="Poetry">Thơ</option>
           <option value="Prose">Văn xuôi</option>
-          <option value="Novel">Tiểu thuyết</option>
         </select>
       </div>
 
@@ -45,12 +44,24 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Hình thức</label>
         <select
           className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
-          onChange={(e) => handleLocalChange("period", e.target.value)}
-          value={localFilters.period}
+          onChange={(e) => handleLocalChange("hinh_thuc", e.target.value)}
+          value={localFilters.hinh_thuc}
         >
           <option value="">Tất cả</option>
-          <option value="Modern">Hiện đại</option>
-          <option value="Ancient">Cổ đại</option>
+          <optgroup label="Thơ">
+            <option value="Thơ 4 chữ">Tứ ngôn</option>
+            <option value="Thơ 5 chữ">Ngũ ngôn</option>
+            <option value="Thơ 6 chữ">Lục ngôn</option>
+            <option value="Thơ 7 chữ">Thất ngôn</option>
+            <option value="Thơ 8 chữ">Bát ngôn</option>
+            <option value="Thơ tự do">Tự do</option>
+          </optgroup>
+          <optgroup label="Văn xuôi">
+            <option value="Tùy bút">Tùy bút</option>
+            <option value="Nhật ký">Nhật ký</option>
+            <option value="Hồi ký">Hồi ký</option>
+            <option value="Tản văn">Tản văn</option>
+          </optgroup>
         </select>
       </div>
 
@@ -118,7 +129,7 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           onClick={() => {
             const defaultFilters = {
               category_type: "",
-              period: "",
+              hinh_thuc: "",
               writing_rule: "",
               sort_date: "newest",
               status: "",

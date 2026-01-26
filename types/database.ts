@@ -2,8 +2,7 @@ export type Work = {
   id: string; // UUID
   title: string;
   category_type: string; // 'Poetry', 'Prose'
-  sub_category: string; // 'Luc bat', 'Tan van', etc.
-  period: string; // 'Ancient', 'Modern'
+  sub_category: string; // 'Thơ 4 chữ', 'Tùy bút', etc. (Mapped to DB column)
   status: string; // 'active', 'completed'
   license: string;
   limit_type: string; // '1_sentence_day'

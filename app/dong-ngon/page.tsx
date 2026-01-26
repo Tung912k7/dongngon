@@ -11,7 +11,7 @@ import { createClient } from "@/utils/supabase/client";
 // Filter State Type
 export interface FilterState {
   category_type: string;
-  period: string;
+  hinh_thuc: string;
   writing_rule: string;
   sort_date: string;
   status: string;
@@ -20,7 +20,7 @@ export interface FilterState {
 
 const defaultFilters: FilterState = {
   category_type: "",
-  period: "",
+  hinh_thuc: "",
   writing_rule: "",
   sort_date: "newest",
   status: "",
@@ -44,31 +44,29 @@ export default function DongNgonPage() {
     });
 
     const fetchWorks = async () => {
-      console.log("Fetching works from Supabase...");
-      const { data, error } = await supabase
-        .from("works")
-        .select("*")
-        .order("created_at", { ascending: false });
+        const { data, error } = await supabase
+          .from("works")
+          .select("id, title, category_type, sub_category, limit_type, status, created_at")
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Supabase fetch error:", error);
-      }
-      
-      if (data) {
-        console.log(`Fetched ${data.length} works:`, data);
-        const mappedWorks = data.map((work: any) => ({
-          ...work,
-          type: work.category_type, // "Thơ", "Văn xuôi"
-          format: work.period, // "Hiện đại", "Cổ đại"
-          rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
-          status: work.status === "writing" ? "Đang viết" : 
-                  work.status === "finished" ? "Hoàn thành" : 
-                  work.status === "pending" ? "Đợi duyệt" : work.status,
-          date: new Date(work.created_at).toLocaleDateString("vi-VN"),
-          rawDate: new Date(work.created_at)
-        }));
-        setAllWorks(mappedWorks);
-      }
+        if (error) {
+          console.error("Supabase fetch error:", error);
+        }
+        
+        if (data) {
+          const mappedWorks = data.map((work: any) => ({
+            ...work,
+            type: work.category_type, // "Thơ", "Văn xuôi"
+            hinh_thuc: work.sub_category, // Access database column named 'sub_category'
+            rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+            status: work.status === "writing" ? "Đang viết" : 
+                    work.status === "finished" ? "Hoàn thành" : 
+                    work.status === "pending" ? "Đợi duyệt" : work.status,
+            date: new Date(work.created_at).toLocaleDateString("vi-VN"),
+            rawDate: new Date(work.created_at)
+          }));
+          setAllWorks(mappedWorks);
+        }
       setIsLoading(false);
     };
 
@@ -85,14 +83,13 @@ export default function DongNgonPage() {
           table: "works",
         },
         (payload) => {
-          console.log("Real-time change received:", payload);
           
           if (payload.eventType === "INSERT") {
             const newWork = payload.new;
             const mappedNewWork = {
               ...newWork,
               type: newWork.category_type,
-              format: newWork.period,
+              hinh_thuc: newWork.sub_category,
               rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
               status: newWork.status === "writing" ? "Đang viết" : 
                       newWork.status === "finished" ? "Hoàn thành" : 
@@ -106,7 +103,7 @@ export default function DongNgonPage() {
             const mappedUpdatedWork = {
               ...updatedWork,
               type: updatedWork.category_type,
-              format: updatedWork.period,
+              hinh_thuc: updatedWork.sub_category,
               rule: updatedWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
               status: updatedWork.status === "writing" ? "Đang viết" : 
                       updatedWork.status === "finished" ? "Hoàn thành" : 
@@ -139,8 +136,6 @@ export default function DongNgonPage() {
 
   // Filtered and Sorted Works
   const filteredWorks = useMemo(() => {
-    console.log(`Filtering ${allWorks.length} works with filters:`, filters);
-
     let works = [...allWorks];
 
     // 1. Strict Filtering (AND Logic)
@@ -151,10 +146,9 @@ export default function DongNgonPage() {
         if (work.type !== catMap[filters.category_type]) return false;
       }
 
-      // Period
-      if (filters.period) {
-        const periodMap: { [key: string]: string } = { "Modern": "Hiện đại", "Ancient": "Cổ đại" };
-        if (work.format !== periodMap[filters.period]) return false;
+      // Hình thức (Internal name hinh_thuc)
+      if (filters.hinh_thuc) {
+        if (work.hinh_thuc !== filters.hinh_thuc) return false;
       }
 
       // Rule
@@ -172,8 +166,6 @@ export default function DongNgonPage() {
       return true;
     });
 
-    console.log(`Remaining works after filtering: ${works.length}`);
-
     // 2. Sorting (Date only)
     works.sort((a, b) => {
       const timeA = a.rawDate?.getTime() || 0;
@@ -190,18 +182,29 @@ export default function DongNgonPage() {
   }, [allWorks, filters]);
 
   // Handle Tag Click
-  const handleTagClick = (type: 'category' | 'period' | 'rule' | 'status', value: string) => {
+  const handleTagClick = (type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
     // Mapping from display text to filter value
     const mappings: { [key: string]: { [key: string]: string } } = {
       category: { "Thơ": "Poetry", "Văn xuôi": "Prose", "Tiểu thuyết": "Novel" },
-      period: { "Hiện đại": "Modern", "Cổ đại": "Ancient" },
+      hinh_thuc: { 
+        "Thơ 4 chữ": "Thơ 4 chữ", 
+        "Thơ 5 chữ": "Thơ 5 chữ",
+        "Thơ 6 chữ": "Thơ 6 chữ",
+        "Thơ 7 chữ": "Thơ 7 chữ",
+        "Thơ 8 chữ": "Thơ 8 chữ",
+        "Thơ tự do": "Thơ tự do",
+        "Tùy bút": "Tùy bút",
+        "Nhật ký": "Nhật ký",
+        "Hồi ký": "Hồi ký",
+        "Tản văn": "Tản văn"
+      },
       rule: { "1 kí tự": "OneChar", "1 câu": "OneSentence" },
       status: { "Đang viết": "In Progress", "Hoàn thành": "Completed", "Tạm dừng": "Paused" }
     };
 
     const filterKeyMap: { [key: string]: keyof FilterState } = {
       category: "category_type",
-      period: "period",
+      hinh_thuc: "hinh_thuc",
       rule: "writing_rule",
       status: "status"
     };
@@ -231,7 +234,7 @@ export default function DongNgonPage() {
               <span className="font-sans font-bold uppercase tracking-wider text-sm">Bộ lọc</span>
               
               {/* Reset Filter Button - Visible when filters are active */}
-              {(filters.category_type || filters.period || filters.writing_rule || filters.status) && (
+              {(filters.category_type || filters.hinh_thuc || filters.writing_rule || filters.status) && (
                 <button 
                   onClick={() => setFilters(defaultFilters)}
                   className="ml-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors bg-red-50 px-2 py-1 rounded-md"
@@ -272,10 +275,10 @@ export default function DongNgonPage() {
                     {/* Tags Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <span 
-                        onClick={(e) => { e.preventDefault(); handleTagClick('period', work.format); }}
+                        onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}
                         className="border border-black rounded-full px-3 py-2 text-center text-sm font-sans truncate hover:bg-black hover:text-white transition-colors cursor-pointer"
                       >
-                        {work.format}
+                        {work.hinh_thuc}
                       </span>
                       <span 
                         onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}

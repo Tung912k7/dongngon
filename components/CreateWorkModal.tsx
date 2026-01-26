@@ -18,7 +18,7 @@ export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps)
   const [formData, setFormData] = useState({
     title: "",
     category_type: "Văn xuôi",
-    period: "Hiện đại",
+    hinh_thuc: "Tùy bút",
     license: "public",
     writing_rule: "1 câu",
   });
@@ -36,7 +36,7 @@ export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps)
       setFormData({
         title: "",
         category_type: "Văn xuôi",
-        period: "Hiện đại",
+        hinh_thuc: "Tùy bút",
         license: "public",
         writing_rule: "1 câu",
       });
@@ -101,23 +101,48 @@ export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps)
                     <label className="text-xs font-bold uppercase tracking-widest text-gray-400">THỂ LOẠI</label>
                     <select
                       value={formData.category_type}
-                      onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
+                      onChange={(e) => {
+                        const newCategory = e.target.value;
+                        let newSub = "";
+                        if (newCategory === "Thơ") newSub = "Tứ ngôn";
+                        else if (newCategory === "Văn xuôi") newSub = "Tùy bút";
+                        
+                        setFormData({ 
+                          ...formData, 
+                          category_type: newCategory,
+                          hinh_thuc: newSub
+                        });
+                      }}
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option>Văn xuôi</option>
                       <option>Thơ</option>
-                      <option>Tiểu thuyết</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">BỐI CẢNH</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">HÌNH THỨC</label>
                     <select
-                      value={formData.period}
-                      onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                      value={formData.hinh_thuc}
+                      onChange={(e) => setFormData({ ...formData, hinh_thuc: e.target.value })}
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
-                      <option>Hiện đại</option>
-                      <option>Cổ đại</option>
+                      {formData.category_type === "Thơ" ? (
+                        <>
+                          <option>Tứ ngôn</option>
+                          <option>Ngũ ngôn</option>
+                          <option>Lục ngôn</option>
+                          <option>Thất ngôn</option>
+                          <option>Bát ngôn</option>
+                          <option>Tự do</option>
+                        </>
+                      ) : (
+                        <>
+                          <option>Tùy bút</option>
+                          <option>Nhật ký</option>
+                          <option>Hồi ký</option>
+                          <option>Tản văn</option>
+                        </>
+                      )}
                     </select>
                   </div>
                 </div>

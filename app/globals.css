@@ -46,3 +46,11 @@ input, button, select, textarea {
 .animate-wave {
   animation: wave 8s ease-in-out infinite;
 }
+
+/* CSS cho khung nhập liệu văn xuôi */
+.prose-input {
+  width: 100%;
+  word-wrap: break-word; /* Tự động xuống dòng khi từ quá dài */
+  white-space: pre-wrap; /* Giữ nguyên các dấu xuống dòng thủ công (Nhật ký/Tản văn) */
+  overflow-wrap: anywhere;
+}

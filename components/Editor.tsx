@@ -6,7 +6,15 @@ import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
 import NotificationModal from "./NotificationModal";
 
-export default function Editor({ workId }: { workId: string }) {
+export default function Editor({ 
+  workId, 
+  writingRule, 
+  hinhThuc 
+}: { 
+  workId: string; 
+  writingRule: string;
+  hinhThuc?: string;
+}) {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,20 +52,52 @@ export default function Editor({ workId }: { workId: string }) {
     return () => clearTimeout(delayDebounceFn);
   }, [content]);
 
+  const validateContent = (content: string, limitType: string) => {
+    const trimmed = content.trim();
+
+    if (limitType === '1 kí tự') {
+      const nonWhitespace = trimmed.replace(/\s+/g, "");
+      return nonWhitespace.length === 1;
+    }
+
+    if (limitType === '1 câu') {
+      // Regex tìm các dấu kết thúc câu.
+      // Một câu chuẩn thường kết thúc bằng . ! hoặc ? và không chứa thêm các dấu này ở giữa (tùy ngữ cảnh, but keep it simple for now as per request)
+      const sentenceEndings = trimmed.match(/[.!?]/g);
+
+      // Kiểm tra nếu chỉ có đúng 1 dấu kết thúc ở cuối chuỗi
+      // Note: User's logic snippet: const hasOneEnding = sentenceEndings && sentenceEndings.length === 1;
+      const hasOneEnding = sentenceEndings && sentenceEndings.length === 1;
+      const endsWithPunctuation = /[.!?]$/.test(trimmed);
+
+      return hasOneEnding && endsWithPunctuation;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedContent = content.trim();
     if (!trimmedContent) return;
 
-    // Punctuation validation
-    const hasPunctuation = /[.!?…]$/.test(trimmedContent);
-    if (!hasPunctuation) {
-      showNotification(
-        "Câu của bạn cần kết thúc bằng dấu câu (vd: . ! ? ...).",
-        "info",
-        "Thiếu dấu câu"
-      );
-      return;
+    // Content Validation based on rule
+    const isValid = validateContent(trimmedContent, writingRule);
+    
+    if (!isValid) {
+        let msg = "Nội dung không hợp lệ.";
+        if (writingRule === '1 kí tự') {
+            msg = "Quy tắc là '1 kí tự'. Vui lòng chỉ nhập đúng 1 kí tự.";
+        } else if (writingRule === '1 câu') {
+            msg = "Quy tắc là '1 câu'. Vui lòng nhập đúng 1 câu và kết thúc bằng dấu câu (. ! ?).";
+        }
+        
+        showNotification(
+            msg,
+            "info",
+            "Sai quy tắc"
+        );
+        return;
     }
 
     setIsSubmitting(true);
@@ -89,13 +129,38 @@ export default function Editor({ workId }: { workId: string }) {
         </div>
       )}
       <div className="flex gap-2">
-        <input
-          type="text"
+        <textarea
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            
+            // Automatic line wrap for poetic forms
+            if (hinhThuc?.includes("Thơ") && hinhThuc !== "Thơ tự do") {
+              const lines = value.split('\n');
+              const currentLine = lines[lines.length - 1];
+              const limitPerLine = parseInt(hinhThuc.replace("Thơ ", "")); // "Thơ 4 chữ" -> 4
+              
+              if (limitPerLine) {
+                const words = currentLine.trim().split(/\s+/).filter(w => w.length > 0);
+                // If we JUST typed a space and reached the limit, or have more than limit
+                if (words.length >= limitPerLine && value.endsWith(" ")) {
+                  setContent(value.trimEnd() + '\n');
+                  return;
+                }
+              }
+            }
+            
+            setContent(value);
+          }}
           placeholder="Viết tiếp câu chuyện..."
-          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-montserrat"
+          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-montserrat resize-none min-h-[46px] h-auto prose-input"
           disabled={isSubmitting}
+          rows={1}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = 'auto';
+            target.style.height = target.scrollHeight + 'px';
+          }}
         />
         <button
           type="submit"

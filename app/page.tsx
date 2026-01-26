@@ -26,11 +26,11 @@ export default async function Home({
 
   
   // Fetch My Private Works
-  let myPrivateWorks: Work[] = [];
+  let myPrivateWorks: Pick<Work, 'id' | 'title' | 'created_at'>[] = [];
   if (user) {
       const { data } = await supabase
         .from("works")
-        .select("*")
+        .select("id, title, created_at")
         .eq("created_by", user.id)
         .eq("license", "private")
         .order("created_at", { ascending: false });
@@ -45,7 +45,7 @@ export default async function Home({
         <FadeIn>
           <div className="flex flex-col items-center justify-center pt-8 sm:pt-16 pb-12 sm:pb-20">
             <BrandHeader />
-            <div className="mt-4 z-10 mb-10">
+            <div className="mt-4 mb-10">
                <div className="relative w-[150px] h-[150px] md:w-[220px] md:h-[220px] animate-fade-in">
         <Image
           src="/logo.webp"
@@ -70,7 +70,7 @@ export default async function Home({
                 Tác phẩm riêng tư (Chỉ mình bạn thấy)
               </h2>
               <div className="grid gap-6">
-                  {myPrivateWorks.map((work: Work) => (
+                  {myPrivateWorks.map((work) => (
                     <Link
                       key={work.id}
                       href={`/work/${work.id}`}
