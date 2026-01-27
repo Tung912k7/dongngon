@@ -7,9 +7,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface CreateWorkModalProps {
   customTrigger?: React.ReactNode;
+  onSuccess?: () => void;
 }
 
-export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps) {
+export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWorkModalProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,7 @@ export default function CreateWorkModal({ customTrigger }: CreateWorkModalProps)
 
     if (result.success) {
       setIsOpen(false);
+      if (onSuccess) onSuccess();
       router.refresh();
       setFormData({
         title: "",

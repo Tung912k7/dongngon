@@ -90,3 +90,59 @@ export async function deleteWork(workId: string) {
   
   return { success: true };
 }
+
+export async function updateWork(workId: string, formData: {
+  title: string;
+  category_type: string;
+  hinh_thuc: string;
+  license: string;
+  writing_rule: string;
+}) {
+  const supabase = await createClient();
+
+  // 1. Check Authentication
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Bạn cần đăng nhập để chỉnh sửa tác phẩm." };
+
+  // 2. Validation
+  if (!formData.title || formData.title.trim().length < 2) {
+    return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
+  }
+
+  // 3. Map UI labels to database constants
+  const mapping = {
+    category: {
+      "Văn xuôi": "Văn xuôi",
+      "Thơ": "Thơ",
+      "Tiểu thuyết": "Tiểu thuyết"
+    },
+    rule: {
+      "1 câu": "sentence",
+      "1 kí tự": "character"
+    }
+  };
+
+  // 4. Update Work
+  const { error } = await supabase
+    .from("works")
+    .update({
+      title: formData.title.trim(),
+      category_type: mapping.category[formData.category_type as keyof typeof mapping.category] || formData.category_type,
+      sub_category: formData.hinh_thuc,
+      license: formData.license,
+      limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
+    })
+    .eq("id", workId)
+    .eq("created_by", user.id);
+
+  if (error) {
+    console.error("Error updating work:", error);
+    return { error: "Không thể cập nhật tác phẩm. Vui lòng thử lại sau." };
+  }
+
+  revalidatePath("/profile");
+  revalidatePath("/dong-ngon");
+  revalidatePath(`/work/${workId}`);
+  
+  return { success: true };
+}

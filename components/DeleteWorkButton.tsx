@@ -7,9 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface DeleteWorkButtonProps {
   workId: string;
   workTitle: string;
+  variant?: 'default' | 'menuItem';
+  onAction?: () => void;
 }
 
-export default function DeleteWorkButton({ workId, workTitle }: DeleteWorkButtonProps) {
+export default function DeleteWorkButton({ workId, workTitle, variant = 'default', onAction }: DeleteWorkButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -20,25 +22,37 @@ export default function DeleteWorkButton({ workId, workTitle }: DeleteWorkButton
       alert(result.error || "Có lỗi xảy ra khi xóa tác phẩm.");
       setIsDeleting(false);
       setIsOpen(false);
+      if (onAction) onAction();
     }
     // No need to close modal on success as revalidatePath will refresh the page
   };
 
+  const triggerOpen = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(true);
+  };
+
   return (
     <>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsOpen(true);
-        }}
-        className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10 hover:bg-red-600 scale-90 hover:scale-100"
-        title="Xóa tác phẩm"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+      {variant === 'default' ? (
+        <button
+          onClick={triggerOpen}
+          className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10 hover:bg-red-600 scale-90 hover:scale-100"
+          title="Xóa tác phẩm"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      ) : (
+        <button
+          onClick={triggerOpen}
+          className="w-full text-left px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors uppercase tracking-wider"
+        >
+          Xóa
+        </button>
+      )}
 
       <AnimatePresence>
         {isOpen && (

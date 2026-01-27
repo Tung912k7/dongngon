@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Work } from "@/types/database";
 import EditProfileModal from "@/components/EditProfileModal";
 import CreateWorkModal from "@/components/CreateWorkModal";
-import DeleteWorkButton from "@/components/DeleteWorkButton";
+import WorkCard from "@/components/WorkCard";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -97,17 +97,7 @@ export default async function ProfilePage() {
             <div className="flex flex-wrap gap-6">
               {createdWorks && createdWorks.length > 0 ? (
                 createdWorks.map((work) => (
-                  <div key={work.id} className="relative group">
-                    <DeleteWorkButton workId={work.id.toString()} workTitle={work.title} />
-                    <Link 
-                      href={`/work/${work.id}`}
-                      className="w-36 aspect-[3/4] bg-black rounded-lg flex items-center justify-center p-4 hover:opacity-90 transition-opacity"
-                    >
-                      <span className="text-white font-bold text-center text-sm line-clamp-3">
-                        {work.title}
-                      </span>
-                    </Link>
-                  </div>
+                  <WorkCard key={work.id} work={work} isOwner={true} />
                 ))
               ) : (
                 <div className="w-full py-16 border-2 border-dashed border-gray-200 rounded-[2rem] flex flex-col items-center justify-center text-gray-400 gap-6">
@@ -136,15 +126,7 @@ export default async function ProfilePage() {
             <div className="flex flex-wrap gap-6">
               {contributedWorksList && contributedWorksList.length > 0 ? (
                 contributedWorksList.map((work) => (
-                  <Link 
-                    key={work.id} 
-                    href={`/work/${work.id}`}
-                    className="w-36 aspect-[3/4] bg-black rounded-lg flex items-center justify-center p-4 group hover:scale-105 transition-transform"
-                  >
-                    <span className="text-white font-bold text-center text-sm line-clamp-3">
-                      {work.title}
-                    </span>
-                  </Link>
+                  <WorkCard key={work.id} work={work} isOwner={false} />
                 ))
               ) : (
                 <div className="w-full py-16 border-2 border-dashed border-gray-200 rounded-[2rem] flex flex-col items-center justify-center text-gray-400 gap-6">

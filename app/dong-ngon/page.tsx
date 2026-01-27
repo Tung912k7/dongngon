@@ -35,6 +35,35 @@ export default function DongNgonPage() {
   const [allWorks, setAllWorks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchWorks = async (supabaseClient?: any) => {
+    setIsLoading(true);
+    const sb = supabaseClient || createClient();
+    const { data, error } = await sb
+      .from("works")
+      .select("id, title, category_type, sub_category, limit_type, status, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase fetch error:", error);
+    }
+    
+    if (data) {
+      const mappedWorks = data.map((work: any) => ({
+        ...work,
+        type: work.category_type, // "Thơ", "Văn xuôi"
+        hinh_thuc: work.sub_category, // Access database column named 'sub_category'
+        rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+        status: work.status === "writing" ? "Đang viết" : 
+                work.status === "finished" ? "Hoàn thành" : 
+                work.status === "pending" ? "Đợi duyệt" : work.status,
+        date: new Date(work.created_at).toLocaleDateString("vi-VN"),
+        rawDate: new Date(work.created_at)
+      }));
+      setAllWorks(mappedWorks);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     const supabase = createClient();
     
@@ -43,34 +72,7 @@ export default function DongNgonPage() {
       setUser(user);
     });
 
-    const fetchWorks = async () => {
-        const { data, error } = await supabase
-          .from("works")
-          .select("id, title, category_type, sub_category, limit_type, status, created_at")
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("Supabase fetch error:", error);
-        }
-        
-        if (data) {
-          const mappedWorks = data.map((work: any) => ({
-            ...work,
-            type: work.category_type, // "Thơ", "Văn xuôi"
-            hinh_thuc: work.sub_category, // Access database column named 'sub_category'
-            rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
-            status: work.status === "writing" ? "Đang viết" : 
-                    work.status === "finished" ? "Hoàn thành" : 
-                    work.status === "pending" ? "Đợi duyệt" : work.status,
-            date: new Date(work.created_at).toLocaleDateString("vi-VN"),
-            rawDate: new Date(work.created_at)
-          }));
-          setAllWorks(mappedWorks);
-        }
-      setIsLoading(false);
-    };
-
-    fetchWorks();
+    fetchWorks(supabase);
 
     // Subscribe to real-time changes
     const channel = supabase
@@ -83,7 +85,6 @@ export default function DongNgonPage() {
           table: "works",
         },
         (payload) => {
-          
           if (payload.eventType === "INSERT") {
             const newWork = payload.new;
             const mappedNewWork = {
@@ -247,7 +248,7 @@ export default function DongNgonPage() {
                 </button>
               )}
             </div>
-            {user && <CreateWorkModal />}
+            {user && <CreateWorkModal onSuccess={() => fetchWorks()} />}
           </div>
 
             {isLoading ? (
@@ -311,7 +312,9 @@ export default function DongNgonPage() {
               // Empty State
               <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
                  {user ? (
-                   <CreateWorkModal customTrigger={
+                   <CreateWorkModal 
+                    onSuccess={() => fetchWorks()}
+                    customTrigger={
                      <button 
                       className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black hover:scale-110 transition-all duration-300 bg-white"
                       title="Tạo tác phẩm mới"
