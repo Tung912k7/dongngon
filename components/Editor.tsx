@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
 import NotificationModal from "./NotificationModal";
@@ -9,11 +10,13 @@ import NotificationModal from "./NotificationModal";
 export default function Editor({ 
   workId, 
   writingRule, 
-  hinhThuc 
+  hinhThuc,
+  user
 }: { 
   workId: string; 
   writingRule: string;
   hinhThuc?: string;
+  user: any;
 }) {
   const router = useRouter();
   const [content, setContent] = useState("");
@@ -79,7 +82,10 @@ export default function Editor({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedContent = content.trim();
-    if (!trimmedContent) return;
+    if (!trimmedContent) {
+      setError("Vui lòng nhập nội dung.");
+      return;
+    }
 
     // Content Validation based on rule
     const isValid = validateContent(trimmedContent, writingRule);
@@ -132,6 +138,24 @@ export default function Editor({
     }
   };
 
+  if (!user) {
+    return (
+      <div className="text-center py-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+        <p className="text-sm text-gray-500 font-medium">
+          Bạn cần{" "}
+          <Link href="/dang-nhap" className="text-black font-bold underline hover:opacity-70 transition-opacity">
+            đăng nhập
+          </Link>{" "}
+          hoặc{" "}
+          <Link href="/dang-ky" className="text-black font-bold underline hover:opacity-70 transition-opacity">
+            ghi danh
+          </Link>{" "}
+          để đóng góp cho tác phẩm này.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="relative">
       {error && (
@@ -182,7 +206,7 @@ export default function Editor({
         <button
           type="submit"
           className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
-          disabled={isSubmitting || !content.trim()}
+          disabled={isSubmitting}
         >
           {isSubmitting ? "..." : "Gửi"}
         </button>

@@ -47,6 +47,9 @@ export default async function WorkPage({
     
   const isCompleted = work.status === "completed";
 
+  // Fetch Current User
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col font-montserrat">
       <header className="mb-8 border-b pb-4">
@@ -91,6 +94,7 @@ export default async function WorkPage({
                   workId={work.id} 
                   writingRule={work.limit_type === "sentence" ? "1 câu" : "1 kí tự"} 
                   hinhThuc={work.sub_category} 
+                  user={user}
                 />
             </div>
         </footer>

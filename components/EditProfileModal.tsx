@@ -20,6 +20,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Avatar Upload State
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -78,6 +79,16 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newFieldErrors: Record<string, string> = {};
+    if (!nickname.trim()) newFieldErrors.nickname = "Vui lòng nhập bút danh.";
+    
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
     setError(null);
 
@@ -255,11 +266,15 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                   <input
                     type="text"
                     value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
+                    onChange={(e) => {
+                      setNickname(e.target.value);
+                      if (fieldErrors.nickname) setFieldErrors(prev => ({ ...prev, nickname: "" }));
+                    }}
                     maxLength={30}
-                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm"
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? 'border-red-500 bg-red-50' : 'border-black'} rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm`}
                     placeholder="Nhập bút danh mới..."
                   />
+                  {fieldErrors.nickname && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{fieldErrors.nickname}</p>}
                 </div>
 
                 {error && (

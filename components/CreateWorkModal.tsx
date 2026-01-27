@@ -16,6 +16,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     title: "",
@@ -36,9 +37,20 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newFieldErrors: Record<string, string> = {};
+    if (!formData.title.trim()) newFieldErrors.title = "Vui lòng nhập tiêu đề.";
+    if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "Vui lòng chọn hình thức.";
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      setIsLoading(false);
+      return;
+    }
+
+    setFieldErrors({});
     setIsLoading(true);
     setError(null);
-
+    
     // Timeout of 15 seconds for creation
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 15000)
@@ -117,14 +129,17 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-400">TIÊU ĐỀ</label>
                   <input
-                    required
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                       setFormData({ ...formData, title: e.target.value });
+                       if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: "" }));
+                    }}
                     maxLength={100}
-                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black"
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black`}
                     placeholder="Tên tác phẩm của bạn..."
                   />
+                  {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -144,15 +159,18 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     <label className="text-xs font-bold uppercase tracking-widest text-gray-400">HÌNH THỨC</label>
                     <select
                       value={formData.hinh_thuc}
-                      onChange={(e) => setFormData({ ...formData, hinh_thuc: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
-                      required
+                      onChange={(e) => {
+                        setFormData({ ...formData, hinh_thuc: e.target.value });
+                        if (fieldErrors.hinh_thuc) setFieldErrors(prev => ({ ...prev, hinh_thuc: "" }));
+                      }}
+                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? 'border-red-500 bg-red-50' : 'border-black'} rounded-2xl font-bold bg-white focus:outline-none text-sm text-black`}
                     >
                       <option value="" disabled>Chọn hình thức...</option>
                       {WORK_TYPES[formData.category_type]?.subCategories.map(sub => (
                         <option key={sub}>{sub}</option>
                       ))}
                     </select>
+                    {fieldErrors.hinh_thuc && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.hinh_thuc}</p>}
                   </div>
                 </div>
 

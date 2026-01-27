@@ -27,7 +27,9 @@ const InputField = ({
   onChange, 
   type = "text", 
   name,
-  maxLength
+  maxLength,
+  error,
+  autoComplete
 }: { 
   label: string; 
   value: string; 
@@ -35,6 +37,8 @@ const InputField = ({
   type?: string;
   name: string;
   maxLength?: number;
+  error?: string;
+  autoComplete?: string;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -50,8 +54,10 @@ const InputField = ({
           value={value} 
           onChange={onChange}
           maxLength={maxLength}
-          className="w-full px-5 py-3 border-[3px] border-black bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12"
+          autoComplete={autoComplete}
+          className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12`}
         />
+        {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
         {isPassword && (
           <button
             type="button"
@@ -80,12 +86,14 @@ const Checkbox = ({
   label, 
   checked, 
   onChange,
-  name
+  name,
+  error
 }: { 
   label: React.ReactNode; 
   checked: boolean; 
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name: string;
+  error?: string;
 }) => (
   <div className="flex items-center gap-4 mb-3 group cursor-pointer">
     <div className="relative flex items-center">
@@ -95,7 +103,7 @@ const Checkbox = ({
         name={name}
         checked={checked} 
         onChange={onChange} 
-        className="peer h-7 w-7 cursor-pointer appearance-none rounded-none border-[3px] border-black checked:bg-black transition-all" 
+        className={`peer h-7 w-7 cursor-pointer appearance-none rounded-none border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} checked:bg-black transition-all`} 
       />
       <svg
         className="absolute h-5 w-5 pointer-events-none hidden peer-checked:block text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -112,6 +120,7 @@ const Checkbox = ({
     </div>
     <div className="text-black text-base font-sans select-none">
       <label htmlFor={name} className="cursor-pointer font-bold">{label}</label>
+      {error && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{error}</p>}
     </div>
   </div>
 );
@@ -132,6 +141,7 @@ export function LoginForm() {
     message: "",
     type: "info",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
     setNotification({ isOpen: true, message, type, title });
@@ -139,13 +149,24 @@ export function LoginForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
+    if (fieldErrors[e.target.name]) setFieldErrors((prev: Record<string, string>) => ({ ...prev, [e.target.name]: "" }));
   };
 
   const isValid = useMemo(() => data.identifier.trim() !== "" && data.password.trim() !== "", [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
+    
+    const newFieldErrors: Record<string, string> = {};
+    if (!data.identifier.trim()) newFieldErrors.identifier = "Vui lòng nhập bút danh hoặc email.";
+    if (!data.password.trim()) newFieldErrors.password = "Vui lòng nhập mật khẩu.";
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     const timeoutPromise = new Promise((_, reject) => 
@@ -231,6 +252,7 @@ export function LoginForm() {
           value={data.identifier} 
           onChange={handleChange} 
           maxLength={100}
+          error={fieldErrors.identifier}
         />
         <InputField 
           label="Mật khẩu" 
@@ -239,6 +261,8 @@ export function LoginForm() {
           value={data.password} 
           onChange={handleChange} 
           maxLength={50}
+          error={fieldErrors.password}
+          autoComplete="current-password"
         />
       </div>
 
@@ -294,6 +318,7 @@ export function SignUpForm() {
     message: "",
     type: "info",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
     setNotification({ isOpen: true, message, type, title });
@@ -302,30 +327,42 @@ export function SignUpForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    if (fieldErrors[name]) setFieldErrors((prev: Record<string, string>) => ({ ...prev, [name]: "" }));
   };
 
   const isValid = useMemo(() => 
     data.fullName.trim() !== "" &&
     data.email.trim() !== "" &&
     data.penName.trim() !== "" &&
-    data.password.trim() !== "",
+    data.password.trim() !== "" &&
+    data.agreedToTerms &&
+    data.agreedToRegulations,
   [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
-
-    if (!data.agreedToTerms || !data.agreedToRegulations) {
-      showNotification("Vui lòng đồng ý với các điều khoản và quy định để tiếp tục.", "info", "Thông báo");
-      return;
-    }
+    
+    const newFieldErrors: Record<string, string> = {};
+    if (!data.fullName.trim()) newFieldErrors.fullName = "Họ và tên không được để trống.";
+    if (!data.email.trim()) newFieldErrors.email = "Gmail không được để trống.";
+    if (!data.penName.trim()) newFieldErrors.penName = "Bút danh không được để trống.";
+    if (!data.password.trim()) newFieldErrors.password = "Mật khẩu không được để trống.";
+    if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
+    if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
     // Email format validation (RFC 5322)
     const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
-    if (!emailRegex.test(data.email)) {
-      showNotification("Email không hợp lệ. Vui lòng kiểm tra lại định dạng.", "error");
+    if (data.email.trim() && !emailRegex.test(data.email)) {
+      newFieldErrors.email = "Email không hợp lệ. Vui lòng kiểm tra lại định dạng.";
+    }
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
       return;
     }
+
+    setFieldErrors({});
+    setLoading(true);
 
     // Timeout of 20 seconds for signup (multi-step checks)
     const timeoutPromise = new Promise((_, reject) => 
@@ -417,10 +454,19 @@ export function SignUpForm() {
             </div>
           
           <div className="space-y-4">
-            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} />
-            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} />
-            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} />
-            <InputField label="Mật khẩu" name="password" type="password" value={data.password} onChange={handleChange} maxLength={50} />
+            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} />
+            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} />
+            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} />
+            <InputField 
+              label="Mật khẩu" 
+              name="password" 
+              type="password" 
+              value={data.password} 
+              onChange={handleChange} 
+              maxLength={50} 
+              error={fieldErrors.password} 
+              autoComplete="new-password"
+            />
           </div>
 
           <div className="mt-8 space-y-2">
@@ -439,6 +485,7 @@ export function SignUpForm() {
               name="agreedToTerms"
               checked={data.agreedToTerms} 
               onChange={handleChange} 
+              error={fieldErrors.agreedToTerms}
             />
             <Checkbox 
               label={
@@ -455,6 +502,7 @@ export function SignUpForm() {
               name="agreedToRegulations"
               checked={data.agreedToRegulations} 
               onChange={handleChange} 
+              error={fieldErrors.agreedToRegulations}
             />
           </div>
 

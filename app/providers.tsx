@@ -5,8 +5,8 @@ import { PostHogProvider } from 'posthog-js/react'
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
 
-if (typeof window !== 'undefined') {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     person_profiles: 'identified_only',
     capture_pageview: false,
@@ -76,6 +76,10 @@ class PostHogErrorBoundary extends Component<{ children: ReactNode }, { hasError
 }
 
 export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+        return <>{children}</>;
+    }
+
     return (
         <PostHogProvider client={posthog}>
           <PostHogErrorBoundary>

@@ -35,6 +35,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // 1. Protect Admin Pages
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user) {
       return NextResponse.redirect(new URL('/dang-nhap', request.url))
@@ -49,6 +50,14 @@ export async function updateSession(request: NextRequest) {
     if (profile?.role !== 'admin') {
       return NextResponse.redirect(new URL('/', request.url))
     }
+  }
+
+  // 2. Protect Authenticated Pages
+  const protectedPaths = ['/profile', '/settings']
+  const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
+  
+  if (isProtectedPath && !user) {
+    return NextResponse.redirect(new URL('/dang-nhap', request.url))
   }
 
   return response

@@ -8,8 +8,16 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInvalid, setIsInvalid] = useState(false);
 
   const handleSave = async () => {
+    if (!nickname.trim() || nickname.trim().length < 2) {
+      setError("Bút danh phải có ít nhất 2 ký tự.");
+      setIsInvalid(true);
+      return;
+    }
+
+    setIsInvalid(false);
     setIsSaving(true);
     setError(null);
     const result = await updateNickname(nickname);
@@ -41,9 +49,12 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
       <input
         type="text"
         value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        onChange={(e) => {
+          setNickname(e.target.value);
+          if (isInvalid) setIsInvalid(false);
+        }}
         maxLength={30}
-        className="border p-1 rounded text-sm"
+        className={`border ${isInvalid ? 'border-red-500 bg-red-50' : 'p-1'} rounded text-sm`}
         placeholder="Nhập bút danh..."
       />
       <button
