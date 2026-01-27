@@ -4,6 +4,25 @@ import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, Suspense } from "react"
+import { createClient } from "@/utils/supabase/client"
+
+function AuthListener() {
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        // Chuyển hướng ngay lập tức ở tất cả các tab
+        window.location.href = '/dang-nhap'; 
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return null;
+}
 
 if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
@@ -82,6 +101,7 @@ export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <PostHogProvider client={posthog}>
+          <AuthListener />
           <PostHogErrorBoundary>
             <Suspense fallback={null}>
               <PostHogPageView />
