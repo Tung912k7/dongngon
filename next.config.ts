@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: https://lqlobokdwcebvoitwxkt.supabase.co",
-              "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com",
+              "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co wss://lqlobokdwcebvoitwxkt.supabase.co https://*.supabase.co wss://*.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com",
               "font-src 'self' data:",
               "object-src 'none'",
               "base-uri 'self'",

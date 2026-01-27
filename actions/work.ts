@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getErrorMessage } from "@/utils/error-handler";
 
 export async function createWork(formData: {
   title: string;
@@ -57,7 +58,7 @@ export async function createWork(formData: {
 
   if (error) {
     console.error("Error creating work:", error);
-    return { error: "Không thể tạo tác phẩm. Vui lòng thử lại sau." };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
@@ -82,7 +83,7 @@ export async function deleteWork(workId: string) {
 
   if (error) {
     console.error("Error deleting work:", error);
-    return { error: "Không thể xóa tác phẩm. Vui lòng thử lại sau." };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
@@ -137,7 +138,7 @@ export async function updateWork(workId: string, formData: {
 
   if (error) {
     console.error("Error updating work:", error);
-    return { error: "Không thể cập nhật tác phẩm. Vui lòng thử lại sau." };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");

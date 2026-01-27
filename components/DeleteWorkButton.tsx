@@ -17,14 +17,35 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const result = await deleteWork(workId);
-    if (!result.success) {
-      alert(result.error || "Có lỗi xảy ra khi xóa tác phẩm.");
-      setIsDeleting(false);
+    
+    // Timeout of 10 seconds
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 10000)
+    );
+
+    try {
+      const result = await Promise.race([
+        deleteWork(workId),
+        timeoutPromise
+      ]) as any;
+
+      if (!result.success) {
+        alert(result.error || "Có lỗi xảy ra khi xóa tác phẩm.");
+        setIsOpen(false);
+        if (onAction) onAction();
+      }
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      if (err.message === "TIMEOUT") {
+        alert("Yêu cầu xóa quá hạn (Timeout). Vui lòng thử lại sau.");
+      } else {
+        alert("Có lỗi xảy ra khi xóa tác phẩm.");
+      }
       setIsOpen(false);
       if (onAction) onAction();
+    } finally {
+      setIsDeleting(false);
     }
-    // No need to close modal on success as revalidatePath will refresh the page
   };
 
   const triggerOpen = (e: React.MouseEvent) => {

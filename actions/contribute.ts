@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
+import { getErrorMessage } from "@/utils/error-handler";
 
 export async function submitContribution(workId: string, content: string) {
   const supabase = await createClient();
@@ -49,6 +50,7 @@ export async function submitContribution(workId: string, content: string) {
 
     if (statusError) {
       console.error("Error updating work status:", statusError);
+      return { error: "Không thể cập nhật trạng thái tác phẩm để xử lý vi phạm." };
     }
   }
 
@@ -86,7 +88,7 @@ export async function submitContribution(workId: string, content: string) {
 
   if (error) {
     console.error("Error submitting contribution:", error);
-    return { error: "Lỗi hệ thống. Vui lòng thử lại sau." };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath(`/work/${workId}`);

@@ -103,17 +103,33 @@ export default function Editor({
     setIsSubmitting(true);
     setError(null);
 
-    const result = await submitContribution(workId, content);
-    
-    if (result.error) {
-      setError(result.error);
-    } else {
-      setContent("");
-      router.refresh();
-      // Optional: Add a success toast or vibration
+    // Timeout of 10 seconds for submissions
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 10000)
+    );
+
+    try {
+      const result = await Promise.race([
+        submitContribution(workId, content),
+        timeoutPromise
+      ]) as any;
+      
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setContent("");
+        router.refresh();
+      }
+    } catch (err: any) {
+      console.error("Submit contribution error:", err);
+      if (err.message === "TIMEOUT") {
+        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+      } else {
+        setError("Có lỗi xảy ra khi gửi đóng góp.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
   };
 
   return (
@@ -153,6 +169,7 @@ export default function Editor({
             setContent(value);
           }}
           placeholder="Viết tiếp câu chuyện..."
+          maxLength={500}
           className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-montserrat resize-none min-h-[46px] h-auto prose-input"
           disabled={isSubmitting}
           rows={1}

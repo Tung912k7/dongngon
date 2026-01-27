@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
 import { Work } from "@/types/database";
+import { WORK_TYPES, CATEGORY_OPTIONS } from "@/data/workTypes";
 
 interface EditWorkModalProps {
   work: Work;
@@ -31,7 +32,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     writing_rule: reverseMapping.rule(work.limit_type || "sentence"),
   });
 
-  // Update form data if work changes (though modal is usually per-card)
+  // Map existing data to form
   useEffect(() => {
     setFormData({
       title: work.title,
@@ -42,20 +43,48 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     });
   }, [work]);
 
+  // Handle category changes - reset hinh_thuc if invalid
+  useEffect(() => {
+    // We only want to trigger this if category_type was actually changed by the user, 
+    // but a simpler check is to see if hinh_thuc is compatible with the new category.
+    const availableSubCategories = WORK_TYPES[formData.category_type]?.subCategories || [];
+    if (formData.hinh_thuc && !availableSubCategories.includes(formData.hinh_thuc)) {
+      setFormData(prev => ({ ...prev, hinh_thuc: "" }));
+    }
+  }, [formData.category_type]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const result = await updateWork(work.id.toString(), formData);
+    // Timeout of 15 seconds for updates
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 15000)
+    );
 
-    if (result.success) {
-      onClose();
-      router.refresh();
-    } else {
-      setError(result.error || "Có lỗi xảy ra.");
+    try {
+      const result = await Promise.race([
+        updateWork(work.id.toString(), formData),
+        timeoutPromise
+      ]) as any;
+
+      if (result.success) {
+        onClose();
+        router.refresh();
+      } else {
+        setError(result.error || "Có lỗi xảy ra.");
+      }
+    } catch (err: any) {
+      console.error("Update work error:", err);
+      if (err.message === "TIMEOUT") {
+        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+      } else {
+        setError("Có lỗi xảy ra khi cập nhật tác phẩm.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -86,6 +115,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  maxLength={100}
                   className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black"
                   placeholder="Tên tác phẩm của bạn..."
                 />
@@ -96,22 +126,12 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-400">THỂ LOẠI</label>
                   <select
                     value={formData.category_type}
-                    onChange={(e) => {
-                      const newCategory = e.target.value;
-                      let newSub = "";
-                      if (newCategory === "Thơ") newSub = "Tứ ngôn";
-                      else if (newCategory === "Văn xuôi") newSub = "Tùy bút";
-                      
-                      setFormData({ 
-                        ...formData, 
-                        category_type: newCategory,
-                        hinh_thuc: newSub
-                      });
-                    }}
+                    onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
                     className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                   >
-                    <option>Văn xuôi</option>
-                    <option>Thơ</option>
+                    {CATEGORY_OPTIONS.map(opt => (
+                      <option key={opt}>{opt}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -120,24 +140,12 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                     value={formData.hinh_thuc}
                     onChange={(e) => setFormData({ ...formData, hinh_thuc: e.target.value })}
                     className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
+                    required
                   >
-                    {formData.category_type === "Thơ" ? (
-                      <>
-                        <option>Tứ ngôn</option>
-                        <option>Ngũ ngôn</option>
-                        <option>Lục ngôn</option>
-                        <option>Thất ngôn</option>
-                        <option>Bát ngôn</option>
-                        <option>Tự do</option>
-                      </>
-                    ) : (
-                      <>
-                        <option>Tùy bút</option>
-                        <option>Nhật ký</option>
-                        <option>Hồi ký</option>
-                        <option>Tản văn</option>
-                      </>
-                    )}
+                    <option value="" disabled>Chọn hình thức...</option>
+                    {WORK_TYPES[formData.category_type]?.subCategories.map(sub => (
+                      <option key={sub}>{sub}</option>
+                    ))}
                   </select>
                 </div>
               </div>

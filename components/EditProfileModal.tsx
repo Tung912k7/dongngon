@@ -83,6 +83,11 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
 
     let finalAvatarUrl = avatarUrl;
 
+    // Timeout of 30 seconds for profile update (includes image upload)
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 30000)
+    );
+
     try {
       // If we have a new image to crop and upload
       if (imageSrc && croppedAreaPixels) {
@@ -97,7 +102,10 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
         }
       }
 
-      const result = await updateProfile(nickname, finalAvatarUrl);
+      const result = await Promise.race([
+        updateProfile(nickname, finalAvatarUrl),
+        timeoutPromise
+      ]) as any;
       
       if (result.success) {
         setIsOpen(false);
@@ -106,7 +114,12 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
         setError(result.error || "Có lỗi xảy ra.");
       }
     } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra khi xử lý ảnh.");
+      console.error("Profile update error:", err);
+      if (err.message === "TIMEOUT") {
+        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+      } else {
+        setError(err.message || "Có lỗi xảy ra khi cập nhật hồ sơ.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -243,6 +256,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
+                    maxLength={30}
                     className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm"
                     placeholder="Nhập bút danh mới..."
                   />

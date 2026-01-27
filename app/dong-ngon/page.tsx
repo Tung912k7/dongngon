@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import WorkFilter from "@/components/WorkFilter";
 import TableFilter from "@/components/TableFilter";
@@ -35,13 +35,21 @@ export default function DongNgonPage() {
   const [allWorks, setAllWorks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchWorks = async (supabaseClient?: any) => {
+  const fetchWorks = async (supabaseClient?: any, searchQuery?: string) => {
     setIsLoading(true);
     const sb = supabaseClient || createClient();
-    const { data, error } = await sb
+    
+    let query = sb
       .from("works")
-      .select("id, title, category_type, sub_category, limit_type, status, created_at")
+      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname")
       .order("created_at", { ascending: false });
+
+    if (searchQuery) {
+      // Lọc theo tiêu đề hoặc nickname tác giả
+      query = query.or(`title.ilike.%${searchQuery}%,author_nickname.ilike.%${searchQuery}%`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Supabase fetch error:", error);
@@ -64,6 +72,10 @@ export default function DongNgonPage() {
     setIsLoading(false);
   };
 
+  // Listen to search params for automatic re-fetching
+  const searchParams = useSearchParams();
+  const q = searchParams.get("query") || "";
+
   useEffect(() => {
     const supabase = createClient();
     
@@ -72,7 +84,7 @@ export default function DongNgonPage() {
       setUser(user);
     });
 
-    fetchWorks(supabase);
+    fetchWorks(supabase, q);
 
     // Subscribe to real-time changes
     const channel = supabase
@@ -125,7 +137,7 @@ export default function DongNgonPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [q]);
 
   const handleAuthAction = (action: () => void) => {
     if (!user) {
@@ -248,7 +260,7 @@ export default function DongNgonPage() {
                 </button>
               )}
             </div>
-            {user && <CreateWorkModal onSuccess={() => fetchWorks()} />}
+            {user && <CreateWorkModal onSuccess={() => fetchWorks(undefined, q)} />}
           </div>
 
             {isLoading ? (
@@ -313,7 +325,7 @@ export default function DongNgonPage() {
               <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
                  {user ? (
                    <CreateWorkModal 
-                    onSuccess={() => fetchWorks()}
+                    onSuccess={() => fetchWorks(undefined, q)}
                     customTrigger={
                      <button 
                       className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black hover:scale-110 transition-all duration-300 bg-white"

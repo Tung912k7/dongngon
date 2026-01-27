@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
+import { WORK_TYPES, CATEGORY_OPTIONS } from "@/data/workTypes";
 
 interface CreateWorkModalProps {
   customTrigger?: React.ReactNode;
@@ -24,28 +25,55 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     writing_rule: "1 câu",
   });
 
+  // Automatically validate sub-category when category changes
+  useEffect(() => {
+    const availableSubCategories = WORK_TYPES[formData.category_type]?.subCategories || [];
+    // Only reset if the current selection is no longer valid in the new category
+    if (!availableSubCategories.includes(formData.hinh_thuc)) {
+      setFormData(prev => ({ ...prev, hinh_thuc: "" })); // Set empty to force user to choose
+    }
+  }, [formData.category_type]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const result = await createWork(formData);
+    // Timeout of 15 seconds for creation
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 15000)
+    );
 
-    if (result.success) {
-      setIsOpen(false);
-      if (onSuccess) onSuccess();
-      router.refresh();
-      setFormData({
-        title: "",
-        category_type: "Văn xuôi",
-        hinh_thuc: "Tùy bút",
-        license: "public",
-        writing_rule: "1 câu",
-      });
-    } else {
-      setError(result.error || "Có lỗi xảy ra.");
+    try {
+      const result = await Promise.race([
+        createWork(formData),
+        timeoutPromise
+      ]) as any;
+
+      if (result.success) {
+        setIsOpen(false);
+        if (onSuccess) onSuccess();
+        router.refresh();
+        setFormData({
+          title: "",
+          category_type: "Văn xuôi",
+          hinh_thuc: "Tùy bút",
+          license: "public",
+          writing_rule: "1 câu",
+        });
+      } else {
+        setError(result.error || "Có lỗi xảy ra.");
+      }
+    } catch (err: any) {
+      console.error("Create work error:", err);
+      if (err.message === "TIMEOUT") {
+        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+      } else {
+        setError("Có lỗi xảy ra khi tạo tác phẩm.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -93,6 +121,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    maxLength={100}
                     className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black"
                     placeholder="Tên tác phẩm của bạn..."
                   />
@@ -103,22 +132,12 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     <label className="text-xs font-bold uppercase tracking-widest text-gray-400">THỂ LOẠI</label>
                     <select
                       value={formData.category_type}
-                      onChange={(e) => {
-                        const newCategory = e.target.value;
-                        let newSub = "";
-                        if (newCategory === "Thơ") newSub = "Tứ ngôn";
-                        else if (newCategory === "Văn xuôi") newSub = "Tùy bút";
-                        
-                        setFormData({ 
-                          ...formData, 
-                          category_type: newCategory,
-                          hinh_thuc: newSub
-                        });
-                      }}
+                      onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
-                      <option>Văn xuôi</option>
-                      <option>Thơ</option>
+                      {CATEGORY_OPTIONS.map(opt => (
+                        <option key={opt}>{opt}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="space-y-2">
@@ -127,24 +146,12 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                       value={formData.hinh_thuc}
                       onChange={(e) => setFormData({ ...formData, hinh_thuc: e.target.value })}
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
+                      required
                     >
-                      {formData.category_type === "Thơ" ? (
-                        <>
-                          <option>Tứ ngôn</option>
-                          <option>Ngũ ngôn</option>
-                          <option>Lục ngôn</option>
-                          <option>Thất ngôn</option>
-                          <option>Bát ngôn</option>
-                          <option>Tự do</option>
-                        </>
-                      ) : (
-                        <>
-                          <option>Tùy bút</option>
-                          <option>Nhật ký</option>
-                          <option>Hồi ký</option>
-                          <option>Tản văn</option>
-                        </>
-                      )}
+                      <option value="" disabled>Chọn hình thức...</option>
+                      {WORK_TYPES[formData.category_type]?.subCategories.map(sub => (
+                        <option key={sub}>{sub}</option>
+                      ))}
                     </select>
                   </div>
                 </div>

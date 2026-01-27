@@ -7,15 +7,17 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
   const [nickname, setNickname] = useState(initialNickname || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSave = async () => {
     setIsSaving(true);
+    setError(null);
     const result = await updateNickname(nickname);
     setIsSaving(false);
     if (result.success) {
       setIsEditing(false);
     } else {
-      alert(result.error);
+      setError(result.error || "Có lỗi xảy ra.");
     }
   };
 
@@ -40,6 +42,7 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
         type="text"
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
+        maxLength={30}
         className="border p-1 rounded text-sm"
         placeholder="Nhập bút danh..."
       />
@@ -56,6 +59,9 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
       >
         Hủy
       </button>
+      {error && (
+        <span className="text-red-500 text-xs font-bold block mt-1">{error}</span>
+      )}
     </div>
   );
 }

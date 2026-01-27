@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getErrorMessage } from "@/utils/error-handler";
 
 export async function voteEndWork(workId: string) {
   const supabase = await createClient();
@@ -47,7 +48,7 @@ export async function voteEndWork(workId: string) {
 
   if (voteError) {
     console.error("Vote error:", voteError);
-    return { error: "Lỗi hệ thống." };
+    return { error: getErrorMessage(voteError) };
   }
 
   // 5. Calculate Threshold and Auto-Complete
@@ -61,25 +62,42 @@ export async function voteEndWork(workId: string) {
   const threshold = Math.max(1, Math.floor(uniqueContributors / 2) + 1);
 
   // Get current votes
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from("finish_votes")
     .select("*", { count: "exact", head: true })
     .eq("work_id", workId);
 
+  if (countError) {
+    console.error("Error fetching vote count:", countError);
+    return { error: "Không thể tính toán kết quả bình chọn." };
+  }
+
   if (count && count >= threshold) {
     // Mark Work as Completed
-    await supabase
+    const { error: completeError } = await supabase
       .from("works")
       .update({ status: "completed" })
       .eq("id", workId);
       
+    if (completeError) {
+      console.error("Error completing work:", completeError);
+      return { error: "Bình chọn thành công nhưng không thể hoàn tất tác phẩm." };
+    }
+      
     // Add [End] marker
-    await supabase.from("contributions").insert({
+    const { error: markerError } = await supabase.from("contributions").insert({
         work_id: workId,
         user_id: user.id,
         content: "[Hết] - Tác phẩm đã hoàn thành do cộng đồng bình chọn.",
         author_nickname: "Hệ thống" 
     });
+
+    if (markerError) {
+      console.error("Error adding [End] marker:", markerError);
+      // We don't necessarily return error here since the work IS completed, 
+      // but it's better to be consistent.
+      return { error: "Bình chọn thành công nhưng không thể đánh dấu kết thúc." };
+    }
   }
 
   revalidatePath(`/work/${workId}`);

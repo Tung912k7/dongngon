@@ -119,6 +119,7 @@ export default function BlacklistPage() {
                 type="text"
                 value={newWord}
                 onChange={(e) => setNewWord(e.target.value)}
+                maxLength={100}
                 placeholder={isRegex ? "Ví dụ: [a-z0-9._%+-]+@..." : "Nhập từ khóa..."}
                 className={`w-full px-6 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-lg font-bold transition-all ${
                   regexError ? 'border-red-500 bg-red-50' : ''

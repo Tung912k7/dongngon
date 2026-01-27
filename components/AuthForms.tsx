@@ -26,13 +26,15 @@ const InputField = ({
   value, 
   onChange, 
   type = "text", 
-  name 
+  name,
+  maxLength
 }: { 
   label: string; 
   value: string; 
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
   type?: string;
   name: string;
+  maxLength?: number;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -47,6 +49,7 @@ const InputField = ({
           name={name}
           value={value} 
           onChange={onChange}
+          maxLength={maxLength}
           className="w-full px-5 py-3 border-[3px] border-black bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12"
         />
         {isPassword && (
@@ -145,50 +148,49 @@ export function LoginForm() {
     if (!isValid) return;
     setLoading(true);
 
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 15000)
+    );
+
     try {
       const supabase = createClient();
       let emailToUse = data.identifier;
 
       // Handle pen name login
       if (!data.identifier.includes("@")) {
-        try {
-          const { data: profileData, error: profileError } = await supabase
-            .from("profiles")
-            .select("email")
-            .ilike("nickname", data.identifier) // Case-insensitive lookup
-            .single();
+        const { data: profileData, error: profileError } = await (async () => {
+          return await Promise.race([
+            supabase.from("profiles").select("email").ilike("nickname", data.identifier).single(),
+            timeoutPromise
+          ]) as any;
+        })();
 
-          if (profileError) {
-            console.error("Pen name lookup failed:", profileError);
-            if (profileError.code === "PGRST116") {
-              showNotification("Bút danh này chưa được đăng ký.", "error");
-            } else if (profileError.message.includes("column \"email\" does not exist")) {
-              showNotification("Hệ thống chưa hỗ trợ đăng nhập bằng bút danh. Vui lòng sử dụng Email.\n(Lỗi: Thiếu cột 'email' trong bảng profiles)", "info", "Thông báo");
-            } else {
-              showNotification(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`, "error");
-            }
-            setLoading(false);
-            return;
+        if (profileError) {
+          console.error("Pen name lookup failed:", profileError);
+          if (profileError.code === "PGRST116") {
+            showNotification("Bút danh này chưa được đăng ký.", "error");
+          } else {
+            showNotification(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`, "error");
           }
-
-          if (!profileData?.email) {
-            showNotification("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.", "info");
-            setLoading(false);
-            return;
-          }
-          emailToUse = profileData.email;
-        } catch (lookupErr) {
-          console.error("Unexpected lookup error:", lookupErr);
-          showNotification("Lỗi hệ thống khi tìm kiếm bút danh.", "error");
-          setLoading(false);
           return;
         }
+
+        if (!profileData?.email) {
+          showNotification("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.", "info");
+          return;
+        }
+        emailToUse = profileData.email;
       }
 
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
-        email: emailToUse,
-        password: data.password,
-      });
+      const { data: { user }, error } = await (async () => {
+        return await Promise.race([
+          supabase.auth.signInWithPassword({
+            email: emailToUse,
+            password: data.password,
+          }),
+          timeoutPromise
+        ]) as any;
+      })();
 
       if (error) {
         let msg = error.message;
@@ -196,7 +198,6 @@ export function LoginForm() {
           msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận.";
         }
         showNotification(msg || "Lỗi đăng nhập.", "error");
-        setLoading(false);
         return;
       }
 
@@ -204,9 +205,14 @@ export function LoginForm() {
          router.push("/");
          router.refresh();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showNotification("Đã xảy ra lỗi.", "error");
+      if (err.message === "TIMEOUT") {
+        showNotification("Yêu cầu quá hạn (Timeout). Vui lòng kiểm tra lại kết nối.", "error");
+      } else {
+        showNotification("Đã xảy ra lỗi.", "error");
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -224,6 +230,7 @@ export function LoginForm() {
           name="identifier" 
           value={data.identifier} 
           onChange={handleChange} 
+          maxLength={100}
         />
         <InputField 
           label="Mật khẩu" 
@@ -231,6 +238,7 @@ export function LoginForm() {
           type="password" 
           value={data.password} 
           onChange={handleChange} 
+          maxLength={50}
         />
       </div>
 
@@ -312,68 +320,87 @@ export function SignUpForm() {
       return;
     }
 
-    setLoading(true);
+    // Email format validation (RFC 5322)
+    const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+    if (!emailRegex.test(data.email)) {
+      showNotification("Email không hợp lệ. Vui lòng kiểm tra lại định dạng.", "error");
+      return;
+    }
+
+    // Timeout of 20 seconds for signup (multi-step checks)
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("TIMEOUT")), 20000)
+    );
 
     try {
       const supabase = createClient();
       
       // 0. Check Blacklist for Pen Name
       const { checkBlacklist } = await import("@/utils/blacklist");
-      const violation = await checkBlacklist(data.penName);
+      
+      const violation = await Promise.race([
+        checkBlacklist(data.penName),
+        timeoutPromise
+      ]) as any;
+
       if (violation) {
         showNotification(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`, "error");
-        setLoading(false);
         return;
       }
 
       // 0.4 Check Email Duplicate
-      const isEmailTaken = await isEmailRegistered(data.email);
+      const isEmailTaken = await Promise.race([
+        isEmailRegistered(data.email),
+        timeoutPromise
+      ]) as any;
+
       if (isEmailTaken) {
         showNotification(`Email "${data.email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.`, "info", "Thông báo");
-        setLoading(false);
         return;
       }
 
       // 0.5 Check Uniqueness for Pen Name
-      const isAvailable = await isNicknameAvailable(data.penName);
+      const isAvailable = await Promise.race([
+        isNicknameAvailable(data.penName),
+        timeoutPromise
+      ]) as any;
+
       if (!isAvailable) {
         showNotification(`Bút danh "${data.penName}" đã được sử dụng. Vui lòng chọn tên khác.`, "error");
-        setLoading(false);
         return;
       }
 
       // 1. Sign Up
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: data.fullName,
-            nickname: data.penName,
+      const { data: authData, error: authError } = await Promise.race([
+        supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              full_name: data.fullName,
+              nickname: data.penName,
+            }
           }
-        }
-      });
+        }),
+        timeoutPromise
+      ]) as any;
 
       if (authError) {
         showNotification(authError.message || "Lỗi đăng ký tài khoản.", "error");
-        setLoading(false);
         return;
       }
 
-      if (!authError) {
-        console.log("Đã tạo tài khoản và Trigger sẽ tự động tạo hồ sơ!");
-      }
-
       if (authData.user) {
-        // We use the same modal state, but need to handle redirect after close if we want, 
-        // but simple alert-replacement is to just show it.
-        // Actually, user might want to redirect. Let's just show success for now.
         showNotification("Đăng ký thành công! Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
         router.push("/dang-nhap");
       }
-    } catch (err) {
-      console.error(err);
-      showNotification("Đã xảy ra lỗi trong quá trình đăng ký.", "error");
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      if (err.message === "TIMEOUT") {
+        showNotification("Yêu cầu quá hạn (Timeout). Vui lòng thử lại sau.", "error");
+      } else {
+        showNotification("Đã xảy ra lỗi trong quá trình đăng ký.", "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -390,10 +417,10 @@ export function SignUpForm() {
             </div>
           
           <div className="space-y-4">
-            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} />
-            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} />
-            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} />
-            <InputField label="Mật khẩu" name="password" type="password" value={data.password} onChange={handleChange} />
+            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} />
+            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} />
+            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} />
+            <InputField label="Mật khẩu" name="password" type="password" value={data.password} onChange={handleChange} maxLength={50} />
           </div>
 
           <div className="mt-8 space-y-2">

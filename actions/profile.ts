@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
-import { cache } from "react";
+import { getErrorMessage } from "@/utils/error-handler";
 
 export const isNicknameAvailable = async (nickname: string, excludeUserId?: string) => {
   const supabase = await createClient();
@@ -86,7 +86,7 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
 
   if (error) {
     console.error("Profile update error:", error);
-    return { error: "Lỗi khi cập nhật hồ sơ." };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
@@ -107,7 +107,7 @@ export async function completeOnboarding() {
 
   if (error) {
     console.error("Error marking onboarding as complete:", error);
-    return { error: "Failed to update onboarding status" };
+    return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/");
