@@ -76,21 +76,20 @@ export async function submitContribution(workId: string, content: string) {
     .eq("id", user.id)
     .single();
 
-  const currentWorkId = workId;
-  const currentUser = user;
-  const contributionText = content.trim();
-  const currentUserNickname = profile?.nickname || "Người bí ẩn";
+  const id = workId;
+  const text = content.trim();
+  const nickname = profile?.nickname || "Người bí ẩn";
 
   // 5. Insert Contribution
+  // Cấu trúc ĐÚNG để không còn lỗi 42703
   const { error } = await supabase
     .from('contributions')
     .insert([
       {
-        // PHẢI khớp 100% với image_4c3883
-        work_id: currentWorkId,
-        user_id: currentUser.id,
-        content: contributionText,
-        author_nickname: currentUserNickname
+        work_id: id,                  // Phải có dấu gạch dưới
+        user_id: user.id,             // Phải có dấu gạch dưới
+        content: text,                // Khớp với cột 'content'
+        author_nickname: nickname     // Khớp với cột 'author_nickname'
       }
     ]);
 
