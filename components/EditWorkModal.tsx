@@ -57,7 +57,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newFieldErrors: Record<string, string> = {};
-    if (!formData.title.trim()) newFieldErrors.title = "Vui lòng nhập tiêu đề.";
+    if (!formData.title.trim()) newFieldErrors.title = "Please enter a title";
     if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "Vui lòng chọn hình thức.";
 
     if (Object.keys(newFieldErrors).length > 0) {

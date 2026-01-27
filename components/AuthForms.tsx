@@ -253,6 +253,7 @@ export function LoginForm() {
           onChange={handleChange} 
           maxLength={100}
           error={fieldErrors.identifier}
+          autoComplete="username"
         />
         <InputField 
           label="Mật khẩu" 
@@ -350,9 +351,9 @@ export function SignUpForm() {
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
     if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
-    // Email format validation (RFC 5322)
-    const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
-    if (data.email.trim() && !emailRegex.test(data.email)) {
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (data.email.trim() && !emailRegex.test(data.email.trim())) {
       newFieldErrors.email = "Email không hợp lệ. Vui lòng kiểm tra lại định dạng.";
     }
 
@@ -454,9 +455,9 @@ export function SignUpForm() {
             </div>
           
           <div className="space-y-4">
-            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} />
-            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} />
-            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} />
+            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} autoComplete="name" />
+            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} autoComplete="email" />
+            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} autoComplete="nickname" />
             <InputField 
               label="Mật khẩu" 
               name="password" 

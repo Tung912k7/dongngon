@@ -76,15 +76,23 @@ export async function submitContribution(workId: string, content: string) {
     .eq("id", user.id)
     .single();
 
-  const authorNickname = profile?.nickname || "Người bí ẩn";
+  const currentWorkId = workId;
+  const currentUser = user;
+  const contributionText = content.trim();
+  const currentUserNickname = profile?.nickname || "Người bí ẩn";
 
   // 5. Insert Contribution
-  const { error } = await supabase.from("contributions").insert({
-    work_id: workId,
-    user_id: user.id,
-    content: content.trim(),
-    author_nickname: authorNickname
-  });
+  const { error } = await supabase
+    .from('contributions')
+    .insert([
+      {
+        // PHẢI khớp 100% với image_4c3883
+        work_id: currentWorkId,
+        user_id: currentUser.id,
+        content: contributionText,
+        author_nickname: currentUserNickname
+      }
+    ]);
 
   if (error) {
     console.error("Error submitting contribution:", error);
