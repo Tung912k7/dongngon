@@ -81,9 +81,13 @@ export default function Editor({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     const trimmedContent = content.trim();
     if (!trimmedContent) {
       setError("Vui lòng nhập nội dung.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -103,10 +107,10 @@ export default function Editor({
             "info",
             "Sai quy tắc"
         );
+        setIsSubmitting(false);
         return;
     }
 
-    setIsSubmitting(true);
     setError(null);
 
     // Timeout of 10 seconds for submissions

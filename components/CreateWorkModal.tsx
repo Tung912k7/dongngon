@@ -37,6 +37,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
+
     const newFieldErrors: Record<string, string> = {};
     if (!formData.title.trim()) newFieldErrors.title = "Please enter a title";
     if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "Vui lòng chọn hình thức.";
@@ -48,7 +51,6 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     }
 
     setFieldErrors({});
-    setIsLoading(true);
     setError(null);
     
     // Timeout of 15 seconds for creation

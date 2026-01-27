@@ -29,10 +29,13 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
         timeoutPromise
       ]) as any;
 
-      if (!result.success) {
-        alert(result.error || "Có lỗi xảy ra khi xóa tác phẩm.");
+      if (result.success) {
+        // 2. Chỉ khi xóa thành công ở DB mới cập nhật giao diện & đóng modal
         setIsOpen(false);
         if (onAction) onAction();
+      } else {
+        console.error("Lỗi xóa từ Database:", result.error);
+        alert(result.error || "Không thể xóa tác phẩm, vui lòng thử lại!");
       }
     } catch (err: any) {
       console.error("Delete error:", err);
@@ -41,8 +44,6 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
       } else {
         alert("Có lỗi xảy ra khi xóa tác phẩm.");
       }
-      setIsOpen(false);
-      if (onAction) onAction();
     } finally {
       setIsDeleting(false);
     }
