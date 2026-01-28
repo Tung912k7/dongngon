@@ -2,24 +2,48 @@
 
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { useEffect, Suspense } from "react"
 import { createClient } from "@/utils/supabase/client"
 
 function AuthListener() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    
+    // Track if we were initially logged in
+    let hasSession = false;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      hasSession = !!session;
+    });
+
+    // Listen for auth state changes (SYNC across tabs)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, !!session);
+
       if (event === 'SIGNED_OUT') {
-        // Chuyển hướng ngay lập tức ở tất cả các tab
-        window.location.href = '/dang-nhap'; 
+        const wasLoggedIn = hasSession;
+        hasSession = false;
+        
+        // Only redirect if we were previously logged in (avoids guest redirect loop)
+        // or if we are currently on a protected route (double safety)
+        if (wasLoggedIn || pathname.startsWith('/profile') || pathname.startsWith('/settings')) {
+          window.location.href = '/dang-nhap';
+        }
+      } else if (event === 'SIGNED_IN') {
+        hasSession = true;
+        // Optionally reload to update server-side rendered state (nickname in header, etc.)
+        // but only if we were NOT logged in before (initial login)
+        // router.refresh();
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [pathname, router]);
 
   return null;
 }
@@ -95,19 +119,27 @@ class PostHogErrorBoundary extends Component<{ children: ReactNode }, { hasError
 }
 
 export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
-    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-        return <>{children}</>;
-    }
+  const isPostHogEnabled = !!process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
-    return (
-        <PostHogProvider client={posthog}>
-          <AuthListener />
-          <PostHogErrorBoundary>
-            <Suspense fallback={null}>
-              <PostHogPageView />
-            </Suspense>
-            {children}
-          </PostHogErrorBoundary>
-        </PostHogProvider>
-    )
+  const content = (
+    <>
+      <AuthListener />
+      <PostHogErrorBoundary>
+        <Suspense fallback={null}>
+          {isPostHogEnabled && <PostHogPageView />}
+        </Suspense>
+        {children}
+      </PostHogErrorBoundary>
+    </>
+  );
+
+  if (!isPostHogEnabled) {
+    return content;
+  }
+
+  return (
+    <PostHogProvider client={posthog}>
+      {content}
+    </PostHogProvider>
+  );
 }

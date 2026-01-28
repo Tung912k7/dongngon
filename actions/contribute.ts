@@ -99,5 +99,6 @@ export async function submitContribution(workId: string, content: string) {
   }
 
   revalidatePath(`/work/${workId}`);
+  revalidatePath("/profile");
   return { success: true };
 }

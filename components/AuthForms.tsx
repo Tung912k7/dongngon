@@ -9,6 +9,7 @@ import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
 import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
 import NotificationModal from "./NotificationModal";
 import { PrimaryButton } from "./PrimaryButton";
+import { isValidEmail } from "@/utils/validation";
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -316,13 +317,25 @@ export function ForgotPasswordForm() {
     type: "info",
   });
 
+  const [fieldError, setFieldError] = useState("");
+
   const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim()) {
+      setFieldError("Vui lòng nhập email.");
+      return;
+    }
+    
+    if (!isValidEmail(email)) {
+      setFieldError("Định dạng email không hợp lệ.");
+      return;
+    }
+
+    setFieldError("");
     setLoading(true);
 
     try {
@@ -357,8 +370,12 @@ export function ForgotPasswordForm() {
           name="email" 
           type="email"
           value={email} 
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (fieldError) setFieldError("");
+          }}
           maxLength={100}
+          error={fieldError}
         />
       </div>
 
@@ -530,8 +547,7 @@ export function SignUpForm() {
     if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
     // Validation: Email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (data.email.trim() && !emailRegex.test(data.email.trim())) {
+    if (data.email.trim() && !isValidEmail(data.email.trim())) {
       newFieldErrors.email = "Email không hợp lệ. Vui lòng kiểm tra lại định dạng.";
     }
 
@@ -619,7 +635,6 @@ export function SignUpForm() {
 
       if (authData.user) {
         showNotification("Đăng ký thành công! Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
-        router.push("/dang-nhap");
       }
     } catch (err: any) {
       console.error("Signup error:", err);
@@ -760,7 +775,12 @@ export function SignUpForm() {
 
       <NotificationModal 
         isOpen={notification.isOpen} 
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => {
+          setNotification(prev => ({ ...prev, isOpen: false }));
+          if (notification.type === "success") {
+            router.push("/dang-nhap");
+          }
+        }}
         message={notification.message}
         type={notification.type}
         title={notification.title}

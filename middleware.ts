@@ -15,5 +15,8 @@ export const config = {
      * Feel free to modify this pattern to include more paths.
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/profile', 
+    '/dong-ngon/:path*', // Thêm dòng này để bảo vệ toàn bộ các trang con của /dong-ngon
+    '/api/:path*'
   ],
 }

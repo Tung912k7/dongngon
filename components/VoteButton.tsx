@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { voteEndWork } from "@/actions/vote";
+import { createClient } from "@/utils/supabase/client";
 
 export default function VoteButton({
   workId,
   initialCount,
-  isCompleted,
+  isCompleted: initialIsCompleted,
   contributorCount,
 }: {
   workId: string;
@@ -15,9 +16,40 @@ export default function VoteButton({
   contributorCount: number;
 }) {
   const [count, setCount] = useState(initialCount);
+  const [isCompleted, setIsCompleted] = useState(initialIsCompleted);
   const [hasVoted, setHasVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`work-votes-${workId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "works",
+          filter: `id=eq.${workId}`,
+        },
+        (payload) => {
+          // If the trigger updates a column named 'finish_votes_count'
+          if (payload.new.finish_votes_count !== undefined) {
+            setCount(payload.new.finish_votes_count);
+          }
+          // Also sync completion status
+          if (payload.new.status === "completed") {
+            setIsCompleted(true);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, workId]);
 
   // Threshold: More than half of contributors
   // If 0 contributors, default to 1 (or 5, but let's follow user logic)

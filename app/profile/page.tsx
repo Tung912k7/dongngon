@@ -33,7 +33,7 @@ export default async function ProfilePage() {
   // Fetch Contributed Works (Unique)
   const { data: contributions } = await supabase
     .from("contributions")
-    .select("work_id, works(*)")
+    .select("*, works(*)")
     .eq("user_id", user.id);
 
   // Filter unique works from contributions
