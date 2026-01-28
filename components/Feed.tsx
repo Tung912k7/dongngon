@@ -55,7 +55,7 @@ export default function Feed({
   }, [supabase, workId]);
 
   return (
-    <div className="text-lg leading-[1.8] text-gray-800 font-montserrat">
+    <div className="text-lg leading-[1.8] text-gray-800 font-be-vietnam">
       {contributions.map((contribution) => (
         <span 
           key={contribution.id} 

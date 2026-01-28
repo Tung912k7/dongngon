@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Work } from "@/types/database";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
+import { formatDate } from "@/utils/date";
 
 interface WorkCardProps {
   work: Work;
@@ -32,10 +33,13 @@ export default function WorkCard({ work, isOwner }: WorkCardProps) {
       {/* Card Content - Entire card is a link */}
       <Link
         href={`/work/${work.id}`}
-        className="absolute inset-0 bg-black rounded-lg flex items-center justify-center p-4 hover:opacity-90 transition-opacity z-0"
+        className="absolute inset-0 bg-black rounded-lg flex flex-col items-center justify-center p-4 hover:opacity-90 transition-opacity z-0 gap-2"
       >
         <span className="text-white font-bold text-center text-sm line-clamp-3">
           {work.title}
+        </span>
+        <span className="text-[10px] text-gray-400 font-medium">
+          {formatDate(work.created_at)}
         </span>
       </Link>
 

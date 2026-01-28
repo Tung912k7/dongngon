@@ -6,6 +6,7 @@ import { updateWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
 import { Work } from "@/types/database";
 import { WORK_TYPES, CATEGORY_OPTIONS } from "@/data/workTypes";
+import { PrimaryButton } from "./PrimaryButton";
 
 interface EditWorkModalProps {
   work: Work;
@@ -119,9 +120,9 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="bg-white border-2 border-black rounded-[2.5rem] p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
-            <h2 className="text-3xl font-sans font-black mb-8 text-center uppercase tracking-tight text-black">Chỉnh sửa tác phẩm</h2>
+            <h2 className="text-3xl font-black mb-8 text-center uppercase tracking-tight text-black">Chỉnh sửa tác phẩm</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6 font-sans">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-400">TIÊU ĐỀ</label>
                   <input
@@ -209,13 +210,13 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                 >
                   HỦY
                 </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex-1 py-3 bg-black text-white font-bold uppercase tracking-widest rounded-xl hover:opacity-80 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {isLoading ? "ĐANG LƯU..." : "CẬP NHẬT"}
-                </button>
+                  <PrimaryButton
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
+                  >
+                    {isLoading ? "ĐANG LƯU..." : "CẬP NHẬT"}
+                  </PrimaryButton>
               </div>
             </form>
           </motion.div>

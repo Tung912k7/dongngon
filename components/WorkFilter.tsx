@@ -12,6 +12,24 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
   // Local state for filters (synced from parent on open)
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
+  const FilterApplyButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    return (
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="px-4 py-2 text-xs font-bold uppercase rounded-md transition-all h-[38px] border border-black flex items-center justify-center"
+        style={{
+          backgroundColor: isHovered ? "black" : "white",
+          color: isHovered ? "white" : "black",
+        }}
+      >
+        {children}
+      </button>
+    );
+  };
+
   // Sync local state when parent filters change
   useEffect(() => {
     setLocalFilters(filters);
@@ -119,12 +137,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex gap-2">
-        <button
-          onClick={applyFilters}
-          className="px-4 py-2 bg-black text-white text-sm font-bold uppercase rounded-md hover:opacity-80 transition-opacity h-[38px]"
-        >
+        <FilterApplyButton onClick={applyFilters}>
           Áp dụng
-        </button>
+        </FilterApplyButton>
         <button
           onClick={() => {
             const defaultFilters = {
@@ -138,7 +153,7 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
             setLocalFilters(defaultFilters);
             onApply(defaultFilters);
           }}
-          className="px-4 py-2 border border-black text-black text-sm font-bold uppercase rounded-md hover:bg-gray-100 transition-colors h-[38px] whitespace-nowrap"
+          className="px-4 py-2 border border-black text-black text-xs font-bold uppercase rounded-md hover:bg-gray-100 transition-colors h-[38px] whitespace-nowrap"
         >
           Đặt lại
         </button>

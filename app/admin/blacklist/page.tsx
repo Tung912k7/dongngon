@@ -96,7 +96,7 @@ export default function BlacklistPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl font-sans">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex items-center gap-4 mb-8">
         <Link 
           href="/admin"

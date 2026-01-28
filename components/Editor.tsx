@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
+import { PrimaryButton } from "./PrimaryButton";
 import NotificationModal from "./NotificationModal";
 
 export default function Editor({ 
@@ -64,16 +65,9 @@ export default function Editor({
     }
 
     if (limitType === '1 câu') {
-      // Regex tìm các dấu kết thúc câu.
-      // Một câu chuẩn thường kết thúc bằng . ! hoặc ? và không chứa thêm các dấu này ở giữa (tùy ngữ cảnh, but keep it simple for now as per request)
-      const sentenceEndings = trimmed.match(/[.!?]/g);
-
-      // Kiểm tra nếu chỉ có đúng 1 dấu kết thúc ở cuối chuỗi
-      // Note: User's logic snippet: const hasOneEnding = sentenceEndings && sentenceEndings.length === 1;
-      const hasOneEnding = sentenceEndings && sentenceEndings.length === 1;
-      const endsWithPunctuation = /[.!?]$/.test(trimmed);
-
-      return hasOneEnding && endsWithPunctuation;
+      // Logic from provided image: must end with . ? or !
+      const sentenceRegex = /[.?!]$/;
+      return sentenceRegex.test(trimmed);
     }
 
     return true;
@@ -84,22 +78,24 @@ export default function Editor({
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const trimmedContent = content.trim();
-    if (!trimmedContent) {
+    // 1. Loại bỏ khoảng trắng thừa ở hai đầu
+    const cleanContent = content.trim();
+    if (!cleanContent) {
       setError("Vui lòng nhập nội dung.");
       setIsSubmitting(false);
       return;
     }
 
-    // Content Validation based on rule
-    const isValid = validateContent(trimmedContent, writingRule);
+    // 2. Kiểm tra quy tắc dựa trên loại bài viết (limit_type)
+    const isValid = validateContent(cleanContent, writingRule);
     
     if (!isValid) {
         let msg = "Nội dung không hợp lệ.";
         if (writingRule === '1 kí tự') {
             msg = "Quy tắc là '1 kí tự'. Vui lòng chỉ nhập đúng 1 kí tự.";
         } else if (writingRule === '1 câu') {
-            msg = "Quy tắc là '1 câu'. Vui lòng nhập đúng 1 câu và kết thúc bằng dấu câu (. ! ?).";
+            // Message from provided image
+            msg = "Nội dung phải kết thúc bằng dấu chấm (.), hỏi (?) hoặc cảm thán (!).";
         }
         
         showNotification(
@@ -113,14 +109,14 @@ export default function Editor({
 
     setError(null);
 
-    // Timeout of 10 seconds for submissions
+    // 3. Nếu vượt qua kiểm tra, mới tiến hành Insert
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 10000)
     );
 
     try {
       const result = await Promise.race([
-        submitContribution(workId, content),
+        submitContribution(workId, cleanContent),
         timeoutPromise
       ]) as any;
       
@@ -198,7 +194,7 @@ export default function Editor({
           }}
           placeholder="Viết tiếp câu chuyện..."
           maxLength={500}
-          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black font-montserrat resize-none min-h-[46px] h-auto prose-input"
+          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black resize-none min-h-[46px] h-auto prose-input font-be-vietnam"
           disabled={isSubmitting}
           rows={1}
           onInput={(e) => {
@@ -207,13 +203,13 @@ export default function Editor({
             target.style.height = target.scrollHeight + 'px';
           }}
         />
-        <button
+        <PrimaryButton
           type="submit"
-          className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+          className="!px-4 !py-1.5 !text-sm rounded-lg min-w-[70px]"
           disabled={isSubmitting}
         >
           {isSubmitting ? "..." : "Gửi"}
-        </button>
+        </PrimaryButton>
       </div>
       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
         Mỗi ngày chỉ được đóng góp 1 câu.

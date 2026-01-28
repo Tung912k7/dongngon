@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Work } from "@/types/database";
 import EditProfileModal from "@/components/EditProfileModal";
 import CreateWorkModal from "@/components/CreateWorkModal";
+import { PrimaryButton, LinkedButton } from "@/components/PrimaryButton";
 import WorkCard from "@/components/WorkCard";
 
 export default async function ProfilePage() {
@@ -44,14 +45,14 @@ export default async function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24 font-sans">
+    <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24">
       <main className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Sidebar */}
         <div className="w-full md:w-1/3 bg-white p-10 rounded-[4rem] border-2 border-black flex flex-col items-center shadow-[15px_15px_0px_0px_rgba(0,0,0,1)]">
           {/* Title */}
           <div className="mb-14 text-center">
-            <h1 className="text-5xl font-aquus font-bold uppercase tracking-tight mb-3">HỒ SƠ</h1>
+            <h1 className="text-5xl font-bold uppercase tracking-tight mb-3">HỒ SƠ</h1>
             <div className="w-12 h-2.5 bg-black mx-auto"></div>
           </div>
 
@@ -70,11 +71,11 @@ export default async function ProfilePage() {
           {/* Info */}
           <div className="w-full space-y-8 text-left px-2">
             <div className="border-b border-gray-100 pb-2">
-              <p className="text-[10px] text-gray-400 font-sans font-bold uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
-              <p className="text-3xl font-black text-black leading-none">{profile?.nickname}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
+              <p className="text-3xl font-bold text-black tracking-tight">{profile?.nickname}</p>
             </div>
             <div className="border-b border-gray-100 pb-2">
-              <p className="text-[10px] text-gray-400 font-sans font-bold uppercase tracking-[0.2em] mb-2">EMAIL</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">EMAIL</p>
               <p className="text-lg font-bold text-gray-400 truncate">{user?.email}</p>
             </div>
           </div>
@@ -91,7 +92,7 @@ export default async function ProfilePage() {
           {/* Created Works Section */}
           <div className="p-10">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-xl font-bold font-sans">Các tác phẩm đã tạo:</h2>
+              <h2 className="text-xl font-bold">Các tác phẩm đã tạo:</h2>
               {createdWorks && createdWorks.length > 0 && <CreateWorkModal />}
             </div>
             <div className="flex flex-wrap gap-6">
@@ -113,14 +114,14 @@ export default async function ProfilePage() {
 
           <div className="p-10">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-xl font-bold font-sans">Các tác phẩm đã đóng góp:</h2>
+              <h2 className="text-xl font-bold">Các tác phẩm đã đóng góp:</h2>
               {contributedWorksList && contributedWorksList.length > 0 && (
-                <Link 
+                <LinkedButton 
                   href="/dong-ngon"
-                  className="px-6 py-2 border-2 border-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                  className="!rounded-full !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                 >
                   ĐÓNG GÓP
-                </Link>
+                </LinkedButton>
               )}
             </div>
             <div className="flex flex-wrap gap-6">
@@ -131,12 +132,12 @@ export default async function ProfilePage() {
               ) : (
                 <div className="w-full py-16 border-2 border-dashed border-gray-200 rounded-[2rem] flex flex-col items-center justify-center text-gray-400 gap-6">
                   <p className="italic font-bold text-gray-400/60">Chưa có đóng góp nào</p>
-                  <Link 
+                  <LinkedButton 
                     href="/dong-ngon"
-                    className="px-10 py-3 bg-white border-2 border-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] text-black"
+                    className="!px-10 !py-3 !rounded-full !text-xs !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                   >
                     ĐÓNG GÓP
-                  </Link>
+                  </LinkedButton>
                 </div>
               )}
             </div>

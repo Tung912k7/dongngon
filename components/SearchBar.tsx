@@ -40,7 +40,7 @@ const SearchBar = () => {
         type="text"
         placeholder=""
         maxLength={100}
-        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-montserrat bg-white"
+        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-ganh bg-white"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get("query")?.toString()}
       />

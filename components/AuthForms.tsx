@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
 import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
 import NotificationModal from "./NotificationModal";
+import { PrimaryButton } from "./PrimaryButton";
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -46,7 +47,7 @@ const InputField = ({
 
   return (
     <div className="mb-6 group">
-      <label className="block text-black text-lg mb-2 font-bold font-sans">{label}</label>
+      <label className="block text-black text-lg mb-2 font-bold">{label}</label>
       <div className="relative">
         <input 
           type={inputType} 
@@ -118,7 +119,7 @@ const Checkbox = ({
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     </div>
-    <div className="text-black text-base font-sans select-none">
+    <div className="text-black text-base select-none">
       <label htmlFor={name} className="cursor-pointer font-bold">{label}</label>
       {error && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{error}</p>}
     </div>
@@ -217,6 +218,8 @@ export function LoginForm() {
         let msg = error.message;
         if (msg === "Email not confirmed") {
           msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận.";
+        } else if (msg === "Invalid login credentials") {
+          msg = "Bút danh/Email hoặc mật khẩu không chính xác.";
         }
         showNotification(msg || "Lỗi đăng nhập.", "error");
         return;
@@ -241,7 +244,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-aquus font-bold text-black mb-2 italic">Hồ sơ</h1>
+        <h1 className="text-5xl font-bold text-black mb-2 italic">Hồ sơ</h1>
         <div className="h-0.5 w-12 bg-black mx-auto" />
       </div>
       
@@ -265,22 +268,197 @@ export function LoginForm() {
           error={fieldErrors.password}
           autoComplete="current-password"
         />
+        <div className="flex justify-end -mt-4 mb-2">
+          <Link href="/quen-mat-khau" className="text-gray-400 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold">
+            Quên mật khẩu?
+          </Link>
+        </div>
       </div>
 
-      <div className="text-center mt-10">
-        <button 
-          type="submit" 
-          disabled={!isValid || loading}
-          className="px-10 py-2.5 bg-white border-[3px] border-black text-black text-2xl rounded-xl hover:bg-black hover:text-white disabled:cursor-not-allowed transition-all font-sans font-bold"
-        >
+      <div className="flex justify-center w-full mt-10">
+        <PrimaryButton type="submit" disabled={!isValid || loading} className="!text-2xl !px-10">
           {loading ? "..." : "Đăng nhập"}
-        </button>
+        </PrimaryButton>
+      </div>
+
+      <div className="text-center mt-8 space-y-4">
+        <div>
+          <Link href="/dang-ky" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
+            Chưa có tài khoản?
+          </Link>
+        </div>
+      </div>
+      
+      <NotificationModal 
+        isOpen={notification.isOpen} 
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        message={notification.message}
+        type={notification.type}
+        title={notification.title}
+      />
+    </form>
+  );
+}
+
+import { forgotPassword, updatePassword } from "@/actions/auth";
+
+export function ForgotPasswordForm() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "error" | "success" | "info";
+    title?: string;
+  }>({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+    setNotification({ isOpen: true, message, type, title });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setLoading(true);
+
+    try {
+      const result = await forgotPassword(email);
+      if (result.success) {
+        showNotification("Link đặt lại mật khẩu đã được gửi vào Gmail của bạn. Vui lòng kiểm tra (cả mục thư rác).", "success", "Đã gửi Email");
+        setEmail("");
+      } else {
+        showNotification(result.error || "Có lỗi xảy ra.", "error");
+      }
+    } catch (err) {
+      showNotification("Đã xảy ra lỗi.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-bold text-black mb-2 italic">Quên mật khẩu</h1>
+        <div className="h-0.5 w-12 bg-black mx-auto" />
+      </div>
+
+      <p className="text-center text-gray-500 mb-8 text-sm">
+        Nhập email bạn đã đăng ký để nhận link đặt lại mật khẩu.
+      </p>
+      
+      <div className="space-y-2">
+        <InputField 
+          label="Gmail" 
+          name="email" 
+          type="email"
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)}
+          maxLength={100}
+        />
+      </div>
+
+      <div className="flex justify-center w-full mt-10">
+        <PrimaryButton type="submit" disabled={!email.trim() || loading} className="!text-2xl !px-10">
+          {loading ? "..." : "Gửi link"}
+        </PrimaryButton>
       </div>
 
       <div className="text-center mt-8">
-        <Link href="/dang-ky" className="text-gray-500 hover:opacity-70 transition-opacity text-sm uppercase tracking-widest">
-          Chưa có tài khoản?
+        <Link href="/dang-nhap" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
+          Quay lại Đăng nhập
         </Link>
+      </div>
+      
+      <NotificationModal 
+        isOpen={notification.isOpen} 
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        message={notification.message}
+        type={notification.type}
+        title={notification.title}
+      />
+    </form>
+  );
+}
+
+export function ResetPasswordForm() {
+  const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "error" | "success" | "info";
+    title?: string;
+  }>({
+    isOpen: false,
+    message: "",
+    type: "info",
+  });
+
+  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+    setNotification({ isOpen: true, message, type, title });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password.trim()) return;
+    if (password !== confirmPassword) {
+      showNotification("Mật khẩu xác nhận không khớp.", "error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await updatePassword(password);
+      if (result.success) {
+        showNotification("Mật khẩu của bạn đã được cập nhật thành công!", "success", "Thành công");
+        setTimeout(() => router.push("/dang-nhap"), 2000);
+      } else {
+        showNotification(result.error || "Có lỗi xảy ra.", "error");
+      }
+    } catch (err) {
+      showNotification("Đã xảy ra lỗi.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-bold text-black mb-2 italic text-nowrap">Đổi mật khẩu</h1>
+        <div className="h-0.5 w-12 bg-black mx-auto" />
+      </div>
+      
+      <div className="space-y-2">
+        <InputField 
+          label="Mật khẩu mới" 
+          name="password" 
+          type="password"
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)}
+          maxLength={50}
+        />
+        <InputField 
+          label="Xác nhận mật khẩu" 
+          name="confirmPassword" 
+          type="password"
+          value={confirmPassword} 
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          maxLength={50}
+        />
+      </div>
+
+      <div className="flex justify-center w-full mt-10">
+        <PrimaryButton type="submit" disabled={!password.trim() || loading} className="!text-2xl !px-10">
+          {loading ? "..." : "Cập nhật"}
+        </PrimaryButton>
       </div>
       
       <NotificationModal 
@@ -351,10 +529,15 @@ export function SignUpForm() {
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
     if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
-    // Email format validation
+    // Validation: Email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (data.email.trim() && !emailRegex.test(data.email.trim())) {
       newFieldErrors.email = "Email không hợp lệ. Vui lòng kiểm tra lại định dạng.";
+    }
+
+    // Validation: Password strength
+    if (data.password.trim() && data.password.length < 6) {
+      newFieldErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
     }
 
     if (Object.keys(newFieldErrors).length > 0) {
@@ -424,7 +607,13 @@ export function SignUpForm() {
       ]) as any;
 
       if (authError) {
-        showNotification(authError.message || "Lỗi đăng ký tài khoản.", "error");
+        let errorMsg = authError.message;
+        if (errorMsg === "Password should be at least 6 characters") {
+          errorMsg = "Mật khẩu phải có ít nhất 6 ký tự.";
+        } else if (errorMsg === "User already registered") {
+          errorMsg = "Email này đã được đăng ký.";
+        }
+        showNotification(errorMsg || "Lỗi đăng ký tài khoản.", "error");
         return;
       }
 
@@ -451,7 +640,7 @@ export function SignUpForm() {
         <div className="w-full flex justify-center lg:justify-end -mt-12">
           <form onSubmit={handleSubmit} className="w-full max-w-lg">
             <div className="text-center mb-6">
-              <h1 className="text-5xl font-aquus font-bold text-black mb-2">Ghi danh</h1>
+              <h1 className="text-5xl font-bold text-black mb-2">Ghi danh</h1>
             </div>
           
           <div className="space-y-4">
@@ -507,18 +696,14 @@ export function SignUpForm() {
             />
           </div>
 
-            <div className="text-center mt-8">
-              <button 
-                type="submit" 
-                disabled={!isValid || loading}
-                className="px-10 py-2.5 bg-white border-[3px] border-black text-black text-2xl rounded-xl hover:bg-black hover:text-white disabled:cursor-not-allowed transition-all font-sans font-bold"
-              >
+            <div className="flex justify-center w-full mt-8">
+              <PrimaryButton type="submit" disabled={!isValid || loading} className="!text-2xl !px-10">
                 {loading ? "..." : "Đăng ký"}
-              </button>
+              </PrimaryButton>
             </div>
 
             <div className="text-center mt-6">
-              <Link href="/dang-nhap" className="text-gray-500 hover:opacity-70 transition-opacity text-sm uppercase tracking-widest">
+              <Link href="/dang-nhap" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
                 Đã có tài khoản?
               </Link>
             </div>
@@ -552,23 +737,22 @@ export function SignUpForm() {
           <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-6 animate-fade-in backdrop-blur-sm" onClick={() => setActiveModal(null)}>
             <div className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto relative border-[3px] border-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
               <div className="mb-6 text-center">
-                <h2 className="text-2xl font-aquus font-bold text-black uppercase">
+                <h2 className="text-2xl font-bold text-black uppercase">
                   {activeModal === "terms" ? "Các Điều Khoản" : "Quy Định Đồng Ngôn"}
                 </h2>
                 <div className="h-0.5 w-10 bg-black mx-auto mt-2" />
               </div>
               
-              <div className="prose prose-sm max-w-none text-black leading-relaxed mb-8 font-sans">
+              <div className="prose prose-sm max-w-none text-black leading-relaxed mb-8">
                 {activeModal === "terms" ? <div dangerouslySetInnerHTML={{ __html: TERMS_CONTENT }} /> : <div dangerouslySetInnerHTML={{ __html: REGULATIONS_CONTENT }} />}
               </div>
               
-              <button 
-                type="button"
+              <PrimaryButton 
                 onClick={() => setActiveModal(null)} 
-                className="w-full bg-white border-[3px] border-black text-black py-3 text-sm font-bold tracking-[0.2em] hover:bg-black hover:text-white transition-all uppercase rounded-xl"
+                className="w-full !text-sm !tracking-[0.2em] !uppercase"
               >
                 Đã hiểu & Đóng
-              </button>
+              </PrimaryButton>
             </div>
           </div>
         </Portal>

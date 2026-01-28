@@ -93,8 +93,8 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white border-2 border-black rounded-[2.5rem] p-8 md:p-10 w-full max-w-md relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
-              <h2 className="text-2xl font-sans font-black mb-4 text-center uppercase tracking-tight text-black">Xác nhận xóa</h2>
-              <p className="text-center text-gray-500 mb-8 font-sans">
+              <h2 className="text-2xl font-black mb-4 text-center uppercase tracking-tight text-black">Xác nhận xóa</h2>
+              <p className="text-center text-gray-500 mb-8">
                 Bạn có chắc chắn muốn xóa tác phẩm <span className="font-bold text-black">"{workTitle}"</span>? 
                 Hành động này không thể hoàn tác.
               </p>

@@ -14,20 +14,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      {
-        source: "/a/static/:path*",
-        destination: "https://us-assets.i.posthog.com/static/:path*",
-      },
-      {
-        source: "/a/:path*",
-        destination: "https://us.i.posthog.com/:path*",
-      },
-      {
-        source: "/a/decide",
-        destination: "https://us.i.posthog.com/decide",
-      },
-    ];
+    return [];
   },
   async headers() {
     return [
@@ -41,7 +28,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: https://lqlobokdwcebvoitwxkt.supabase.co",
-              "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co wss://lqlobokdwcebvoitwxkt.supabase.co https://*.supabase.co wss://*.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com",
+              "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co wss://lqlobokdwcebvoitwxkt.supabase.co https://*.supabase.co wss://*.supabase.co",
               "font-src 'self' data:",
               "object-src 'none'",
               "base-uri 'self'",

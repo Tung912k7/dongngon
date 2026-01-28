@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-aria), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-aria), ui-serif, Georgia, serif;
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-ganh), ui-serif, Georgia, serif;
   --font-aquus: var(--font-aquus), serif;
-  --font-roboto: var(--font-aria), sans-serif;
-  --font-montserrat: var(--font-montserrat), sans-serif;
+  --font-roboto: var(--font-be-vietnam), sans-serif;
+  --font-montserrat: var(--font-be-vietnam), sans-serif;
+  --font-ganh: var(--font-ganh), sans-serif;
+  --font-be-vietnam: var(--font-be-vietnam), sans-serif;
+  --font-harmony: var(--font-harmony), cursive;
 }
 
 :root {
@@ -13,31 +16,36 @@
   --foreground: #171717;
 }
 
-.font-montserrat {
-  font-family: var(--font-montserrat), sans-serif !important;
-}
-
-
-
-/* Dark mode disabled by default as per user request
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-*/
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-aria), sans-serif;
 }
 
-/* Ensure inputs and buttons use the global font */
-input, button, select, textarea {
-  font-family: inherit;
+body, input, button, select, textarea {
+  font-family: var(--font-be-vietnam), sans-serif;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-ganh), sans-serif;
+}
+
+/* Tag utility */
+.tag, .font-tag {
+  font-family: var(--font-ganh), sans-serif !important;
+}
+
+.font-ganh {
+  font-family: var(--font-ganh), sans-serif !important;
+}
+
+.font-be-vietnam {
+  font-family: var(--font-be-vietnam), sans-serif !important;
+}
+
+.text-white-force, .hover\:text-white-force:hover {
+  color: #ffffff !important;
+}
+
 
 @keyframes wave {
   0%, 100% { transform: translateY(0); }

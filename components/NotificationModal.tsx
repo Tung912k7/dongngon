@@ -64,10 +64,10 @@ export default function NotificationModal({
                 </div>
               )}
               
-              <h3 className={`text-xl font-bold mb-2 uppercase tracking-tight font-montserrat ${iconColor}`}>
+              <h3 className={`text-xl font-bold mb-2 uppercase tracking-tight ${iconColor}`}>
                 {title || (type === "error" ? "Lỗi" : type === "success" ? "Thành công" : "Thông báo")}
               </h3>
-              <p className="text-gray-700 text-sm font-medium leading-relaxed font-montserrat whitespace-pre-line">
+               <p className="text-gray-700 text-sm font-medium leading-relaxed whitespace-pre-line">
                 {message}
               </p>
               

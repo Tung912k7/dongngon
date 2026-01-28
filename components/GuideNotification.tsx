@@ -54,7 +54,7 @@ export default function GuideNotification({ hasSeenTour }: GuideNotificationProp
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white border-4 border-black rounded-[2.5rem] p-8 md:p-12 w-full max-w-lg relative z-[100] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center font-sans"
+            className="bg-white border-4 border-black rounded-[2.5rem] p-8 md:p-12 w-full max-w-lg relative z-[100] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center"
           >
             {/* Icon/Decoration */}
             <div className="mb-6 flex justify-center">

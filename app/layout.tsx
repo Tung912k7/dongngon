@@ -6,26 +6,20 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GuideNotification from "@/components/GuideNotification";
 import localFont from "next/font/local";
+import { Be_Vietnam_Pro } from "next/font/google";
 
-const ariaPro = localFont({
-  src: "../public/fonts/Aria Pro.ttf",
+const ganhType = localFont({
+  src: "../public/fonts/Ganh Type - Regular.ttf",
   display: "swap",
-  variable: "--font-aria",
+  variable: "--font-ganh",
   preload: true,
 });
 
-const aquus = localFont({
-  src: "../public/fonts/hlt-aquus-regular.ttf",
+const beVietnamPro = Be_Vietnam_Pro({
+  weight: ["400", "500", "700"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-be-vietnam",
   display: "swap",
-  variable: "--font-aquus",
-  preload: true,
-});
-
-const montserrat = localFont({
-  src: "../public/fonts/Montserrat.ttf",
-  display: "swap",
-  variable: "--font-montserrat",
-  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -121,7 +115,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
       </head>
       <body
-        className={`${ariaPro.variable} ${aquus.variable} ${montserrat.variable} antialiased font-sans min-h-screen flex flex-col`}
+        className={`${ganhType.variable} ${beVietnamPro.variable} antialiased min-h-screen flex flex-col`}
       >
         <CSPostHogProvider>
           <Header user={user} nickname={nickname} role={role} />

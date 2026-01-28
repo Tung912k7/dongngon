@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "@/utils/imageCrop";
 import { createClient } from "@/utils/supabase/client";
+import { PrimaryButton } from "./PrimaryButton";
 
 interface EditProfileModalProps {
   initialNickname: string;
@@ -138,12 +139,12 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
 
   return (
     <>
-      <button
+      <PrimaryButton
         onClick={() => setIsOpen(true)}
-        className="mt-12 w-full py-3 border-2 border-black text-black font-bold uppercase tracking-widest rounded-xl hover:bg-black hover:text-white transition-all text-center"
+        className="mt-12 w-full !py-3 !text-sm !uppercase !tracking-widest"
       >
         CHỈNH SỬA HỒ SƠ
-      </button>
+      </PrimaryButton>
 
       <AnimatePresence>
         {isOpen && (
@@ -165,7 +166,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white border-4 border-black rounded-[2.5rem] p-8 md:p-10 w-full max-w-xl relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-h-[90vh] overflow-y-auto"
             >
-              <h2 className="text-3xl font-aquus font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
+              <h2 className="text-3xl font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6 font-sans">
                 {/* Consolidated Avatar Section */}
@@ -174,13 +175,13 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                   
                   {/* Upload & Reset Buttons */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <button
+                    <PrimaryButton
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="px-6 py-2 bg-white border-2 border-black rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                      className="!px-4 !py-1.5 !text-[9px] rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                     >
                       CHỌN ẢNH TỪ THIẾT BỊ
-                    </button>
+                    </PrimaryButton>
                     
                     <button
                       type="button"
@@ -294,10 +295,10 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                   >
                     HỦY
                   </button>
-                  <button
+                  <PrimaryButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 py-3 bg-black text-white font-bold uppercase tracking-widest rounded-xl hover:opacity-80 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
                   >
                     {isSubmitting ? (
                       <>
@@ -305,7 +306,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                         ĐANG LƯU...
                       </>
                     ) : "LƯU THAY ĐỔI"}
-                  </button>
+                  </PrimaryButton>
                 </div>
               </form>
             </motion.div>

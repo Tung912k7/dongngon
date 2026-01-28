@@ -1,4 +1,9 @@
-import Image from "next/image";
+import localFont from "next/font/local";
+
+const svnHarmony = localFont({
+  src: "../public/fonts/SVN Harmony.ttf",
+  display: "swap",
+});
 
 /**
  * BrandHeader Component
@@ -9,32 +14,22 @@ const BrandHeader = () => {
       <h1
         id="tour-brand"
         className={`
+          ${svnHarmony.className}
           flex items-center justify-center
-          font-serif
-          font-bold
-          tracking-[0.05em]
+          tracking-normal
           leading-none
           text-slate-900
           select-none
           whitespace-nowrap
         `}
         style={{
-          fontSize: "clamp(2.5rem, 8vw, 9rem)",
+          fontSize: "clamp(3.5rem, 15vw, 12rem)",
+          textShadow: "0.5px 0.5px 0 currentcolor, -0.5px -0.5px 0 currentcolor, 0.5px -0.5px 0 currentcolor, -0.5px 0.5px 0 currentcolor",
           fontFeatureSettings: '"kern" 1, "liga" 1, "ccmp" 1, "locl" 1',
         }}
         lang="vi"
       >
-        <span>Đ</span>
-        <span className="relative inline-block">
-          Ô
-          <span 
-            className="absolute top-[-0.4em] right-[0.1em] text-[0.8em]"
-            style={{ transform: "rotate(-10deg)" }}
-          >
-            `
-          </span>
-        </span>
-        <span>NG NGÔN</span>
+        ĐỒNG NGÔN
       </h1>
     </header>
   );

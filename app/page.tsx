@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Work } from "@/types/database";
+import { formatDate } from "@/utils/date";
 import NicknameForm from "@/components/NicknameForm";
 import Header from "@/components/Header";
 import FadeIn from "@/components/FadeIn";
@@ -38,7 +39,7 @@ export default async function Home({
   }
 
   return (
-    <div className="min-h-screen bg-white font-serif text-black">
+    <div className="min-h-screen bg-white text-black">
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Hero Section */}
@@ -57,7 +58,7 @@ export default async function Home({
         />
       </div>
             </div>
-            <p className="text-2xl sm:text-3xl md:text-5xl font-serif font-normal tracking-wide text-center">[Slogan]</p>
+            <p className="text-2xl sm:text-3xl md:text-5xl font-normal tracking-wide text-center">[Slogan]</p>
           </div>
         </FadeIn>
 
@@ -76,10 +77,10 @@ export default async function Home({
                       href={`/work/${work.id}`}
                       className="block p-6 rounded-lg border border-dashed border-gray-300 hover:border-gray-400 transition-colors bg-gray-50"
                     >
-                      <h3 className="text-2xl font-serif mb-2 text-gray-700">{work.title} 🔒</h3>
-                      <div className="flex justify-between text-sm text-gray-400 font-sans">
+                      <h3 className="text-2xl mb-2 text-gray-700">{work.title} 🔒</h3>
+                      <div className="flex justify-between text-sm text-gray-400">
                         <span>ID: #{work.id.slice(0, 8)}</span>
-                        <span>{new Date(work.created_at).toLocaleDateString("vi-VN")}</span>
+                        <span>{formatDate(work.created_at)}</span>
                       </div>
                     </Link>
                   ))}

@@ -75,11 +75,11 @@ export default function AdminWelcome() {
                 <span className="text-3xl">👋</span>
              </div>
              
-             <h2 className="text-3xl font-aquus font-bold mb-4 tracking-tighter uppercase italic">
+             <h2 className="text-3xl font-bold mb-4 tracking-tighter uppercase italic">
                 Chào mừng Quản trị viên!
              </h2>
              
-             <p className="font-sans text-slate-600 mb-8 leading-relaxed text-lg">
+             <p className="text-slate-600 mb-8 leading-relaxed text-lg">
                 Hệ thống đã sẵn sàng. Thao tác quan trọng nhất lúc này là <span className="font-bold text-black border-b-2 border-yellow-400">kiểm duyệt các nội dung mới</span> từ cộng đồng.
              </p>
              
@@ -115,7 +115,7 @@ export default function AdminWelcome() {
             }}
             className="flex items-center gap-4 hidden lg:flex"
           >
-             <div className="bg-yellow-400 text-black px-4 py-2 rounded-xl border-2 border-black font-bold font-sans text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">
+              <div className="bg-yellow-400 text-black px-4 py-2 rounded-xl border-2 border-black font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">
                 BẮT ĐẦU TẠI ĐÂY!
              </div>
              <svg 

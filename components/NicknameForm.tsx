@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateNickname } from "@/actions/profile";
+import { PrimaryButton } from "./PrimaryButton";
 
 export default function NicknameForm({ initialNickname }: { initialNickname?: string }) {
   const [nickname, setNickname] = useState(initialNickname || "");
@@ -57,13 +58,13 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
         className={`border ${isInvalid ? 'border-red-500 bg-red-50' : 'p-1'} rounded text-sm`}
         placeholder="Nhập bút danh..."
       />
-      <button
+      <PrimaryButton
         onClick={handleSave}
         disabled={isSaving}
-        className="bg-black text-white px-3 py-1 rounded text-xs"
+        className="!px-3 !py-1 !text-xs min-w-[50px] !rounded"
       >
         {isSaving ? "Lưu..." : "Lưu"}
-      </button>
+      </PrimaryButton>
       <button
         onClick={() => setIsEditing(false)}
         className="text-gray-500 text-xs"

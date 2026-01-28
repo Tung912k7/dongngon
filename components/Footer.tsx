@@ -15,12 +15,12 @@ export default function Footer() {
             
 
           {/* Copyright */}
-          <div className="text-base font-medium text-slate-900 font-montserrat text-center justify-self-center whitespace-nowrap">
+          <div className="text-base font-medium text-slate-900 text-center justify-self-center whitespace-nowrap">
             © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai
           </div>
 
           {/* Links */}
-          <nav className="flex gap-8 font-montserrat text-base font-normal uppercase tracking-wider items-center justify-self-end">
+          <nav className="flex gap-8 text-base font-normal uppercase tracking-wider items-center justify-self-end">
             <a 
               href="https://forms.gle/2ENzFe3rdUhkXTP59" 
               target="_blank" 
@@ -69,7 +69,7 @@ export default function Footer() {
                 </svg>
               </button>
 
-              <p className="text-center font-montserrat text-xl font-medium text-black mb-4">
+              <p className="text-center text-xl font-medium text-black mb-4">
                 Cảm ơn bạn đã đồng hành cùng Đồng ngôn!
               </p>
               

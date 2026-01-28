@@ -26,7 +26,7 @@ function AuthListener() {
 
 if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    api_host: '/api/event',
     person_profiles: 'identified_only',
     capture_pageview: false,
     enable_recording_console_log: true,

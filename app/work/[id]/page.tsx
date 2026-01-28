@@ -13,49 +13,51 @@ export default async function WorkPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Fetch Work Details
-  const { data: work } = await supabase
-    .from("works")
-    .select("*")
-    .eq("id", id)
-    .single();
+  // Parallelize all data fetching
+  const [
+    { data: work },
+    { data: contributions },
+    { count: voteCount },
+    { data: { user } }
+  ] = await Promise.all([
+    // 1. Fetch Work Details
+    supabase
+      .from("works")
+      .select("id, title, status, limit_type, sub_category")
+      .eq("id", id)
+      .single(),
+    
+    // 2. Fetch Contributions
+    supabase
+      .from("contributions")
+      .select("id, content, user_id, work_id, created_at, author_nickname")
+      .eq("work_id", id)
+      .order("created_at", { ascending: true }),
+
+    // 3. Fetch Vote Count
+    supabase
+      .from("finish_votes")
+      .select("*", { count: "exact", head: true })
+      .eq("work_id", id),
+
+    // 4. Fetch Current User
+    supabase.auth.getUser()
+  ]);
 
   if (!work) {
     notFound();
   }
 
-  // Fetch Contributions
-  const { data: contributions } = await supabase
-    .from("contributions")
-    .select("*")
-    .eq("work_id", id)
-    .order("created_at", { ascending: true });
-
-  // Fetch Vote Count
-  const { count: voteCount } = await supabase
-    .from("finish_votes")
-    .select("*", { count: "exact", head: true })
-    .eq("work_id", id);
-
-  // Fetch Unique Contributors Count
-  const { data: contributorsData } = await supabase
-    .from("contributions")
-    .select("user_id")
-    .eq("work_id", id);
-  
-  const uniqueContributors = new Set(contributorsData?.map(c => c.user_id) || []).size;
-    
+  // Calculate unique contributors from the already fetched contributions
+  const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
   const isCompleted = work.status === "completed";
 
-  // Fetch Current User
-  const { data: { user } } = await supabase.auth.getUser();
-
   return (
-    <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col font-montserrat">
+    <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
       <header className="mb-8 border-b pb-4">
         <Link
           href="/dong-ngon"
-          className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block font-montserrat"
+          className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block "
         >
           &larr; Quay lại
         </Link>
@@ -69,7 +71,7 @@ export default async function WorkPage({
             />
         </div>
         
-        <div className="text-sm text-gray-500 mt-2 font-montserrat">
+        <div className="text-sm text-gray-500 mt-2 ">
           Trạng thái:{" "}
           <span
             className={

@@ -66,6 +66,43 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
   };
 
   const isUserSectionActive = pathname === "/profile" || pathname === "/settings" || pathname === "/dang-nhap" || pathname === "/dang-ky";
+  
+  const MenuLink = ({ href, onClick, children, className = "" }: { href: string; onClick: () => void; children: React.ReactNode; className?: string }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    return (
+      <Link 
+        href={href} 
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`block px-6 py-3 text-lg font-normal font-ganh transition-colors ${className}`}
+        style={{
+          backgroundColor: isHovered ? "black" : "transparent",
+          color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
+        }}
+      >
+        {children}
+      </Link>
+    );
+  };
+
+  const MenuButton = ({ onClick, children, className = "" }: { onClick: () => void; children: React.ReactNode; className?: string }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    return (
+      <button 
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`w-full block px-6 py-3 text-lg font-normal font-ganh transition-colors text-left ${className}`}
+        style={{
+          backgroundColor: isHovered ? "black" : "transparent",
+          color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
+        }}
+      >
+        {children}
+      </button>
+    );
+  };
 
   return (
     <header className="w-full bg-white sticky top-0 z-50">
@@ -144,7 +181,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                           key={link.href}
                           href={link.href}
                           className={`
-                            font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
+                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
                             ${isActive ? "bg-black text-white" : "text-black hover:bg-gray-100"}
                           `}
                         >
@@ -160,7 +197,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         {role === "admin" && (
                           <Link
                             href="/admin"
-                            className="font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                            className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
                           >
                             Hệ thống
                           </Link>
@@ -168,7 +205,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         <Link
                           href="/profile"
                           className={`
-                            font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
+                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
                             ${pathname === "/profile" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
                           `}
                         >
@@ -177,7 +214,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         <Link
                           href="/settings"
                           className={`
-                            font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
+                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
                             ${pathname === "/settings" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
                           `}
                         >
@@ -185,7 +222,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-left"
+                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-left"
                         >
                           Đăng xuất
                         </button>
@@ -193,7 +230,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     ) : (
                       <Link
                         href="/dang-nhap"
-                        className="font-montserrat text-xl tracking-wide py-3 px-4 rounded-lg text-black hover:bg-gray-100 transition-colors"
+                        className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-black hover:bg-gray-100 transition-colors"
                       >
                         Đăng nhập
                       </Link>
@@ -227,7 +264,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                       />
                     )}
-                    <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
+                    <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${showActiveState ? "text-white" : "text-black"}`}>
                       {link.name}
                     </span>
                   </Link>
@@ -250,12 +287,12 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <span className="font-montserrat font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap">
+                  <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"}`}>
                     {nickname || "Tài khoản"}
                   </span>
                   {user && (
                     <svg 
-                      className={`w-4 h-4 relative z-10 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                      className={`w-4 h-4 relative z-10 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''} ${mounted && isUserSectionActive ? "text-white" : "text-black"}`} 
                       fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -273,34 +310,33 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
                     >
                       {role === "admin" && (
-                        <Link 
-                          href="/admin" 
+                        <MenuLink
+                          href="/admin"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="block px-6 py-3 text-xl font-normal font-montserrat text-blue-600 hover:bg-blue-600 hover:text-white transition-colors border-b border-black/10"
+                          className="text-blue-600 border-b border-black/10"
                         >
                           Hệ thống
-                        </Link>
+                        </MenuLink>
                       )}
-                      <Link 
+                      <MenuLink 
                         href="/profile" 
                         onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors"
                       >
                         Hồ sơ
-                      </Link>
-                      <Link 
+                      </MenuLink>
+                      <MenuLink 
                         href="/settings" 
                         onClick={() => setIsDropdownOpen(false)}
-                        className="block px-6 py-3 text-xl font-normal font-montserrat text-black hover:bg-black hover:text-white transition-colors border-t border-black/10"
+                        className="border-t border-black/10"
                       >
                         Cài đặt
-                      </Link>
-                      <button
+                      </MenuLink>
+                      <MenuButton
                         onClick={handleLogout}
-                        className="w-full text-left px-6 py-3 text-xl font-normal font-montserrat text-red-600 hover:bg-red-600 hover:text-white transition-colors border-t border-black/10"
+                        className="text-red-600 border-t border-black/10"
                       >
                         Đăng xuất
-                      </button>
+                      </MenuButton>
                     </motion.div>
                   )}
                 </AnimatePresence>

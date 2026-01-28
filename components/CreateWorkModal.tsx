@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
 import { WORK_TYPES, CATEGORY_OPTIONS } from "@/data/workTypes";
+import { PrimaryButton } from "./PrimaryButton";
 
 interface CreateWorkModalProps {
   customTrigger?: React.ReactNode;
@@ -14,6 +15,7 @@ interface CreateWorkModalProps {
 export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWorkModalProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -99,10 +101,22 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-all transform hover:scale-110 active:scale-95"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            backgroundColor: isHovered ? "black" : "white",
+          }}
+          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95"
           title="Tạo tác phẩm mới"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            strokeWidth={2.5} 
+            stroke={isHovered ? "white" : "black"}
+            className="w-5 h-5 transition-colors"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
         </button>
@@ -125,9 +139,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white border-2 border-black rounded-[2.5rem] p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
-              <h2 className="text-3xl font-sans font-black mb-8 text-center uppercase tracking-tight text-black">Tạo tác phẩm mới</h2>
+              <h2 className="text-3xl font-black mb-8 text-center uppercase tracking-tight text-black">Tạo tác phẩm mới</h2>
               
-              <form onSubmit={handleSubmit} className="space-y-6 font-sans">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-400">TIÊU ĐỀ</label>
                   <input
@@ -215,13 +229,13 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   >
                     HỦY
                   </button>
-                  <button
+                  <PrimaryButton
                     type="submit"
                     disabled={isLoading}
-                    className="flex-1 py-3 bg-black text-white font-bold uppercase tracking-widest rounded-xl hover:opacity-80 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
                   >
                     {isLoading ? "ĐANG TẠO..." : "TẠO TÁC PHẨM"}
-                  </button>
+                  </PrimaryButton>
                 </div>
               </form>
             </motion.div>
