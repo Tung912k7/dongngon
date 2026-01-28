@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import WorkFilter from "./WorkFilter";
 import { motion, AnimatePresence } from "framer-motion";
-import { FilterState } from "@/app/dong-ngon/page";
+import { FilterState } from "@/app/dong-ngon/types";
 
 interface TableFilterProps {
   filters: FilterState;

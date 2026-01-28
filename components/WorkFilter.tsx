@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FilterState } from "@/app/dong-ngon/page";
+import { FilterState } from "@/app/dong-ngon/types";
 
 interface WorkFilterProps {
   filters: FilterState;
