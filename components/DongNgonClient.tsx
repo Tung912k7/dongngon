@@ -148,24 +148,6 @@ export default function DongNgonClient({
   }, [q]);
 
   const handleTagClick = (type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
-    const mappings: { [key: string]: { [key: string]: string } } = {
-      category: { "Thơ": "Poetry", "Văn xuôi": "Prose", "Tiểu thuyết": "Novel" },
-      hinh_thuc: { 
-        "Thơ 4 chữ": "Thơ 4 chữ", 
-        "Thơ 5 chữ": "Thơ 5 chữ",
-        "Thơ 6 chữ": "Thơ 6 chữ",
-        "Thơ 7 chữ": "Thơ 7 chữ",
-        "Thơ 8 chữ": "Thơ 8 chữ",
-        "Thơ tự do": "Thơ tự do",
-        "Tùy bút": "Tùy bút",
-        "Nhật ký": "Nhật ký",
-        "Hồi ký": "Hồi ký",
-        "Tản văn": "Tản văn"
-      },
-      rule: { "1 kí tự": "OneChar", "1 câu": "OneSentence" },
-      status: { "Đang viết": "In Progress", "Hoàn thành": "Completed", "Tạm dừng": "Paused" }
-    };
-
     const filterKeyMap: { [key: string]: keyof FilterState } = {
       category: "category_type",
       hinh_thuc: "hinh_thuc",
@@ -174,7 +156,7 @@ export default function DongNgonClient({
     };
 
     const filterKey = filterKeyMap[type];
-    const filterValue = mappings[type][value] || "";
+    const filterValue = value;
 
     if (filterValue) {
       setFilters((prev: FilterState) => ({ ...prev, [filterKey]: filterValue }));
@@ -185,19 +167,16 @@ export default function DongNgonClient({
     let works = [...allWorks];
     works = works.filter((work) => {
       if (filters.category_type) {
-        const catMap: { [key: string]: string } = { "Poetry": "Thơ", "Prose": "Văn xuôi", "Novel": "Tiểu thuyết" };
-        if (work.type !== catMap[filters.category_type]) return false;
+        if (work.type !== filters.category_type) return false;
       }
       if (filters.hinh_thuc) {
         if (work.hinh_thuc !== filters.hinh_thuc) return false;
       }
       if (filters.writing_rule) {
-        const ruleMap: { [key: string]: string } = { "OneChar": "1 kí tự", "OneSentence": "1 câu" };
-        if (work.rule !== ruleMap[filters.writing_rule]) return false;
+        if (work.rule !== filters.writing_rule) return false;
       }
       if (filters.status) {
-        const statusMap: { [key: string]: string } = { "In Progress": "Đang viết", "Completed": "Hoàn thành", "Paused": "Tạm dừng" };
-        if (work.status !== statusMap[filters.status]) return false;
+        if (work.status !== filters.status) return false;
       }
       return true;
     });

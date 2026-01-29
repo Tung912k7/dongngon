@@ -43,7 +43,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     setIsLoading(true);
 
     const newFieldErrors: Record<string, string> = {};
-    if (!formData.title.trim()) newFieldErrors.title = "Please enter a title";
+    if (!formData.title.trim()) newFieldErrors.title = "Vui lòng nhập tiêu đề.";
     if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "Vui lòng chọn hình thức.";
 
     if (Object.keys(newFieldErrors).length > 0) {

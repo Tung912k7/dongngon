@@ -101,7 +101,7 @@ export async function completeOnboarding() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return { error: "Bạn chưa đăng nhập." };
 
   const { error } = await supabase
     .from("profiles")

@@ -34,10 +34,28 @@ export function getErrorMessage(error: any): string {
        return message || "Lỗi nghiệp vụ hệ thống.";
 
     default:
+      // Handle Supabase Auth specific error messages (which often come as text)
+      if (typeof error === 'string') {
+        const msg = error.toLowerCase();
+        if (msg.includes("invalid login credentials")) return "Bút danh/Email hoặc mật khẩu không chính xác.";
+        if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
+        if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
+        if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
+        return error;
+      }
+
+      if (message) {
+        const msg = message.toLowerCase();
+        if (msg.includes("invalid login credentials")) return "Bút danh/Email hoặc mật khẩu không chính xác.";
+        if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
+        if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
+        if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
+      }
+
       // If it's a known error code but not handled specifically
       if (code && typeof code === 'string' && code.length === 5) {
         return `Lỗi hệ thống (${code}). Vui lòng thử lại sau.`;
       }
-      return typeof error === 'string' ? error : (error.message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+      return message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
   }
 }

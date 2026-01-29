@@ -160,6 +160,13 @@ export function LoginForm() {
   const isValid = useMemo(() => data.identifier.trim() !== "" && data.password.trim() !== "", [data]);
 
   useEffect(() => {
+    const error = new URLSearchParams(window.location.search).get("error");
+    if (error === "auth-callback-failed") {
+      showNotification("Xác thực không thành công. Link có thể đã hết hạn hoặc không hợp lệ.", "error", "Lỗi xác thực");
+    }
+  }, []);
+
+  useEffect(() => {
     const checkUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();

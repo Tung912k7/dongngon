@@ -53,8 +53,8 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           value={localFilters.category_type}
         >
           <option value="">Tất cả</option>
-          <option value="Poetry">Thơ</option>
-          <option value="Prose">Văn xuôi</option>
+          <option value="Thơ">Thơ</option>
+          <option value="Văn xuôi">Văn xuôi</option>
         </select>
       </div>
 
@@ -91,8 +91,8 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           value={localFilters.writing_rule}
         >
           <option value="">Tất cả</option>
-          <option value="OneChar">1 kí tự</option>
-          <option value="OneSentence">1 câu</option>
+          <option value="1 kí tự">1 kí tự</option>
+          <option value="1 câu">1 câu</option>
         </select>
       </div>
 
@@ -116,9 +116,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           value={localFilters.status}
         >
           <option value="">Tất cả</option>
-          <option value="In Progress">Đang viết</option>
-          <option value="Completed">Hoàn thành</option>
-          <option value="Paused">Tạm dừng</option>
+          <option value="Đang viết">Đang viết</option>
+          <option value="Hoàn thành">Hoàn thành</option>
+          <option value="Đợi duyệt">Đợi duyệt</option>
         </select>
       </div>
 
