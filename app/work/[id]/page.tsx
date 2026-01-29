@@ -87,21 +87,12 @@ export default async function WorkPage({
             />
         </div>
         
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          <div className="text-gray-500">
-            Quy tắc: <span className="font-bold text-black">{renderRuleText(work.limit_type)}</span>
-          </div>
-          <div className="text-gray-500">
-            Hình thức: <span className="font-bold text-black">{work.sub_category}</span>
-          </div>
-          <div className="text-gray-500">
-            Trạng thái:{" "}
-            <span
-              className={
-                isCompleted ? "text-red-600 font-bold" : "text-green-600 font-bold"
-              }
-            >
-              {isCompleted ? "Đã hoàn thành" : "Đang viết"}
+        <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-3">
+          {/* Trang thai */}
+          <div className="flex items-center text-[10px] whitespace-nowrap">
+            <span className="font-bold text-gray-400 uppercase tracking-[0.1em] mr-1.5">TRẠNG THÁI:</span>
+            <span className={`font-black uppercase tracking-tight ${isCompleted ? "text-red-600" : "text-green-600"}`}>
+              {isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}
             </span>
           </div>
         </div>
@@ -109,7 +100,11 @@ export default async function WorkPage({
 
       {/* Real-time Feed */}
       <section className="flex-grow mb-12">
-        <Feed initialContributions={contributions || []} workId={work.id} />
+        <Feed 
+          initialContributions={contributions || []} 
+          workId={work.id} 
+          limitType={work.limit_type}
+        />
       </section>
 
       {/* Editor - Sticky at bottom */}

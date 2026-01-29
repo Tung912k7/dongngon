@@ -53,11 +53,13 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 2. Protect Authenticated Pages
-  const protectedPaths = ['/profile', '/settings']
-  const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
+  const pathname = request.nextUrl.pathname
+  const isProtectedPath = pathname.startsWith('/profile') || pathname.startsWith('/settings')
   
   if (isProtectedPath && !user) {
-    return NextResponse.redirect(new URL('/dang-nhap', request.url))
+    const url = request.nextUrl.clone()
+    url.pathname = '/dang-nhap'
+    return NextResponse.redirect(url)
   }
 
   return response

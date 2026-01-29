@@ -29,7 +29,8 @@ function AuthListener() {
         
         // Only redirect if we were previously logged in (avoids guest redirect loop)
         // or if we are currently on a protected route (double safety)
-        if (wasLoggedIn || pathname.startsWith('/profile') || pathname.startsWith('/settings')) {
+        const isPublicPage = pathname === '/' || pathname === '/dong-ngon' || pathname.startsWith('/work/');
+        if (!isPublicPage && (wasLoggedIn || pathname.startsWith('/profile') || pathname.startsWith('/settings'))) {
           window.location.href = '/dang-nhap';
         }
       } else if (event === 'SIGNED_IN') {

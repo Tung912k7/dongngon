@@ -57,15 +57,14 @@ export default function Editor({
   }, [content]);
 
   const validateContent = (content: string, limitType: string) => {
-    const trimmed = content.trim();
-
     if (limitType === '1 kí tự') {
-      const nonWhitespace = trimmed.replace(/\s+/g, "");
-      return nonWhitespace.length === 1;
+      // Allow 1 character, or 1 space + 1 character
+      // This supports the user's request for manual spacing
+      return /^ ?[^ ]$/.test(content);
     }
 
+    const trimmed = content.trim();
     if (limitType === '1 câu') {
-      // Logic from provided image: must end with . ? or !
       const sentenceRegex = /[.?!]$/;
       return sentenceRegex.test(trimmed);
     }
@@ -78,23 +77,24 @@ export default function Editor({
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // 1. Loại bỏ khoảng trắng thừa ở hai đầu
-    const cleanContent = content.trim();
+    // 1. Clean content: only trim if not in character mode
+    const isCharacterMode = writingRule === '1 kí tự';
+    const cleanContent = isCharacterMode ? content : content.trim();
+    
     if (!cleanContent) {
       setError("Vui lòng nhập nội dung.");
       setIsSubmitting(false);
       return;
     }
 
-    // 2. Kiểm tra quy tắc dựa trên loại bài viết (limit_type)
+    // 2. Validate rule
     const isValid = validateContent(cleanContent, writingRule);
     
     if (!isValid) {
         let msg = "Nội dung không hợp lệ.";
         if (writingRule === '1 kí tự') {
-            msg = "Quy tắc là '1 kí tự'. Vui lòng chỉ nhập đúng 1 kí tự.";
+            msg = "Quy tắc là '1 kí tự'. Bạn có thể nhập đúng 1 kí tự hoặc 1 dấu cách + 1 kí tự để tự cách chữ.";
         } else if (writingRule === '1 câu') {
-            // Message from provided image
             msg = "Nội dung phải kết thúc bằng dấu chấm (.), hỏi (?) hoặc cảm thán (!).";
         }
         

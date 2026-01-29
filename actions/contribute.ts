@@ -7,7 +7,6 @@ import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeInput } from "@/utils/sanitizer";
 
 export async function submitContribution(workId: string, content: string) {
-  const sanitizedContent = sanitizeInput(content);
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -19,16 +18,21 @@ export async function submitContribution(workId: string, content: string) {
     return { error: "Bạn cần đăng nhập để viết tiếp." };
   }
 
-  // 1.1 Check Work Status
+  // 1.1 Check Work Details (including limit_type)
   const { data: work } = await supabase
     .from("works")
-    .select("status")
+    .select("status, limit_type")
     .eq("id", workId)
     .single();
 
   if (work?.status === "completed") {
     return { error: "Tác phẩm này đã hoàn thành, không thể đóng góp thêm." };
   }
+
+  // 1.2 Sanitize Content based on limit_type
+  // For character mode, we might want to preserve a single leading space if provided
+  const isCharacterMode = work?.limit_type === 'character';
+  const sanitizedContent = sanitizeInput(content, !isCharacterMode);
 
   // 2. Validate Content
   if (!sanitizedContent || sanitizedContent.length === 0) {
@@ -68,7 +72,8 @@ export async function submitContribution(workId: string, content: string) {
     .gte("created_at", startOfDay.toISOString());
 
   if (recentContributions && recentContributions.length > 0) {
-    return { error: "Bạn chỉ được đóng góp 1 câu mỗi ngày cho tác phẩm này." };
+    const unit = work?.limit_type === 'character' ? 'kí tự' : 'câu';
+    return { error: `Bạn chỉ được đóng góp 1 ${unit} mỗi ngày cho tác phẩm này.` };
   }
 
   // 4. Get User Profile for Nickname

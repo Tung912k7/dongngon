@@ -163,7 +163,7 @@ export function LoginForm() {
     const checkUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user && (window.location.pathname === "/dang-nhap" || window.location.pathname === "/dang-ky")) {
         router.push("/");
         router.refresh();
       }
