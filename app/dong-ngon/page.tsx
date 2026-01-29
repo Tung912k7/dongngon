@@ -10,24 +10,28 @@ export default async function DongNgonPage({
     const { query: q } = await searchParams;
     const supabase = await createClient();
 
-    // Fetch User and Works in parallel on the server
-    const [
-        { data: { user } },
-        { data: rawWorks, error }
-    ] = await Promise.all([
-        supabase.auth.getUser(),
-        (async () => {
-            let query = supabase
-                .from("works")
-                .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname")
-                .order("created_at", { ascending: false });
+    // Fetch User first to use in filter
+    const { data: { user } } = await supabase.auth.getUser();
 
-            if (q) {
-                query = query.or(`title.ilike.%${q}%,author_nickname.ilike.%${q}%`);
-            }
-            return await query;
-        })()
-    ]);
+    // Fetch Works with privacy filter
+    const { data: rawWorks, error } = await (async () => {
+        let query = supabase
+            .from("works")
+            .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by")
+            .order("created_at", { ascending: false });
+
+        // Privacy Filter: Only show Public works OR works created by the current user
+        if (user) {
+            query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
+        } else {
+            query = query.eq("privacy", "Public");
+        }
+
+        if (q) {
+            query = query.or(`title.ilike.%${q}%,author_nickname.ilike.%${q}%`);
+        }
+        return await query;
+    })();
 
     if (error) {
         console.error("Supabase server-side fetch error:", error);

@@ -4,8 +4,10 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
+import { sanitizeInput } from "@/utils/sanitizer";
 
 export async function submitContribution(workId: string, content: string) {
+  const sanitizedContent = sanitizeInput(content);
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -29,15 +31,15 @@ export async function submitContribution(workId: string, content: string) {
   }
 
   // 2. Validate Content
-  if (!content || content.trim().length === 0) {
+  if (!sanitizedContent || sanitizedContent.length === 0) {
     return { error: "Nội dung không được để trống." };
   }
   
-  if (content.length > 200) {
+  if (sanitizedContent.length > 200) {
        return { error: "Nội dung quá dài (tối đa 200 ký tự)." };
   }
 
-  const blacklistViolation = await checkBlacklist(content);
+  const blacklistViolation = await checkBlacklist(sanitizedContent);
   if (blacklistViolation) {
     // If blacklisted, we still allow the contribution but mark the work as pending
     console.log(`Blacklist violation detected: "${blacklistViolation}". Marking work ${workId} as pending.`);
@@ -77,7 +79,7 @@ export async function submitContribution(workId: string, content: string) {
     .single();
 
   const id = workId;
-  const text = content.trim();
+  const text = sanitizedContent;
   const nickname = profile?.nickname || "Người bí ẩn";
 
   // 5. Insert Contribution

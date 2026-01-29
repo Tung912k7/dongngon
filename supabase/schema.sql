@@ -21,7 +21,11 @@ ALTER TABLE public.works ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contributions ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-CREATE POLICY "Public works are viewable by everyone" ON public.works FOR SELECT USING (true);
+CREATE POLICY "Works are viewable if public or by owner" ON public.works 
+FOR SELECT USING (
+  privacy = 'Public' OR 
+  auth.uid() = created_by
+);
 CREATE POLICY "Public contributions are viewable by everyone" ON public.contributions FOR SELECT USING (true);
 
 -- Authenticated users can insert works

@@ -31,7 +31,8 @@ const InputField = ({
   name,
   maxLength,
   error,
-  autoComplete
+  autoComplete,
+  required
 }: { 
   label: string; 
   value: string; 
@@ -41,6 +42,7 @@ const InputField = ({
   maxLength?: number;
   error?: string;
   autoComplete?: string;
+  required?: boolean;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -57,6 +59,7 @@ const InputField = ({
           onChange={onChange}
           maxLength={maxLength}
           autoComplete={autoComplete}
+          required={required}
           className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12`}
         />
         {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
@@ -218,7 +221,7 @@ export function LoginForm() {
       if (error) {
         let msg = error.message;
         if (msg === "Email not confirmed") {
-          msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận.";
+          msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư (kiểm tra cả mục thư rác) để xác nhận.";
         } else if (msg === "Invalid login credentials") {
           msg = "Bút danh/Email hoặc mật khẩu không chính xác.";
         }
@@ -317,37 +320,24 @@ export function ForgotPasswordForm() {
     type: "info",
   });
 
-  const [fieldError, setFieldError] = useState("");
-
   const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
-      setFieldError("Vui lòng nhập email.");
-      return;
-    }
-    
-    if (!isValidEmail(email)) {
-      setFieldError("Định dạng email không hợp lệ.");
-      return;
-    }
-
-    setFieldError("");
     setLoading(true);
 
     try {
-      const result = await forgotPassword(email);
+      const result = await forgotPassword(email.trim());
       if (result.success) {
-        showNotification("Link đặt lại mật khẩu đã được gửi vào Gmail của bạn. Vui lòng kiểm tra (cả mục thư rác).", "success", "Đã gửi Email");
+        showNotification("Link đặt lại mật khẩu đã được gửi vào Email của bạn. Vui lòng kiểm tra (cả mục thư rác).", "success", "Đã gửi Email");
         setEmail("");
       } else {
         showNotification(result.error || "Có lỗi xảy ra.", "error");
       }
-    } catch (err) {
-      showNotification("Đã xảy ra lỗi.", "error");
+    } catch (err: any) {
+      showNotification(err.message || "Đã xảy ra lỗi.", "error");
     } finally {
       setLoading(false);
     }
@@ -366,21 +356,18 @@ export function ForgotPasswordForm() {
       
       <div className="space-y-2">
         <InputField 
-          label="Gmail" 
+          label="Email" 
           name="email" 
           type="email"
           value={email} 
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (fieldError) setFieldError("");
-          }}
+          onChange={(e) => setEmail(e.target.value)}
           maxLength={100}
-          error={fieldError}
+          required
         />
       </div>
 
       <div className="flex justify-center w-full mt-10">
-        <PrimaryButton type="submit" disabled={!email.trim() || loading} className="!text-2xl !px-10">
+        <PrimaryButton type="submit" disabled={loading} className="!text-2xl !px-10">
           {loading ? "..." : "Gửi link"}
         </PrimaryButton>
       </div>
@@ -540,7 +527,7 @@ export function SignUpForm() {
     
     const newFieldErrors: Record<string, string> = {};
     if (!data.fullName.trim()) newFieldErrors.fullName = "Họ và tên không được để trống.";
-    if (!data.email.trim()) newFieldErrors.email = "Gmail không được để trống.";
+    if (!data.email.trim()) newFieldErrors.email = "Email không được để trống.";
     if (!data.penName.trim()) newFieldErrors.penName = "Bút danh không được để trống.";
     if (!data.password.trim()) newFieldErrors.password = "Mật khẩu không được để trống.";
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
@@ -610,7 +597,7 @@ export function SignUpForm() {
       // 1. Sign Up
       const { data: authData, error: authError } = await Promise.race([
         supabase.auth.signUp({
-          email: data.email,
+          email: data.email.trim(),
           password: data.password,
           options: {
             data: {
@@ -634,7 +621,7 @@ export function SignUpForm() {
       }
 
       if (authData.user) {
-        showNotification("Đăng ký thành công! Vui lòng kiểm tra Gmail (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
+        showNotification("Đăng ký thành công! Vui lòng kiểm tra Email (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
       }
     } catch (err: any) {
       console.error("Signup error:", err);
@@ -660,7 +647,7 @@ export function SignUpForm() {
           
           <div className="space-y-4">
             <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} autoComplete="name" />
-            <InputField label="Gmail" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} autoComplete="email" />
+            <InputField label="Email" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} autoComplete="email" />
             <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} autoComplete="nickname" />
             <InputField 
               label="Mật khẩu" 

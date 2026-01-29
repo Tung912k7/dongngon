@@ -43,8 +43,15 @@ export default function DongNgonClient({
     
     let query = sb
       .from("works")
-      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname")
+      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by")
       .order("created_at", { ascending: false });
+
+    // Privacy Filter
+    if (user) {
+      query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
+    } else {
+      query = query.eq("privacy", "Public");
+    }
 
     if (searchQuery) {
       query = query.or(`title.ilike.%${searchQuery}%,author_nickname.ilike.%${searchQuery}%`);

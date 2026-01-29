@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "@/utils/error-handler";
+import { sanitizeInput } from "@/utils/sanitizer";
 
 export async function createWork(formData: {
   title: string;
@@ -18,7 +19,8 @@ export async function createWork(formData: {
   if (!user) return { error: "Bạn cần đăng nhập để tạo tác phẩm." };
 
   // 2. Validation
-  if (!formData.title || formData.title.trim().length < 2) {
+  const sanitizedTitle = sanitizeInput(formData.title);
+  if (!sanitizedTitle || sanitizedTitle.length < 2) {
     return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
   }
 
@@ -46,10 +48,11 @@ export async function createWork(formData: {
 
   // 5. Insert Work
   const { data, error } = await supabase.from("works").insert({
-    title: formData.title.trim(),
+    title: sanitizedTitle,
     category_type: mapping.category[formData.category_type as keyof typeof mapping.category] || formData.category_type,
     sub_category: formData.hinh_thuc,
     license: formData.license,
+    privacy: formData.license === "private" ? "Private" : "Public",
     limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
     created_by: user.id,
     author_nickname: authorNickname,
@@ -102,7 +105,8 @@ export async function updateWork(workId: string, formData: {
   if (!user) return { error: "Bạn cần đăng nhập để chỉnh sửa tác phẩm." };
 
   // 2. Validation
-  if (!formData.title || formData.title.trim().length < 2) {
+  const sanitizedTitle = sanitizeInput(formData.title);
+  if (!sanitizedTitle || sanitizedTitle.length < 2) {
     return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
   }
 
@@ -110,7 +114,7 @@ export async function updateWork(workId: string, formData: {
   const { error } = await supabase
     .from("works")
     .update({
-      title: formData.title.trim(),
+      title: sanitizedTitle,
     })
     .eq("id", workId)
     .eq("created_by", user.id);

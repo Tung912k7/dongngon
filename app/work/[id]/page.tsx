@@ -23,7 +23,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by")
       .eq("id", id)
       .single(),
     
@@ -48,9 +48,25 @@ export default async function WorkPage({
     notFound();
   }
 
+  // Permission Check: If work is private, only owner can view
+  if (work.privacy === "Private" && (!user || user.id !== work.created_by)) {
+    notFound();
+  }
+
   // Calculate unique contributors from the already fetched contributions
   const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
   const isCompleted = work.status === "completed";
+
+  const renderRuleText = (limitType: string) => {
+    switch (limitType) {
+      case 'character':
+        return '1 kí tự';
+      case 'sentence':
+        return '1 câu';
+      default:
+        return 'Không giới hạn';
+    }
+  };
 
   return (
     <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
@@ -71,15 +87,23 @@ export default async function WorkPage({
             />
         </div>
         
-        <div className="text-sm text-gray-500 mt-2 ">
-          Trạng thái:{" "}
-          <span
-            className={
-              isCompleted ? "text-red-600 font-bold" : "text-green-600"
-            }
-          >
-            {isCompleted ? "Đã hoàn thành" : "Đang viết"}
-          </span>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+          <div className="text-gray-500">
+            Quy tắc: <span className="font-bold text-black">{renderRuleText(work.limit_type)}</span>
+          </div>
+          <div className="text-gray-500">
+            Hình thức: <span className="font-bold text-black">{work.sub_category}</span>
+          </div>
+          <div className="text-gray-500">
+            Trạng thái:{" "}
+            <span
+              className={
+                isCompleted ? "text-red-600 font-bold" : "text-green-600 font-bold"
+              }
+            >
+              {isCompleted ? "Đã hoàn thành" : "Đang viết"}
+            </span>
+          </div>
         </div>
       </header>
 

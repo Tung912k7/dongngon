@@ -4,14 +4,16 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
+import { sanitizeInput } from "@/utils/sanitizer";
 
 export const isNicknameAvailable = async (nickname: string, excludeUserId?: string) => {
   const supabase = await createClient();
   
+  const sanitizedNickname = sanitizeInput(nickname);
   const query = supabase
     .from("profiles")
     .select("id")
-    .ilike("nickname", nickname.trim());
+    .ilike("nickname", sanitizedNickname);
     
   if (excludeUserId) {
     query.neq("id", excludeUserId);
@@ -57,21 +59,22 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
   }
 
   // 2. Validate Nickname
-  if (!nickname || nickname.trim().length < 2) {
-    return { error: "Bút danh phải có ít nhất 2 ký tự." };
+  const sanitizedNickname = sanitizeInput(nickname);
+  if (!sanitizedNickname || sanitizedNickname.length < 2) {
+    return { error: "Bút danh phải có ít nhất 2 ký tự (sau khi đã loại bỏ các thẻ HTML)." };
   }
   
-  if (nickname.trim().length > 30) {
+  if (sanitizedNickname.length > 30) {
       return { error: "Bút danh quá dài." };
   }
 
-  const violation = await checkBlacklist(nickname);
+  const violation = await checkBlacklist(sanitizedNickname);
   if (violation) {
     return { error: `Bút danh chứa từ không cho phép (${violation}).` };
   }
 
   // 3. Check Uniqueness
-  const isAvailable = await isNicknameAvailable(nickname, user.id);
+  const isAvailable = await isNicknameAvailable(sanitizedNickname, user.id);
   if (!isAvailable) {
     return { error: "Bút danh này đã được sử dụng bởi người khác." };
   }
@@ -79,7 +82,7 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
   // 4. Upsert Profile
   const { error } = await supabase.from("profiles").upsert({
     id: user.id,
-    nickname: nickname.trim(),
+    nickname: sanitizedNickname,
     avatar_url: avatarUrl,
     updated_at: new Date().toISOString(),
   });
