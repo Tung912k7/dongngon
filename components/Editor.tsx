@@ -212,7 +212,7 @@ export default function Editor({
         </PrimaryButton>
       </div>
       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
-        Mỗi ngày chỉ được đóng góp 1 câu.
+        Mỗi ngày chỉ được đóng góp 1 {writingRule === "1 kí tự" ? "kí tự" : "câu"}.
       </p>
 
       <NotificationModal 

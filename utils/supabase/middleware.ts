@@ -53,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 2. Protect Authenticated Pages
-  const protectedPaths = ['/profile', '/settings', '/dong-ngon']
+  const protectedPaths = ['/profile', '/settings']
   const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
   
   if (isProtectedPath && !user) {

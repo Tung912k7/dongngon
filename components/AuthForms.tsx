@@ -340,6 +340,12 @@ export function ForgotPasswordForm() {
     e.preventDefault();
     setLoading(true);
 
+    if (email.trim() && !isValidEmail(email.trim())) {
+      showNotification("Email không hợp lệ. Vui lòng kiểm tra lại định dạng.", "error");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await forgotPassword(email.trim());
       if (result.success) {
