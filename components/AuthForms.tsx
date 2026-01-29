@@ -159,6 +159,18 @@ export function LoginForm() {
 
   const isValid = useMemo(() => data.identifier.trim() !== "" && data.password.trim() !== "", [data]);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/");
+        router.refresh();
+      }
+    };
+    checkUser();
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -522,6 +534,18 @@ export function SignUpForm() {
     data.agreedToRegulations,
   [data]);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/");
+        router.refresh();
+      }
+    };
+    checkUser();
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -765,6 +789,7 @@ export function SignUpForm() {
         onClose={() => {
           setNotification(prev => ({ ...prev, isOpen: false }));
           if (notification.type === "success") {
+            router.refresh(); // Refresh to clear header/session state
             router.push("/dang-nhap");
           }
         }}
