@@ -87,8 +87,19 @@ export default function DongNgonClient({
   useEffect(() => {
     const supabase = createClient();
     
-    // Skip re-fetching on the very first mount since the Server Component
-    // already provided the search-filtered initialWorks.
+    // Sync user state on client side to handle potential stale hydration from prefetch
+    const syncUser = async () => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser && !user) {
+        setUser(currentUser);
+        // If we just found a user, we should re-fetch to include their private works
+        fetchWorks(supabase, q);
+      }
+    };
+    syncUser();
+
+    // Skip re-fetching on the very first mount if search hasn't changed
+    // and we already have works from server.
     if (isFirstMount.current) {
       isFirstMount.current = false;
     } else {
