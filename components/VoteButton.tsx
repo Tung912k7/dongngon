@@ -39,7 +39,7 @@ export default function VoteButton({
             setCount(payload.new.finish_votes_count);
           }
           // Also sync completion status
-          if (payload.new.status === "completed") {
+          if (payload.new.status === "finished") {
             setIsCompleted(true);
           }
         }

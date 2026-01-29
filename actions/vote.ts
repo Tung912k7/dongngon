@@ -76,7 +76,7 @@ export async function voteEndWork(workId: string) {
     // Mark Work as Completed
     const { error: completeError } = await supabase
       .from("works")
-      .update({ status: "completed" })
+      .update({ status: "finished" })
       .eq("id", workId);
       
     if (completeError) {

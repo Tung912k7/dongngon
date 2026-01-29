@@ -55,7 +55,7 @@ export default async function WorkPage({
 
   // Calculate unique contributors from the already fetched contributions
   const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
-  const isCompleted = work.status === "completed";
+  const isCompleted = work.status === "finished";
 
   const renderRuleText = (limitType: string) => {
     switch (limitType) {

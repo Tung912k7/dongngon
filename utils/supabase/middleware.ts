@@ -2,10 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   })
 
   const supabase = createServerClient(
@@ -18,19 +16,18 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+          supabaseResponse = NextResponse.next({
+            request,
           })
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options)
           )
         },
       },
     }
   )
 
+  // IMPORTANT: DO NOT remove getUser() call
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -38,7 +35,11 @@ export async function updateSession(request: NextRequest) {
   // 1. Protect Admin Pages
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/dang-nhap', request.url))
+      const url = request.nextUrl.clone()
+      url.pathname = '/dang-nhap'
+      const response = NextResponse.redirect(url)
+      supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+      return response
     }
 
     const { data: profile } = await supabase
@@ -48,7 +49,11 @@ export async function updateSession(request: NextRequest) {
       .single()
 
     if (profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url))
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      const response = NextResponse.redirect(url)
+      supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+      return response
     }
   }
 
@@ -59,8 +64,10 @@ export async function updateSession(request: NextRequest) {
   if (isProtectedPath && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dang-nhap'
-    return NextResponse.redirect(url)
+    const response = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+    return response
   }
 
-  return response
+  return supabaseResponse
 }

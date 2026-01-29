@@ -25,7 +25,7 @@ export async function submitContribution(workId: string, content: string) {
     .eq("id", workId)
     .single();
 
-  if (work?.status === "completed") {
+  if (work?.status === "finished") {
     return { error: "Tác phẩm này đã hoàn thành, không thể đóng góp thêm." };
   }
 
