@@ -1,37 +1,32 @@
 import { MetadataRoute } from 'next'
-import { createClient } from '@/utils/supabase/server'
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = await createClient()
-  const domain = 'https://dongngon.com'
-
-  // Fetch all public works
-  const { data: works } = await supabase
-    .from('works')
-    .select('id, created_at')
-    .eq('license', 'public')
-
-  const workEntries: MetadataRoute.Sitemap = (works || []).map((work) => ({
-    url: `${domain}/work/${work.id}`,
-    lastModified: new Date(work.created_at),
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }))
-
-  const staticEntries: MetadataRoute.Sitemap = [
+ 
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://dongngon.com'
+  
+  return [
     {
-      url: domain,
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: `${domain}/dong-ngon`,
+      url: `${baseUrl}/dong-ngon`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'always',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/dang-nhap`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/dang-ky`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
   ]
-
-  return [...staticEntries, ...workEntries]
 }

@@ -5,7 +5,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/profile/', '/settings/'],
+      disallow: [
+        '/admin/',
+        '/profile/',
+        '/settings/',
+        '/api/',
+      ],
     },
     sitemap: 'https://dongngon.com/sitemap.xml',
   }

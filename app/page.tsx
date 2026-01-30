@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Đồng ngôn - Nơi lưu giữ tâm hồn",
+  description: "Không gian tĩnh lặng để sáng tác, chia sẻ và cảm nhận những áng thơ văn, câu nói hay.",
+};
+
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Work } from "@/types/database";

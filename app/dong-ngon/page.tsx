@@ -1,6 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { formatDate } from "@/utils/date";
 import DongNgonClient from "@/components/DongNgonClient";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Đồng ngôn - Kho tàng tác phẩm",
+  description: "Khám phá những áng thơ văn, câu nói hay và các tác phẩm sáng tác ngẫu hứng từ cộng đồng Đồng ngôn.",
+};
 
 export default async function DongNgonPage({
     searchParams,

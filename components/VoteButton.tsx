@@ -34,11 +34,15 @@ export default function VoteButton({
           filter: `id=eq.${workId}`,
         },
         (payload) => {
-          // If the trigger updates a column named 'finish_votes_count'
-          if (payload.new.finish_votes_count !== undefined) {
-            setCount(payload.new.finish_votes_count);
+          // Sync all counts from the new DB columns
+          if (payload.new.vote_count !== undefined) {
+            setCount(payload.new.vote_count);
           }
-          // Also sync completion status
+          // Note: local threshold depends on contributor_count
+          if (payload.new.contributor_count !== undefined) {
+             // We could sync this to state if we wanted, but props usually update via router.refresh()
+          }
+          // Sync completion status
           if (payload.new.status === "finished") {
             setIsCompleted(true);
           }
@@ -52,7 +56,6 @@ export default function VoteButton({
   }, [supabase, workId]);
 
   // Threshold: More than half of contributors
-  // If 0 contributors, default to 1 (or 5, but let's follow user logic)
   const threshold = Math.max(1, Math.floor(contributorCount / 2) + 1);
 
   if (isCompleted) {
@@ -78,7 +81,9 @@ export default function VoteButton({
       // Revert optimistic update
       setCount((prev) => prev - 1);
       setHasVoted(false);
-    } 
+    } else if (result.newCount !== undefined) {
+      setCount(result.newCount);
+    }
     
     setIsLoading(false);
   };

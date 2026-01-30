@@ -1,9 +1,37 @@
+import { Viewport, Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
 import VoteButton from "../../../components/VoteButton";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: work } = await supabase
+    .from("works")
+    .select("title, sub_category")
+    .eq("id", id)
+    .single();
+
+  if (!work) return { title: "Không tìm thấy tác phẩm" };
+
+  return {
+    title: work.title,
+    description: `Tác phẩm ${work.title} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
+    openGraph: {
+      title: `${work.title} | Đồng ngôn`,
+      description: `Đọc và đóng góp cho tác phẩm "${work.title}" trên Đổng ngôn.`,
+      type: "article",
+    },
+  };
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export default async function WorkPage({
   params,
@@ -23,7 +51,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by, contributor_count, vote_count")
       .eq("id", id)
       .single(),
     
@@ -54,7 +82,7 @@ export default async function WorkPage({
   }
 
   // Calculate unique contributors from the already fetched contributions
-  const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
+  const uniqueContributors = new Set(contributions?.map((c: any) => c.user_id) || []).size;
   const isCompleted = work.status === "finished";
 
   const renderRuleText = (limitType: string) => {
@@ -81,9 +109,9 @@ export default async function WorkPage({
             <h1 className="text-3xl font-bold">{work.title}</h1>
             <VoteButton 
                 workId={work.id} 
-                initialCount={voteCount || 0} 
+                initialCount={work.vote_count || 0} 
                 isCompleted={isCompleted} 
-                contributorCount={uniqueContributors}
+                contributorCount={work.contributor_count || 0}
             />
         </div>
         
