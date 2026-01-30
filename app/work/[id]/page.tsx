@@ -5,6 +5,7 @@ import Link from "next/link";
 import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
 import VoteButton from "../../../components/VoteButton";
+import WorkOwnerControls from "../../../components/WorkOwnerControls";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -89,8 +90,20 @@ export default async function WorkPage({
   // Permission Check: If work is private, only owner can view
   const isPrivate = work.privacy?.toLowerCase() === "private";
   if (isPrivate && (!user || user.id !== work.created_by)) {
-    console.warn(`[WorkPage] Unauthorized access attempt to private work ${id}`);
-    notFound();
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-gray-400">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Tác phẩm riêng tư</h1>
+        <p className="text-gray-500 mb-8 max-w-xs">Bạn không có quyền truy cập vào nội dung này.</p>
+        <Link href="/dong-ngon" className="px-6 py-2 bg-black text-white rounded-full font-bold">
+          Quay lại trang chủ
+        </Link>
+      </main>
+    );
   }
 
   // Calculate unique contributors from the already fetched contributions
@@ -118,7 +131,14 @@ export default async function WorkPage({
           &larr; Quay lại
         </Link>
         <div className="flex justify-between items-start">
-            <h1 className="text-3xl font-bold">{work.title}</h1>
+            <div className="flex-grow">
+              <h1 className="text-3xl font-bold">{work.title}</h1>
+              <WorkOwnerControls 
+                workId={work.id} 
+                initialTitle={work.title} 
+                isOwner={!!user && user.id === work.created_by} 
+              />
+            </div>
             <VoteButton 
                 workId={work.id} 
                 initialCount={voteCount || 0} 

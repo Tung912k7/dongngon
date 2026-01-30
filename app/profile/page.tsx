@@ -39,8 +39,15 @@ export default async function ProfilePage() {
   // Filter unique works from contributions
   const contributedWorksList = Array.from(
     new Map((contributions || [])
-      .filter(c => c.works && (c.works as any).created_by !== user.id)
-      .map(c => [(c.works as any).id, c.works as unknown as Work]))
+      .filter(c => {
+        // Handle works as object or array
+        const workData = Array.isArray(c.works) ? c.works[0] : (c.works as any);
+        return workData && workData.id && workData.created_by !== user.id;
+      })
+      .map(c => {
+        const workData = Array.isArray(c.works) ? c.works[0] : (c.works as any);
+        return [workData.id, workData as unknown as Work];
+      }))
       .values()
   );
 

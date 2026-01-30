@@ -47,9 +47,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
   // Automatically validate sub-category when category changes
   useEffect(() => {
     const availableSubCategories = WORK_TYPES[formData.category_type]?.subCategories || [];
-    // Only reset if the current selection is no longer valid in the new category
-    if (isOpen && formData.hinh_thuc && !availableSubCategories.includes(formData.hinh_thuc)) {
-      setFormData(prev => ({ ...prev, hinh_thuc: "" })); // Set empty to force user to choose
+    // If current sub-category is not valid for new category, pick the first one
+    if (isOpen && (!formData.hinh_thuc || !availableSubCategories.includes(formData.hinh_thuc))) {
+      setFormData(prev => ({ ...prev, hinh_thuc: availableSubCategories[0] || "" }));
     }
   }, [formData.category_type, isOpen]);
 
@@ -252,10 +252,10 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   </button>
                   <PrimaryButton
                     type="submit"
-                    disabled={isLoading || !formData.title.trim() || !formData.hinh_thuc}
+                    disabled={isLoading || isSubmitting.current || !formData.title.trim() || !formData.hinh_thuc}
                     className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
                   >
-                    {isLoading ? "ĐANG TẠO..." : "TẠO TÁC PHẨM"}
+                    {isLoading ? "..." : "TẠO TÁC PHẨM"}
                   </PrimaryButton>
                 </div>
               </form>

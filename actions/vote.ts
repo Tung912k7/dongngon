@@ -55,12 +55,38 @@ export async function voteEndWork(workId: string) {
     return { error: getErrorMessage(voteError) };
   }
 
-  // 5. Get current votes
-  const { count } = await supabase
+  // 5. Get current votes count
+  const { count: currentVotes } = await supabase
     .from("finish_votes")
     .select("*", { count: "exact", head: true })
     .eq("work_id", workId);
 
+  const currentCount = currentVotes || 0;
+
+  // 6. Threshold logic: Always fetch latest contributor count to avoid stale props
+  const { data: contributions } = await supabase
+    .from("contributions")
+    .select("user_id")
+    .eq("work_id", workId);
+  
+  const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
+  const threshold = Math.max(1, Math.floor(uniqueContributors / 2) + 1);
+
+  if (currentCount >= threshold) {
+     const { error: updateError } = await supabase
+       .from("works")
+       .update({ status: "finished" })
+       .eq("id", workId)
+       // Only update if it's NOT already finished or pending? 
+       // Actually, we can update writing -> finished.
+       .neq("status", "finished");
+       
+     if (updateError) {
+         console.error("Critical error updating work status to finished:", updateError);
+     }
+  }
+
   revalidatePath(`/work/${workId}`);
-  return { success: true, newCount: count || 0 };
+  revalidatePath("/dong-ngon");
+  return { success: true, newCount: currentCount };
 }

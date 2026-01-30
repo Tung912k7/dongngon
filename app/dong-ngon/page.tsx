@@ -27,10 +27,11 @@ export default async function DongNgonPage({
             .order("created_at", { ascending: false });
 
         // Privacy Filter: Only show Public works OR works created by the current user
+        // We use .or() for (A OR B) and regular chain for AND
         if (user) {
-            query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
+            query = query.or(`privacy.ilike.public,created_by.eq.${user.id}`);
         } else {
-            query = query.eq("privacy", "Public");
+            query = query.ilike("privacy", "public");
         }
 
         if (q) {

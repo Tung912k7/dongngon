@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "@/utils/error-handler";
-import { sanitizeInput } from "@/utils/sanitizer";
+import { sanitizeInput, sanitizeTitle } from "@/utils/sanitizer";
 
 export async function createWork(formData: {
   title: string;
@@ -18,8 +18,21 @@ export async function createWork(formData: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Bạn cần đăng nhập để tạo tác phẩm." };
 
+  // 1.1 Server-side Duplicate Check (Anti-spam/Race condition)
+  const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
+  const { data: recentWorks } = await supabase
+    .from("works")
+    .select("id")
+    .eq("created_by", user.id)
+    .eq("title", formData.title.trim())
+    .gte("created_at", tenSecondsAgo);
+
+  if (recentWorks && recentWorks.length > 0) {
+    return { error: "Bạn đã tạo một tác phẩm trùng tên trong 10 giây qua. Vui lòng đợi." };
+  }
+
   // 2. Validation
-  const sanitizedTitle = sanitizeInput(formData.title);
+  const sanitizedTitle = sanitizeTitle(formData.title); // Use strict title sanitization
   if (!sanitizedTitle || sanitizedTitle.length < 2) {
     return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
   }
@@ -105,7 +118,7 @@ export async function updateWork(workId: string, formData: {
   if (!user) return { error: "Bạn cần đăng nhập để chỉnh sửa tác phẩm." };
 
   // 2. Validation
-  const sanitizedTitle = sanitizeInput(formData.title);
+  const sanitizedTitle = sanitizeTitle(formData.title); // Use strict title sanitization
   if (!sanitizedTitle || sanitizedTitle.length < 2) {
     return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
   }

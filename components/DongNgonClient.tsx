@@ -158,6 +158,17 @@ export default function DongNgonClient({
         (payload) => {
           if (payload.eventType === "INSERT") {
             const newWork = payload.new;
+            
+            // Privacy Guard: Only add if Public or if we are the owner
+            // Case-insensitive check for robustness
+            const privacy = newWork.privacy?.toLowerCase();
+            const isPublic = privacy === 'public';
+            const isOwner = user && newWork.created_by === user.id;
+            
+            if (!isPublic && !isOwner) {
+              return;
+            }
+
             const mappedNewWork = {
               ...newWork,
               type: newWork.category_type,
@@ -196,7 +207,7 @@ export default function DongNgonClient({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [q]);
+  }, [q, user]); // Added user to dependencies to fix stale closure
 
   const handleTagClick = (type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
     const filterKeyMap: { [key: string]: keyof FilterState } = {
@@ -230,7 +241,12 @@ export default function DongNgonClient({
       if (filters.status) {
         if (work.status !== filters.status) return false;
       }
-      return true;
+      
+      // Final security filter: Public OR Owner
+      const privacy = work.privacy?.toLowerCase();
+      const isPublic = privacy === 'public';
+      const isOwner = user && work.created_by === user.id;
+      return isPublic || isOwner;
     });
 
     works.sort((a, b) => {
