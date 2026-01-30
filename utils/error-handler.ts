@@ -41,6 +41,7 @@ export function getErrorMessage(error: any): string {
         if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
         if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
         if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
+        if (msg.includes("email address is invalid")) return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
         return error;
       }
 
@@ -50,6 +51,7 @@ export function getErrorMessage(error: any): string {
         if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
         if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
         if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
+        if (msg.includes("email address is invalid")) return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
       }
 
       // If it's a known error code but not handled specifically

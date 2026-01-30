@@ -347,11 +347,7 @@ export function ForgotPasswordForm() {
     e.preventDefault();
     setLoading(true);
 
-    if (email.trim() && !isValidEmail(email.trim())) {
-      showNotification("Email không hợp lệ. Vui lòng kiểm tra lại định dạng.", "error");
-      setLoading(false);
-      return;
-    }
+    // Let browser and server handle validation
 
     try {
       const result = await forgotPassword(email.trim());
@@ -570,10 +566,7 @@ export function SignUpForm() {
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
     if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
-    // Validation: Email format
-    if (data.email.trim() && !isValidEmail(data.email.trim())) {
-      newFieldErrors.email = "Email không hợp lệ. Vui lòng kiểm tra lại định dạng.";
-    }
+    // Let browser/server handle validation or use the standardized regex
 
     // Validation: Password strength
     if (data.password.trim() && data.password.length < 6) {
