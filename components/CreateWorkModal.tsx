@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createWork } from "@/actions/work";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,6 +19,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const isSubmitting = useRef(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -28,18 +29,34 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     writing_rule: "1 câu",
   });
 
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        title: "",
+        category_type: "Văn xuôi",
+        hinh_thuc: "Tùy bút",
+        license: "public",
+        writing_rule: "1 câu",
+      });
+      setFieldErrors({});
+      setError(null);
+    }
+  }, [isOpen]);
+
   // Automatically validate sub-category when category changes
   useEffect(() => {
     const availableSubCategories = WORK_TYPES[formData.category_type]?.subCategories || [];
     // Only reset if the current selection is no longer valid in the new category
-    if (!availableSubCategories.includes(formData.hinh_thuc)) {
+    if (isOpen && formData.hinh_thuc && !availableSubCategories.includes(formData.hinh_thuc)) {
       setFormData(prev => ({ ...prev, hinh_thuc: "" })); // Set empty to force user to choose
     }
-  }, [formData.category_type]);
+  }, [formData.category_type, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading) return;
+    if (isLoading || isSubmitting.current) return;
+    isSubmitting.current = true;
     setIsLoading(true);
 
     const newFieldErrors: Record<string, string> = {};
@@ -49,6 +66,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     if (Object.keys(newFieldErrors).length > 0) {
       setFieldErrors(newFieldErrors);
       setIsLoading(false);
+      isSubmitting.current = false;
       return;
     }
 
@@ -67,6 +85,8 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       ]) as any;
 
       if (result.success) {
+        setIsLoading(false);
+        isSubmitting.current = false;
         setIsOpen(false);
         if (onSuccess) onSuccess();
         router.refresh();
@@ -89,6 +109,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       }
     } finally {
       setIsLoading(false);
+      isSubmitting.current = false;
     }
   };
 
@@ -231,7 +252,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   </button>
                   <PrimaryButton
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || !formData.title.trim() || !formData.hinh_thuc}
                     className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
                   >
                     {isLoading ? "ĐANG TẠO..." : "TẠO TÁC PHẨM"}

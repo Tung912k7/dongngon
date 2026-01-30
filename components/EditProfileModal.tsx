@@ -142,6 +142,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
       <PrimaryButton
         onClick={() => setIsOpen(true)}
         className="mt-12 w-full !py-3 !text-sm !uppercase !tracking-widest"
+        aria-label="Mở chỉnh sửa hồ sơ"
       >
         CHỈNH SỬA HỒ SƠ
       </PrimaryButton>
@@ -158,6 +159,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                 setImageSrc(null);
               }}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              aria-label="Đóng chỉnh sửa hồ sơ"
             />
             
             <motion.div
@@ -215,7 +217,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                         />
                         {/* Zoom Control Overlay */}
                         <div className="absolute bottom-4 left-4 right-4 bg-white p-3 rounded-2xl border-2 border-black flex items-center gap-4 z-10">
-                          <span className="text-[10px] font-black text-black">ZOOM</span>
+                          <span className="text-[10px] font-black text-black">THU PHÓNG</span>
                           <input
                             type="range"
                             value={zoom}

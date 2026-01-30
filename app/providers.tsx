@@ -70,9 +70,16 @@ function PostHogPageView() : null {
       if (searchParams.toString()) {
         url = url + `?${searchParams.toString()}`;
       }
-      posthog.capture('$pageview', {
-        '$current_url': url,
-      });
+      
+      // Use a timeout to debounce pageview capturing
+      // and avoid rate-limiting on rapid filtering
+      const handle = setTimeout(() => {
+        posthog.capture('$pageview', {
+          '$current_url': url,
+        });
+      }, 500);
+
+      return () => clearTimeout(handle);
     }
   }, [pathname, searchParams]);
 

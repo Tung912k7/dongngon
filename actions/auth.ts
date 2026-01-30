@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { getErrorMessage } from "@/utils/error-handler";
 
 export async function forgotPassword(email: string) {
   const supabase = await createClient();
@@ -14,7 +15,7 @@ export async function forgotPassword(email: string) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: getErrorMessage(error) };
   }
 
   return { success: true };
@@ -28,7 +29,7 @@ export async function updatePassword(password: string) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: getErrorMessage(error) };
   }
 
   return { success: true };

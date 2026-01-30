@@ -65,7 +65,7 @@ export default async function Home({
         />
       </div>
             </div>
-            <p className="text-2xl sm:text-3xl md:text-5xl font-normal tracking-wide text-center">[Slogan]</p>
+            <p className="text-2xl sm:text-3xl md:text-5xl font-normal tracking-wide text-center">Một tâm hồn, nhiều ngòi bút.</p>
           </div>
         </FadeIn>
 

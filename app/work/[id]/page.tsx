@@ -43,15 +43,15 @@ export default async function WorkPage({
 
   // Parallelize all data fetching
   const [
-    { data: work },
-    { data: contributions },
-    { count: voteCount },
-    { data: { user } }
+    workResponse,
+    contributionsResponse,
+    voteCountResponse,
+    userResponse
   ] = await Promise.all([
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by, contributor_count, vote_count")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by")
       .eq("id", id)
       .single(),
     
@@ -72,12 +72,24 @@ export default async function WorkPage({
     supabase.auth.getUser()
   ]);
 
+  const work = workResponse.data;
+  const contributions = contributionsResponse.data;
+  const voteCount = voteCountResponse.count;
+  const user = userResponse.data.user;
+
+  if (workResponse.error) {
+    console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error);
+  }
+
   if (!work) {
+    console.warn(`[WorkPage] Work not found for ID: ${id}`);
     notFound();
   }
 
   // Permission Check: If work is private, only owner can view
-  if (work.privacy === "Private" && (!user || user.id !== work.created_by)) {
+  const isPrivate = work.privacy?.toLowerCase() === "private";
+  if (isPrivate && (!user || user.id !== work.created_by)) {
+    console.warn(`[WorkPage] Unauthorized access attempt to private work ${id}`);
     notFound();
   }
 
@@ -109,9 +121,9 @@ export default async function WorkPage({
             <h1 className="text-3xl font-bold">{work.title}</h1>
             <VoteButton 
                 workId={work.id} 
-                initialCount={work.vote_count || 0} 
+                initialCount={voteCount || 0} 
                 isCompleted={isCompleted} 
-                contributorCount={work.contributor_count || 0}
+                contributorCount={uniqueContributors}
             />
         </div>
         

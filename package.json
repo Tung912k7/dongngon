@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.26.1",
     "next": "16.1.1",
     "posthog-js": "^1.335.2",
@@ -20,6 +21,7 @@
     "use-debounce": "^10.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

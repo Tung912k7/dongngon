@@ -114,7 +114,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Toggle menu"
+            aria-label="Mở menu"
           >
             <svg 
               width="24" 
@@ -164,7 +164,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                   <button 
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="mb-8 p-2 hover:opacity-70 transition-opacity"
-                    aria-label="Close menu"
+                    aria-label="Đóng menu"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18" />
@@ -229,12 +229,20 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         </button>
                       </>
                     ) : (
-                      <Link
-                        href="/dang-nhap"
-                        className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-black hover:bg-gray-100 transition-colors"
-                      >
-                        Đăng nhập
-                      </Link>
+                      <div className="flex flex-col gap-2">
+                        <Link
+                          href="/dang-nhap"
+                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-black hover:bg-gray-100 transition-colors"
+                        >
+                          Đăng nhập
+                        </Link>
+                        <Link
+                          href="/dang-ky"
+                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-white bg-black hover:opacity-80 transition-opacity text-center"
+                        >
+                          Ghi danh
+                        </Link>
+                      </div>
                     )}
                   </nav>
                 </div>
@@ -290,7 +298,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     />
                   )}
                   <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"}`}>
-                    {nickname || "Tài khoản"}
+                    {nickname || (user ? "Tài khoản" : "Đăng nhập")}
                   </span>
                   {user && (
                     <svg 
@@ -301,6 +309,15 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     </svg>
                   )}
                 </button>
+                
+                {!user && (
+                   <Link
+                      href="/dang-ky"
+                      className="hidden md:flex font-ganh text-xl md:text-2xl tracking-wide px-6 py-2 rounded-full border-2 border-black hover:bg-black hover:text-white transition-all ml-4"
+                    >
+                      Ghi danh
+                    </Link>
+                )}
 
                 <AnimatePresence>
                   {isDropdownOpen && user && (

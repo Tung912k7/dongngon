@@ -10,6 +10,7 @@ import CreateWorkModal from "@/components/CreateWorkModal";
 import { TagButton } from "@/components/TagButton";
 import { createClient } from "@/utils/supabase/client";
 import { FilterState } from "../app/dong-ngon/types";
+import Pagination from "@/components/Pagination";
 
 const defaultFilters: FilterState = {
   category_type: "",
@@ -27,8 +28,21 @@ export default function DongNgonClient({
   initialWorks: any[]; 
   initialUser: any;
 }) {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  
+  // Initialize filters from URL search params
+  const [filters, setFilters] = useState<FilterState>(() => ({
+    category_type: searchParams.get("category") || "",
+    hinh_thuc: searchParams.get("form") || "",
+    writing_rule: searchParams.get("rule") || "",
+    sort_date: (searchParams.get("sort") as any) || "newest",
+    status: searchParams.get("status") || "",
+    limit: searchParams.get("limit") || "10",
+  }));
+  const [currentPage, setCurrentPage] = useState(() => 
+    parseInt(searchParams.get("page") || "1")
+  );
   const [user, setUser] = useState<any>(initialUser);
   
   // Ensure initial works have actual Date objects for sorting
@@ -36,6 +50,33 @@ export default function DongNgonClient({
     initialWorks.map(w => ({ ...w, rawDate: new Date(w.rawDate) }))
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.category_type) params.set("category", filters.category_type);
+    if (filters.hinh_thuc) params.set("form", filters.hinh_thuc);
+    if (filters.writing_rule) params.set("rule", filters.writing_rule);
+    if (filters.sort_date !== "newest") params.set("sort", filters.sort_date);
+    if (filters.status) params.set("status", filters.status);
+    if (filters.limit !== "10") params.set("limit", filters.limit);
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    
+    // Get query from current URL to avoid dependency on searchParams hook
+    // Which can cause re-render loops when we call replaceState
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    const query = currentUrlParams.get("query");
+    if (query) params.set("query", query);
+
+    const queryString = params.toString();
+    const currentPath = window.location.pathname + window.location.search;
+    const newPath = `/dong-ngon${queryString ? `?${queryString}` : ""}`;
+    
+    // Only update if the URL is actually different
+    if (currentPath !== newPath) {
+      window.history.replaceState(null, "", newPath);
+    }
+  }, [filters, currentPage]); // Removed searchParams dependency
 
   const fetchWorks = async (supabaseClient?: any, searchQuery?: string) => {
     setIsLoading(true);
@@ -80,7 +121,6 @@ export default function DongNgonClient({
     setIsLoading(false);
   };
 
-  const searchParams = useSearchParams();
   const q = searchParams.get("query") || "";
   const isFirstMount = useRef(true);
 
@@ -171,10 +211,11 @@ export default function DongNgonClient({
 
     if (filterValue) {
       setFilters((prev: FilterState) => ({ ...prev, [filterKey]: filterValue }));
+      setCurrentPage(1); // Reset to page 1 on filter change
     }
   };
 
-  const filteredWorks = useMemo(() => {
+  const { paginatedWorks, totalPages } = useMemo(() => {
     let works = [...allWorks];
     works = works.filter((work) => {
       if (filters.category_type) {
@@ -200,8 +241,23 @@ export default function DongNgonClient({
     });
 
     const limit = parseInt(filters.limit) || 10;
-    return works.slice(0, limit);
-  }, [allWorks, filters]);
+    const totalItems = works.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    
+    // Ensure current page is valid if filters changed total count
+    const safePage = Math.min(currentPage, Math.max(1, totalPages));
+    const start = (safePage - 1) * limit;
+    
+    return {
+      paginatedWorks: works.slice(start, start + limit),
+      totalPages
+    };
+  }, [allWorks, filters, currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -209,11 +265,20 @@ export default function DongNgonClient({
         <div className="w-full max-w-6xl relative">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
-              <TableFilter filters={filters} onApplyFilters={setFilters} />
+              <TableFilter 
+                filters={filters} 
+                onApplyFilters={(newFilters) => {
+                  setFilters(newFilters);
+                  setCurrentPage(1); // Reset to page 1 when applying filters
+                }} 
+              />
               <span className="font-bold uppercase tracking-wider text-sm">Bộ lọc</span>
               {(filters.category_type || filters.hinh_thuc || filters.writing_rule || filters.status) && (
                 <button 
-                  onClick={() => setFilters(defaultFilters)}
+                  onClick={() => {
+                    setFilters(defaultFilters);
+                    setCurrentPage(1);
+                  }}
                   className="ml-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors bg-red-50 px-2 py-1 rounded-md"
                   title="Xóa tất cả bộ lọc"
                 >
@@ -231,36 +296,44 @@ export default function DongNgonClient({
             <div className="flex justify-center py-20">
               <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
             </div>
-          ) : filteredWorks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredWorks.map((work) => (
-                <Link 
-                  key={work.id} 
-                  href={`/work/${work.id}`}
-                  className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[320px] justify-between relative group cursor-pointer"
-                >
-                  <div>
-                    <h3 className="text-3xl font-bold line-clamp-2 leading-tight mb-2">{work.title}</h3>
-                    <p className="text-base text-gray-500">{work.date}</p>
-                  </div>
+          ) : paginatedWorks.length > 0 ? (
+            <div className="flex flex-col">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginatedWorks.map((work) => (
+                  <Link 
+                    key={work.id} 
+                    href={`/work/${work.id}`}
+                    className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[320px] justify-between relative group cursor-pointer"
+                  >
+                    <div>
+                      <h3 className="text-3xl font-bold line-clamp-2 leading-tight mb-2">{work.title}</h3>
+                      <p className="text-base text-gray-500">{work.date}</p>
+                    </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}>{work.hinh_thuc}</TagButton>
-                    <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}>{work.rule}</TagButton>
-                    <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}>{work.type}</TagButton>
-                    <span 
-                      onClick={(e) => { e.preventDefault(); handleTagClick('status', work.status); }}
-                      className={`border rounded-full px-4 py-2 text-center text-sm overflow-hidden text-ellipsis whitespace-nowrap transition-colors cursor-pointer tracking-tight ${
-                        work.status === "Hoàn thành" ? "bg-green-100 border-green-600 text-green-800 hover:bg-green-200" :
-                        work.status === "Đang viết" ? "bg-blue-100 border-blue-600 text-blue-800 hover:bg-blue-200" :
-                        "bg-yellow-100 border-yellow-600 text-yellow-800 hover:bg-yellow-200"
-                      }`}
-                    >
-                      {work.status}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                    <div className="grid grid-cols-2 gap-3">
+                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}>{work.hinh_thuc}</TagButton>
+                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}>{work.rule}</TagButton>
+                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}>{work.type}</TagButton>
+                      <span 
+                        onClick={(e) => { e.preventDefault(); handleTagClick('status', work.status); }}
+                        className={`border rounded-full px-4 py-2 text-center text-sm overflow-hidden text-ellipsis whitespace-nowrap transition-colors cursor-pointer tracking-tight ${
+                          work.status === "Hoàn thành" ? "bg-green-100 border-green-600 text-green-800 hover:bg-green-200" :
+                          work.status === "Đang viết" ? "bg-blue-100 border-blue-600 text-blue-800 hover:bg-blue-200" :
+                          "bg-yellow-100 border-yellow-600 text-yellow-800 hover:bg-yellow-200"
+                        }`}
+                      >
+                        {work.status}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
