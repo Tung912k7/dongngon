@@ -105,7 +105,7 @@ export default async function WorkPage({
         <Link href="/dong-ngon" className="px-6 py-2 bg-black text-white rounded-full font-bold">
           Quay lại trang chủ
         </Link>
-      </main>
+      </div>
     );
   }
 
