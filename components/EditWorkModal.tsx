@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateWork } from "@/actions/work";
+import { sanitizeTitle } from "@/utils/sanitizer";
 import { motion, AnimatePresence } from "framer-motion";
 import { Work } from "@/types/database";
 import { PrimaryButton } from "./PrimaryButton";
@@ -62,7 +63,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     setError(null);
     
     const updateData = {
-      title: formData.title,
+      title: sanitizeTitle(formData.title),
     };
     
     const timeoutPromise = new Promise((_, reject) => 

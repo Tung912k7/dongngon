@@ -46,9 +46,7 @@ export default function DongNgonClient({
   const [user, setUser] = useState<any>(initialUser);
   
   // Ensure initial works have actual Date objects for sorting
-  const [allWorks, setAllWorks] = useState<any[]>(() => 
-    initialWorks.map(w => ({ ...w, rawDate: new Date(w.rawDate) }))
-  );
+  const [allWorks, setAllWorks] = useState<any[]>(initialWorks);
   const [isLoading, setIsLoading] = useState(false);
 
   // Sync filters to URL
@@ -250,8 +248,8 @@ export default function DongNgonClient({
     });
 
     works.sort((a, b) => {
-      const timeA = a.rawDate?.getTime() || 0;
-      const timeB = b.rawDate?.getTime() || 0;
+      const timeA = new Date(a.rawDate).getTime();
+      const timeB = new Date(b.rawDate).getTime();
       if (filters.sort_date === 'oldest') return timeA - timeB;
       return timeB - timeA;
     });
@@ -277,7 +275,7 @@ export default function DongNgonClient({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 flex flex-col items-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 flex flex-col items-center">
         <div className="w-full max-w-6xl relative">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
@@ -374,7 +372,7 @@ export default function DongNgonClient({
             </div>
           )}
         </div>
-      </main>
+      </section>
     </div>
   );
 }

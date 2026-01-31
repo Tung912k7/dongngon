@@ -1,6 +1,7 @@
 import { Viewport, Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
+import { escapeHTML } from "@/utils/sanitizer";
 import Link from "next/link";
 import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
@@ -18,12 +19,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!work) return { title: "Không tìm thấy tác phẩm" };
 
+  const escapedTitle = escapeHTML(work.title);
+
   return {
-    title: work.title,
-    description: `Tác phẩm ${work.title} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
+    title: escapedTitle,
+    description: `Tác phẩm ${escapedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
     openGraph: {
-      title: `${work.title} | Đồng ngôn`,
-      description: `Đọc và đóng góp cho tác phẩm "${work.title}" trên Đổng ngôn.`,
+      title: `${escapedTitle} | Đồng ngôn`,
+      description: `Đọc và đóng góp cho tác phẩm "${escapedTitle}" trên Đổng ngôn.`,
       type: "article",
     },
   };
@@ -91,7 +94,7 @@ export default async function WorkPage({
   const isPrivate = work.privacy?.toLowerCase() === "private";
   if (isPrivate && (!user || user.id !== work.created_by)) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-gray-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -122,8 +125,8 @@ export default async function WorkPage({
   };
 
   return (
-    <main className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
-      <header className="mb-8 border-b pb-4">
+    <div className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
+      <section className="mb-8 border-b pb-4">
         <Link
           href="/dong-ngon"
           className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block "
@@ -156,7 +159,7 @@ export default async function WorkPage({
             </span>
           </div>
         </div>
-      </header>
+      </section>
 
       {/* Real-time Feed */}
       <section className="flex-grow mb-12">
@@ -169,7 +172,7 @@ export default async function WorkPage({
 
       {/* Editor - Sticky at bottom */}
       {!isCompleted && (
-        <footer className="sticky bottom-6">
+        <div className="sticky bottom-6">
             <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
                 <Editor 
                   workId={work.id} 
@@ -178,8 +181,8 @@ export default async function WorkPage({
                   user={user}
                 />
             </div>
-        </footer>
+        </div>
       )}
-    </main>
+    </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { updateProfile } from "@/actions/profile";
+import { sanitizeNickname } from "@/utils/sanitizer";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -115,7 +116,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
       }
 
       const result = await Promise.race([
-        updateProfile(nickname, finalAvatarUrl),
+        updateProfile(sanitizeNickname(nickname), finalAvatarUrl),
         timeoutPromise
       ]) as any;
       

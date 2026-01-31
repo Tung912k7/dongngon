@@ -2,20 +2,38 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
+  const [isLoveOpen, setIsLoveOpen] = useState(false);
 
   return (
     <>
       <footer className="w-full bg-white border-t border-black py-8 mt-auto">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 items-center gap-4">
-          {/* Empty div to maintain grid spacing for centering */}
-          <div className="hidden md:block" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 items-center gap-6">
+          {/* Logo */}
+          <div className="flex justify-center md:justify-start md:-ml-10">
+            <button 
+              onClick={() => setIsLoveOpen(true)}
+              className="hover:opacity-80 transition-opacity"
+            >
+              <Image 
+                src="/logo.webp" 
+                alt="Đồng ngôn Logo" 
+                width={80} 
+                height={80} 
+                className="w-16 h-16 object-contain"
+              />
+            </button>
+          </div>
             
 
           {/* Copyright */}
-          <div className="text-base font-medium text-slate-900 text-center justify-self-center whitespace-nowrap">
+          <div 
+            className="text-base font-medium text-slate-900 text-center justify-self-center whitespace-nowrap"
+            suppressHydrationWarning
+          >
             © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai
           </div>
 
@@ -38,6 +56,39 @@ export default function Footer() {
           </nav>
         </div>
       </footer>
+
+      {/* Love Modal */}
+      <AnimatePresence>
+        {isLoveOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsLoveOpen(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+            />
+            
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              className="relative bg-white border-4 border-black p-8 rounded-[2rem] shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] max-w-xs w-full flex flex-col items-center text-center"
+            >
+              <div className="mb-4 text-4xl animate-bounce">❤️</div>
+              <p className="text-2xl font-bold text-black italic">
+                "Yêu bé nhiều :33"
+              </p>
+              <button 
+                onClick={() => setIsLoveOpen(false)}
+                className="mt-6 px-6 py-2 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-all active:scale-95"
+              >
+                Đóng
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Donation Modal */}
       <AnimatePresence>

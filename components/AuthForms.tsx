@@ -10,6 +10,7 @@ import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
 import NotificationModal from "./NotificationModal";
 import { PrimaryButton } from "./PrimaryButton";
 import { isValidEmail } from "@/utils/validation";
+import { sanitizeNickname } from "@/utils/sanitizer";
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -593,7 +594,7 @@ export function SignUpForm() {
       const { checkBlacklist } = await import("@/utils/blacklist");
       
       const violation = await Promise.race([
-        checkBlacklist(data.penName),
+        checkBlacklist(sanitizeNickname(data.penName)),
         timeoutPromise
       ]) as any;
 
@@ -615,7 +616,7 @@ export function SignUpForm() {
 
       // 0.5 Check Uniqueness for Pen Name
       const isAvailable = await Promise.race([
-        isNicknameAvailable(data.penName),
+        isNicknameAvailable(sanitizeNickname(data.penName)),
         timeoutPromise
       ]) as any;
 
@@ -632,7 +633,7 @@ export function SignUpForm() {
           options: {
             data: {
               full_name: data.fullName,
-              nickname: data.penName,
+              nickname: sanitizeNickname(data.penName),
             }
           }
         }),

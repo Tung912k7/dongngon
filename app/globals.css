@@ -8,7 +8,7 @@
   --font-montserrat: var(--font-be-vietnam), sans-serif;
   --font-ganh: var(--font-ganh), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam), sans-serif;
-  --font-harmony: var(--font-harmony), cursive;
+  --font-svn-harmony: var(--font-svn-harmony), cursive;
 }
 
 :root {
@@ -40,6 +40,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .font-be-vietnam {
   font-family: var(--font-be-vietnam), sans-serif !important;
+}
+
+.font-svn-harmony {
+  font-family: var(--font-svn-harmony), cursive !important;
 }
 
 .text-white-force, .hover\:text-white-force:hover {

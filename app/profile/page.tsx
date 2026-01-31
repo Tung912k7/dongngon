@@ -55,7 +55,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24">
-      <main className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+      <section className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Sidebar */}
         <div className="w-full md:w-1/3 bg-white p-10 rounded-[4rem] border-2 border-black flex flex-col items-center shadow-[15px_15px_0px_0px_rgba(0,0,0,1)]">
@@ -154,7 +154,7 @@ export default async function ProfilePage() {
 
         </div>
 
-      </main>
+      </section>
     </div>
   );
 }

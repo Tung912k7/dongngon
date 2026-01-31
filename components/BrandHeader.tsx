@@ -1,10 +1,3 @@
-import localFont from "next/font/local";
-
-const svnHarmony = localFont({
-  src: "../public/fonts/SVN Harmony.ttf",
-  display: "swap",
-});
-
 /**
  * BrandHeader Component
  */
@@ -13,15 +6,7 @@ const BrandHeader = () => {
     <header className="relative w-full h-auto flex items-center justify-center bg-white">
       <h1
         id="tour-brand"
-        className={`
-          ${svnHarmony.className}
-          flex items-center justify-center
-          tracking-normal
-          leading-none
-          text-slate-900
-          select-none
-          whitespace-nowrap
-        `}
+        className="font-svn-harmony flex items-center justify-center tracking-normal leading-none text-slate-900 select-none whitespace-nowrap"
         style={{
           fontSize: "clamp(3.5rem, 15vw, 12rem)",
           textShadow: "0.5px 0.5px 0 currentcolor, -0.5px -0.5px 0 currentcolor, 0.5px -0.5px 0 currentcolor, -0.5px 0.5px 0 currentcolor",

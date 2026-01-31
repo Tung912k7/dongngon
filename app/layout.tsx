@@ -15,6 +15,13 @@ const ganhType = localFont({
   preload: true,
 });
 
+const svnHarmony = localFont({
+  src: "../public/fonts/SVN Harmony.ttf",
+  display: "swap",
+  variable: "--font-svn-harmony",
+  preload: true,
+});
+
 const beVietnamPro = Be_Vietnam_Pro({
   weight: ["400", "500", "700"],
   subsets: ["latin", "vietnamese"],
@@ -109,13 +116,13 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="vi">
+    <html lang="vi" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
       </head>
       <body
-        className={`${ganhType.variable} ${beVietnamPro.variable} antialiased min-h-screen flex flex-col`}
+        className={`${ganhType.variable} ${svnHarmony.variable} ${beVietnamPro.variable} antialiased min-h-screen flex flex-col`}
       >
         <CSPostHogProvider>
           <Header user={user} nickname={nickname} role={role} />

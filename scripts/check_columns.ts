@@ -12,7 +12,7 @@ async function checkColumnInfo() {
   const { data, error } = await supabase.rpc('get_column_info', { table_name: 'profiles' });
   if (error) {
     // Fallback: try to query information_schema if RPC doesn't exist
-    const { data: info, error: infoError } = await supabase.from('profiles').select('*').limit(1);
+    const { data: info, error: infoError } = await supabase.from('profiles').select('id, nickname').limit(1);
     console.log("Profiles sample:", info);
     console.log("Note: Use SQL to check actual column constraints.");
   } else {

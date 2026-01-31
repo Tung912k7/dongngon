@@ -20,10 +20,40 @@ export function sanitizeInput(input: string, shouldTrim: boolean = true): string
 }
 
 /**
+ * Encodes special characters into HTML entities.
+ * Use for labels and attributes that might not be handled by React.
+ */
+export function escapeHTML(input: string): string {
+  if (!input) return "";
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    "/": '&#x2F;'
+  };
+  return input.replace(/[&<>"'/]/g, (m) => map[m]);
+}
+
+/**
  * Strict sanitization for titles: removes all HTML tags.
  */
 export function sanitizeTitle(input: string): string {
   if (!input) return "";
   // Strip all HTML tags
   return input.replace(/<[^>]*>?/gm, "").trim();
+}
+
+/**
+ * Strict sanitization for nicknames: removes all HTML tags and cleans up escaped quotes.
+ * This resolves the issue where some pages show backslash-escaped versions.
+ */
+export function sanitizeNickname(input: string): string {
+  if (!input) return "";
+  // 1. Strip all HTML tags
+  const stripped = input.replace(/<[^>]*>?/gm, "");
+  // 2. Remove backslashes that are often added by unintentional double-escaping/JSON.stringify
+  const cleaned = stripped.replace(/\\(?=["'])/g, ""); // Remove backslash if followed by a quote
+  return cleaned.trim();
 }

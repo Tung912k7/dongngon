@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateNickname } from "@/actions/profile";
+import { sanitizeNickname } from "@/utils/sanitizer";
 import { PrimaryButton } from "./PrimaryButton";
 
 export default function NicknameForm({ initialNickname }: { initialNickname?: string }) {
@@ -21,7 +22,7 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
     setIsInvalid(false);
     setIsSaving(true);
     setError(null);
-    const result = await updateNickname(nickname);
+    const result = await updateNickname(sanitizeNickname(nickname));
     setIsSaving(false);
     if (result.success) {
       setIsEditing(false);

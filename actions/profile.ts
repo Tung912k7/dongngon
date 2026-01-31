@@ -4,12 +4,12 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
-import { sanitizeInput } from "@/utils/sanitizer";
+import { sanitizeInput, sanitizeNickname } from "@/utils/sanitizer";
 
 export const isNicknameAvailable = async (nickname: string, excludeUserId?: string) => {
   const supabase = await createClient();
   
-  const sanitizedNickname = sanitizeInput(nickname);
+  const sanitizedNickname = sanitizeNickname(nickname);
   const query = supabase
     .from("profiles")
     .select("id")
@@ -59,7 +59,7 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
   }
 
   // 2. Validate Nickname
-  const sanitizedNickname = sanitizeInput(nickname);
+  const sanitizedNickname = sanitizeNickname(nickname);
   if (!sanitizedNickname || sanitizedNickname.length < 2) {
     return { error: "Bút danh phải có ít nhất 2 ký tự (sau khi đã loại bỏ các thẻ HTML)." };
   }
