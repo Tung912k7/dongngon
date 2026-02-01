@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { formatDate } from "@/utils/date";
 import DongNgonClient from "@/components/DongNgonClient";
 import { Metadata } from "next";
+import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 
 export const metadata: Metadata = {
   title: "Đồng ngôn - Kho tàng tác phẩm",
@@ -47,6 +48,8 @@ export default async function DongNgonPage({
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication
     const mappedWorks = (rawWorks || []).map((work: any) => ({
         ...work,
+        title: sanitizeTitle(work.title),
+        author_nickname: sanitizeNickname(work.author_nickname),
         type: work.category_type,
         hinh_thuc: work.sub_category,
         rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",

@@ -1,17 +1,24 @@
 /**
- * Hàng rào bảo mật Frontend: Làm sạch dữ liệu đầu vào.
+ * Helper to remove backslashes that are often added by unintentional double-escaping/JSON.stringify
+ */
+function cleanEscapedQuotes(input: string): string {
+  return input.replace(/\\(?=["'])/g, ""); // Remove backslash if followed by a quote
+}
+
+/**
+ * Hàng rào bảo mật: Làm sạch dữ liệu đầu vào.
  * Mục tiêu: Loại bỏ các thẻ HTML và các ký tự có thể gây lỗi injection hoặc XSS.
  */
 export function sanitizeInput(input: string, shouldTrim: boolean = true): string {
   if (!input) return "";
 
-  // 1. loại bỏ trim() nếu là mode character để giữ spacing
-  // 2. Không stripping tags phá hoại nội dung (<, >)
-  // Chỉ nên encode hoặc để React tự handle text node.
-  // Ở đây chúng ta tạm thời bỏ stripping destructive.
-  let sanitized = input;
+  // 1. Loại bỏ các thẻ HTML để tránh XSS
+  let sanitized = input.replace(/<[^>]*>?/gm, "");
+  
+  // 2. Làm sạch các dấu backslash thừa trước dấu ngoặc
+  sanitized = cleanEscapedQuotes(sanitized);
 
-  // 2. Trim khoảng trắng thừa ở hai đầu (nếu được yêu cầu)
+  // 3. Trim khoảng trắng thừa ở hai đầu (nếu được yêu cầu)
   if (shouldTrim) {
     sanitized = sanitized.trim();
   }
@@ -37,12 +44,13 @@ export function escapeHTML(input: string): string {
 }
 
 /**
- * Strict sanitization for titles: removes all HTML tags.
+ * Strict sanitization for titles: removes all HTML tags and cleans escaped quotes.
  */
 export function sanitizeTitle(input: string): string {
   if (!input) return "";
-  // Strip all HTML tags
-  return input.replace(/<[^>]*>?/gm, "").trim();
+  // Strip all HTML tags and clean escaped quotes
+  const stripped = input.replace(/<[^>]*>?/gm, "");
+  return cleanEscapedQuotes(stripped).trim();
 }
 
 /**
@@ -51,9 +59,7 @@ export function sanitizeTitle(input: string): string {
  */
 export function sanitizeNickname(input: string): string {
   if (!input) return "";
-  // 1. Strip all HTML tags
+  // Strip all HTML tags and clean escaped quotes
   const stripped = input.replace(/<[^>]*>?/gm, "");
-  // 2. Remove backslashes that are often added by unintentional double-escaping/JSON.stringify
-  const cleaned = stripped.replace(/\\(?=["'])/g, ""); // Remove backslash if followed by a quote
-  return cleaned.trim();
+  return cleanEscapedQuotes(stripped).trim();
 }

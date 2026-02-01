@@ -1,7 +1,7 @@
 import { Viewport, Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { escapeHTML } from "@/utils/sanitizer";
+import { escapeHTML, sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 import Link from "next/link";
 import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
@@ -77,7 +77,18 @@ export default async function WorkPage({
   ]);
 
   const work = workResponse.data;
-  const contributions = contributionsResponse.data;
+  if (work) {
+    work.title = sanitizeTitle(work.title);
+  }
+
+  const contributions = (contributionsResponse.data || []).map((c: any) => ({
+    ...c,
+    author_nickname: sanitizeNickname(c.author_nickname),
+    // We don't have a specific sanitizeContribution but sanitizeTitle is similar (strips tags, cleans quotes)
+    // Actually sanitizeInput is for input, we'll use a version that cleans quotes.
+    content: sanitizeTitle(c.content)
+  }));
+
   const voteCount = voteCountResponse.count;
   const user = userResponse.data.user;
 
