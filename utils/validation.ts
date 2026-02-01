@@ -33,3 +33,11 @@ export function validatePoeticForm(content: string, hinhThuc: string): { isValid
 
   return { isValid: true };
 }
+
+/**
+ * Validates email format using a standard regex.
+ */
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}

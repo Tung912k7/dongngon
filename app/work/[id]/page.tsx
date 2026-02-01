@@ -18,15 +18,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     .single();
 
   if (!work) return { title: "Không tìm thấy tác phẩm" };
-
-  const escapedTitle = escapeHTML(work.title);
+  const sanitizedTitle = sanitizeTitle(work.title);
 
   return {
-    title: escapedTitle,
-    description: `Tác phẩm ${escapedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
+    title: sanitizedTitle,
+    description: `Tác phẩm ${sanitizedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
     openGraph: {
-      title: `${escapedTitle} | Đồng ngôn`,
-      description: `Đọc và đóng góp cho tác phẩm "${escapedTitle}" trên Đổng ngôn.`,
+      title: `${sanitizedTitle} | Đồng ngôn`,
+      description: `Đọc và đóng góp cho tác phẩm "${sanitizedTitle}" trên Đồng ngôn.`,
       type: "article",
     },
   };

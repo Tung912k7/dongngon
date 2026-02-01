@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
+import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 import WorkFilter from "@/components/WorkFilter";
 import TableFilter from "@/components/TableFilter";
 import CreateWorkModal from "@/components/CreateWorkModal";
@@ -105,6 +106,8 @@ export default function DongNgonClient({
     if (data) {
       const mappedWorks = data.map((work: any) => ({
         ...work,
+        title: sanitizeTitle(work.title),
+        author_nickname: sanitizeNickname(work.author_nickname),
         type: work.category_type,
         hinh_thuc: work.sub_category,
         rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
@@ -166,9 +169,11 @@ export default function DongNgonClient({
             if (!isPublic && !isOwner) {
               return;
             }
-
+            
             const mappedNewWork = {
               ...newWork,
+              title: sanitizeTitle(newWork.title),
+              author_nickname: sanitizeNickname(newWork.author_nickname),
               type: newWork.category_type,
               hinh_thuc: newWork.sub_category,
               rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
@@ -183,6 +188,8 @@ export default function DongNgonClient({
             const updatedWork = payload.new;
             const mappedUpdatedWork = {
               ...updatedWork,
+              title: sanitizeTitle(updatedWork.title),
+              author_nickname: sanitizeNickname(updatedWork.author_nickname),
               type: updatedWork.category_type,
               hinh_thuc: updatedWork.sub_category,
               rule: updatedWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
