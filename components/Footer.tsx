@@ -13,7 +13,7 @@ export default function Footer() {
       <footer className="w-full bg-white border-t border-black py-8 mt-auto">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 items-center gap-6">
           {/* Logo */}
-          <div className="flex justify-center md:justify-start md:-ml-10">
+          <div className="flex justify-center md:justify-start md:-ml-4">
             <button 
               onClick={() => setIsLoveOpen(true)}
               className="hover:opacity-80 transition-opacity"

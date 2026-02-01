@@ -21,12 +21,21 @@ export async function submitContribution(workId: string, content: string) {
   // 1.1 Check Work Details (including limit_type)
   const { data: work } = await supabase
     .from("works")
-    .select("status, limit_type")
+    .select("status, limit_type, sub_category")
     .eq("id", workId)
     .single();
 
   if (work?.status === "finished") {
     return { error: "Tác phẩm này đã hoàn thành, không thể đóng góp thêm." };
+  }
+
+  // 1.1.5 Poetic Form Validation
+  if (work?.sub_category) {
+    const { validatePoeticForm } = await import("@/utils/validation");
+    const poeticResult = validatePoeticForm(content, work.sub_category);
+    if (!poeticResult.isValid) {
+      return { error: poeticResult.error };
+    }
   }
 
   // 1.2 Sanitize Content based on limit_type

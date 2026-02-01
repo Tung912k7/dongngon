@@ -1,32 +1,35 @@
-/**
- * Validates a contribution based on the work's writing rule.
- * Returns null if valid, or an error message if invalid.
- */
-export function validateWritingRule(content: string, rule: string): string | null {
-  const trimmed = content.trim();
-  if (trimmed.length === 0) return "Nội dung không được để trống.";
+export const POETIC_FORM_LIMITS: Record<string, number> = {
+  "Tứ ngôn": 4,
+  "Ngũ ngôn": 5,
+  "Lục ngôn": 6,
+  "Thất ngôn": 7,
+  "Bát ngôn": 8
+};
 
-  if (rule === "1 kí tự") {
-    const nonWhitespace = trimmed.replace(/\s+/g, "");
-    if (nonWhitespace.length !== 1) {
-      return "Quy tắc của tác phẩm này là '1 kí tự'. Vui lòng chỉ nhập đúng một chữ cái hoặc kí tự.";
-    }
-  } else {
-    // Default or "1 câu"
-    const hasPunctuation = /[.!?…]$/.test(trimmed);
-    if (!hasPunctuation) {
-      return "Quy tắc của tác phẩm này là '1 câu'. Câu của bạn cần kết thúc bằng dấu câu (vd: . ! ? ...).";
+/**
+ * Validates content against a poetic form's word count rules.
+ * @returns { isValid: boolean, error?: string }
+ */
+export function validatePoeticForm(content: string, hinhThuc: string): { isValid: boolean, error?: string } {
+  // If not a formal poetic form, we skip this specific validation
+  const limit = POETIC_FORM_LIMITS[hinhThuc] || 
+                (hinhThuc.includes("Thơ") && !hinhThuc.includes("tự do") ? parseInt(hinhThuc.replace(/[^0-9]/g, "")) : null);
+
+  if (!limit || isNaN(limit)) return { isValid: true };
+
+  const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  
+  if (lines.length === 0) return { isValid: false, error: "Nội dung không được để trống." };
+
+  for (let i = 0; i < lines.length; i++) {
+    const words = lines[i].split(/\s+/).filter(w => w.length > 0);
+    if (words.length !== limit) {
+      return { 
+        isValid: false, 
+        error: `Dòng ${i + 1} có ${words.length} chữ. Thể loại ${hinhThuc} yêu cầu đúng ${limit} chữ mỗi dòng.`
+      };
     }
   }
 
-  return null;
-}
-
-/**
- * Basic email format validation.
- */
-export function isValidEmail(email: string): boolean {
-  // RFC 5322 compliant regex
-  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return emailRegex.test(email.trim());
+  return { isValid: true };
 }

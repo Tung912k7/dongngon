@@ -7,6 +7,7 @@ import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
 import { PrimaryButton } from "./PrimaryButton";
 import NotificationModal from "./NotificationModal";
+import { validatePoeticForm } from "@/utils/validation";
 
 export default function Editor({ 
   workId, 
@@ -88,9 +89,9 @@ export default function Editor({
     }
 
     // 2. Validate rule
-    const isValid = validateContent(cleanContent, writingRule);
+    const isValidRule = validateContent(cleanContent, writingRule);
     
-    if (!isValid) {
+    if (!isValidRule) {
         let msg = "Nội dung không hợp lệ.";
         if (writingRule === '1 kí tự') {
             msg = "Quy tắc là '1 kí tự'. Bạn có thể nhập đúng 1 kí tự hoặc 1 dấu cách + 1 kí tự để tự cách chữ.";
@@ -98,13 +99,19 @@ export default function Editor({
             msg = "Nội dung phải kết thúc bằng dấu chấm (.), hỏi (?) hoặc cảm thán (!).";
         }
         
-        showNotification(
-            msg,
-            "info",
-            "Sai quy tắc"
-        );
+        showNotification(msg, "info", "Sai quy tắc");
         setIsSubmitting(false);
         return;
+    }
+
+    // 2.1 Validate Poetic Form constraints
+    if (hinhThuc) {
+      const poeticResult = validatePoeticForm(cleanContent, hinhThuc);
+      if (!poeticResult.isValid) {
+        showNotification(poeticResult.error || "Sai số chữ trong câu thơ.", "info", "Sai thể thơ");
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     setError(null);
@@ -175,10 +182,22 @@ export default function Editor({
             const value = e.target.value;
             
             // Automatic line wrap for poetic forms
-            if (hinhThuc?.includes("Thơ") && hinhThuc !== "Thơ tự do") {
+            const poeticFormMap: Record<string, number> = {
+              "Tứ ngôn": 4,
+              "Ngũ ngôn": 5,
+              "Lục ngôn": 6,
+              "Thất ngôn": 7,
+              "Bát ngôn": 8
+            };
+
+            const isPoeticForm = hinhThuc && (hinhThuc.includes("Thơ") || poeticFormMap[hinhThuc]);
+            
+            if (isPoeticForm && hinhThuc !== "Thơ tự do" && hinhThuc !== "Tự do") {
               const lines = value.split('\n');
               const currentLine = lines[lines.length - 1];
-              const limitPerLine = parseInt(hinhThuc.replace("Thơ ", "")); // "Thơ 4 chữ" -> 4
+              
+              // Get limit from map or parse from "Thơ X chữ"
+              const limitPerLine = poeticFormMap[hinhThuc!] || parseInt(hinhThuc!.replace(/[^0-9]/g, ""));
               
               if (limitPerLine) {
                 const words = currentLine.trim().split(/\s+/).filter(w => w.length > 0);
