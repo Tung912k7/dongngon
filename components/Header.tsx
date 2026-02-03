@@ -229,20 +229,15 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         </button>
                       </>
                     ) : (
-                      <div className="flex flex-col gap-2">
-                        <Link
-                          href="/dang-nhap"
-                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-black hover:bg-gray-100 transition-colors"
-                        >
-                          Đăng nhập
-                        </Link>
-                        <Link
-                          href="/dang-ky"
-                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-white bg-black hover:opacity-80 transition-opacity text-center"
-                        >
-                          Ghi danh
-                        </Link>
-                      </div>
+                      <Link
+                        href="/dang-nhap"
+                        className={`
+                          font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
+                          ${pathname === "/dang-nhap" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
+                        `}
+                      >
+                        Tài khoản
+                      </Link>
                     )}
                   </nav>
                 </div>
@@ -298,7 +293,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     />
                   )}
                   <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"}`}>
-                    {nickname || (user ? "Tài khoản" : "Đăng nhập")}
+                    {nickname || "Tài khoản"}
                   </span>
                   {user && (
                     <svg 
@@ -309,15 +304,6 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     </svg>
                   )}
                 </button>
-                
-                {!user && (
-                   <Link
-                      href="/dang-ky"
-                      className="hidden md:flex font-ganh text-xl md:text-2xl tracking-wide px-6 py-2 rounded-full border-2 border-black hover:bg-black hover:text-white transition-all ml-4"
-                    >
-                      Ghi danh
-                    </Link>
-                )}
 
                 <AnimatePresence>
                   {isDropdownOpen && user && (
