@@ -6,10 +6,11 @@ const BrandHeader = () => {
     <header className="relative w-full h-auto flex items-center justify-center bg-white">
       <h1
         id="tour-brand"
-        className="font-svn-harmony flex items-center justify-center tracking-normal leading-none text-slate-900 select-none whitespace-nowrap"
+        className="flex items-center justify-center tracking-[0.08em] leading-none text-black select-none whitespace-nowrap"
         style={{
-          fontSize: "clamp(3.5rem, 15vw, 12rem)",
-          textShadow: "0.5px 0.5px 0 currentcolor, -0.5px -0.5px 0 currentcolor, 0.5px -0.5px 0 currentcolor, -0.5px 0.5px 0 currentcolor",
+          fontFamily: "var(--font-aria-pro), serif",
+          fontSize: "clamp(3rem, 12vw, 8rem)",
+          fontWeight: 400,
           fontFeatureSettings: '"kern" 1, "liga" 1, "ccmp" 1, "locl" 1',
         }}
         lang="vi"

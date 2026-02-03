@@ -247,8 +247,8 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
         </AnimatePresence>
 
         {/* Desktop Navigation - Hidden on mobile */}
-        <div className="hidden sm:flex justify-center items-center mb-6">
-           <nav className="flex items-center gap-2 sm:gap-8 md:gap-16">
+        <div className="hidden sm:flex justify-center items-center mb-8">
+           <nav className="flex items-center gap-10 md:gap-24">
               {navLinks.map((link) => {
                 const isActive = getIsActive(link.href);
                 const showActiveState = mounted && isActive;
@@ -354,7 +354,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
            <div className="absolute inset-0 flex items-center" aria-hidden="true">
              <div className="w-full border-t-2 border-black"></div>
            </div>
-           <div className="relative bg-white px-4 z-10">
+           <div className="relative bg-white px-8 z-10">
               <SearchBar />
            </div>
         </div>

@@ -1,16 +1,15 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn - Nơi lưu giữ tâm hồn",
-  description: "Không gian tĩnh lặng để sáng tác, chia sẻ và cảm nhận những áng thơ văn, câu nói hay.",
+  title: "Đồng ngôn",
+  description: "Suỵt",
 };
 
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Work } from "@/types/database";
 import { formatDate } from "@/utils/date";
-import NicknameForm from "@/components/NicknameForm";
-import Header from "@/components/Header";
+
 import FadeIn from "@/components/FadeIn";
 import BrandHeader from "@/components/BrandHeader";
 import Image from "next/image";
@@ -47,24 +46,37 @@ export default async function Home({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        {/* Hero Section - Immediate render for better LCP */}
-        <div className="flex flex-col items-center justify-center pt-8 sm:pt-16 pb-12 sm:pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        
+        {/* Hero Section - Centered using Flexbox */}
+        <div className="flex flex-col items-center justify-start min-h-[120vh] pb-12 pt-48 sm:pt-[26rem]">
           <BrandHeader />
-          <div className="mt-4 mb-10">
-             <div className="relative w-[150px] h-[150px] md:w-[220px] md:h-[220px]">
+          
+          {/* Intro Card */}
+          <div className="mt-8 sm:mt-10 w-full max-w-xl bg-white rounded-[2rem] border-2 border-black p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 transition-all hover:shadow-2xl">
+            {/* Logo */}
+            <div className="flex shrink-0 items-center justify-center">
               <Image
-                src="/logo.webp"
-                alt="Đồng Ngôn Logo"
-                fill
-                sizes="(max-width: 768px) 150px, 220px"
-                className="object-contain"
+                src="/logo.png"
+                alt="Đồng ngôn"
+                width={200}
+                height={200}
+                className="object-contain w-24 h-24 sm:w-36 sm:h-36"
                 priority
               />
             </div>
+
+            {/* Divider Line */}
+            <div className="hidden sm:block w-[3px] h-24 bg-black shrink-0 self-center"></div>
+            <div className="block sm:hidden w-24 h-[3px] bg-black shrink-0 self-center"></div>
+            
+            {/* Text */}
+            <div className="flex-grow">
+              <p className="text-gray-700 text-sm sm:text-base font-medium leading-relaxed font-be-vietnam text-center sm:text-left">
+                Không gian tĩnh lặng
+              </p>
+            </div>
           </div>
-          <p className="text-2xl sm:text-3xl md:text-5xl font-normal tracking-wide text-center">Một tâm hồn, nhiều ngòi bút.</p>
         </div>
 
   

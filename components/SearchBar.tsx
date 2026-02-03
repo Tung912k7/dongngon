@@ -19,8 +19,8 @@ const SearchBar = () => {
   }, 300);
 
   return (
-    <div id="tour-search" className="relative w-full md:w-96">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black pointer-events-none">
+    <div id="tour-search" className="relative w-full md:w-[300px] group">
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-black transition-colors duration-300 pointer-events-none">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -28,7 +28,7 @@ const SearchBar = () => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -38,9 +38,9 @@ const SearchBar = () => {
       </div>
       <input
         type="text"
-        placeholder=""
+        placeholder="Tìm kiếm tác phẩm..."
         maxLength={100}
-        className="w-full border border-black rounded-full py-2 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-black font-ganh bg-white"
+        className="w-full border border-black rounded-full py-3 pl-12 pr-6 focus:outline-none focus:ring-1 focus:ring-black font-ganh bg-white text-base transition-all duration-300 placeholder:text-gray-400 text-black shadow-sm hover:shadow-md focus:shadow-lg"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get("query")?.toString()}
       />

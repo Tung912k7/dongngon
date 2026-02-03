@@ -8,24 +8,31 @@ import GuideNotification from "@/components/GuideNotification";
 import localFont from "next/font/local";
 import { Be_Vietnam_Pro } from "next/font/google";
 
+const ariaPro = localFont({
+  src: "../public/fonts/Aria Pro.ttf",
+  display: "swap",
+  variable: "--font-aria-pro",
+  preload: true,
+});
+
 const ganhType = localFont({
   src: "../public/fonts/Ganh Type - Regular.ttf",
   display: "swap",
-  variable: "--font-ganh",
+  variable: "--font-ganh-next",
   preload: true,
 });
 
 const svnHarmony = localFont({
   src: "../public/fonts/SVN Harmony.ttf",
   display: "swap",
-  variable: "--font-svn-harmony",
+  variable: "--font-svn-harmony-next",
   preload: true,
 });
 
 const beVietnamPro = Be_Vietnam_Pro({
   weight: ["400", "500", "700"],
   subsets: ["latin", "vietnamese"],
-  variable: "--font-be-vietnam",
+  variable: "--font-be-vietnam-next",
   display: "swap",
 });
 
@@ -122,7 +129,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
       </head>
       <body
-        className={`${ganhType.variable} ${svnHarmony.variable} ${beVietnamPro.variable} antialiased min-h-screen flex flex-col`}
+        className={`${ganhType.variable} ${svnHarmony.variable} ${beVietnamPro.variable} ${ariaPro.variable} antialiased min-h-screen flex flex-col`}
       >
         <CSPostHogProvider>
           <Header user={user} nickname={nickname} role={role} />
