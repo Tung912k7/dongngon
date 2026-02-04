@@ -3,13 +3,10 @@
 @theme {
   --font-sans: var(--font-be-vietnam-next), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ganh-next), ui-serif, Georgia, serif;
-  --font-aquus: var(--font-aquus), serif;
-  --font-roboto: var(--font-be-vietnam-next), sans-serif;
-  --font-montserrat: var(--font-be-vietnam-next), sans-serif;
+
+  --font-aria: var(--font-aria-pro), serif;
   --font-ganh: var(--font-ganh-next), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam-next), sans-serif;
-  --font-svn-harmony: var(--font-svn-harmony-next), cursive;
-  --font-aria: var(--font-aria-pro), serif;
 }
 
 :root {
@@ -43,9 +40,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-be-vietnam), sans-serif !important;
 }
 
-.font-svn-harmony {
-  font-family: var(--font-svn-harmony), cursive !important;
-}
 
 .font-aria {
   font-family: var(--font-aria), serif !important;

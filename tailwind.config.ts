@@ -24,8 +24,6 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-aria)", "sans-serif"],
         serif: ["var(--font-aria)", "serif"],
-        roboto: ["var(--font-aria)", "sans-serif"],
-        aquus: ["var(--font-aquus)", "serif"],
         aria: ["var(--font-aria)", "sans-serif"],
         "be-vietnam": ["var(--font-be-vietnam-next)", "sans-serif"],
       },
