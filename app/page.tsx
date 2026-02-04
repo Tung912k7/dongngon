@@ -49,7 +49,7 @@ export default async function Home({
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         
         {/* Hero Section - Centered using Flexbox */}
-        <div className="flex flex-col items-center justify-start min-h-[120vh] pb-12 pt-48 sm:pt-[26rem]">
+        <div className="flex flex-col items-center justify-start min-h-[85vh] pb-12 pt-36 sm:pt-[20rem]">
           <BrandHeader />
           
           {/* Intro Card */}
