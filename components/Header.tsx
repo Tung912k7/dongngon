@@ -180,7 +180,6 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         <Link
                           key={link.href}
                           href={link.href}
-                          prefetch={false}
                           className={`
                             font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
                             ${isActive ? "bg-black text-white" : "text-black hover:bg-gray-100"}
@@ -253,15 +252,14 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                 const isActive = getIsActive(link.href);
                 const showActiveState = mounted && isActive;
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    prefetch={false}
-                    className={`
-                      relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
-                      ${showActiveState ? "text-white" : "text-black hover:opacity-70"}
-                    `}
-                  >
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`
+                        relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
+                        ${showActiveState ? "text-white" : "text-black hover:opacity-70"}
+                      `}
+                    >
                     {showActiveState && (
                       <motion.div
                         layoutId="active-pill"

@@ -22,9 +22,7 @@ const config: Config = {
         'subtle-zoom': 'subtle-zoom 20s ease-in-out infinite alternate',
       },
       fontFamily: {
-        sans: ["var(--font-aria)", "sans-serif"],
-        serif: ["var(--font-aria)", "serif"],
-        aria: ["var(--font-aria)", "sans-serif"],
+        quicksand: ["var(--font-quicksand)", "sans-serif"],
         "be-vietnam": ["var(--font-be-vietnam-next)", "sans-serif"],
       },
     },

@@ -4,7 +4,7 @@
   --font-sans: var(--font-be-vietnam-next), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ganh-next), ui-serif, Georgia, serif;
 
-  --font-aria: var(--font-aria-pro), serif;
+  --font-quicksand: var(--font-quicksand), sans-serif;
   --font-ganh: var(--font-ganh-next), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam-next), sans-serif;
 }
@@ -41,8 +41,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-.font-aria {
-  font-family: var(--font-aria), serif !important;
+.font-quicksand {
+  font-family: var(--font-quicksand), sans-serif !important;
 }
 
 .text-white-force, .hover\:text-white-force:hover {

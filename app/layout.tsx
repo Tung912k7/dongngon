@@ -5,14 +5,14 @@ import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GuideNotification from "@/components/GuideNotification";
+import { Be_Vietnam_Pro, Quicksand } from "next/font/google";
 import localFont from "next/font/local";
-import { Be_Vietnam_Pro } from "next/font/google";
 
-const ariaPro = localFont({
-  src: "../public/fonts/Aria Pro.ttf",
+const quicksand = Quicksand({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-quicksand",
   display: "swap",
-  variable: "--font-aria-pro",
-  preload: true,
 });
 
 const ganhType = localFont({
@@ -123,7 +123,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
       </head>
       <body
-        className={`${ganhType.variable} ${beVietnamPro.variable} ${ariaPro.variable} antialiased min-h-screen flex flex-col`}
+        className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col`}
       >
         <CSPostHogProvider>
           <Header user={user} nickname={nickname} role={role} />

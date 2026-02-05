@@ -14,13 +14,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // Disable compression for forwarded requests to avoid encoding issues
   headers.delete('accept-encoding')
   
-  const response = await fetch(targetUrl, {
-    method: 'POST',
-    headers: headers,
-    body: request.body,
-    // @ts-ignore
-    duplex: 'half',
-  })
+  let response;
+  try {
+    response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: headers,
+      body: request.body,
+      // @ts-ignore
+      duplex: 'half',
+    });
+  } catch (error) {
+    console.error('PostHog proxy error (POST):', error);
+    return new NextResponse('Bad Gateway', { status: 502 });
+  }
 
   // Create a new response to sanitize headers and prevent decoding errors
   const responseHeaders = new Headers(response.headers)
@@ -48,10 +54,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   // Disable compression for forwarded requests
   headers.delete('accept-encoding')
 
-  const response = await fetch(targetUrl, {
-    method: 'GET',
-    headers: headers,
-  })
+  let response;
+  try {
+    response = await fetch(targetUrl, {
+      method: 'GET',
+      headers: headers,
+    });
+  } catch (error) {
+    console.error('PostHog proxy error (GET):', error);
+    return new NextResponse('Bad Gateway', { status: 502 });
+  }
 
   // Sanitize headers for the response
   const responseHeaders = new Headers(response.headers)

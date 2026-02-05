@@ -49,11 +49,12 @@ export default async function Home({
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         
         {/* Hero Section - Centered using Flexbox */}
-        <div className="flex flex-col items-center justify-start min-h-[85vh] pb-12 pt-36 sm:pt-[20rem]">
+        {/* Hero Section - Flexible Flexbox Layout */}
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-20 pb-32">
           <BrandHeader />
           
           {/* Intro Card */}
-          <div className="mt-8 sm:mt-10 w-full max-w-xl bg-white rounded-[2rem] border-2 border-black p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 transition-all hover:shadow-2xl">
+          <div className="w-full max-w-xl bg-white rounded-[2rem] border-2 border-black p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 transition-all hover:shadow-2xl">
             {/* Logo */}
             <div className="flex shrink-0 items-center justify-center">
               <Image
