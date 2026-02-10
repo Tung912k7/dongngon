@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
@@ -77,7 +77,7 @@ export default function DongNgonClient({
     }
   }, [filters, currentPage]); // Removed searchParams dependency
 
-  const fetchWorks = async (supabaseClient?: any, searchQuery?: string) => {
+  const fetchWorks = useCallback(async (supabaseClient?: any, searchQuery?: string) => {
     setIsLoading(true);
     const sb = supabaseClient || createClient();
     
@@ -120,7 +120,7 @@ export default function DongNgonClient({
       setAllWorks(mappedWorks);
     }
     setIsLoading(false);
-  };
+  }, [user]);
 
   const q = searchParams.get("query") || "";
   const isFirstMount = useRef(true);
@@ -214,7 +214,7 @@ export default function DongNgonClient({
     };
   }, [q, user]); // Added user to dependencies to fix stale closure
 
-  const handleTagClick = (type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
+  const handleTagClick = useCallback((type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
     const filterKeyMap: { [key: string]: keyof FilterState } = {
       category: "category_type",
       hinh_thuc: "hinh_thuc",
@@ -229,7 +229,7 @@ export default function DongNgonClient({
       setFilters((prev: FilterState) => ({ ...prev, [filterKey]: filterValue }));
       setCurrentPage(1); // Reset to page 1 on filter change
     }
-  };
+  }, []);
 
   const { paginatedWorks, totalPages } = useMemo(() => {
     let works = [...allWorks];
@@ -275,10 +275,10 @@ export default function DongNgonClient({
     };
   }, [allWorks, filters, currentPage]);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-black">

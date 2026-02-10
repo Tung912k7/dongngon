@@ -10,8 +10,8 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F5F5;
+  --foreground: #07000B;
 }
 
 body {
@@ -46,7 +46,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-white-force, .hover\:text-white-force:hover {
-  color: #ffffff !important;
+  color: #F5F5F5 !important;
 }
 
 
@@ -64,4 +64,10 @@ h1, h2, h3, h4, h5, h6 {
   word-wrap: break-word; /* Tự động xuống dòng khi từ quá dài */
   white-space: pre-wrap; /* Giữ nguyên các dấu xuống dòng thủ công (Nhật ký/Tản văn) */
   overflow-wrap: anywhere;
+}
+/* CSS cho hiển thị nội dung tác phẩm (Feed) */
+.content-display {
+  white-space: pre-wrap; /* Giữ nguyên dấu xuống dòng và khoảng trắng */
+  word-wrap: break-word; /* Chống tràn màn hình */
+  font-family: var(--font-ganh), sans-serif; /* Giữ style có chân cho thơ */
 }

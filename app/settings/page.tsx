@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import SettingsClient from "@/components/settings/SettingsClient";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -9,12 +10,20 @@ export default async function SettingsPage() {
     redirect("/dang-nhap");
   }
 
+  // Fetch user profile data (nickname, avatar)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nickname, avatar_url")
+    .eq("id", user.id)
+    .single();
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-6">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold uppercase tracking-tighter">Đang hoàn thiện</h1>
-        <p className="text-gray-500 tracking-widest">CHỨC NĂNG CÀI ĐẶT SẼ SỚM RA MẮT</p>
-      </div>
+    <div className="min-h-screen bg-[#F9F9F9]">
+      <SettingsClient 
+        user={user} 
+        initialNickname={profile?.nickname || ""} 
+        initialAvatarUrl={profile?.avatar_url || ""} 
+      />
     </div>
   );
 }

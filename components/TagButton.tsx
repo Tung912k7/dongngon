@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, memo } from "react";
 
-export const TagButton = ({ 
+export const TagButton = memo(({ 
   children, 
   onClick, 
   className = "" 
@@ -27,4 +27,4 @@ export const TagButton = ({
       {children}
     </span>
   );
-};
+});

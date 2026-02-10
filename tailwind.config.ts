@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        black: "#07000B", // Natural Black
+        white: "#F5F5F5", // White Smoke
       },
       keyframes: {
         'subtle-zoom': {

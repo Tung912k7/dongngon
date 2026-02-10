@@ -10,8 +10,14 @@ export const POETIC_FORM_LIMITS: Record<string, number> = {
  * Validates content against a poetic form's word count rules.
  * @returns { isValid: boolean, error?: string }
  */
-export function validatePoeticForm(content: string, hinhThuc: string): { isValid: boolean, error?: string } {
+export function validatePoeticForm(content: string, hinhThuc: string, writingRule?: string): { isValid: boolean, error?: string } {
   // If not a formal poetic form, we skip this specific validation
+
+  if (writingRule === '1 kí tự' || writingRule === 'character') {
+      const words = content.trim().split(/\s+/).filter(w => w.length > 0);
+      if (words.length <= 1) return { isValid: true };
+  }
+
   const limit = POETIC_FORM_LIMITS[hinhThuc] || 
                 (hinhThuc.includes("Thơ") && !hinhThuc.includes("tự do") ? parseInt(hinhThuc.replace(/[^0-9]/g, "")) : null);
 

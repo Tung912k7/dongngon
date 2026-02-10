@@ -31,25 +31,25 @@ export default function Footer() {
 
           {/* Copyright */}
           <div 
-            className="text-base font-medium text-slate-900 text-center justify-self-center whitespace-nowrap"
+            className="text-base font-medium text-black text-center justify-self-center whitespace-nowrap"
             suppressHydrationWarning
           >
             © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai
           </div>
 
           {/* Links */}
-          <nav className="flex gap-8 text-base font-normal uppercase tracking-wider items-center justify-self-end">
+          <nav className="flex gap-8 text-sm md:text-base font-medium uppercase tracking-wider items-center justify-self-end text-black">
             <a 
               href="https://forms.gle/2ENzFe3rdUhkXTP59" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:opacity-70 transition-opacity uppercase"
+              className="hover:opacity-75 transition-opacity"
             >
               Góp ý
             </a>
             <button 
               onClick={() => setIsDonateOpen(true)}
-              className="hover:opacity-70 transition-opacity uppercase"
+              className="hover:opacity-75 transition-opacity uppercase"
             >
               Giải cứu admin
             </button>

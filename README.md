@@ -1,22 +1,34 @@
 # Project Title: Website [Đồng ngôn]
 
-## Description:
-    Tính năng:
-        1. Lữu trữ những thứ đoạn thơ/văn ngẫu hứng của tôi và ny.
-        2. Thơ/Văn xuôi tập thể.
-            a. Thơ:
-                - Thể thơ: Tự do, lục bát, song thất lục bát, thất ngôn tứ tuyệt, thất ngôn bát cú.
-            b. Văn xuôi:
-                - Thể loại văn: Tản văn, truyện ngắn.
-            c. Tiểu thuyết (Coming soon)
-        3. Quy luật:
-                - 2 chế độ: 1 kí tự/ 1 bài/ 1 ngày hoặc 1 câu/ 1 bài/ 1 ngày.
-                - Không có chủ đề cố định, mọi thứ đều là cảm hứng.
-                - Mỗi người sẽ có 1 bút danh (nickname).
-                - Là tài sản của cộng đồng, không ai được phép đánh bản quyền hoặc lấy làm của riêng, kể cả chủ trang web.
-                - Cấm những hành động, câu viết có nội dung xuyên tạc, bịa đặt, chống phá, không phù hợp với thuần phong mỹ tục và trái với luật hiện hành của Việt Nam.
-        4. Bộ lọc: 
-            Lọc theo thể loại -> Thể loại thơ (văn)/Thời kì (Cổ đại, trung đại, cận đại, hiện đại).
+## Giới thiệu (Description)
+Website **Đồng Ngôn** là nơi lưu trữ và chia sẻ cảm hứng văn học.
+
+### Tính năng chính:
+1. **Lưu trữ cảm hứng**: Nơi cất giữ những đoạn thơ, văn ngẫu hứng.
+2. **Sáng tác tập thể**:
+   - **Thơ**: Đa dạng thể loại (Tự do, Lục bát, Song thất lục bát, Thất ngôn tứ tuyệt, Thất ngôn bát cú...).
+   - **Văn xuôi**: Tản văn, Truyện ngắn.
+   - **Tiểu thuyết**: (Coming soon).
+3. **Quy luật cộng đồng**:
+   - **Chế độ**: 1 ký tự/bài/ngày hoặc 1 câu/bài/ngày.
+   - **Tự do**: Không chủ đề cố định, tôn trọng cảm hứng cá nhân.
+   - **Định danh**: Mỗi người dùng có một bút danh (Nickname) riêng.
+   - **Bản quyền**: Nội dung là tài sản chung của cộng đồng.
+   - **Nguyên tắc**: Nghiêm cấm nội dung xuyên tạc, chống phá, vi phạm pháp luật và thuần phong mỹ tục Việt Nam.
+4. **Bộ lọc thông minh**:
+   - Lọc theo Thể loại (Thơ/Văn).
+   - Lọc theo Thời kỳ (Cổ đại, Trung đại, Cận đại, Hiện đại).
+
+## Hướng dẫn chạy thử (Getting Started)
+
+```bash
+# Cài đặt thư viện
+npm install
+
+# Chạy server development
+npm run dev
+# Mở http://localhost:3000 để xem kết quả
+```
 
 ## Tech Stack (Công nghệ sử dụng)
 
@@ -25,6 +37,8 @@
 - **Animation**: 
   - [Framer Motion](https://www.framer.com/motion/) (Hiệu ứng chuyển cảnh, tương tác)
   - [react-pageflip](https://github.com/Nodlik/react-pageflip) (Hiệu ứng lật trang sách 3D)
+- **Utilities**:
+  - [react-easy-crop](https://github.com/ValentinH/react-easy-crop) (Cắt ảnh Avatar)
 - **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
 - **Fonts**: 
   - [Google Fonts](https://fonts.google.com/) (Lora, Geist)
@@ -49,3 +63,18 @@
   - **Client-side Filtering**: Sử dụng `React State` và `useMemo` để lọc dữ liệu tức thì không cần reload trang.
   - **Interactive Tags**: Thẻ metadata trên card có thể click được để kích hoạt bộ lọc tương ứng.
   - **UX**: Hỗ trợ nút "Áp dụng" để người dùng kiểm soát thời điểm lọc và nút "Đặt lại" để xóa bộ lọc nhanh.
+
+### Trang Cài đặt (/settings)
+- **Giao diện**: Layout 2 cột (Sidebar + Content) hiện đại, tự động chuyển đổi responsive giữa Mobile (Vertical Stack) và Desktop (Side-by-Side).
+- **Tính năng**:
+  - **Hồ sơ cá nhân**: 
+    - Cập nhật Avatar với công cụ cắt ảnh (Image Cropper) tích hợp.
+    - Thay đổi Bút danh (Nickname).
+  - **Tài khoản & Bảo mật**: 
+    - Gửi email đặt lại mật khẩu.
+    - Khu vực nguy hiểm (Xóa tài khoản).
+  - **Giao diện & Ngôn ngữ**: Tùy chỉnh Dark/Light mode và Ngôn ngữ hệ thống.
+- **Kỹ thuật**:
+  - **Supabase Integration**: Auth (User Session), Database (Profiles), Storage (Avatars).
+  - **Server Components & Actions**: Tối ưu hóa hiệu năng và bảo mật khi xử lý dữ liệu người dùng.
+  - **Robust Layout**: Sử dụng CSS Injection kết hợp Tailwind để đảm bảo layout sidebar hoạt động chính xác trên mọi kích thước màn hình.

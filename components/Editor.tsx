@@ -79,6 +79,7 @@ export default function Editor({
     setIsSubmitting(true);
 
     // 1. Clean content: only trim if not in character mode
+    // Preserve internal newlines (don't replace \n with space)
     const isCharacterMode = writingRule === '1 kí tự';
     const cleanContent = isCharacterMode ? content : content.trim();
     
@@ -106,7 +107,7 @@ export default function Editor({
 
     // 2.1 Validate Poetic Form constraints
     if (hinhThuc) {
-      const poeticResult = validatePoeticForm(cleanContent, hinhThuc);
+      const poeticResult = validatePoeticForm(cleanContent, hinhThuc, writingRule);
       if (!poeticResult.isValid) {
         showNotification(poeticResult.error || "Sai số chữ trong câu thơ.", "info", "Sai thể thơ");
         setIsSubmitting(false);
@@ -181,39 +182,17 @@ export default function Editor({
           onChange={(e) => {
             const value = e.target.value;
             
-            // Automatic line wrap for poetic forms
-            const poeticFormMap: Record<string, number> = {
-              "Tứ ngôn": 4,
-              "Ngũ ngôn": 5,
-              "Lục ngôn": 6,
-              "Thất ngôn": 7,
-              "Bát ngôn": 8
-            };
-
-            const isPoeticForm = hinhThuc && (hinhThuc.includes("Thơ") || poeticFormMap[hinhThuc]);
-            
-            if (isPoeticForm && hinhThuc !== "Thơ tự do" && hinhThuc !== "Tự do") {
-              const lines = value.split('\n');
-              const currentLine = lines[lines.length - 1];
-              
-              // Get limit from map or parse from "Thơ X chữ"
-              const limitPerLine = poeticFormMap[hinhThuc!] || parseInt(hinhThuc!.replace(/[^0-9]/g, ""));
-              
-              if (limitPerLine) {
-                const words = currentLine.trim().split(/\s+/).filter(w => w.length > 0);
-                // If we JUST typed a space and reached the limit, or have more than limit
-                if (words.length >= limitPerLine && value.endsWith(" ")) {
-                  setContent(value.trimEnd() + '\n');
-                  return;
-                }
-              }
-            }
-            
             setContent(value);
           }}
           placeholder="Viết tiếp câu chuyện..."
           maxLength={500}
-          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black resize-none min-h-[46px] h-auto prose-input font-be-vietnam"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
+          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black resize-none min-h-[46px] h-auto prose-input font-be-vietnam whitespace-pre-wrap"
           disabled={isSubmitting}
           rows={1}
           onInput={(e) => {

@@ -45,7 +45,7 @@ export default function Feed({
           filter: `work_id=eq.${workId}`,
         },
         (payload) => {
-          console.log("Change received!", payload);
+
           const newContrib = payload.new as Contribution;
           setContributions((prev) => {
             if (prev.find(c => c.id === newContrib.id)) return prev;
@@ -69,36 +69,13 @@ export default function Feed({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="text-lg leading-[1.8] text-gray-800 font-be-vietnam">
-        {currentItems.map((contribution, index) => {
-          const absoluteIndex = index + startIndex;
-          const prevContribution = absoluteIndex > 0 ? contributions[absoluteIndex - 1] : null;
-          
-          // Logic for adding space in '1 kí tự' mode
-          let content = contribution.content;
-          const isCharacterMode = limitType === 'character';
-          
-          if (isCharacterMode && prevContribution) {
-            const prevContent = prevContribution.content;
-            const lastCharOfPrev = prevContent.trim().slice(-1);
-            const punctuationRegex = /[.,!?;:]/;
-            
-            // Add space if previous ends with punctuation (even if it has a trailing space)
-            // and current doesn't already start with a space
-            if (punctuationRegex.test(lastCharOfPrev) && !content.startsWith(' ')) {
-              content = ' ' + content;
-            }
-          }
-
-          return (
-            <span 
-              key={contribution.id} 
-              className={`animate-in fade-in slide-in-from-bottom-2 duration-500 ${!isCharacterMode ? "mr-1.5" : ""}`}
-            >
-              {content}
-            </span>
-          );
-        })}
+      <div className="text-lg leading-[1.8] text-gray-800 content-display">
+        {contributions.map((contribution) => (
+          <span key={contribution.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {contribution.content}
+            {(!limitType || limitType === '1 câu') && !contribution.content.endsWith('\n') ? ' ' : ''}
+          </span>
+        ))}
         {contributions.length === 0 && (
             <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy là người đầu tiên đóng góp.</p>
         )}

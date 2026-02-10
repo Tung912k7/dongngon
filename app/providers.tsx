@@ -21,7 +21,7 @@ function AuthListener() {
 
     // Listen for auth state changes (SYNC across tabs)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth event:', event, !!session);
+
 
       if (event === 'SIGNED_OUT') {
         const wasLoggedIn = hasSession;
