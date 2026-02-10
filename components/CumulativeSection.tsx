@@ -21,17 +21,14 @@ const CumulativeSection = () => {
             className="relative w-full h-full bg-black overflow-hidden flex items-center justify-center group cursor-pointer"
           >
             <div className="absolute inset-0 w-full h-full flex items-center justify-center opacity-100 transition-opacity group-hover:opacity-30">
-              <div 
-                className="relative w-[200vh] h-24 lg:h-32 shrink-0 origin-center"
-                style={{ transform: 'rotate(-90deg)' }}
-              >
+              <div className="relative w-full h-full">
                 <div 
                   className="w-full h-full"
                   style={{
                     backgroundImage: "url('/pattern/pattern1.png')",
-                    backgroundRepeat: 'repeat-x',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'auto 100%' 
+                    backgroundRepeat: 'repeat-y',
+                    backgroundPosition: 'center top',
+                    backgroundSize: '100% auto' 
                   }}
                 />
               </div>
@@ -60,17 +57,14 @@ const CumulativeSection = () => {
           <section className="relative h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20 overflow-hidden">
             {/* Right Sidebar Pattern for Contribution */}
             <div className="absolute right-0 top-0 bottom-0 z-10 flex flex-col justify-center items-center h-full pointer-events-none border-l border-white/10 bg-black/40 w-24 lg:w-32 overflow-hidden">
-                <div 
-                  className="absolute top-1/2 left-1/2 w-[200vh] h-24 lg:h-32 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center origin-center"
-                  style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
-                >
+                <div className="relative w-full h-full">
                    <div 
                     className="w-full h-full"
                     style={{
                       backgroundImage: "url('/pattern/pattern1.png')",
-                      backgroundRepeat: 'repeat-x',
-                      backgroundPosition: 'center',
-                      backgroundSize: 'auto 100%' 
+                      backgroundRepeat: 'repeat-y',
+                      backgroundPosition: 'center top',
+                      backgroundSize: '100% auto' 
                     }}
                   />
                 </div>

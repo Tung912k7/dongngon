@@ -8,21 +8,16 @@ const ContributionSection = () => {
       {/* Right Sidebar Container: Pattern Only */}
       <div className="absolute right-0 top-0 bottom-0 z-30 flex flex-row items-end h-full pointer-events-none border-l border-white/10 bg-black overflow-hidden bg-black/40">
           {/* Pattern Column */}
-             <div 
-               className="absolute top-1/2 left-1/2 w-[200vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center origin-center"
-               style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
-             >
-                <div className="relative w-full h-20 md:h-24 lg:h-28">
+             <div className="relative w-full h-full">
                   <div 
                     className="w-full h-full"
                     style={{
                       backgroundImage: "url('/pattern/pattern1.png')",
-                      backgroundRepeat: 'repeat-x',
-                      backgroundPosition: 'center',
-                      backgroundSize: 'auto 100%' 
+                      backgroundRepeat: 'repeat-y',
+                      backgroundPosition: 'center top',
+                      backgroundSize: '100% auto' 
                     }}
                   />
-                </div>
              </div>
       </div>
 
