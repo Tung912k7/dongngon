@@ -5,21 +5,7 @@ import { motion } from 'framer-motion';
 const ContributionSection = () => {
   return (
     <section className="relative w-full min-h-[80vh] bg-black text-white flex items-center justify-center overflow-hidden py-20 z-20">
-      {/* Right Sidebar Container: Pattern Only */}
-      <div className="absolute right-0 top-0 bottom-0 z-30 flex flex-row items-end h-full pointer-events-none border-l border-white/10 bg-black overflow-hidden bg-black/40">
-          {/* Pattern Column */}
-             <div className="relative w-full h-full">
-                  <div 
-                    className="w-full h-full"
-                    style={{
-                      backgroundImage: "url('/pattern/pattern1.png')",
-                      backgroundRepeat: 'repeat-y',
-                      backgroundPosition: 'center top',
-                      backgroundSize: '100% auto' 
-                    }}
-                  />
-             </div>
-      </div>
+
 
       <div className="container mx-auto px-4 sm:px-6 relative z-20 h-full flex flex-col justify-center items-start lg:pr-32">
         {/* Text Content */}

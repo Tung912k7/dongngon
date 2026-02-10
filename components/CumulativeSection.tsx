@@ -9,10 +9,16 @@ import PopularContent from './popular/PopularContent';
 
 const CumulativeSection = () => {
   return (
-    <section className="relative w-full bg-black text-white">
+    <section className="relative w-full bg-black text-white pb-32">
       <div className="flex flex-col md:flex-row w-full relative">
         {/* Left Sidebar: Minimalist Pattern & Navigation Hook */}
-        <aside className="hidden md:flex sticky top-0 h-[100dvh] w-24 lg:w-32 z-30 shrink-0 flex-col border-r border-white/10 bg-black overflow-hidden">
+        <motion.aside 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          viewport={{ once: true }}
+          className="hidden md:flex sticky top-0 h-[100dvh] w-24 lg:w-32 z-30 shrink-0 flex-col border-r border-white/10 bg-black overflow-hidden"
+        >
           {/* Pattern Container - Full Height */}
           {/* Pattern Container - Interactive Link */}
           <Link 
@@ -20,18 +26,18 @@ const CumulativeSection = () => {
             target="_blank"
             className="relative w-full h-full bg-black overflow-hidden flex items-center justify-center group cursor-pointer"
           >
-            <div className="absolute inset-0 w-full h-full flex items-center justify-center opacity-100 transition-opacity group-hover:opacity-30">
-              <div className="relative w-full h-full">
-                <div 
-                  className="w-full h-full"
-                  style={{
-                    backgroundImage: "url('/pattern/pattern1.png')",
-                    backgroundRepeat: 'repeat-y',
-                    backgroundPosition: 'center top',
-                    backgroundSize: '100% auto' 
-                  }}
-                />
-              </div>
+            
+            {/* Pattern Background */}
+            <div className="absolute inset-0 w-full h-full opacity-100 transition-opacity group-hover:opacity-30">
+              <div 
+                className="w-full h-full"
+                style={{
+                  backgroundImage: "url('/pattern/pattern1.png')",
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center top',
+                  backgroundSize: '100% 100%' 
+                }}
+              />
             </div>
             
             {/* Hover Overlay */}
@@ -41,46 +47,49 @@ const CumulativeSection = () => {
               </div>
             </div>
           </Link>
-        </aside>
+        </motion.aside>
 
         {/* Scrollable Content Container */}
         <div className="relative z-20 flex-1 flex flex-col w-full snap-y snap-mandatory md:snap-none">
           
           {/* About Block - Full Screen Page */}
-          <section className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20">
+          <motion.section 
+            initial={{ opacity: 0, y: 150, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.3 }}
+            className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20"
+          >
             <div className="w-full">
               <AboutContent />
             </div>
-          </section>
+          </motion.section>
 
           {/* Contribution Block - Full Screen Page */}
-          <section className="relative h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20 overflow-hidden">
-            {/* Right Sidebar Pattern for Contribution */}
-            <div className="absolute right-0 top-0 bottom-0 z-10 flex flex-col justify-center items-center h-full pointer-events-none border-l border-white/10 bg-black/40 w-24 lg:w-32 overflow-hidden">
-                <div className="relative w-full h-full">
-                   <div 
-                    className="w-full h-full"
-                    style={{
-                      backgroundImage: "url('/pattern/pattern1.png')",
-                      backgroundRepeat: 'repeat-y',
-                      backgroundPosition: 'center top',
-                      backgroundSize: '100% auto' 
-                    }}
-                  />
-                </div>
-            </div>
-
+          <motion.section 
+            initial={{ opacity: 0, y: 150, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.3 }}
+            className="relative h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20 overflow-hidden"
+          >
             <div className="w-full relative z-20">
               <ContributionContent />
             </div>
-          </section>
+          </motion.section>
 
           {/* Popular Works Block - Full Screen Page */}
-          <section className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20">
+          <motion.section 
+            initial={{ opacity: 0, y: 150, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.3 }}
+            className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20"
+          >
             <div className="w-full">
               <PopularContent />
             </div>
-          </section>
+          </motion.section>
 
         </div>
       </div>
