@@ -59,7 +59,7 @@ const PopularWorksSection = () => {
       <div className="absolute left-0 top-0 bottom-0 z-30 flex items-center justify-center h-full pointer-events-none border-r border-white/10 bg-black overflow-hidden bg-black/40">
           <div className="relative h-full w-20 md:w-24 lg:w-28 flex items-center justify-center">
              <div 
-               className="absolute top-1/2 left-1/2 w-[150vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+               className="absolute top-1/2 left-1/2 w-[180vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center scale-125"
                style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
              >
                <div className="relative w-full h-20 md:h-24 lg:h-28">

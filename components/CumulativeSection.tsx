@@ -12,7 +12,7 @@ const CumulativeSection = () => {
     <section className="relative w-full bg-black text-white">
       <div className="flex flex-col md:flex-row w-full relative">
         {/* Left Sidebar: Minimalist Pattern & Navigation Hook */}
-        <aside className="hidden md:flex sticky top-0 h-screen w-24 lg:w-32 z-30 shrink-0 flex-col border-r border-white/10 bg-black overflow-hidden">
+        <aside className="hidden md:flex sticky top-0 h-[100dvh] w-24 lg:w-32 z-30 shrink-0 flex-col border-r border-white/10 bg-black overflow-hidden">
           {/* Pattern Container - Full Height */}
           {/* Pattern Container - Interactive Link */}
           <Link 
@@ -22,7 +22,7 @@ const CumulativeSection = () => {
           >
             <div className="absolute inset-0 w-full h-full flex items-center justify-center opacity-100 transition-opacity group-hover:opacity-30">
               <div 
-                className="relative w-[150vh] h-24 lg:h-32 shrink-0 scale-110"
+                className="relative w-[180vh] h-24 lg:h-32 shrink-0 scale-125"
                 style={{ transform: 'rotate(-90deg)' }}
               >
                 <Image 
