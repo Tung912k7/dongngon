@@ -22,15 +22,17 @@ const CumulativeSection = () => {
           >
             <div className="absolute inset-0 w-full h-full flex items-center justify-center opacity-100 transition-opacity group-hover:opacity-30">
               <div 
-                className="relative w-[180vh] h-24 lg:h-32 shrink-0 scale-125"
+                className="relative w-[200vh] h-24 lg:h-32 shrink-0 origin-center"
                 style={{ transform: 'rotate(-90deg)' }}
               >
-                <Image 
-                  src="/pattern/pattern1.png"
-                  alt="Hoa văn Đại Việt"
-                  fill
-                  className="object-fill"
-                  priority={true}
+                <div 
+                  className="w-full h-full"
+                  style={{
+                    backgroundImage: "url('/pattern/pattern1.png')",
+                    backgroundRepeat: 'repeat-x',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'auto 100%' 
+                  }}
                 />
               </div>
             </div>
@@ -59,15 +61,17 @@ const CumulativeSection = () => {
             {/* Right Sidebar Pattern for Contribution */}
             <div className="absolute right-0 top-0 bottom-0 z-10 flex flex-col justify-center items-center h-full pointer-events-none border-l border-white/10 bg-black/40 w-24 lg:w-32 overflow-hidden">
                 <div 
-                  className="absolute top-1/2 left-1/2 w-[180vh] h-24 lg:h-32 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center scale-125 origin-center"
+                  className="absolute top-1/2 left-1/2 w-[200vh] h-24 lg:h-32 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center origin-center"
                   style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
                 >
-                  <Image 
-                    src="/pattern/pattern1.png"
-                    alt="Decorative Pattern"
-                    fill
-                    className="object-fill"
-                    priority={true}
+                   <div 
+                    className="w-full h-full"
+                    style={{
+                      backgroundImage: "url('/pattern/pattern1.png')",
+                      backgroundRepeat: 'repeat-x',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'auto 100%' 
+                    }}
                   />
                 </div>
             </div>

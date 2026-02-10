@@ -11,17 +11,18 @@ const AboutSection = () => {
           {/* 1. Pattern Column (Fixed Width) */}
           <div className="relative h-full w-20 md:w-24 lg:w-28 pointer-events-auto z-40 flex items-center justify-center">
              <div 
-               className="absolute top-1/2 left-1/2 w-[180vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center scale-125"
+               className="absolute top-1/2 left-1/2 w-[200vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center origin-center"
                style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
              >
                 <div className="relative w-full h-20 md:h-24 lg:h-28">
-                  <Image 
-                    src="/pattern/pattern1.png"
-                    alt="Decorative Pattern"
-                    fill
-                    sizes="(max-width: 1024px) 96px, 112px"
-                    className="object-cover opacity-100"
-                    priority={true}
+                  <div 
+                    className="w-full h-full"
+                    style={{
+                      backgroundImage: "url('/pattern/pattern1.png')",
+                      backgroundRepeat: 'repeat-x',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'auto 100%' 
+                    }}
                   />
                 </div>
              </div>
