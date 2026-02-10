@@ -55,8 +55,24 @@ const CumulativeSection = () => {
           </section>
 
           {/* Contribution Block - Full Screen Page */}
-          <section className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20">
-            <div className="w-full">
+          <section className="relative h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20 overflow-hidden">
+            {/* Right Sidebar Pattern for Contribution */}
+            <div className="absolute right-0 top-0 bottom-0 z-10 flex flex-col justify-center items-center h-full pointer-events-none border-l border-white/10 bg-black/40 w-24 lg:w-32 overflow-hidden">
+                <div 
+                  className="absolute top-1/2 left-1/2 w-[180vh] h-24 lg:h-32 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center scale-125 origin-center"
+                  style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
+                >
+                  <Image 
+                    src="/pattern/pattern1.png"
+                    alt="Decorative Pattern"
+                    fill
+                    className="object-fill"
+                    priority={true}
+                  />
+                </div>
+            </div>
+
+            <div className="w-full relative z-20">
               <ContributionContent />
             </div>
           </section>
