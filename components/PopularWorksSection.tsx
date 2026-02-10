@@ -76,7 +76,6 @@ const PopularWorksSection = () => {
              </div>
           </div>
       </div>
-
       {/* 1. Title */}
       <motion.h2 
         initial={{ opacity: 0 }}

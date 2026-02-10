@@ -24,7 +24,6 @@ const ContributionSection = () => {
                   />
                 </div>
              </div>
-          </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-20 h-full flex flex-col justify-center items-start lg:pr-32">
