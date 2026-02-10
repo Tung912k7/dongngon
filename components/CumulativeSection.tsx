@@ -21,7 +21,10 @@ const CumulativeSection = () => {
             className="relative w-full h-full bg-black overflow-hidden flex items-center justify-center group cursor-pointer"
           >
             <div className="absolute inset-0 w-full h-full flex items-center justify-center opacity-100 transition-opacity group-hover:opacity-30">
-              <div className="relative w-[120vh] h-24 lg:h-32 -rotate-90 shrink-0 scale-110">
+              <div 
+                className="relative w-[150vh] h-24 lg:h-32 shrink-0 scale-110"
+                style={{ transform: 'rotate(-90deg)' }}
+              >
                 <Image 
                   src="/pattern/pattern1.png"
                   alt="Hoa văn Đại Việt"

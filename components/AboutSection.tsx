@@ -10,7 +10,10 @@ const AboutSection = () => {
           
           {/* 1. Pattern Column (Fixed Width) */}
           <div className="relative h-full w-20 md:w-24 lg:w-28 pointer-events-auto z-40 flex items-center justify-center">
-             <div className="absolute top-1/2 left-1/2 w-[120vh] h-full -translate-x-1/2 -translate-y-1/2 -rotate-90 flex items-center justify-center">
+             <div 
+               className="absolute top-1/2 left-1/2 w-[150vh] h-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+               style={{ transform: 'translate(-50%, -50%) rotate(-90deg)' }}
+             >
                 <div className="relative w-full h-20 md:h-24 lg:h-28">
                   <Image 
                     src="/pattern/pattern1.png"
