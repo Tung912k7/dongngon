@@ -20,7 +20,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       method: 'POST',
       headers: headers,
       body: request.body,
-      // @ts-ignore
+      // @ts-expect-error - PostHog duplex is not in standard Fetch types but required for streaming POST
       duplex: 'half',
     });
   } catch (error) {

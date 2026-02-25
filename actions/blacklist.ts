@@ -35,7 +35,7 @@ export async function checkBlacklist(text: string): Promise<string | null> {
           if (regex.test(textLower)) {
             return item.word;
           }
-        } catch (e) {
+        } catch {
           console.error("Invalid regex in database:", item.word);
         }
       } else {

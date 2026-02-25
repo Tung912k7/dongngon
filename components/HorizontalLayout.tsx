@@ -11,7 +11,7 @@ import { useHorizontalScroll } from "@/components/useHorizontalScroll";
 
 interface HorizontalLayoutProps {
   works: Pick<Work, 'id' | 'title' | 'created_at'>[];
-  profile: any;
+  profile: unknown;
 }
 
 export default function HorizontalLayout({ works, profile }: HorizontalLayoutProps) {
@@ -19,8 +19,7 @@ export default function HorizontalLayout({ works, profile }: HorizontalLayoutPro
 
   return (
     <div 
-      // @ts-ignore
-      ref={scrollRef} 
+      ref={scrollRef as React.RefObject<HTMLDivElement>} 
       className="flex flex-row h-screen w-screen overflow-x-auto overflow-y-hidden bg-white text-black snap-x snap-mandatory scroll-smooth no-scrollbar"
     >
       

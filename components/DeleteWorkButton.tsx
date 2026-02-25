@@ -95,7 +95,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
             >
               <h2 className="text-2xl font-black mb-4 text-center uppercase tracking-tight text-black">Xác nhận xóa</h2>
               <p className="text-center text-gray-500 mb-8">
-                Bạn có chắc chắn muốn xóa tác phẩm <span className="font-bold text-black">"{workTitle}"</span>? 
+                Bạn có chắc chắn muốn xóa tác phẩm <span className="font-bold text-black">&quot;{workTitle}&quot;</span>? 
                 Hành động này không thể hoàn tác.
               </p>
               

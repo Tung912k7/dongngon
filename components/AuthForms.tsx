@@ -9,7 +9,6 @@ import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
 import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
 import NotificationModal from "./NotificationModal";
 import { PrimaryButton } from "./PrimaryButton";
-import { isValidEmail } from "@/utils/validation";
 import { sanitizeNickname } from "@/utils/sanitizer";
 
 // --- Components ---
@@ -17,6 +16,7 @@ const Portal = ({ children }: { children: React.ReactNode }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     return () => setMounted(false);
   }, []);
@@ -208,15 +208,15 @@ export function LoginForm() {
           return await Promise.race([
             supabase.from("profiles").select("email").ilike("nickname", data.identifier).single(),
             timeoutPromise
-          ]) as any;
+          ]) as { data: { email: string } | null; error: unknown };
         })();
 
         if (profileError) {
-          console.error("Pen name lookup failed:", profileError);
-          if (profileError.code === "PGRST116") {
-            showNotification("Bút danh này chưa được đăng ký.", "error");
+          const castedProfileError = profileError as { code?: string; message?: string };
+          if (castedProfileError.code === "PGRST116") {
+            showNotification(`Không tìm thấy người dùng với bút danh/email "${data.identifier}".`, "error");
           } else {
-            showNotification(`Lỗi khi tìm kiếm bút danh: ${profileError.message}`, "error");
+            showNotification(castedProfileError.message || "Lỗi kiểm tra thông tin tài khoản.", "error");
           }
           return;
         }
@@ -235,17 +235,12 @@ export function LoginForm() {
             password: data.password,
           }),
           timeoutPromise
-        ]) as any;
+        ]) as { data: { user: unknown }; error: unknown };
       })();
 
       if (error) {
-        let msg = error.message;
-        if (msg === "Email not confirmed") {
-          msg = "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư (kiểm tra cả mục thư rác) để xác nhận.";
-        } else if (msg === "Invalid login credentials") {
-          msg = "Bút danh/Email hoặc mật khẩu không chính xác.";
-        }
-        showNotification(msg || "Lỗi đăng nhập.", "error");
+        const authError = error as { message: string };
+        showNotification(authError.message || "Bút danh/Email hoặc mật khẩu không chính xác.", "error");
         return;
       }
 
@@ -253,9 +248,10 @@ export function LoginForm() {
          router.push("/");
          router.refresh();
       }
-    } catch (err: any) {
-      console.error(err);
-      if (err.message === "TIMEOUT") {
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error(error);
+      if (error.message === "TIMEOUT") {
         showNotification("Yêu cầu quá hạn (Timeout). Vui lòng kiểm tra lại kết nối.", "error");
       } else {
         showNotification("Đã xảy ra lỗi.", "error");
@@ -358,8 +354,9 @@ export function ForgotPasswordForm() {
       } else {
         showNotification(result.error || "Có lỗi xảy ra.", "error");
       }
-    } catch (err: any) {
-      showNotification(err.message || "Đã xảy ra lỗi.", "error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      showNotification(error.message || "Đã xảy ra lỗi.", "error");
     } finally {
       setLoading(false);
     }
@@ -448,7 +445,7 @@ export function ResetPasswordForm() {
       } else {
         showNotification(result.error || "Có lỗi xảy ra.", "error");
       }
-    } catch (err) {
+    } catch {
       showNotification("Đã xảy ra lỗi.", "error");
     } finally {
       setLoading(false);
@@ -596,7 +593,7 @@ export function SignUpForm() {
       const violation = await Promise.race([
         checkBlacklist(sanitizeNickname(data.penName)),
         timeoutPromise
-      ]) as any;
+      ]) as string | null;
 
       if (violation) {
         showNotification(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`, "error");
@@ -654,9 +651,10 @@ export function SignUpForm() {
       if (authData.user) {
         showNotification("Đăng ký thành công! Vui lòng kiểm tra Email (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
       }
-    } catch (err: any) {
-      console.error("Signup error:", err);
-      if (err.message === "TIMEOUT") {
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Signup error:", error);
+      if (error.message === "TIMEOUT") {
         showNotification("Yêu cầu quá hạn (Timeout). Vui lòng thử lại sau.", "error");
       } else {
         showNotification("Đã xảy ra lỗi trong quá trình đăng ký.", "error");

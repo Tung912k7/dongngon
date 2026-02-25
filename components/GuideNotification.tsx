@@ -14,6 +14,7 @@ export default function GuideNotification({ hasSeenTour }: GuideNotificationProp
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     // Only show if user hasn't seen the tour/guide yet
     if (hasSeenTour === false) {

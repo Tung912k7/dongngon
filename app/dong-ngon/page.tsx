@@ -46,7 +46,7 @@ export default async function DongNgonPage({
     }
 
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication
-    const mappedWorks = (rawWorks || []).map((work: any) => ({
+    const mappedWorks = (rawWorks || []).map((work: Record<string, any>) => ({
         ...work,
         title: sanitizeTitle(work.title),
         author_nickname: sanitizeNickname(work.author_nickname),

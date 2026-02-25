@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "@/utils/error-handler";
-import { sanitizeInput, sanitizeTitle } from "@/utils/sanitizer";
+import { sanitizeTitle } from "@/utils/sanitizer";
 
 export async function createWork(formData: {
   title: string;

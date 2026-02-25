@@ -1,11 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { Work } from "@/types/database";
 import EditProfileModal from "@/components/EditProfileModal";
 import CreateWorkModal from "@/components/CreateWorkModal";
-import { PrimaryButton, LinkedButton } from "@/components/PrimaryButton";
+import { LinkedButton } from "@/components/PrimaryButton";
 import WorkCard from "@/components/WorkCard";
 
 export default async function ProfilePage() {
@@ -41,12 +40,12 @@ export default async function ProfilePage() {
     new Map((contributions || [])
       .filter(c => {
         // Handle works as object or array, with singular/plural fallback
-        const workData = c.works || (c as any).work;
+        const workData = c.works || (c as Record<string, unknown>).work;
         const finalWork = Array.isArray(workData) ? workData[0] : workData;
         return finalWork && finalWork.id && finalWork.created_by !== user.id;
       })
       .map(c => {
-        const workData = c.works || (c as any).work;
+        const workData = c.works || (c as Record<string, unknown>).work;
         const finalWork = Array.isArray(workData) ? workData[0] : workData;
         return [finalWork.id, finalWork as unknown as Work];
       }))

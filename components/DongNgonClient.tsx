@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
-import WorkFilter from "@/components/WorkFilter";
 import TableFilter from "@/components/TableFilter";
 import CreateWorkModal from "@/components/CreateWorkModal";
 import { TagButton } from "@/components/TagButton";
@@ -144,6 +143,7 @@ export default function DongNgonClient({
     if (isFirstMount.current) {
       isFirstMount.current = false;
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchWorks(supabase, q);
     }
 
@@ -273,7 +273,7 @@ export default function DongNgonClient({
       paginatedWorks: works.slice(start, start + limit),
       totalPages
     };
-  }, [allWorks, filters, currentPage]);
+  }, [allWorks, filters, currentPage, user]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
@@ -328,7 +328,10 @@ export default function DongNgonClient({
                   >
                     <div>
                       <h3 className="text-3xl font-bold line-clamp-2 leading-tight mb-2">{work.title}</h3>
-                      <p className="text-base text-gray-500">{work.date}</p>
+                      <div className="flex flex-col">
+                        <p className="text-base text-gray-500">Bởi: {work.author_nickname}</p>
+                        <p className="text-base text-gray-500">{work.date}</p>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">

@@ -82,7 +82,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       const result = await Promise.race([
         createWork(formData),
         timeoutPromise
-      ]) as any;
+      ]) as { success: boolean; error?: string };
 
       if (result.success) {
         setIsLoading(false);
@@ -100,9 +100,10 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       } else {
         setError(result.error || "Có lỗi xảy ra.");
       }
-    } catch (err: any) {
-      console.error("Create work error:", err);
-      if (err.message === "TIMEOUT") {
+    } catch (err: unknown) {
+      const e = err as Error;
+      console.error("Create work error:", e);
+      if (e.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
         setError("Có lỗi xảy ra khi tạo tác phẩm.");

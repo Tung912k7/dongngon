@@ -11,32 +11,42 @@ export const POETIC_FORM_LIMITS: Record<string, number> = {
  * @returns { isValid: boolean, error?: string }
  */
 export function validatePoeticForm(content: string, hinhThuc: string, writingRule?: string): { isValid: boolean, error?: string } {
-  // If not a formal poetic form, we skip this specific validation
+  // 1. Get word count of current contribution
+  const words = content.trim().split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
 
-  if (writingRule === '1 kí tự' || writingRule === 'character') {
-      const words = content.trim().split(/\s+/).filter(w => w.length > 0);
-      if (words.length <= 1) return { isValid: true };
-  }
-
-  const limit = POETIC_FORM_LIMITS[hinhThuc] || 
+  // 2. Get required words for the poetic form
+  const requiredWords = POETIC_FORM_LIMITS[hinhThuc] || 
                 (hinhThuc.includes("Thơ") && !hinhThuc.includes("tự do") ? parseInt(hinhThuc.replace(/[^0-9]/g, "")) : null);
 
-  if (!limit || isNaN(limit)) return { isValid: true };
-
-  const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  
-  if (lines.length === 0) return { isValid: false, error: "Nội dung không được để trống." };
-
-  for (let i = 0; i < lines.length; i++) {
-    const words = lines[i].split(/\s+/).filter(w => w.length > 0);
-    if (words.length !== limit) {
-      return { 
-        isValid: false, 
-        error: `Dòng ${i + 1} có ${words.length} chữ. Thể loại ${hinhThuc} yêu cầu đúng ${limit} chữ mỗi dòng.`
-      };
+  // 3. CASE 1: Character Mode (1 kí tự)
+  // Skip counting total words in the poem line here; just ensure 1 word per submission.
+  if (writingRule === '1 kí tự' || writingRule === 'character') {
+    if (wordCount === 1) {
+      return { isValid: true };
     }
+    return { 
+      isValid: false, 
+      error: "Với quy tắc 1 kí tự, bạn chỉ được nhập đúng 1 chữ mỗi lần gửi." 
+    };
   }
 
+  // 4. CASE 2: Sentence Mode (1 câu)
+  // Enforce the full line length matching the poetic form.
+  if (writingRule === '1 câu' || writingRule === 'sentence') {
+    if (!requiredWords || isNaN(requiredWords)) return { isValid: true };
+
+    if (wordCount === requiredWords) {
+      return { isValid: true };
+    }
+    
+    return { 
+      isValid: false, 
+      error: `Thể loại ${hinhThuc} yêu cầu đúng ${requiredWords} chữ mỗi dòng.`
+    };
+  }
+
+  // Fallback for non-poetry or undefined rule
   return { isValid: true };
 }
 

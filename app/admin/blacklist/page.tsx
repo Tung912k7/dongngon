@@ -21,25 +21,7 @@ export default function BlacklistPage() {
   const [submitting, setSubmitting] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchBlacklist();
-  }, []);
-
-  // Live Regex Validation
-  useEffect(() => {
-    if (isRegex && newWord) {
-      try {
-        new RegExp(newWord);
-        setRegexError(null);
-      } catch (e: any) {
-        setRegexError(e.message);
-      }
-    } else {
-      setRegexError(null);
-    }
-  }, [newWord, isRegex]);
-
-  const fetchBlacklist = async () => {
+  async function fetchBlacklist() {
     setLoading(true);
     const { data, error } = await supabase
       .from("blacklist_words")
@@ -52,7 +34,28 @@ export default function BlacklistPage() {
       setWords(data || []);
     }
     setLoading(false);
-  };
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchBlacklist();
+  }, []);
+
+  // Live Regex Validation
+  useEffect(() => {
+    if (isRegex && newWord) {
+      try {
+        new RegExp(newWord);
+        setRegexError(null);
+      } catch (e: unknown) {
+        const error = e as Error;
+        setRegexError(error.message);
+      }
+    } else {
+      setRegexError(null);
+    }
+  }, [newWord, isRegex]);
+
 
   const handleAddWord = async (e: React.FormEvent) => {
     e.preventDefault();

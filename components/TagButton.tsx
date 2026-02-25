@@ -28,3 +28,4 @@ export const TagButton = memo(({
     </span>
   );
 });
+TagButton.displayName = "TagButton";

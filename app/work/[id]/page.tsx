@@ -1,7 +1,8 @@
 import { Viewport, Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { escapeHTML, sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
+import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
+import { Contribution } from "@/types/database";
 import Link from "next/link";
 import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
@@ -80,11 +81,9 @@ export default async function WorkPage({
     work.title = sanitizeTitle(work.title);
   }
 
-  const contributions = (contributionsResponse.data || []).map((c: any) => ({
+  const contributions: Contribution[] = (contributionsResponse.data || []).map((c: Contribution) => ({
     ...c,
     author_nickname: sanitizeNickname(c.author_nickname),
-    // We don't have a specific sanitizeContribution but sanitizeTitle is similar (strips tags, cleans quotes)
-    // Actually sanitizeInput is for input, we'll use a version that cleans quotes.
     content: sanitizeTitle(c.content)
   }));
 
@@ -120,19 +119,9 @@ export default async function WorkPage({
   }
 
   // Calculate unique contributors from the already fetched contributions
-  const uniqueContributors = new Set(contributions?.map((c: any) => c.user_id) || []).size;
+  const uniqueContributors = new Set(contributions?.map((c) => c.user_id) || []).size;
   const isCompleted = work.status === "finished";
 
-  const renderRuleText = (limitType: string) => {
-    switch (limitType) {
-      case 'character':
-        return '1 kí tự';
-      case 'sentence':
-        return '1 câu';
-      default:
-        return 'Không giới hạn';
-    }
-  };
 
   return (
     <div className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
@@ -177,6 +166,7 @@ export default async function WorkPage({
           initialContributions={contributions || []} 
           workId={work.id} 
           limitType={work.limit_type}
+          hinhThuc={work.sub_category}
         />
       </section>
 

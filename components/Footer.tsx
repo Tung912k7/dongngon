@@ -77,7 +77,7 @@ export default function Footer() {
             >
               <div className="mb-4 text-4xl animate-bounce">❤️</div>
               <p className="text-2xl font-bold text-black italic">
-                "Yêu bé nhiều :33"
+                &quot;Yêu bé nhiều :33&quot;
               </p>
               <button 
                 onClick={() => setIsLoveOpen(false)}

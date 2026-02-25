@@ -18,7 +18,7 @@ export default function Editor({
   workId: string; 
   writingRule: string;
   hinhThuc?: string;
-  user: any;
+  user: { id: string } | null;
 }) {
   const router = useRouter();
   const [content, setContent] = useState("");
@@ -58,13 +58,13 @@ export default function Editor({
   }, [content]);
 
   const validateContent = (content: string, limitType: string) => {
+    const trimmed = content.trim();
+    const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+
     if (limitType === '1 kí tự') {
-      // Allow 1 character, or 1 space + 1 character
-      // This supports the user's request for manual spacing
-      return /^ ?[^ ]$/.test(content);
+      return words.length === 1;
     }
 
-    const trimmed = content.trim();
     if (limitType === '1 câu') {
       const sentenceRegex = /[.?!]$/;
       return sentenceRegex.test(trimmed);
@@ -95,9 +95,9 @@ export default function Editor({
     if (!isValidRule) {
         let msg = "Nội dung không hợp lệ.";
         if (writingRule === '1 kí tự') {
-            msg = "Quy tắc là '1 kí tự'. Bạn có thể nhập đúng 1 kí tự hoặc 1 dấu cách + 1 kí tự để tự cách chữ.";
+            msg = "Quy tắc là '1 kí tự'. Bạn chỉ được nhập đúng 1 chữ mỗi lần gửi.";
         } else if (writingRule === '1 câu') {
-            msg = "Nội dung phải kết thúc bằng dấu chấm (.), hỏi (?) hoặc cảm thán (!).";
+            msg = "Nội dung phải kết thúc bằng dấu câu (. ! ?).";
         }
         
         showNotification(msg, "info", "Sai quy tắc");
@@ -126,7 +126,7 @@ export default function Editor({
       const result = await Promise.race([
         submitContribution(workId, cleanContent),
         timeoutPromise
-      ]) as any;
+      ]) as { success?: boolean; error?: string };
       
       if (result.error) {
         setError(result.error);
@@ -134,9 +134,10 @@ export default function Editor({
         setContent("");
         router.refresh();
       }
-    } catch (err: any) {
-      console.error("Submit contribution error:", err);
-      if (err.message === "TIMEOUT") {
+    } catch (err: unknown) {
+      const e = err as Error;
+      console.error("Submit contribution error:", e);
+      if (e.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
         setError("Có lỗi xảy ra khi gửi đóng góp.");

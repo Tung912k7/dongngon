@@ -32,7 +32,7 @@ export async function submitContribution(workId: string, content: string) {
   // 1.1.5 Poetic Form Validation
   if (work?.sub_category) {
     const { validatePoeticForm } = await import("@/utils/validation");
-    const poeticResult = validatePoeticForm(content, work.sub_category);
+    const poeticResult = validatePoeticForm(content, work.sub_category, work.limit_type);
     if (!poeticResult.isValid) {
       return { error: poeticResult.error };
     }

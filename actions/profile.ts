@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
-import { sanitizeInput, sanitizeNickname } from "@/utils/sanitizer";
+import { sanitizeNickname } from "@/utils/sanitizer";
 
 export const isNicknameAvailable = async (nickname: string, excludeUserId?: string) => {
   const supabase = await createClient();

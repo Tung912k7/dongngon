@@ -3,15 +3,19 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Contribution } from "@/types/database";
+import { POETIC_FORM_LIMITS } from "@/utils/validation";
+import React from "react";
 
 export default function Feed({
   initialContributions,
   workId,
   limitType,
+  hinhThuc,
 }: {
   initialContributions: Contribution[];
   workId: string;
   limitType?: string;
+  hinhThuc?: string;
 }) {
   const [contributions, setContributions] = useState<Contribution[]>(
     initialContributions
@@ -22,6 +26,7 @@ export default function Feed({
   const supabase = createClient();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setContributions(prev => {
       // Merge initialContributions with any existing ones (from realtime), avoiding duplicates
       const existingIds = new Set(initialContributions.map(c => c.id));
@@ -65,17 +70,29 @@ export default function Feed({
 
   const totalPages = Math.ceil(contributions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = contributions.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="text-lg leading-[1.8] text-gray-800 content-display">
-        {contributions.map((contribution) => (
-          <span key={contribution.id} className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {contribution.content}
-            {(!limitType || limitType === '1 câu') && !contribution.content.endsWith('\n') ? ' ' : ''}
-          </span>
-        ))}
+        {contributions.map((contribution, index) => {
+          const limit = hinhThuc ? POETIC_FORM_LIMITS[hinhThuc] : null;
+          const isCharacterMode = limitType === 'character' || limitType === '1 kí tự';
+          const isSentenceMode = limitType === 'sentence' || limitType === '1 câu';
+          
+          // Show break if line is finished (character mode) or if each contribution is a line (sentence mode)
+          const showBreak = limit && isCharacterMode && (index + 1) % limit === 0;
+          
+          return (
+            <React.Fragment key={contribution.id}>
+              <span className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                {contribution.content}
+                {/* Add space if not end of line and not already there */}
+                {!showBreak && !contribution.content.endsWith(' ') && (isSentenceMode || isCharacterMode) && ' '}
+              </span>
+              {showBreak && <br />}
+            </React.Fragment>
+          );
+        })}
         {contributions.length === 0 && (
             <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy là người đầu tiên đóng góp.</p>
         )}
