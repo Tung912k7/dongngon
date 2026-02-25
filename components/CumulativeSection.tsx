@@ -1,43 +1,59 @@
 "use client";
-import React from 'react';
-import Image from 'next/image';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import AboutContent from './about/AboutContent';
 import ContributionContent from './contribution/ContributionContent';
 import PopularContent from './popular/PopularContent';
 
 const CumulativeSection = () => {
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  // Calculate opacity and scale based on scroll progress
+  // Total scroll range divided into 3 sections
+  
+  // Section 1: About (Visible from start, fades out around 30%)
+  const opacityAbout = useTransform(scrollYProgress, [0, 0.25, 0.3], [1, 1, 0]);
+  const scaleAbout = useTransform(scrollYProgress, [0, 0.3], [1, 0.8]);
+  const pointerEventsAbout = useTransform(scrollYProgress, (pos) => pos <= 0.3 ? "auto" : "none");
+
+  // Section 2: Contribution (Fades in 30-35%, visible 35-60%, fades out 60-65%)
+  const opacityContribution = useTransform(scrollYProgress, [0.3, 0.35, 0.6, 0.65], [0, 1, 1, 0]);
+  const scaleContribution = useTransform(scrollYProgress, [0.3, 0.35, 0.6, 0.65], [0.8, 1, 1, 0.8]);
+  const pointerEventsContribution = useTransform(scrollYProgress, (pos) => (pos > 0.3 && pos <= 0.65) ? "auto" : "none");
+
+  // Section 3: Popular (Fades in 65-70%, visible until end)
+  const opacityPopular = useTransform(scrollYProgress, [0.65, 0.7, 1], [0, 1, 1]);
+  const scalePopular = useTransform(scrollYProgress, [0.65, 0.7, 1], [0.8, 1, 1]);
+  const pointerEventsPopular = useTransform(scrollYProgress, (pos) => pos > 0.65 ? "auto" : "none");
+
   return (
-    <section className="relative w-full bg-black text-white pb-32">
-      <div className="flex flex-col md:flex-row w-full relative">
-        {/* Left Sidebar: Minimalist Pattern & Navigation Hook */}
-        <motion.aside 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          viewport={{ once: true }}
-          className="hidden md:flex sticky top-0 h-[100dvh] w-24 lg:w-32 z-30 shrink-0 flex-col border-r border-white/10 bg-black overflow-hidden"
-        >
-          {/* Pattern Container - Full Height */}
-          {/* Pattern Container - Interactive Link */}
+    <section ref={containerRef} className="relative w-full bg-black text-white h-[400vh]">
+      {/* Sticky Container - The Viewport */}
+      <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row overflow-hidden">
+        
+        {/* Left Sidebar: Fixed/Sticky Pattern */}
+        <aside className="hidden md:flex flex-col w-24 lg:w-32 h-full z-30 shrink-0 border-r border-white/10 bg-black">
           <Link 
             href="https://hoavandaiviet.vn" 
             target="_blank"
-            className="relative w-full h-full bg-black overflow-hidden flex items-center justify-center group cursor-pointer"
+            className="relative w-full h-full flex items-center justify-center group cursor-pointer"
           >
-            
             {/* Pattern Background */}
             <div className="absolute inset-0 w-full h-full opacity-100 transition-opacity group-hover:opacity-30">
-              <div 
-                className="w-full h-full"
-                style={{
-                  backgroundImage: "url('/pattern/pattern1.png')",
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center top',
-                  backgroundSize: '100% 100%' 
-                }}
-              />
+               <div 
+                 className="w-full h-full"
+                 style={{
+                   backgroundImage: "url('/pattern/pattern1.png')",
+                   backgroundRepeat: 'no-repeat',
+                   backgroundPosition: 'center',
+                   backgroundSize: 'cover'
+                 }}
+               />
             </div>
             
             {/* Hover Overlay */}
@@ -47,51 +63,54 @@ const CumulativeSection = () => {
               </div>
             </div>
           </Link>
-        </motion.aside>
+        </aside>
 
-        {/* Scrollable Content Container */}
-        <div className="relative z-20 flex-1 flex flex-col w-full snap-y snap-mandatory md:snap-none">
+        {/* Content Container */}
+        <main className="relative flex-1 w-full h-full">
           
-          {/* About Block - Full Screen Page */}
-          <motion.section 
-            initial={{ opacity: 0, y: 150, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20"
+          {/* About Block */}
+          <motion.div 
+            style={{ 
+              opacity: opacityAbout, 
+              scale: scaleAbout,
+              pointerEvents: pointerEventsAbout
+            }}
+            className="absolute inset-0 flex items-center justify-center px-4 md:px-12 lg:px-20"
           >
-            <div className="w-full">
+            <div className="w-full max-w-5xl">
               <AboutContent />
             </div>
-          </motion.section>
+          </motion.div>
 
-          {/* Contribution Block - Full Screen Page */}
-          <motion.section 
-            initial={{ opacity: 0, y: 150, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="relative h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20 overflow-hidden"
+          {/* Contribution Block */}
+          <motion.div 
+            style={{ 
+              opacity: opacityContribution, 
+              scale: scaleContribution,
+              pointerEvents: pointerEventsContribution
+            }}
+            className="absolute inset-0 flex items-center justify-center px-4 md:px-12 lg:px-20"
           >
-            <div className="w-full relative z-20">
+            <div className="w-full max-w-5xl">
               <ContributionContent />
             </div>
-          </motion.section>
+          </motion.div>
 
-          {/* Popular Works Block - Full Screen Page */}
-          <motion.section 
-            initial={{ opacity: 0, y: 150, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="h-[100dvh] md:min-h-screen flex items-center justify-center snap-start py-12 md:py-24 px-4 md:px-12 lg:px-20"
+          {/* Popular Works Block */}
+          <motion.div 
+            style={{ 
+              opacity: opacityPopular, 
+              scale: scalePopular,
+              pointerEvents: pointerEventsPopular
+            }}
+            className="absolute inset-0 flex items-end justify-center px-4 md:px-12 lg:px-20 pb-10"
           >
-            <div className="w-full">
+            <div className="w-full max-w-5xl">
               <PopularContent />
             </div>
-          </motion.section>
+          </motion.div>
 
-        </div>
+        </main>
       </div>
     </section>
   );

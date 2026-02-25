@@ -1,80 +1,49 @@
-# Project Title: Website [Đồng ngôn]
+# Đồng ngôn (Website)
 
-## Giới thiệu (Description)
-Website **Đồng Ngôn** là nơi lưu trữ và chia sẻ cảm hứng văn học.
+## Introduction / Giới thiệu
+**Đồng ngôn** is a sanctuary for literature enthusiasts to store, share, and experience poetry and prose. It provides a quiet space for fleeting inspirations and collective creative works.
 
-### Tính năng chính:
-1. **Lưu trữ cảm hứng**: Nơi cất giữ những đoạn thơ, văn ngẫu hứng.
-2. **Sáng tác tập thể**:
-   - **Thơ**: Đa dạng thể loại (Tự do, Lục bát, Song thất lục bát, Thất ngôn tứ tuyệt, Thất ngôn bát cú...).
-   - **Văn xuôi**: Tản văn, Truyện ngắn.
-   - **Tiểu thuyết**: (Coming soon).
-3. **Quy luật cộng đồng**:
-   - **Chế độ**: 1 ký tự/bài/ngày hoặc 1 câu/bài/ngày.
-   - **Tự do**: Không chủ đề cố định, tôn trọng cảm hứng cá nhân.
-   - **Định danh**: Mỗi người dùng có một bút danh (Nickname) riêng.
-   - **Bản quyền**: Nội dung là tài sản chung của cộng đồng.
-   - **Nguyên tắc**: Nghiêm cấm nội dung xuyên tạc, chống phá, vi phạm pháp luật và thuần phong mỹ tục Việt Nam.
-4. **Bộ lọc thông minh**:
-   - Lọc theo Thể loại (Thơ/Văn).
-   - Lọc theo Thời kỳ (Cổ đại, Trung đại, Cận đại, Hiện đại).
+**Đồng ngôn** là không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.
 
-## Hướng dẫn chạy thử (Getting Started)
+## Key Features / Tính năng chính
+1. **Literature Repository**: A secure vault for poems, prose, and spontaneous inspirations.
+2. **Collective Creation**: Support for various forms of literature including Poetry (Free verse, Luc Bat, etc.) and Prose (Essays, Short stories).
+3. **Advanced Filtering**: Categorize and discover works by Genre (Poetry/Prose) and Era (Ancient, Medieval, Modern).
+4. **User Profiles**: Personalized nicknames, avatar customization, and secure authentication.
+5. **Interactive Experience**: Smooth navigation, voting systems, and real-time updates.
+
+## Tech Stack / Công nghệ sử dụng
+- **Core**: [Next.js 16 (App Router)](https://nextjs.org/), [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animation & UX**:
+  - [Framer Motion](https://www.framer.com/motion/) (Transitions and interactions)
+  - [Lenis](https://lenis.darkroom.engineering/) (Smooth scrolling)
+- **Backend & Auth**: [Supabase](https://supabase.com/) (PostgreSQL, Real-time Auth, Storage)
+- **Analytics**: [PostHog](https://posthog.com/)
+- **Testing**: [Playwright](https://playwright.dev/)
+
+## Getting Started / Hướng dẫn chạy thử
 
 ```bash
-# Cài đặt thư viện
+# Install dependencies
 npm install
 
-# Chạy server development
+# Run development server
 npm run dev
-# Mở http://localhost:3000 để xem kết quả
+
+# Open http://localhost:3000 to view the project
 ```
 
-## Tech Stack (Công nghệ sử dụng)
+## Project Structure / Cấu trúc dự án
+- `app/`: Next.js App Router pages and API routes.
+- `components/`: Reusable UI components organized by feature (About, Contribution, Popular, Settings).
+- `supabase/`: Database migrations and edge functions.
+- `utils/`: Helper functions and Supabase client configuration.
+- `public/`: Static assets including fonts and logos.
 
-- **Core**: [Next.js 14+](https://nextjs.org/) (App Router), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animation**: 
-  - [Framer Motion](https://www.framer.com/motion/) (Hiệu ứng chuyển cảnh, tương tác)
-  - [react-pageflip](https://github.com/Nodlik/react-pageflip) (Hiệu ứng lật trang sách 3D)
-- **Utilities**:
-  - [react-easy-crop](https://github.com/ValentinH/react-easy-crop) (Cắt ảnh Avatar)
-- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **Fonts**: 
-  - [Google Fonts](https://fonts.google.com/) (Lora, Geist)
-  - Custom Fonts (Roboto Slab Light)
-
-## Cập nhật Kỹ thuật (Technical Highlights)
-
-### Trang Đăng ký (/dang-ky)
-- **Thiết kế**: Mô phỏng cuốn sách ma thuật 3D.
-- **Công nghệ**: `react-pageflip` kết hợp `framer-motion`.
-- **Đặc điểm**:
-  - **Hiệu ứng lật trang**: Sách mở từ phải sang trái, bìa sách lật ra sau để lộ trang nội dung.
-  - **Layout Thông minh**: 
-    - Khi đóng: Bìa sách (Màu đen) được căn giữa màn hình.
-    - Khi mở: Sách mở rộng ra 2 bên, tự động căn giữa lại để hiển thị toàn bộ nội dung.
-  - **Tương tác**: Các nút điều hướng ("Trang trước", "Bắt Đầu") được tối ưu với lớp Overlay vô hình để đảm bảo nhận diện click chính xác trên bề mặt 3D.
-  - **Giao diện**: Màu đen chủ đạo (#1a1a1a), font chữ `Roboto Slab Light` tạo cảm giác cổ điển, trang trọng.
-
-### Trang Đồng Ngôn (/dong-ngon)
-- **Giao diện**: Grid Layout responsive, hiển thị tác phẩm dưới dạng thẻ (Card).
-- **Tính năng lọc (Advanced Filter)**:
-  - **Client-side Filtering**: Sử dụng `React State` và `useMemo` để lọc dữ liệu tức thì không cần reload trang.
-  - **Interactive Tags**: Thẻ metadata trên card có thể click được để kích hoạt bộ lọc tương ứng.
-  - **UX**: Hỗ trợ nút "Áp dụng" để người dùng kiểm soát thời điểm lọc và nút "Đặt lại" để xóa bộ lọc nhanh.
-
-### Trang Cài đặt (/settings)
-- **Giao diện**: Layout 2 cột (Sidebar + Content) hiện đại, tự động chuyển đổi responsive giữa Mobile (Vertical Stack) và Desktop (Side-by-Side).
-- **Tính năng**:
-  - **Hồ sơ cá nhân**: 
-    - Cập nhật Avatar với công cụ cắt ảnh (Image Cropper) tích hợp.
-    - Thay đổi Bút danh (Nickname).
-  - **Tài khoản & Bảo mật**: 
-    - Gửi email đặt lại mật khẩu.
-    - Khu vực nguy hiểm (Xóa tài khoản).
-  - **Giao diện & Ngôn ngữ**: Tùy chỉnh Dark/Light mode và Ngôn ngữ hệ thống.
-- **Kỹ thuật**:
-  - **Supabase Integration**: Auth (User Session), Database (Profiles), Storage (Avatars).
-  - **Server Components & Actions**: Tối ưu hóa hiệu năng và bảo mật khi xử lý dữ liệu người dùng.
-  - **Robust Layout**: Sử dụng CSS Injection kết hợp Tailwind để đảm bảo layout sidebar hoạt động chính xác trên mọi kích thước màn hình.
+## Technical Highlights / Đặc điểm kỹ thuật
+- **Hybrid Rendering**: Strategic use of Server and Client components for optimal performance and SEO.
+- **Dynamic Content Flow**: Implemented via `CumulativeSection` and `HeroSection` for an engaging landing experience.
+- **Secure Persistence**: User profiles and literature works are managed through Supabase with strict Row Level Security (RLS).
+- **Responsive Design**: Mobile-first architecture ensured via Tailwind 4 and custom fluid layouts.
+- **Modern Typography**: Integrated local fonts (Ganh Type) and Google Fonts (Quicksand, Be Vietnam Pro) via `next/font`.
