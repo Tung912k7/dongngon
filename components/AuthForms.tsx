@@ -10,6 +10,7 @@ import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
 import NotificationModal from "./NotificationModal";
 import { PrimaryButton } from "./PrimaryButton";
 import { sanitizeNickname } from "@/utils/sanitizer";
+import DateInput from "@/components/DateInput";
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -53,16 +54,27 @@ const InputField = ({
     <div className="mb-6 group">
       <label className="block text-black text-lg mb-2 font-bold">{label}</label>
       <div className="relative">
-        <input 
-          type={inputType} 
-          name={name}
-          value={value} 
-          onChange={onChange}
-          maxLength={maxLength}
-          autoComplete={autoComplete}
-          required={required}
-          className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] pr-12`}
-        />
+        {type === "date" ? (
+          <DateInput
+            value={value}
+            onChange={(val) => {
+              // Creating a synthetic event-like object to trigger the parent's generic handleChange
+              onChange({ target: { name, value: val } } as React.ChangeEvent<HTMLInputElement>);
+            }}
+            className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem]`}
+          />
+        ) : (
+          <input 
+            type={inputType} 
+            name={name}
+            value={value} 
+            onChange={onChange}
+            maxLength={maxLength}
+            autoComplete={autoComplete}
+            required={required}
+            className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] ${isPassword ? 'pr-12' : ''}`}
+          />
+        )}
         {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
         {isPassword && (
           <button
@@ -506,6 +518,7 @@ export function SignUpForm() {
     email: "",
     penName: "",
     password: "",
+    birthday: "",
     agreedToTerms: false,
     agreedToRegulations: false,
   });
@@ -537,6 +550,7 @@ export function SignUpForm() {
     data.email.trim() !== "" &&
     data.penName.trim() !== "" &&
     data.password.trim() !== "" &&
+    data.birthday.trim() !== "" &&
     data.agreedToTerms &&
     data.agreedToRegulations,
   [data]);
@@ -561,14 +575,27 @@ export function SignUpForm() {
     if (!data.email.trim()) newFieldErrors.email = "Email không được để trống.";
     if (!data.penName.trim()) newFieldErrors.penName = "Bút danh không được để trống.";
     if (!data.password.trim()) newFieldErrors.password = "Mật khẩu không được để trống.";
+    if (!data.birthday.trim()) newFieldErrors.birthday = "Ngày sinh không được để trống.";
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
     if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
     // Let browser/server handle validation or use the standardized regex
 
     // Validation: Password strength
-    if (data.password.trim() && data.password.length < 6) {
-      newFieldErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+    if (data.password.trim()) {
+      if (data.password.length < 8) {
+        newFieldErrors.password = "Mật khẩu phải có ít nhất 8 ký tự.";
+      } else if (data.password.length > 50) {
+        newFieldErrors.password = "Mật khẩu không được vượt quá 50 ký tự.";
+      } else if (!/[a-z]/.test(data.password)) {
+        newFieldErrors.password = "Mật khẩu phải chứa ít nhất một chữ thường (a-z).";
+      } else if (!/[A-Z]/.test(data.password)) {
+        newFieldErrors.password = "Mật khẩu phải chứa ít nhất một chữ hoa (A-Z).";
+      } else if (!/[0-9]/.test(data.password)) {
+        newFieldErrors.password = "Mật khẩu phải chứa ít nhất một chữ số (0-9).";
+      } else if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(data.password)) {
+        newFieldErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      }
     }
 
     if (Object.keys(newFieldErrors).length > 0) {
@@ -631,6 +658,7 @@ export function SignUpForm() {
             data: {
               full_name: data.fullName,
               nickname: sanitizeNickname(data.penName),
+              birthday: data.birthday,
             }
           }
         }),
@@ -639,8 +667,8 @@ export function SignUpForm() {
 
       if (authError) {
         let errorMsg = authError.message;
-        if (errorMsg === "Password should be at least 6 characters") {
-          errorMsg = "Mật khẩu phải có ít nhất 6 ký tự.";
+        if (errorMsg.includes("Password should be at least")) {
+          errorMsg = "Mật khẩu không đáp ứng yêu cầu bảo mật.";
         } else if (errorMsg === "User already registered") {
           errorMsg = "Email này đã được đăng ký.";
         }
@@ -678,6 +706,7 @@ export function SignUpForm() {
             <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} autoComplete="name" />
             <InputField label="Email" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} autoComplete="email" />
             <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} autoComplete="nickname" />
+            <InputField label="Ngày sinh" name="birthday" type="date" value={data.birthday} onChange={handleChange} error={fieldErrors.birthday} autoComplete="bday" required />
             <InputField 
               label="Mật khẩu" 
               name="password" 
@@ -688,6 +717,17 @@ export function SignUpForm() {
               error={fieldErrors.password} 
               autoComplete="new-password"
             />
+            
+            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-xl border border-gray-200 mt-2">
+              <p className="font-bold text-black mb-1">Yêu cầu mật khẩu:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li className={data.password.length >= 8 ? "text-green-600 font-medium" : ""}>Ít nhất 8 ký tự (tối đa 50)</li>
+                <li className={/[A-Z]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một chữ hoa (A-Z)</li>
+                <li className={/[a-z]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một chữ thường (a-z)</li>
+                <li className={/[0-9]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một số (0-9)</li>
+                <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một ký tự đặc biệt</li>
+              </ul>
+            </div>
           </div>
 
           <div className="mt-8 space-y-2">

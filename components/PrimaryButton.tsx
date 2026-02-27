@@ -26,7 +26,7 @@ export const PrimaryButton = ({
       disabled={disabled}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`px-10 py-2.5 border-[3px] border-black text-2xl rounded-xl transition-all font-bold disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center justify-center gap-2 ${className}`}
+      className={`px-10 py-2.5 border-[3px] border-black text-2xl rounded-full transition-all duration-300 hover:scale-[1.02] hover:shadow-lg font-bold disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center justify-center gap-2 ${className}`}
       style={{
         backgroundColor: (isHovered && !disabled) ? "black" : (disabled ? "#f3f4f6" : "white"),
         color: (isHovered && !disabled) ? "white" : (disabled ? "#9ca3af" : "black"),
@@ -53,7 +53,7 @@ export const LinkedButton = ({
       href={href}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`px-6 py-2 border-[3px] border-black text-center transition-all font-bold flex items-center justify-center gap-2 ${className}`}
+      className={`px-6 py-2 border-[3px] border-black text-center transition-all duration-300 rounded-full hover:scale-[1.02] hover:shadow-lg font-bold flex items-center justify-center gap-2 ${className}`}
       style={{
         backgroundColor: isHovered ? "black" : "white",
         color: isHovered ? "white" : "black",

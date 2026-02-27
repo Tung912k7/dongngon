@@ -27,6 +27,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     hinh_thuc: "Tùy bút",
     license: "public",
     writing_rule: "1 câu",
+    age_rating: "all",
   });
 
   // Reset form when modal opens
@@ -38,6 +39,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
         hinh_thuc: "Tùy bút",
         license: "public",
         writing_rule: "1 câu",
+        age_rating: "all",
       });
       setFieldErrors({});
       setError(null);
@@ -96,6 +98,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
           hinh_thuc: "Tùy bút",
           license: "public",
           writing_rule: "1 câu",
+          age_rating: "all",
         });
       } else {
         setError(result.error || "Có lỗi xảy ra.");
@@ -225,16 +228,30 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">QUYỀN RIÊNG TƯ</label>
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">GIỚI HẠN ĐỘ TUỔI</label>
                     <select
-                      value={formData.license}
-                      onChange={(e) => setFormData({ ...formData, license: e.target.value })}
+                      value={formData.age_rating}
+                      onChange={(e) => setFormData({ ...formData, age_rating: e.target.value })}
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
-                      <option value="public">Cộng đồng</option>
-                      <option value="private">Riêng tư</option>
+                      <option value="all">Mọi độ tuổi</option>
+                      <option value="13+">13+</option>
+                      <option value="16+">16+</option>
+                      <option value="18+">18+</option>
                     </select>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-400">QUYỀN RIÊNG TƯ</label>
+                  <select
+                    value={formData.license}
+                    onChange={(e) => setFormData({ ...formData, license: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
+                  >
+                    <option value="public">Cộng đồng</option>
+                    <option value="private">Riêng tư</option>
+                  </select>
                 </div>
 
                 {error && (

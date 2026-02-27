@@ -24,7 +24,7 @@ export default async function DongNgonPage({
     const { data: rawWorks, error } = await (async () => {
         let query = supabase
             .from("works")
-            .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by")
+            .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by, age_rating")
             .order("created_at", { ascending: false });
 
         // Privacy Filter: Only show Public works OR works created by the current user

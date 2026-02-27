@@ -11,8 +11,8 @@ const AboutContent = () => {
         viewport={{ once: true }}
         className="w-full max-w-4xl text-left"
       >
-        <p className="font-be-vietnam text-lg md:text-xl lg:text-2xl leading-relaxed text-gray-200">
-          Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn. Tại đây chúng tôi đề cao sự ngẫu hứng như cách dự án này được sinh ra.
+        <p className="font-ganh text-2xl md:text-4xl lg:text-5xl leading-relaxed text-white tracking-wide">
+          "Tại đây chúng tôi đề cao sự ngẫu hứng như cách dự án này được sinh ra."
         </p>
       </motion.div>
     </div>

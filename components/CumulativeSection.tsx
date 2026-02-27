@@ -33,6 +33,9 @@ const CumulativeSection = () => {
 
   return (
     <section ref={containerRef} className="relative w-full bg-black text-white h-[400vh]">
+      {/* Smooth Transition Gradient overlay */}
+      <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-[#F5F5F5] to-transparent z-20 pointer-events-none"></div>
+
       {/* Sticky Container - The Viewport */}
       <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row overflow-hidden">
         

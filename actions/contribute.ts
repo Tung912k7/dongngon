@@ -21,7 +21,7 @@ export async function submitContribution(workId: string, content: string) {
   // 1.1 Check Work Details (including limit_type)
   const { data: work } = await supabase
     .from("works")
-    .select("status, limit_type, sub_category")
+    .select("status, limit_type, sub_category, created_by, title, age_rating")
     .eq("id", workId)
     .single();
 
@@ -85,12 +85,22 @@ export async function submitContribution(workId: string, content: string) {
     return { error: `Bạn chỉ được đóng góp 1 ${unit} mỗi ngày cho tác phẩm này.` };
   }
 
-  // 4. Get User Profile for Nickname
+  // 4. Get User Profile for Nickname & Age Check
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname")
+    .select("nickname, birthday")
     .eq("id", user.id)
     .single();
+
+  // 4.1 Perform Age Rating check on backend before contribution
+  if (work?.age_rating && work.age_rating !== "all") {
+    const { calculateAge, isOldEnough } = await import("@/utils/age");
+    const age = calculateAge(profile?.birthday);
+    
+    if (user.id !== work.created_by && !isOldEnough(age, work.age_rating)) {
+      return { error: `Bạn chưa đủ tuổi (${work.age_rating}) để đóng góp vào tác phẩm này.` };
+    }
+  }
 
   const id = workId;
   const text = sanitizedContent;
@@ -112,6 +122,17 @@ export async function submitContribution(workId: string, content: string) {
   if (error) {
     console.error("Error submitting contribution:", error);
     return { error: getErrorMessage(error) };
+  }
+
+  // 6. Notify Work Owner (if someone else contributed)
+  if (work && work.created_by && work.created_by !== user.id) {
+    await supabase.from("notifications").insert({
+      user_id: work.created_by,
+      work_id: workId,
+      type: "contribution",
+      message: `${nickname} đã đóng góp tiếp nối vào tác phẩm "${work.title}".`,
+      is_read: false
+    });
   }
 
   revalidatePath(`/work/${workId}`);

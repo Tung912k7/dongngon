@@ -6,6 +6,7 @@ export type Work = {
   status: string; // 'active', 'completed'
   license: string;
   limit_type: string; // '1_sentence_day'
+  age_rating?: string; // 'all', '13+', '16+', '18+'
   created_at: string;
   created_by: string; // UUID
 };
@@ -16,6 +17,16 @@ export type Contribution = {
   user_id: string; // UUID
   author_nickname: string;
   content: string;
+  created_at: string;
+};
+
+export type Notification = {
+  id: string; // UUID
+  user_id: string; // UUID
+  work_id?: string; // UUID
+  type: string; // 'contribution', 'announcement', 'system'
+  message: string;
+  is_read: boolean;
   created_at: string;
 };
 

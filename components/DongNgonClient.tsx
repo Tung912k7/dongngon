@@ -82,7 +82,7 @@ export default function DongNgonClient({
     
     let query = sb
       .from("works")
-      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by")
+      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by, age_rating")
       .order("created_at", { ascending: false });
 
     // Privacy Filter
@@ -110,6 +110,7 @@ export default function DongNgonClient({
         type: work.category_type,
         hinh_thuc: work.sub_category,
         rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+        age_rating: work.age_rating,
         status: work.status === "writing" ? "Đang viết" : 
                 work.status === "finished" ? "Hoàn thành" : 
                 work.status === "pending" ? "Đợi duyệt" : work.status,
@@ -177,6 +178,7 @@ export default function DongNgonClient({
               type: newWork.category_type,
               hinh_thuc: newWork.sub_category,
               rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+              age_rating: newWork.age_rating,
               status: newWork.status === "writing" ? "Đang viết" : 
                       newWork.status === "finished" ? "Hoàn thành" : 
                       newWork.status === "pending" ? "Đợi duyệt" : newWork.status,
@@ -193,6 +195,7 @@ export default function DongNgonClient({
               type: updatedWork.category_type,
               hinh_thuc: updatedWork.sub_category,
               rule: updatedWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+              age_rating: updatedWork.age_rating,
               status: updatedWork.status === "writing" ? "Đang viết" : 
                       updatedWork.status === "finished" ? "Hoàn thành" : 
                       updatedWork.status === "pending" ? "Đợi duyệt" : updatedWork.status,
@@ -324,30 +327,37 @@ export default function DongNgonClient({
                   <Link 
                     key={work.id} 
                     href={`/work/${work.id}`}
-                    className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[320px] justify-between relative group cursor-pointer"
+                    className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[360px] relative group cursor-pointer"
                   >
-                    <div>
+                    <div className="flex-grow flex flex-col justify-start mb-6">
                       <h3 className="text-3xl font-bold line-clamp-2 leading-tight mb-2">{work.title}</h3>
-                      <div className="flex flex-col">
-                        <p className="text-base text-gray-500">Bởi: {work.author_nickname}</p>
-                        <p className="text-base text-gray-500">{work.date}</p>
+                      <div className="flex flex-col mt-2">
+                        <p className="text-base text-gray-500 line-clamp-1 flex-shrink-0">Bởi: {work.author_nickname}</p>
+                        <p className="text-base text-gray-500 mt-1 flex items-center gap-2">
+                          {work.date} 
+                          <span>&bull;</span> 
+                          <span>{work.age_rating === 'all' || work.age_rating === 'All' ? 'Mọi độ tuổi' : work.age_rating}</span>
+                        </p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}>{work.hinh_thuc}</TagButton>
-                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}>{work.rule}</TagButton>
-                      <TagButton onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}>{work.type}</TagButton>
-                      <span 
+                    <div className="flex flex-wrap gap-2 mt-auto flex-shrink-0">
+                      <TagButton 
+                        className="!px-3 !py-1 !text-xs !font-medium" 
                         onClick={(e) => { e.preventDefault(); handleTagClick('status', work.status); }}
-                        className={`border rounded-full px-4 py-2 text-center text-sm overflow-hidden text-ellipsis whitespace-nowrap transition-colors cursor-pointer tracking-tight ${
-                          work.status === "Hoàn thành" ? "bg-green-100 border-green-600 text-green-800 hover:bg-green-200" :
-                          work.status === "Đang viết" ? "bg-blue-100 border-blue-600 text-blue-800 hover:bg-blue-200" :
-                          "bg-yellow-100 border-yellow-600 text-yellow-800 hover:bg-yellow-200"
-                        }`}
                       >
-                        {work.status}
-                      </span>
+                        <span className="flex items-center gap-1.5">
+                          <span className={`w-2 h-2 rounded-full ${
+                            work.status === "Hoàn thành" ? "bg-green-500" :
+                            work.status === "Đang viết" ? "bg-blue-500" :
+                            "bg-yellow-500"
+                          }`} />
+                          {work.status}
+                        </span>
+                      </TagButton>
+                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}>{work.type}</TagButton>
+                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}>{work.hinh_thuc}</TagButton>
+                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}>{work.rule}</TagButton>
                     </div>
                   </Link>
                 ))}

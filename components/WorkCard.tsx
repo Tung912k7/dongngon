@@ -29,37 +29,37 @@ export default function WorkCard({ work, isOwner }: WorkCardProps) {
   }, []);
 
   return (
-    <div className="relative group w-36 h-48">
+    <div className="relative group w-44 h-64 shrink-0 transition-all duration-300">
       {/* Card Content - Entire card is a link */}
       <Link
         href={`/work/${work.id}`}
-        className="absolute inset-0 bg-black rounded-lg flex flex-col items-center justify-center p-4 hover:opacity-90 transition-opacity z-0 gap-2"
+        className="absolute inset-0 bg-white border border-black/10 rounded-2xl flex flex-col items-start justify-between p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 z-0 gap-2 overfow-hidden"
       >
-        <span className="text-white font-bold text-center text-sm line-clamp-3">
+        <span className="text-black font-ganh font-bold text-left text-2xl line-clamp-4 leading-tight">
           {work.title}
         </span>
-        <span className="text-[10px] text-gray-400 font-medium">
+        <span className="text-xs font-quicksand text-black/60 font-medium">
           {formatDate(work.created_at)}
         </span>
       </Link>
 
       {/* Actions Menu Button - Floating on top */}
       {isOwner && (
-        <div className="absolute top-1 z-20" style={{ right: '0px' }} ref={menuRef}>
+        <div className="absolute top-2 right-2 z-20" ref={menuRef}>
           <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
             }}
-            className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-black/50 hover:text-black hover:bg-black/5 rounded-full transition-colors backdrop-blur-sm"
             title="Tùy chọn"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
               viewBox="0 0 24 24"
-              className="w-7 h-7"
+              className="w-6 h-6"
             >
               <path
                 d="M12 7.5a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5zM12 13.25a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5zM12 19a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5z"

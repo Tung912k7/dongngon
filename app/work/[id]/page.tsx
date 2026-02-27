@@ -55,7 +55,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating")
       .eq("id", id)
       .single(),
     
@@ -76,6 +76,19 @@ export default async function WorkPage({
     supabase.auth.getUser()
   ]);
 
+  const user = userResponse.data.user;
+
+  // 5. Fetch User Profile
+  let profile = null;
+  if (user) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("birthday")
+      .eq("id", user.id)
+      .single();
+    profile = profileData;
+  }
+
   const work = workResponse.data;
   if (work) {
     work.title = sanitizeTitle(work.title);
@@ -88,7 +101,6 @@ export default async function WorkPage({
   }));
 
   const voteCount = voteCountResponse.count;
-  const user = userResponse.data.user;
 
   if (workResponse.error) {
     console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error);
@@ -116,6 +128,46 @@ export default async function WorkPage({
         </Link>
       </div>
     );
+  }
+
+  // Age Restriction Check
+  const ageRating = work.age_rating;
+  if (ageRating && ageRating.toLowerCase() !== "all") {
+    if (!user) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-gray-400">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Giới hạn độ tuổi</h1>
+          <p className="text-gray-500 mb-8 max-w-xs">Tác phẩm này được giới hạn cho độ tuổi {ageRating}. Vui lòng đăng nhập để xác nhận.</p>
+          <Link href="/dang-nhap" className="px-6 py-2 bg-black text-white rounded-full font-bold">
+            Đăng nhập
+          </Link>
+        </div>
+      );
+    }
+
+    const { calculateAge, isOldEnough } = await import("@/utils/age");
+    const age = calculateAge(profile?.birthday);
+    
+    // Admin bypass optionally? We can just do strictly age for everyone except maybe created_by
+    if (user.id !== work.created_by && !isOldEnough(age, ageRating)) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+            <span className="text-2xl font-black text-red-500">{ageRating}</span>
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-red-600">Nội dung giới hạn độ tuổi</h1>
+          <p className="text-gray-500 mb-8 max-w-xs">Bạn chưa đủ tuổi để xem tác phẩm này.</p>
+          <Link href="/dong-ngon" className="px-6 py-2 bg-black text-white rounded-full font-bold">
+            Quay lại trang chủ
+          </Link>
+        </div>
+      );
+    }
   }
 
   // Calculate unique contributors from the already fetched contributions

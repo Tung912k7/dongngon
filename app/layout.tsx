@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
-import GuideNotification from "@/components/GuideNotification";
-import SmoothScroll from "@/components/SmoothScroll";
+import { ClientGlobalWrappers } from "@/components/ClientGlobalWrappers";
 import { Be_Vietnam_Pro, Quicksand } from "next/font/google";
 import localFont from "next/font/local";
 
@@ -126,13 +125,12 @@ export default async function RootLayout({
         className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col overflow-x-hidden`}
       >
         <CSPostHogProvider>
-          <SmoothScroll>
+          <ClientGlobalWrappers hasSeenTour={has_seen_tour}>
             <Header user={user} nickname={nickname} role={role} />
             <main className="flex-1 w-full">
               {children}
             </main>
-            <GuideNotification hasSeenTour={has_seen_tour} />
-          </SmoothScroll>
+          </ClientGlobalWrappers>
         </CSPostHogProvider>
       </body>
     </html>

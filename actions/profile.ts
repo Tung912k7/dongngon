@@ -46,7 +46,7 @@ export const isEmailRegistered = async (email: string) => {
   return !!data;
 };
 
-export async function updateProfile(nickname: string, avatarUrl?: string) {
+export async function updateProfile(nickname: string, avatarUrl?: string, birthday?: string) {
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -79,13 +79,37 @@ export async function updateProfile(nickname: string, avatarUrl?: string) {
     return { error: "Bút danh này đã được sử dụng bởi người khác." };
   }
 
-  // 4. Upsert Profile
-  const { error } = await supabase.from("profiles").upsert({
+  // 4. Handle Birthday Logic (Cannot be changed after it is set once)
+  let finalBirthday = undefined;
+  if (birthday) {
+    const { data: currentProfile } = await supabase
+      .from("profiles")
+      .select("birthday")
+      .eq("id", user.id)
+      .single();
+
+    if (!currentProfile?.birthday) {
+      // Allow setting it because it was not set previously
+      finalBirthday = birthday;
+    }
+  }
+
+  // 5. Upsert Profile
+  const updatePayload: any = {
     id: user.id,
     nickname: sanitizedNickname,
-    avatar_url: avatarUrl,
     updated_at: new Date().toISOString(),
-  });
+  };
+
+  if (avatarUrl !== undefined) {
+    updatePayload.avatar_url = avatarUrl;
+  }
+  
+  if (finalBirthday !== undefined) {
+    updatePayload.birthday = finalBirthday;
+  }
+
+  const { error } = await supabase.from("profiles").upsert(updatePayload);
 
   if (error) {
     console.error("Profile update error:", error);

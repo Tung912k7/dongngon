@@ -6,16 +6,19 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import { createClient } from "@/utils/supabase/client";
+import DateInput from "@/components/DateInput";
 
 interface ProfileTabProps {
   initialNickname: string;
   initialAvatarUrl: string;
+  initialBirthday: string | null;
   userEmail: string;
 }
 
-export default function ProfileTab({ initialNickname, initialAvatarUrl, userEmail }: ProfileTabProps) {
+export default function ProfileTab({ initialNickname, initialAvatarUrl, initialBirthday, userEmail }: ProfileTabProps) {
   const [nickname, setNickname] = useState(initialNickname);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [birthday, setBirthday] = useState(initialBirthday || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +63,12 @@ export default function ProfileTab({ initialNickname, initialAvatarUrl, userEmai
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nickname.trim()) {
-      setMessage({ type: 'error', text: "Bút danh không được để trống." });
+      return;
+    }
+    
+    // Validate birthday if it is being set for the first time
+    if (!initialBirthday && !birthday) {
+      setMessage({ type: 'error', text: "Ngày sinh không được để trống." });
       return;
     }
 
@@ -68,7 +76,12 @@ export default function ProfileTab({ initialNickname, initialAvatarUrl, userEmai
     setMessage(null);
 
     try {
-      const result = await updateProfile(sanitizeNickname(nickname), avatarUrl);
+      // Pass birthday only if it wasn't previously set and is now set
+      const result = await updateProfile(
+        sanitizeNickname(nickname), 
+        avatarUrl, 
+        !initialBirthday && birthday ? birthday : undefined
+      );
       if (result.success) {
         setMessage({ type: 'success', text: "Cập nhật hồ sơ thành công!" });
       } else {
@@ -108,6 +121,12 @@ export default function ProfileTab({ initialNickname, initialAvatarUrl, userEmai
         </div>
       </div>
 
+      {(!initialBirthday || true) && (
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl text-yellow-800 text-sm">
+          <strong>Lưu ý:</strong> Một số tác phẩm cũ của bạn có thể đang thiếu phân loại độ tuổi. Vui lòng kiểm tra và cập nhật!
+        </div>
+      )}
+
       <div className="space-y-6 max-w-3xl">
         <div className="space-y-2">
           <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Bút danh (Hiển thị công khai)</label>
@@ -117,6 +136,20 @@ export default function ProfileTab({ initialNickname, initialAvatarUrl, userEmai
             onChange={(e) => setNickname(e.target.value)}
             className="w-full px-6 py-4 border-2 border-black rounded-xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5"
             placeholder="Nhập bút danh..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Ngày sinh (Không thể thay đổi sau khi lưu)</label>
+          <DateInput
+            value={birthday}
+            onChange={(val) => setBirthday(val)}
+            disabled={!!initialBirthday}
+            className={`w-full px-6 py-4 border-2 rounded-xl font-bold focus:outline-none ${
+              !!initialBirthday 
+                ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed'
+                : 'border-black focus:ring-4 focus:ring-black/5'
+            }`}
           />
         </div>
 

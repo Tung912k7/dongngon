@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import BrandHeader from "@/components/BrandHeader";
+import SearchBar from "@/components/SearchBar";
+import { LinkedButton } from "@/components/PrimaryButton";
 
 const HeroSection = () => {
     return (
@@ -12,29 +14,14 @@ const HeroSection = () => {
                 <div className="flex flex-col items-center justify-center min-h-[70vh] md:min-h-[80vh] gap-8 md:gap-12 pb-6 md:pb-12 w-full">
                     <BrandHeader />
                     
-                    {/* Intro Card - Premium Balanced Refactor */}
-                    <div className="w-fit max-w-[90vw] sm:max-w-xl mx-auto bg-white rounded-full border-2 border-black px-5 py-3 sm:px-8 sm:py-5 flex flex-row items-center justify-center gap-4 sm:gap-8 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-10">
-                        {/* Logo Container - Circular & Balanced */}
-                        <div className="flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-full w-12 h-12 sm:w-28 sm:h-28 overflow-hidden border border-black/5 shadow-sm">
-                            <Image
-                                src="/logo.png"
-                                alt="Đồng ngôn"
-                                width={120}
-                                height={120}
-                                className="object-contain w-8 h-8 sm:w-20 sm:h-20"
-                                priority
-                            />
-                        </div>
-            
-                        {/* Divider Line - Minimalist Vertical */}
-                        <div className="block w-[1.5px] sm:w-[2px] h-8 sm:h-20 bg-black/80 shrink-0"></div>
-                        
-                        {/* Text Content - Flexible & Readable */}
-                        <div className="flex flex-col justify-center min-w-0">
-                            <p className="text-black text-[11px] sm:text-base font-medium leading-relaxed font-be-vietnam tracking-tight">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            </p>
-                        </div>
+                    <p className="text-center font-be-vietnam text-lg md:text-xl text-black/70 max-w-2xl mt-[-1rem]">
+                      Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-4 mt-6 w-full justify-center">
+                        <LinkedButton href="/dong-ngon" className="w-full sm:w-auto px-12 py-3 text-2xl shadow-md">
+                            Bắt Đầu Viết
+                        </LinkedButton>
                     </div>
                     
                     {/* Scroll Down Indicator */}

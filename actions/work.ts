@@ -11,6 +11,7 @@ export async function createWork(formData: {
   hinh_thuc: string;
   license: string;
   writing_rule: string;
+  age_rating: string;
 }) {
   const supabase = await createClient();
 
@@ -67,6 +68,7 @@ export async function createWork(formData: {
     license: formData.license,
     privacy: formData.license === "private" ? "Private" : "Public",
     limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
+    age_rating: formData.age_rating,
     created_by: user.id,
     author_nickname: authorNickname,
     status: "writing"

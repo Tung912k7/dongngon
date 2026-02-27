@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
+import { getNotifications } from "@/actions/notification";
 
 interface HeaderProps {
   user: User | null;
@@ -104,12 +105,37 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
     );
   };
 
+  const NotificationMenuItemContent = () => {
+    const [unreadCount, setUnreadCount] = useState(0);
+    useEffect(() => {
+      if (!user) return;
+      const fetchNotifications = async () => {
+        const result = await getNotifications();
+        if (result.success && result.notifications) {
+          setUnreadCount(result.notifications.filter(n => !n.is_read).length);
+        }
+      };
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 60000);
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <div className="flex items-center gap-2">
+        <span>Thông báo</span>
+        {unreadCount > 0 && (
+          <div className="w-2 h-2 bg-red-500 rounded-full shadow-sm border border-white" />
+        )}
+      </div>
+    );
+  };
+
   return (
     <header className="w-full bg-white sticky top-0 z-50">
       <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         
         {/* Mobile Header - Only visible on small screens */}
-        <div className="flex sm:hidden items-center gap-4 mb-4">
+        <div className="flex sm:hidden items-center gap-4 mb-4 relative z-50">
           {/* Hamburger Menu Button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -212,6 +238,15 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                           Hồ sơ
                         </Link>
                         <Link
+                          href="/notification"
+                          className={`
+                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
+                            ${pathname === "/notification" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
+                          `}
+                        >
+                          <NotificationMenuItemContent />
+                        </Link>
+                        <Link
                           href="/settings"
                           className={`
                             font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
@@ -275,9 +310,10 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
               })}
 
               {/* User Section / Dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => user ? setIsDropdownOpen(!isDropdownOpen) : router.push("/dang-nhap")}
+              <div className="flex items-center gap-4">
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => user ? setIsDropdownOpen(!isDropdownOpen) : router.push("/dang-nhap")}
                   className={`
                     relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center gap-2
                     ${mounted && isUserSectionActive ? "text-white" : "text-black hover:opacity-70"}
@@ -328,6 +364,12 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                         Hồ sơ
                       </MenuLink>
                       <MenuLink 
+                        href="/notification" 
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <NotificationMenuItemContent />
+                      </MenuLink>
+                      <MenuLink 
                         href="/settings" 
                         onClick={() => setIsDropdownOpen(false)}
                         className="border-t border-black/10"
@@ -344,6 +386,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                   )}
                 </AnimatePresence>
               </div>
+            </div>
            </nav>
         </div>
 

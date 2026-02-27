@@ -16,11 +16,12 @@ export default async function AdminDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Bảng điều khiển quản trị</h1>
-          <p className="text-slate-500">Quản lý hệ thống Đồng Ngôn</p>
-        </div>
+      <div className="mb-14 text-center">
+        <h1 className="text-5xl font-bold uppercase tracking-tight mb-3">Bảng điều khiển</h1>
+        <div className="w-12 h-2.5 bg-black mx-auto"></div>
+        <p className="text-gray-500 mt-6 font-bold uppercase tracking-widest text-xs">
+          Quản lý hệ thống Đồng Ngôn
+        </p>
       </div>
 
       {/* Stats Grid */}
