@@ -127,7 +127,7 @@ const CumulativeSection = () => {
               zIndex: zIndexPopular,
               willChange: "opacity, transform"
             }}
-            className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-12 lg:px-20"
+            className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-12 lg:px-20 pt-[10vh] md:pt-[12vh]"
           >
             <div className="w-full max-w-6xl">
               <PopularContent />

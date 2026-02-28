@@ -65,7 +65,7 @@ const PopularContent = () => {
   if (popularWorks.length === 0) return null;
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-10 md:gap-16 lg:gap-24 relative overflow-hidden py-10 md:py-16">
+    <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-10 lg:gap-12 relative overflow-hidden py-6 md:py-8 lg:py-12">
       {/* 1. Title Section (Shelf Header) */}
       <div className="w-full max-w-4xl px-4 flex flex-col items-center justify-center gap-2 md:gap-3 relative z-20">
         <motion.div 
