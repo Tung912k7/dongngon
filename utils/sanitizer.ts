@@ -6,19 +6,18 @@ function cleanEscapedQuotes(input: string): string {
 }
 
 /**
- * Hàng rào bảo mật: Làm sạch dữ liệu đầu vào.
- * Mục tiêu: Loại bỏ các thẻ HTML và các ký tự có thể gây lỗi injection hoặc XSS.
+ * Strict escaping and sanitization for regular inputs.
  */
 export function sanitizeInput(input: string, shouldTrim: boolean = true): string {
   if (!input) return "";
 
-  // 1. Loại bỏ các thẻ HTML để tránh XSS
-  let sanitized = input.replace(/<[^>]*>?/gm, "");
-  
-  // 2. Làm sạch các dấu backslash thừa trước dấu ngoặc
-  sanitized = cleanEscapedQuotes(sanitized);
+  // 1. Clean backslashes
+  let sanitized = cleanEscapedQuotes(input);
 
-  // 3. Trim khoảng trắng thừa ở hai đầu (nếu được yêu cầu)
+  // 2. Escape HTML symbols securely (Converts < to &lt;, > to &gt;)
+  sanitized = escapeHTML(sanitized);
+
+  // 3. Trim if required
   if (shouldTrim) {
     sanitized = sanitized.trim();
   }
@@ -44,22 +43,19 @@ export function escapeHTML(input: string): string {
 }
 
 /**
- * Strict sanitization for titles: removes all HTML tags and cleans escaped quotes.
+ * Strict escaping for titles.
  */
 export function sanitizeTitle(input: string): string {
   if (!input) return "";
-  // Strip all HTML tags and clean escaped quotes
-  const stripped = input.replace(/<[^>]*>?/gm, "");
-  return cleanEscapedQuotes(stripped).trim();
+  const cleaned = cleanEscapedQuotes(input).trim();
+  return escapeHTML(cleaned);
 }
 
 /**
- * Strict sanitization for nicknames: removes all HTML tags and cleans up escaped quotes.
- * This resolves the issue where some pages show backslash-escaped versions.
+ * Strict escaping for nicknames.
  */
 export function sanitizeNickname(input: string): string {
   if (!input) return "";
-  // Strip all HTML tags and clean escaped quotes
-  const stripped = input.replace(/<[^>]*>?/gm, "");
-  return cleanEscapedQuotes(stripped).trim();
+  const cleaned = cleanEscapedQuotes(input).trim();
+  return escapeHTML(cleaned);
 }

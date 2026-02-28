@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitContribution } from "@/actions/contribute";
@@ -23,6 +23,8 @@ export default function Editor({
   const router = useRouter();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
@@ -75,13 +77,14 @@ export default function Editor({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
 
-    // 1. Clean content: only trim if not in character mode
-    // Preserve internal newlines (don't replace \n with space)
+    // 1. Clean content: read from ref directly for perfectly synced state or state fallback
+    const currentContent = textareaRef.current?.value ?? content;
     const isCharacterMode = writingRule === '1 kí tự';
-    const cleanContent = isCharacterMode ? content : content.trim();
+    const cleanContent = isCharacterMode ? currentContent : currentContent.trim();
     
     if (!cleanContent) {
       setError("Vui lòng nhập nội dung.");
@@ -144,6 +147,7 @@ export default function Editor({
       }
     } finally {
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -179,6 +183,7 @@ export default function Editor({
       )}
       <div className="flex gap-2">
         <textarea
+          ref={textareaRef}
           value={content}
           onChange={(e) => {
             const value = e.target.value;
@@ -211,7 +216,8 @@ export default function Editor({
         </PrimaryButton>
       </div>
       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
-        Mỗi ngày chỉ được đóng góp 1 {writingRule === "1 kí tự" ? "kí tự" : "câu"}.
+        Mỗi ngày chỉ được đóng góp 1 {writingRule === "1 kí tự" ? "kí tự" : "câu"}. 
+        {writingRule === "1 câu" && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
       </p>
 
       <NotificationModal 
