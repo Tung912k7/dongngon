@@ -63,7 +63,7 @@ export default function WorkOwnerControls({
     setIsSubmitting(false);
 
     if (result.success) {
-      router.push("/dong-ngon");
+      router.push("/kho-tang");
       router.refresh();
     } else {
       setNotification({

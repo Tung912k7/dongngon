@@ -55,7 +55,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating, author_nickname")
       .eq("id", id)
       .single(),
     
@@ -123,7 +123,7 @@ export default async function WorkPage({
         </div>
         <h1 className="text-2xl font-bold mb-2">Tác phẩm riêng tư</h1>
         <p className="text-gray-500 mb-8 max-w-xs">Bạn không có quyền truy cập vào nội dung này.</p>
-        <Link href="/dong-ngon" className="px-6 py-2 bg-black text-white rounded-full font-bold">
+        <Link href="/kho-tang" className="px-6 py-2 bg-black text-white rounded-full font-bold">
           Quay lại trang chủ
         </Link>
       </div>
@@ -162,7 +162,7 @@ export default async function WorkPage({
           </div>
           <h1 className="text-2xl font-bold mb-2 text-red-600">Nội dung giới hạn độ tuổi</h1>
           <p className="text-gray-500 mb-8 max-w-xs">Bạn chưa đủ tuổi để xem tác phẩm này.</p>
-          <Link href="/dong-ngon" className="px-6 py-2 bg-black text-white rounded-full font-bold">
+          <Link href="/kho-tang" className="px-6 py-2 bg-black text-white rounded-full font-bold">
             Quay lại trang chủ
           </Link>
         </div>
@@ -179,7 +179,7 @@ export default async function WorkPage({
     <div className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
       <section className="mb-8 border-b pb-4">
         <Link
-          href="/dong-ngon"
+          href="/kho-tang"
           className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block "
         >
           &larr; Quay lại

@@ -125,7 +125,7 @@ export default async function ProfilePage() {
               <h2 className="text-xl font-bold">Các tác phẩm đã đóng góp:</h2>
               {contributedWorksList && contributedWorksList.length > 0 && (
                 <LinkedButton 
-                  href="/dong-ngon"
+                  href="/kho-tang"
                   className="!rounded-full !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                 >
                   ĐÓNG GÓP
@@ -141,7 +141,7 @@ export default async function ProfilePage() {
                 <div className="w-full py-16 border-2 border-dashed border-gray-200 rounded-[2rem] flex flex-col items-center justify-center text-gray-400 gap-6">
                   <p className="italic font-bold text-gray-400/60">Chưa có đóng góp nào</p>
                   <LinkedButton 
-                    href="/dong-ngon"
+                    href="/kho-tang"
                     className="!px-10 !py-3 !rounded-full !text-xs !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                   >
                     ĐÓNG GÓP

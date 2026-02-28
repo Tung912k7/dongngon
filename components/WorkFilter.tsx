@@ -19,7 +19,7 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="px-4 py-2 text-xs font-bold uppercase rounded-md transition-all h-[38px] border border-black flex items-center justify-center"
+        className="px-4 py-2 text-sm font-medium rounded-md transition-all h-[38px] border border-gray-800 flex items-center justify-center"
         style={{
           backgroundColor: isHovered ? "black" : "white",
           color: isHovered ? "white" : "black",
@@ -44,11 +44,11 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-4 p-4 bg-white border border-black rounded-lg shadow-sm items-end">
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Loại văn bản</label>
+    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-4 p-3 md:p-4 bg-white border border-gray-200 rounded-lg shadow-sm items-end w-full">
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider whitespace-nowrap">Loại văn bản</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("category_type", e.target.value)}
           value={localFilters.category_type}
         >
@@ -58,10 +58,10 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Hình thức</label>
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider whitespace-nowrap">Hình thức</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("hinh_thuc", e.target.value)}
           value={localFilters.hinh_thuc}
         >
@@ -83,10 +83,10 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider">Quy tắc viết</label>
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider">Quy tắc viết</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("writing_rule", e.target.value)}
           value={localFilters.writing_rule}
         >
@@ -96,10 +96,10 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Ngày tạo</label>
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider whitespace-nowrap">Ngày tạo</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("sort_date", e.target.value)}
           value={localFilters.sort_date}
         >
@@ -108,10 +108,10 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Tiến độ</label>
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider whitespace-nowrap">Tiến độ</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("status", e.target.value)}
           value={localFilters.status}
         >
@@ -122,10 +122,10 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Số lượng</label>
+      <div className="flex flex-col gap-1 w-full md:w-auto">
+        <label className="text-sm font-medium text-gray-700 tracking-wider whitespace-nowrap">Số lượng</label>
         <select
-          className="p-2 border border-black rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-black w-full"
+          className="p-2 border border-gray-300 rounded-md bg-white text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-black w-full"
           onChange={(e) => handleLocalChange("limit", e.target.value)}
           value={localFilters.limit}
         >
@@ -136,10 +136,12 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
         </select>
       </div>
 
-      <div className="flex gap-2">
-        <FilterApplyButton onClick={applyFilters}>
-          Áp dụng
-        </FilterApplyButton>
+      <div className="flex gap-2 col-span-2 md:col-span-1 w-full md:w-auto mt-2 md:mt-0">
+        <div className="w-1/2 md:w-auto">
+          <FilterApplyButton onClick={applyFilters}>
+            Áp dụng
+          </FilterApplyButton>
+        </div>
         <button
           onClick={() => {
             const defaultFilters = {
@@ -153,7 +155,7 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
             setLocalFilters(defaultFilters);
             onApply(defaultFilters);
           }}
-          className="px-4 py-2 border border-black text-black text-xs font-bold uppercase rounded-md hover:bg-gray-100 transition-colors h-[38px] whitespace-nowrap"
+          className="w-1/2 md:w-auto px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors h-[38px] whitespace-nowrap flex items-center justify-center"
         >
           Đặt lại
         </button>

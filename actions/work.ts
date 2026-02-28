@@ -38,6 +38,10 @@ export async function createWork(formData: {
     return { error: "Tiêu đề phải có ít nhất 2 ký tự." };
   }
 
+  if (formData.writing_rule === "1 kí tự" || formData.writing_rule === "character") {
+    return { error: "Quy tắc 1 kí tự đang tạm thời bị khóa." };
+  }
+
   // 3. Get User Profile for Nickname
   const { data: profile } = await supabase
     .from("profiles")
@@ -80,7 +84,7 @@ export async function createWork(formData: {
   }
 
   revalidatePath("/profile");
-  revalidatePath("/dong-ngon");
+  revalidatePath("/kho-tang");
   
   return { success: true, workId: data.id };
 }
@@ -105,7 +109,7 @@ export async function deleteWork(workId: string) {
   }
 
   revalidatePath("/profile");
-  revalidatePath("/dong-ngon");
+  revalidatePath("/kho-tang");
   
   return { success: true };
 }
@@ -140,7 +144,7 @@ export async function updateWork(workId: string, formData: {
   }
 
   revalidatePath("/profile");
-  revalidatePath("/dong-ngon");
+  revalidatePath("/kho-tang");
   revalidatePath(`/work/${workId}`);
   
   return { success: true };

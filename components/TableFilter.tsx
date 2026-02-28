@@ -62,7 +62,7 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-0 mt-2 min-w-[300px]"
+              className="absolute top-full -left-2 sm:left-0 mt-2 w-[calc(100vw-2rem)] sm:w-auto sm:min-w-[400px] md:min-w-[500px]"
             >
               <WorkFilter filters={filters} onApply={handleApply} />
             </motion.div>

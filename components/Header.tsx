@@ -346,7 +346,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden"
+                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden flex flex-col"
                     >
                       {role === "admin" && (
                         <MenuLink
@@ -360,25 +360,27 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       <MenuLink 
                         href="/profile" 
                         onClick={() => setIsDropdownOpen(false)}
+                        className="border-b border-black/10"
                       >
                         Hồ sơ
                       </MenuLink>
                       <MenuLink 
                         href="/notification" 
                         onClick={() => setIsDropdownOpen(false)}
+                        className="border-b border-black/10"
                       >
                         <NotificationMenuItemContent />
                       </MenuLink>
                       <MenuLink 
                         href="/settings" 
                         onClick={() => setIsDropdownOpen(false)}
-                        className="border-t border-black/10"
+                        className="border-b border-black/10"
                       >
                         Cài đặt
                       </MenuLink>
                       <MenuButton
                         onClick={handleLogout}
-                        className="text-red-600 border-t border-black/10"
+                        className="text-red-600"
                       >
                         Đăng xuất
                       </MenuButton>

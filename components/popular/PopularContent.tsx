@@ -86,7 +86,7 @@ const PopularContent = () => {
       </div>
 
       {/* 2. Bookshelf Container */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-12 lg:gap-16 relative z-10 w-full px-4 max-w-6xl mx-auto">
+      <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 md:gap-12 lg:gap-16 relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto h-[200px] sm:h-[260px] md:h-auto pb-4 md:pb-0">
         {popularWorks.map((work, index) => {
           const isFeatured = popularWorks.length === 3 ? index === 1 : index === 0;
 
@@ -109,8 +109,8 @@ const PopularContent = () => {
                   transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 }}
                   className={`relative cursor-pointer rounded-l-[1.5px] rounded-r-[4px] transition-all duration-500 transform-style-3d backface-hidden ${
                     isFeatured 
-                      ? 'w-28 h-36 md:w-40 md:h-56 lg:w-52 lg:h-72 shadow-[15px_15px_40px_rgba(0,0,0,0.9)] border-white/20' 
-                      : 'w-22 h-28 md:w-32 md:h-44 lg:w-40 lg:h-56 shadow-[10px_10px_30px_rgba(0,0,0,0.8)] border-white/10 opacity-80 group-hover:opacity-100'
+                      ? 'w-24 h-36 sm:w-28 sm:h-40 md:w-40 md:h-56 lg:w-52 lg:h-72 shadow-[15px_15px_40px_rgba(0,0,0,0.9)] border-white/10' 
+                      : 'w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-44 lg:w-40 lg:h-56 shadow-[10px_10px_30px_rgba(0,0,0,0.8)] border-white/5 opacity-80 group-hover:opacity-100'
                   } bg-[#1a1a1a] border-y border-r overflow-hidden`}
                   style={{ willChange: "transform, opacity" }}
                 >
@@ -127,8 +127,8 @@ const PopularContent = () => {
                   )}
 
                   {/* Internal Padding for Content */}
-                  <div className="relative h-full w-full p-3 md:p-4 lg:p-6 flex flex-col justify-center items-center z-10 text-center">
-                    <span className="font-ganh text-[10px] md:text-sm lg:text-base tracking-wide leading-tight px-1 break-words drop-shadow-md overflow-hidden line-clamp-3">
+                  <div className="relative h-full w-full p-2 sm:p-3 md:p-4 lg:p-6 flex flex-col justify-center items-center z-10 text-center">
+                    <span className="font-ganh text-[8px] sm:text-[10px] md:text-sm lg:text-base tracking-wide leading-tight px-0.5 sm:px-1 break-words drop-shadow-md overflow-hidden line-clamp-3">
                       {work.title}
                     </span>
                   </div>
@@ -147,7 +147,7 @@ const PopularContent = () => {
                     ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-100/80' 
                     : 'border-white/5 bg-white/5 text-gray-400 font-light'
                 }`}>
-                  <p className="font-be-vietnam text-[7px] md:text-[8px] lg:text-[9px] uppercase tracking-[0.2em] opacity-50 mb-0.5">
+                  <p className="font-be-vietnam text-[6px] sm:text-[7px] md:text-[8px] uppercase tracking-[0.2em] opacity-50 mb-0.5">
                     Đóng góp bởi
                   </p>
                   <div className="flex items-center gap-1">

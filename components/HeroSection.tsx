@@ -7,19 +7,19 @@ import { LinkedButton } from "@/components/PrimaryButton";
 
 const HeroSection = () => {
     return (
-        <section className="h-screen w-screen flex flex-col justify-center items-center relative overflow-hidden bg-white text-black snap-start shrink-0">
+        <section className="min-h-[100dvh] h-full w-screen flex flex-col justify-center items-center relative overflow-hidden bg-white text-black snap-start shrink-0">
              <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 h-full flex flex-col justify-center relative w-full">
           
                 {/* Hero Content - Flexible Flexbox Layout */}
-                <div className="flex flex-col items-center justify-center min-h-[70vh] md:min-h-[80vh] gap-8 md:gap-12 pb-6 md:pb-12 w-full">
+                <div className="flex flex-col items-center justify-center min-h-[70vh] md:min-h-[80vh] gap-6 md:gap-10 pb-6 md:pb-12 w-full">
                     <BrandHeader />
                     
-                    <p className="text-center font-be-vietnam text-lg md:text-xl text-black/70 max-w-2xl mt-[-1rem]">
+                    <p className="text-center font-be-vietnam text-lg md:text-xl text-gray-600 max-w-2xl px-4 sm:px-0">
                       Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-4 mt-6 w-full justify-center">
-                        <LinkedButton href="/kho-tang" className="w-full sm:w-auto px-12 py-3 text-2xl shadow-md">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 mt-6 w-full justify-center px-4 sm:px-0">
+                        <LinkedButton href="/kho-tang" className="w-full sm:w-auto px-8 py-3 md:px-12 md:py-3 text-xl md:text-2xl shadow-md">
                             Bắt Đầu Viết
                         </LinkedButton>
                     </div>

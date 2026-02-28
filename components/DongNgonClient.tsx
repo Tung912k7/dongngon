@@ -285,7 +285,7 @@ export default function DongNgonClient({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 flex flex-col items-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 flex flex-col items-center">
         <div className="w-full max-w-6xl relative">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
@@ -327,10 +327,10 @@ export default function DongNgonClient({
                   <Link 
                     key={work.id} 
                     href={`/work/${work.id}`}
-                    className="border-2 border-black rounded-[2rem] p-8 bg-white hover:shadow-xl transition-shadow flex flex-col h-[360px] relative group cursor-pointer"
+                    className="border sm:border-2 border-black/80 sm:border-black rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-8 bg-white hover:shadow-xl transition-shadow flex flex-col min-h-[220px] sm:h-[360px] relative group cursor-pointer"
                   >
-                    <div className="flex-grow flex flex-col justify-start mb-6">
-                      <h3 className="text-3xl font-bold line-clamp-2 leading-tight mb-2">{work.title}</h3>
+                    <div className="flex-grow flex flex-col justify-start mb-4 sm:mb-6">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">{work.title}</h3>
                       <div className="flex flex-col mt-2">
                         <p className="text-base text-gray-500 line-clamp-1 flex-shrink-0">Bởi: {work.author_nickname}</p>
                         <p className="text-base text-gray-500 mt-1 flex items-center gap-2">
@@ -375,20 +375,20 @@ export default function DongNgonClient({
                    <CreateWorkModal 
                     onSuccess={() => fetchWorks(undefined, q)}
                     customTrigger={
-                     <button className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black transition-all bg-white" title="Tạo tác phẩm mới">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12">
+                     <button className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black transition-all bg-white" title="Tạo tác phẩm mới">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10 sm:w-12 sm:h-12">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                      </button>
                    } />
                  ) : (
-                   <button onClick={() => router.push('/dang-ky')} className="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black transition-all bg-white" title="Đăng ký để tạo tác phẩm">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12">
+                   <button onClick={() => router.push('/dang-ky')} className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black transition-all bg-white" title="Đăng ký để tạo tác phẩm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10 sm:w-12 sm:h-12">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                       </svg>
                    </button>
                  )}
-                 <p className="mt-6 text-xl text-gray-400 font-light">Chưa có tác phẩm nào.</p>
+                 <p className="mt-6 text-lg sm:text-xl text-gray-400 font-light text-center px-4">Chưa có tác phẩm nào.</p>
             </div>
           )}
         </div>

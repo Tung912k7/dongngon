@@ -224,7 +224,6 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                       className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
                     >
                       <option>1 câu</option>
-                      <option>1 kí tự</option>
                     </select>
                   </div>
                   <div className="space-y-2">

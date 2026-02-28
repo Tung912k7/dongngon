@@ -87,6 +87,6 @@ export async function voteEndWork(workId: string) {
   }
 
   revalidatePath(`/work/${workId}`);
-  revalidatePath("/dong-ngon");
+  revalidatePath("/kho-tang");
   return { success: true, newCount: currentCount };
 }
