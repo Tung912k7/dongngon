@@ -9,7 +9,7 @@ const ContributionContent = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 text-center md:text-left items-center mt-32 md:mt-48 lg:mt-[25vh] p-4 max-w-6xl mx-auto"
+        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-10 text-center md:text-left items-center mt-8 md:mt-16 lg:mt-20 p-4 max-w-6xl mx-auto"
       >
         {/* Left Column: Purpose & Description */}
         <div className="lg:col-span-7 flex flex-col gap-5 md:gap-8">
