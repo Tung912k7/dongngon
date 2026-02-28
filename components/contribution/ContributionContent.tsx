@@ -9,7 +9,7 @@ const ContributionContent = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 text-left items-center mt-32 md:mt-48 lg:mt-[25vh] p-4 max-w-6xl mx-auto"
+        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 text-center md:text-left items-center mt-32 md:mt-48 lg:mt-[25vh] p-4 max-w-6xl mx-auto"
       >
         {/* Left Column: Purpose & Description */}
         <div className="lg:col-span-7 flex flex-col gap-5 md:gap-8">
@@ -27,7 +27,7 @@ const ContributionContent = () => {
             <h3 className="font-ganh text-xl md:text-2xl lg:text-3xl text-white tracking-wide">
               Sự độc đáo
             </h3>
-            <p className="font-be-vietnam text-sm md:text-base text-gray-300 leading-relaxed font-light">
+            <p className="font-be-vietnam text-sm md:text-base text-gray-300 leading-relaxed font-light text-center md:text-left">
               Trải nghiệm chậm rãi, nơi giao diện không có những cuộn trang vô tận. Bạn được dừng lại, đọc thật sâu và suy ngẫm từng câu từ thuần túy, vắng bóng các thuật toán bủa vây. Mọi tính năng đều xoay quanh việc viết, đem lại sự tập trung tuyệt đối.
             </p>
           </div>
@@ -35,8 +35,8 @@ const ContributionContent = () => {
         </div>
 
         {/* Right Column: Rule Card (Glassmorphism) */}
-        <div className="lg:col-span-5 w-full mt-4 lg:mt-0">
-          <div className="relative p-5 md:p-6 lg:p-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md overflow-hidden group shadow-2xl">
+        <div className="lg:col-span-5 w-full mt-4 lg:mt-0 px-2 md:px-0">
+          <div className="relative p-5 md:p-6 lg:p-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md overflow-hidden group shadow-2xl active:scale-[0.98] transition-transform">
             {/* Subtle glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
             

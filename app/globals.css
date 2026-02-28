@@ -71,3 +71,16 @@ h1, h2, h3, h4, h5, h6 {
   word-wrap: break-word; /* Chống tràn màn hình */
   font-family: var(--font-ganh), sans-serif; /* Giữ style có chân cho thơ */
 }
+/* UI/UX Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
