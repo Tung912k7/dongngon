@@ -9,7 +9,7 @@ import TableFilter from "@/components/TableFilter";
 import CreateWorkModal from "@/components/CreateWorkModal";
 import { TagButton } from "@/components/TagButton";
 import { createClient } from "@/utils/supabase/client";
-import { FilterState } from "../app/dong-ngon/types";
+import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
 
 const defaultFilters: FilterState = {
@@ -68,7 +68,7 @@ export default function DongNgonClient({
 
     const queryString = params.toString();
     const currentPath = window.location.pathname + window.location.search;
-    const newPath = `/dong-ngon${queryString ? `?${queryString}` : ""}`;
+    const newPath = `/kho-tang${queryString ? `?${queryString}` : ""}`;
     
     // Only update if the URL is actually different
     if (currentPath !== newPath) {

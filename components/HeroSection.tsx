@@ -19,7 +19,7 @@ const HeroSection = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4 mt-6 w-full justify-center">
-                        <LinkedButton href="/dong-ngon" className="w-full sm:w-auto px-12 py-3 text-2xl shadow-md">
+                        <LinkedButton href="/kho-tang" className="w-full sm:w-auto px-12 py-3 text-2xl shadow-md">
                             Bắt Đầu Viết
                         </LinkedButton>
                     </div>

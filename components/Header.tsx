@@ -52,7 +52,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
 
   const navLinks = [
     { name: "Trang chủ", href: "/" },
-    { name: "Đồng ngôn", href: "/dong-ngon" },
+    { name: "Kho tàng", href: "/kho-tang" },
   ];
 
   const handleLogout = async () => {

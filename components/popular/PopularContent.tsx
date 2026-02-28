@@ -75,7 +75,7 @@ const PopularContent = () => {
           className="flex flex-col items-center gap-1"
         >
           <h2 className="font-ganh text-xl md:text-3xl lg:text-4xl text-white tracking-[0.1em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-center">
-            CÁC TÁC PHẨM PHỔ BIẾN
+            BẢNG XẾP HẠNG
           </h2>
           <div className="flex items-center gap-2 md:gap-3 w-full justify-center">
             <div className="h-[1px] flex-1 max-w-[40px] md:max-w-[60px] bg-gradient-to-r from-transparent via-white/30 to-white/50"></div>
