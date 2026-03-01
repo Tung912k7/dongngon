@@ -1,16 +1,22 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useUserStore } from "@/stores/user-store";
+import { useWorkStore, Work } from "@/stores/work-store";
 import Link from "next/link";
 import { formatDate } from "@/utils/date";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
-import TableFilter from "@/components/TableFilter";
-import CreateWorkModal from "@/components/CreateWorkModal";
+import dynamic from "next/dynamic";
+const TableFilter = dynamic(() => import("@/components/TableFilter"), { ssr: false });
+const CreateWorkModal = dynamic(() => import("@/components/CreateWorkModal"), { ssr: false });
 import { TagButton } from "@/components/TagButton";
 import { createClient } from "@/utils/supabase/client";
 import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
+import { WorkGridSkeleton } from "@/components/WorkCardSkeleton";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import WorkCard from "@/components/WorkCard";
 
 const defaultFilters: FilterState = {
   category_type: "",
@@ -31,26 +37,59 @@ export default function DongNgonClient({
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Initialize filters from URL search params
-  const [filters, setFilters] = useState<FilterState>(() => ({
-    category_type: searchParams.get("category") || "",
-    hinh_thuc: searchParams.get("form") || "",
-    writing_rule: searchParams.get("rule") || "",
-    sort_date: (searchParams.get("sort") as any) || "newest",
-    status: searchParams.get("status") || "",
-    limit: searchParams.get("limit") || "10",
-  }));
-  const [currentPage, setCurrentPage] = useState(() => 
-    parseInt(searchParams.get("page") || "1")
-  );
-  const [user, setUser] = useState<any>(initialUser);
+  // Zustand stores
+  const { 
+    user, 
+    setUser 
+  } = useUserStore();
   
-  // Ensure initial works have actual Date objects for sorting
-  const [allWorks, setAllWorks] = useState<any[]>(initialWorks);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Sync filters to URL
+  const { 
+    allWorks, 
+    filters, 
+    currentPage, 
+    isLoading,
+    setAllWorks,
+    setFilters,
+    setCurrentPage,
+    setIsLoading 
+  } = useWorkStore();
+  
+  // Unified initialization logic to prevent re-render loops
+  const isHydrated = useRef(false);
   useEffect(() => {
+    if (isHydrated.current) return;
+    
+    // 1. Hydrate Stores with a single direct set call to minimize notifies
+    const updates: any = {};
+    if (initialUser && !user) updates.user = initialUser;
+    if (Object.keys(updates).length > 0) {
+        useUserStore.setState(updates);
+    }
+
+    const workUpdates: any = {};
+    if (initialWorks && allWorks.length === 0) workUpdates.allWorks = initialWorks;
+    
+    // Initial Filters from URL
+    const urlFilters = {
+      category_type: searchParams.get("category") || "",
+      hinh_thuc: searchParams.get("form") || "",
+      writing_rule: searchParams.get("rule") || "",
+      sort_date: (searchParams.get("sort") as any) || "newest",
+      status: searchParams.get("status") || "",
+      limit: searchParams.get("limit") || "10",
+    };
+    workUpdates.filters = urlFilters;
+    workUpdates.currentPage = parseInt(searchParams.get("page") || "1");
+
+    useWorkStore.setState(workUpdates);
+    
+    isHydrated.current = true;
+  }, []); 
+
+  // Stable URL sync - only runs when filters/currentPage changes
+  useEffect(() => {
+    if (!isHydrated.current) return;
+    
     const params = new URLSearchParams();
     if (filters.category_type) params.set("category", filters.category_type);
     if (filters.hinh_thuc) params.set("form", filters.hinh_thuc);
@@ -60,23 +99,17 @@ export default function DongNgonClient({
     if (filters.limit !== "10") params.set("limit", filters.limit);
     if (currentPage > 1) params.set("page", currentPage.toString());
     
-    // Get query from current URL to avoid dependency on searchParams hook
-    // Which can cause re-render loops when we call replaceState
-    const currentUrlParams = new URLSearchParams(window.location.search);
-    const query = currentUrlParams.get("query");
+    const query = searchParams.get("query");
     if (query) params.set("query", query);
 
-    const queryString = params.toString();
-    const currentPath = window.location.pathname + window.location.search;
-    const newPath = `/kho-tang${queryString ? `?${queryString}` : ""}`;
-    
-    // Only update if the URL is actually different
-    if (currentPath !== newPath) {
-      window.history.replaceState(null, "", newPath);
+    const newPath = `/kho-tang${params.toString() ? `?${params.toString()}` : ""}`;
+    if (window.location.search !== `?${params.toString()}` && params.toString() !== "") {
+        window.history.replaceState(null, "", newPath);
     }
-  }, [filters, currentPage]); // Removed searchParams dependency
+  }, [filters, currentPage, searchParams]);
 
   const fetchWorks = useCallback(async (supabaseClient?: any, searchQuery?: string) => {
+    // We should not set loading if we are already loading or if it's the first mount hydration
     setIsLoading(true);
     const sb = supabaseClient || createClient();
     
@@ -85,7 +118,6 @@ export default function DongNgonClient({
       .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by, age_rating")
       .order("created_at", { ascending: false });
 
-    // Privacy Filter
     if (user) {
       query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
     } else {
@@ -96,58 +128,73 @@ export default function DongNgonClient({
       query = query.or(`title.ilike.%${searchQuery}%,author_nickname.ilike.%${searchQuery}%`);
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("Supabase fetch error:", error);
+    try {
+      const { data, error } = await query;
+      if (error) {
+        console.error("Supabase fetch error (details):", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        console.error("Supabase fetch error (stringified):", JSON.stringify(error));
+      } else if (data) {
+        const mappedWorks = data.map((work: any) => ({
+          ...work,
+          title: sanitizeTitle(work.title),
+          author_nickname: sanitizeNickname(work.author_nickname),
+          type: work.category_type,
+          hinh_thuc: work.sub_category,
+          rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+          age_rating: work.age_rating,
+          status: work.status === "writing" ? "Đang viết" : 
+                  work.status === "finished" ? "Hoàn thành" : 
+                  work.status === "pending" ? "Đợi duyệt" : work.status,
+          date: formatDate(work.created_at || new Date().toISOString()),
+          rawDate: new Date(work.created_at || new Date().toISOString()),
+          is_author_private: (Array.isArray(work.profiles) ? work.profiles[0]?.is_private : (work.profiles as any)?.is_private) || false
+        }));
+        setAllWorks(mappedWorks);
+      }
+    } catch (err) {
+      console.error("Fetch implementation error:", err);
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (data) {
-      const mappedWorks = data.map((work: any) => ({
-        ...work,
-        title: sanitizeTitle(work.title),
-        author_nickname: sanitizeNickname(work.author_nickname),
-        type: work.category_type,
-        hinh_thuc: work.sub_category,
-        rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
-        age_rating: work.age_rating,
-        status: work.status === "writing" ? "Đang viết" : 
-                work.status === "finished" ? "Hoàn thành" : 
-                work.status === "pending" ? "Đợi duyệt" : work.status,
-        date: formatDate(work.created_at),
-        rawDate: new Date(work.created_at)
-      }));
-      setAllWorks(mappedWorks);
-    }
-    setIsLoading(false);
-  }, [user]);
+  }, [user, setAllWorks, setIsLoading]);
 
   const q = searchParams.get("query") || "";
   const isFirstMount = useRef(true);
 
+  // Fetch works based on query or user change
   useEffect(() => {
     const supabase = createClient();
-    
-    // Sync user state on client side to handle potential stale hydration from prefetch
+    if (!isFirstMount.current) {
+        fetchWorks(supabase, q);
+    }
+  }, [q, fetchWorks]); 
+
+  // Stable User Sync (Avoids triggering loop)
+  useEffect(() => {
+    const supabase = createClient();
     const syncUser = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser && !user) {
         setUser(currentUser);
-        // If we just found a user, we should re-fetch to include their private works
-        fetchWorks(supabase, q);
       }
     };
     syncUser();
-
-    // Skip re-fetching on the very first mount if search hasn't changed
-    // and we already have works from server.
+    
+    // Set first mount finished after potential hydration or first render
     if (isFirstMount.current) {
-      isFirstMount.current = false;
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      fetchWorks(supabase, q);
+        isFirstMount.current = false;
     }
+  }, [user, setUser]);
 
+  // 2. Handle real-time subscription (Stable: no allWorks dependency)
+  useEffect(() => {
+    const supabase = createClient();
+    
     const channel = supabase
       .channel("public:works")
       .on(
@@ -161,35 +208,48 @@ export default function DongNgonClient({
           if (payload.eventType === "INSERT") {
             const newWork = payload.new;
             
-            // Privacy Guard: Only add if Public or if we are the owner
-            // Case-insensitive check for robustness
-            const privacy = newWork.privacy?.toLowerCase();
-            const isPublic = privacy === 'public';
-            const isOwner = user && newWork.created_by === user.id;
-            
-            if (!isPublic && !isOwner) {
-              return;
-            }
-            
-            const mappedNewWork = {
-              ...newWork,
-              title: sanitizeTitle(newWork.title),
-              author_nickname: sanitizeNickname(newWork.author_nickname),
-              type: newWork.category_type,
-              hinh_thuc: newWork.sub_category,
-              rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
-              age_rating: newWork.age_rating,
-              status: newWork.status === "writing" ? "Đang viết" : 
-                      newWork.status === "finished" ? "Hoàn thành" : 
-                      newWork.status === "pending" ? "Đợi duyệt" : newWork.status,
-              date: formatDate(newWork.created_at),
-              rawDate: new Date(newWork.created_at)
+            // Fetch author privacy status for new items to ensure popup works
+            const fetchAndMap = async () => {
+              const { data: authorData } = await supabase
+                .from("profiles")
+                .select("is_private")
+                .eq("id", newWork.created_by)
+                .single();
+
+              const privacy = newWork.privacy?.toLowerCase();
+              const isPublic = privacy === 'public';
+              const isOwner = user && newWork.created_by === user.id;
+              
+              if (!isPublic && !isOwner) return;
+              
+              const mappedNewWork: Work = {
+                ...newWork,
+                id: newWork.id,
+                title: sanitizeTitle(newWork.title),
+                author_nickname: sanitizeNickname(newWork.author_nickname),
+                type: newWork.category_type,
+                hinh_thuc: newWork.sub_category,
+                rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+                age_rating: newWork.age_rating,
+                status: newWork.status === "writing" ? "Đang viết" : 
+                        newWork.status === "finished" ? "Hoàn thành" : 
+                        newWork.status === "pending" ? "Đợi duyệt" : newWork.status,
+                date: formatDate(newWork.created_at),
+                rawDate: new Date(newWork.created_at),
+                is_author_private: authorData?.is_private || false
+              };
+              
+              useWorkStore.setState((state) => ({
+                allWorks: [mappedNewWork, ...state.allWorks]
+              }));
             };
-            setAllWorks((prev) => [mappedNewWork, ...prev]);
+
+            fetchAndMap();
           } else if (payload.eventType === "UPDATE") {
             const updatedWork = payload.new;
-            const mappedUpdatedWork = {
+            const mappedUpdatedWork: Work = {
               ...updatedWork,
+              id: updatedWork.id,
               title: sanitizeTitle(updatedWork.title),
               author_nickname: sanitizeNickname(updatedWork.author_nickname),
               type: updatedWork.category_type,
@@ -202,11 +262,15 @@ export default function DongNgonClient({
               date: formatDate(updatedWork.created_at),
               rawDate: new Date(updatedWork.created_at)
             };
-            setAllWorks((prev) => 
-              prev.map(w => w.id === updatedWork.id ? mappedUpdatedWork : w)
-            );
+
+            useWorkStore.setState((state) => ({
+              allWorks: state.allWorks.map(w => w.id === updatedWork.id ? mappedUpdatedWork : w)
+            }));
+
           } else if (payload.eventType === "DELETE") {
-            setAllWorks((prev) => prev.filter(w => w.id !== payload.old.id));
+            useWorkStore.setState((state) => ({
+              allWorks: state.allWorks.filter(w => w.id !== payload.old.id)
+            }));
           }
         }
       )
@@ -215,7 +279,7 @@ export default function DongNgonClient({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [q, user]); // Added user to dependencies to fix stale closure
+  }, [user]); // Only depend on current user for privacy filtering rules
 
   const handleTagClick = useCallback((type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
     const filterKeyMap: { [key: string]: keyof FilterState } = {
@@ -226,13 +290,10 @@ export default function DongNgonClient({
     };
 
     const filterKey = filterKeyMap[type];
-    const filterValue = value;
-
-    if (filterValue) {
-      setFilters((prev: FilterState) => ({ ...prev, [filterKey]: filterValue }));
-      setCurrentPage(1); // Reset to page 1 on filter change
+    if (value) {
+      setFilters({ [filterKey]: value });
     }
-  }, []);
+  }, [setFilters]);
 
   const { paginatedWorks, totalPages } = useMemo(() => {
     let works = [...allWorks];
@@ -250,7 +311,6 @@ export default function DongNgonClient({
         if (work.status !== filters.status) return false;
       }
       
-      // Final security filter: Public OR Owner
       const privacy = work.privacy?.toLowerCase();
       const isPublic = privacy === 'public';
       const isOwner = user && work.created_by === user.id;
@@ -258,8 +318,8 @@ export default function DongNgonClient({
     });
 
     works.sort((a, b) => {
-      const timeA = new Date(a.rawDate).getTime();
-      const timeB = new Date(b.rawDate).getTime();
+      const timeA = new Date(a.rawDate || '').getTime();
+      const timeB = new Date(b.rawDate || '').getTime();
       if (filters.sort_date === 'oldest') return timeA - timeB;
       return timeB - timeA;
     });
@@ -267,8 +327,6 @@ export default function DongNgonClient({
     const limit = parseInt(filters.limit) || 10;
     const totalItems = works.length;
     const totalPages = Math.ceil(totalItems / limit);
-    
-    // Ensure current page is valid if filters changed total count
     const safePage = Math.min(currentPage, Math.max(1, totalPages));
     const start = (safePage - 1) * limit;
     
@@ -281,7 +339,25 @@ export default function DongNgonClient({
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [setCurrentPage]);
+
+const parentRef = useRef<HTMLDivElement>(null);
+
+  const columns = 3;
+  const rows = useMemo(() => {
+    const r = [];
+    for (let i = 0; i < paginatedWorks.length; i += columns) {
+      r.push(paginatedWorks.slice(i, i + columns));
+    }
+    return r;
+  }, [paginatedWorks]);
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 380,
+    overscan: 2,
+  });
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -291,9 +367,9 @@ export default function DongNgonClient({
             <div className="flex items-center gap-2">
               <TableFilter 
                 filters={filters} 
-                onApplyFilters={(newFilters) => {
+                onApplyFilters={(newFilters: Partial<FilterState>) => {
                   setFilters(newFilters);
-                  setCurrentPage(1); // Reset to page 1 when applying filters
+                  setCurrentPage(1);
                 }} 
               />
               <span className="font-bold uppercase tracking-wider text-sm">Bộ lọc</span>
@@ -313,53 +389,43 @@ export default function DongNgonClient({
                 </button>
               )}
             </div>
-            {user && <CreateWorkModal onSuccess={() => fetchWorks(undefined, q)} />}
+            {user ? (
+              <CreateWorkModal onSuccess={() => fetchWorks(undefined, q)} />
+            ) : (
+              <button
+                onClick={() => router.push('/dang-nhap')}
+                className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-black hover:text-white cursor-pointer"
+                title="Tạo tác phẩm mới"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  strokeWidth="2.5" 
+                  stroke="currentColor"
+                  className="w-5 h-5 transition-colors"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </button>
+            )}
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-20">
-              <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+            <div className="py-10">
+              <WorkGridSkeleton count={filters.limit ? parseInt(filters.limit) : 6} />
             </div>
           ) : paginatedWorks.length > 0 ? (
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {paginatedWorks.map((work) => (
-                  <Link 
-                    key={work.id} 
-                    href={`/work/${work.id}`}
-                    className="border sm:border-2 border-black/80 sm:border-black rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-8 bg-white hover:shadow-xl transition-shadow flex flex-col min-h-[220px] sm:h-[360px] relative group cursor-pointer"
-                  >
-                    <div className="flex-grow flex flex-col justify-start mb-4 sm:mb-6">
-                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">{work.title}</h3>
-                      <div className="flex flex-col mt-2">
-                        <p className="text-base text-gray-500 line-clamp-1 flex-shrink-0">Bởi: {work.author_nickname}</p>
-                        <p className="text-base text-gray-500 mt-1 flex items-center gap-2">
-                          {work.date} 
-                          <span>&bull;</span> 
-                          <span>{work.age_rating === 'all' || work.age_rating === 'All' ? 'Mọi độ tuổi' : work.age_rating}</span>
-                        </p>
-                      </div>
+                    <div key={work.id} className="flex justify-center sm:justify-start">
+                        <WorkCard 
+                        work={work} 
+                        isOwner={user && work.created_by === user.id} 
+                        hideMenu={true}
+                        />
                     </div>
-
-                    <div className="flex flex-wrap gap-2 mt-auto flex-shrink-0">
-                      <TagButton 
-                        className="!px-3 !py-1 !text-xs !font-medium" 
-                        onClick={(e) => { e.preventDefault(); handleTagClick('status', work.status); }}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <span className={`w-2 h-2 rounded-full ${
-                            work.status === "Hoàn thành" ? "bg-green-500" :
-                            work.status === "Đang viết" ? "bg-blue-500" :
-                            "bg-yellow-500"
-                          }`} />
-                          {work.status}
-                        </span>
-                      </TagButton>
-                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('category', work.type); }}>{work.type}</TagButton>
-                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('hinh_thuc', work.hinh_thuc); }}>{work.hinh_thuc}</TagButton>
-                      <TagButton className="!px-3 !py-1 !text-xs !font-medium" onClick={(e) => { e.preventDefault(); handleTagClick('rule', work.rule); }}>{work.rule}</TagButton>
-                    </div>
-                  </Link>
                 ))}
               </div>
 

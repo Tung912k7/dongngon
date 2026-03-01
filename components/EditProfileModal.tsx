@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import Link from "next/link";
@@ -14,11 +14,13 @@ import { PrimaryButton } from "./PrimaryButton";
 interface EditProfileModalProps {
   initialNickname: string;
   initialAvatarUrl: string;
+  initialDescription?: string;
 }
 
-export default function EditProfileModal({ initialNickname, initialAvatarUrl }: EditProfileModalProps) {
+export default function EditProfileModal({ initialNickname, initialAvatarUrl, initialDescription }: EditProfileModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [nickname, setNickname] = useState(initialNickname);
+  const [description, setDescription] = useState(initialDescription || "");
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,13 +98,11 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
 
     let finalAvatarUrl = avatarUrl;
 
-    // Timeout of 30 seconds for profile update (includes image upload)
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 30000)
     );
 
     try {
-      // If we have a new image to crop and upload
       if (imageSrc && croppedAreaPixels) {
         const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
         if (croppedImageBlob) {
@@ -116,13 +116,13 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
       }
 
       const result = await Promise.race([
-        updateProfile(sanitizeNickname(nickname), finalAvatarUrl),
+        updateProfile(sanitizeNickname(nickname), finalAvatarUrl, undefined, description),
         timeoutPromise
       ]) as any;
       
       if (result.success) {
         setIsOpen(false);
-        setImageSrc(null); // Clear cropper
+        setImageSrc(null);
       } else {
         setError(result.error || "Có lỗi xảy ra.");
       }
@@ -138,6 +138,18 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
     }
   };
 
+  // Scroll Lock
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   return (
     <>
       <PrimaryButton
@@ -150,7 +162,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -159,7 +171,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                 setIsOpen(false);
                 setImageSrc(null);
               }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
               aria-label="Đóng chỉnh sửa hồ sơ"
             />
             
@@ -167,8 +179,30 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white border-4 border-black rounded-[2.5rem] p-8 md:p-10 w-full max-w-xl relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-h-[90vh] overflow-y-auto"
+              className="bg-white border-4 border-black rounded-[2.5rem] p-6 md:p-10 w-full max-w-xl relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
             >
+              <style dangerouslySetInnerHTML={{ __html: `
+                .modal-scroll-container::-webkit-scrollbar {
+                  width: 8px;
+                }
+                .modal-scroll-container::-webkit-scrollbar-track {
+                  background: #f1f1f1;
+                  border-radius: 10px;
+                  margin: 20px 0;
+                }
+                .modal-scroll-container::-webkit-scrollbar-thumb {
+                  background: #000;
+                  border-radius: 10px;
+                  border: 2px solid #f1f1f1;
+                }
+                .modal-scroll-container::-webkit-scrollbar-thumb:hover {
+                  background: #333;
+                }
+                .modal-scroll-container {
+                  scrollbar-width: thin;
+                  scrollbar-color: #000 #f1f1f1;
+                }
+              `}} />
               <h2 className="text-3xl font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6 font-sans">
@@ -279,6 +313,22 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl }: 
                     placeholder="Nhập bút danh mới..."
                   />
                   {fieldErrors.nickname && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{fieldErrors.nickname}</p>}
+                </div>
+
+                <div className="space-y-2 text-left">
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">GIỚI THIỆU</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    maxLength={200}
+                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm min-h-[120px] resize-none"
+                    placeholder="Hãy chia sẻ một chút về bản thân bạn..."
+                  />
+                  <div className="flex justify-end">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                      {description.length}/200
+                    </span>
+                  </div>
                 </div>
 
                 {error && (

@@ -1,15 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { completeOnboarding } from "@/actions/profile";
 
 export default function WelcomeNotification() {
   const [show, setShow] = useState(true);
+  const router = useRouter();
 
   const handleDismiss = async () => {
     setShow(false);
-    // Silent server update without awaiting it to block the UI
-    completeOnboarding().catch(console.error);
+    try {
+      await completeOnboarding();
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to complete onboarding:", error);
+    }
   };
 
   if (!show) return null;

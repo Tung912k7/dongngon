@@ -131,35 +131,32 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
   };
 
   return (
-    <header className="w-full bg-white sticky top-0 z-50">
+    <header className="w-full bg-white relative sm:sticky sm:top-0 z-[45]">
       <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         
         {/* Mobile Header - Only visible on small screens */}
-        <div className="flex sm:hidden items-center gap-4 mb-4 relative z-50">
-          {/* Hamburger Menu Button */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Mở menu"
-          >
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
+        <div className="flex flex-col sm:hidden w-full gap-4 mb-2 relative z-50">
+          <div className="flex justify-between items-center w-full">
+            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none">
+              Đồng ngôn
+              <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
+            </Link>
+            
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center text-black active:scale-95 transition-all hover:bg-black hover:text-white group"
+              aria-label="Mở menu"
             >
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
+              <div className="flex flex-col gap-[4px] items-center">
+                <span className="w-[18px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
+                <span className="w-[16px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
+                <span className="w-[18px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
+              </div>
+            </button>
+          </div>
           
           {/* Mobile Search Bar */}
-          <div className="flex-1">
+          <div className="w-full">
             <SearchBar />
           </div>
         </div>
@@ -167,116 +164,111 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
         {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="fixed inset-0 bg-black/50 z-40 sm:hidden"
-              />
-              
-              {/* Slide-out Menu */}
-              <motion.div
-                initial={{ x: "-100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "-100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-xl sm:hidden"
-              >
-                <div className="p-6">
-                  {/* Close Button */}
-                  <button 
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="mb-8 p-2 hover:opacity-70 transition-opacity"
-                    aria-label="Đóng menu"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                  
-                  {/* Mobile Navigation Links */}
-                  <nav className="flex flex-col gap-4">
-                    {navLinks.map((link) => {
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-0 bg-white z-[100] sm:hidden flex flex-col"
+            >
+              {/* Menu Header */}
+              <div className="flex justify-between items-center py-4 px-4 relative z-10 w-full bg-white">
+                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none">
+                    Đồng ngôn
+                    <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
+                 </Link>
+                 <button 
+                   onClick={() => setIsMobileMenuOpen(false)}
+                   className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center active:scale-95 transition-all hover:bg-black hover:text-white group"
+                 >
+                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                     <path d="M18 6L6 18M6 6l12 12" />
+                   </svg>
+                 </button>
+              </div>
+
+              {/* Menu Content */}
+              <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col pb-20">
+                 <nav className="flex flex-col gap-5">
+                    {navLinks.map((link, i) => {
                       const isActive = getIsActive(link.href);
                       return (
-                        <Link
+                        <motion.div
                           key={link.href}
-                          href={link.href}
-                          className={`
-                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
-                            ${isActive ? "bg-black text-white" : "text-black hover:bg-gray-100"}
-                          `}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + i * 0.05 }}
                         >
-                          {link.name}
-                        </Link>
+                          <Link
+                            href={link.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`
+                              font-ganh text-[40px] leading-tight font-black tracking-tight flex items-center justify-between
+                              ${isActive ? "text-black" : "text-gray-300 hover:text-black transition-colors"}
+                            `}
+                          >
+                            {link.name}
+                            {isActive && (
+                              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="text-black ml-4">
+                                <path d="M5 12h14m-7-7l7 7-7 7" />
+                              </svg>
+                            )}
+                          </Link>
+                        </motion.div>
                       );
                     })}
-                    
-                    <div className="border-t border-gray-200 my-2" />
-                    
+                 </nav>
+
+                 <div className="h-[2px] w-full bg-black/5 my-8" />
+
+                 <div className="flex flex-col gap-2">
                     {user ? (
                       <>
+                        <div className="flex items-center gap-4 mb-6">
+                           <div className="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                              <span className="font-black text-2xl uppercase">{nickname?.charAt(0) || "U"}</span>
+                           </div>
+                           <div className="flex flex-col">
+                              <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Người dùng</span>
+                              <span className="text-xl font-black font-ganh leading-tight tracking-wide text-black">{nickname}</span>
+                           </div>
+                        </div>
                         {role === "admin" && (
-                          <Link
-                            href="/admin"
-                            className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                          >
-                            Hệ thống
+                          <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-blue-600 flex items-center justify-between group">
+                             Hệ thống
+                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                           </Link>
                         )}
-                        <Link
-                          href="/profile"
-                          className={`
-                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
-                            ${pathname === "/profile" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
-                          `}
-                        >
-                          Hồ sơ
+                        <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
+                           Hồ sơ cá nhân
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
-                        <Link
-                          href="/notification"
-                          className={`
-                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
-                            ${pathname === "/notification" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
-                          `}
-                        >
-                          <NotificationMenuItemContent />
+                        <Link href="/notification" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
+                           <NotificationMenuItemContent />
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
-                        <Link
-                          href="/settings"
-                          className={`
-                            font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
-                            ${pathname === "/settings" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
-                          `}
-                        >
-                          Cài đặt
+                        <Link href="/settings" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
+                           Cài đặt
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="font-ganh text-xl tracking-wide py-3 px-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-left"
-                        >
-                          Đăng xuất
+                        
+                        <button onClick={handleLogout} className="mt-8 w-full py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all hover:bg-red-500 hover:text-white shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]">
+                           Đăng xuất
                         </button>
                       </>
                     ) : (
-                      <Link
-                        href="/dang-nhap"
-                        className={`
-                          font-ganh text-xl tracking-wide py-3 px-4 rounded-lg transition-colors
-                          ${pathname === "/dang-nhap" ? "bg-black text-white" : "text-black hover:bg-gray-100"}
-                        `}
-                      >
-                        Tài khoản
-                      </Link>
+                      <div className="flex flex-col gap-4 mt-auto">
+                        <Link href="/dang-nhap" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-black text-white text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all border-2 border-black hover:opacity-90">
+                           Đăng nhập
+                        </Link>
+                        <Link href="/dang-ky" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-white text-black border-2 border-black text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all hover:bg-gray-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                           Tạo tài khoản
+                        </Link>
+                      </div>
                     )}
-                  </nav>
-                </div>
-              </motion.div>
-            </>
+                 </div>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
 

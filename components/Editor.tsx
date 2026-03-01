@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitContribution } from "@/actions/contribute";
@@ -8,39 +8,46 @@ import { checkBlacklist } from "@/utils/blacklist";
 import { PrimaryButton } from "./PrimaryButton";
 import NotificationModal from "./NotificationModal";
 import { validatePoeticForm } from "@/utils/validation";
+import { useUserStore } from "@/stores/user-store";
+import { useEditorStore } from "@/stores/editor-store";
 
 export default function Editor({ 
   workId, 
   writingRule, 
   hinhThuc,
-  user
+  user: initialUser
 }: { 
   workId: string; 
-  writingRule: string;
+  writingRule: string; 
   hinhThuc?: string;
   user: { id: string } | null;
 }) {
   const router = useRouter();
-  const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Zustand Stores
+  const { user } = useUserStore();
+  const {
+    content,
+    isSubmitting,
+    error,
+    warning,
+    notification,
+    setContent,
+    setIsSubmitting,
+    setError,
+    setWarning,
+    showNotification,
+    closeNotification,
+    reset
+  } = useEditorStore();
+
   const isSubmittingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
-  const [notification, setNotification] = useState<{
-    isOpen: boolean;
-    message: string;
-    type: "error" | "success" | "info";
-    title?: string;
-  }>({
-    isOpen: false,
-    message: "",
-    type: "info",
-  });
 
-  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
-    setNotification({ isOpen: true, message, type, title });
-  };
+  // Sync initial user prop with store if store is empty
+  if (initialUser && !user) {
+    useUserStore.setState({ user: initialUser });
+  }
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -57,7 +64,7 @@ export default function Editor({
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [content]);
+  }, [content, setWarning]);
 
   const validateContent = (content: string, limitType: string) => {
     const trimmed = content.trim();
@@ -81,7 +88,6 @@ export default function Editor({
     isSubmittingRef.current = true;
     setIsSubmitting(true);
 
-    // 1. Clean content: read from ref directly for perfectly synced state or state fallback
     const currentContent = textareaRef.current?.value ?? content;
     const isCharacterMode = writingRule === '1 kí tự';
     const cleanContent = isCharacterMode ? currentContent : currentContent.trim();
@@ -89,10 +95,10 @@ export default function Editor({
     if (!cleanContent) {
       setError("Vui lòng nhập nội dung.");
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       return;
     }
 
-    // 2. Validate rule
     const isValidRule = validateContent(cleanContent, writingRule);
     
     if (!isValidRule) {
@@ -105,22 +111,22 @@ export default function Editor({
         
         showNotification(msg, "info", "Sai quy tắc");
         setIsSubmitting(false);
+        isSubmittingRef.current = false;
         return;
     }
 
-    // 2.1 Validate Poetic Form constraints
     if (hinhThuc) {
       const poeticResult = validatePoeticForm(cleanContent, hinhThuc, writingRule);
       if (!poeticResult.isValid) {
         showNotification(poeticResult.error || "Sai số chữ trong câu thơ.", "info", "Sai thể thơ");
         setIsSubmitting(false);
+        isSubmittingRef.current = false;
         return;
       }
     }
 
     setError(null);
 
-    // 3. Nếu vượt qua kiểm tra, mới tiến hành Insert
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 10000)
     );
@@ -134,7 +140,7 @@ export default function Editor({
       if (result.error) {
         setError(result.error);
       } else {
-        setContent("");
+        reset();
         router.refresh();
       }
     } catch (err: unknown) {
@@ -186,9 +192,7 @@ export default function Editor({
           ref={textareaRef}
           value={content}
           onChange={(e) => {
-            const value = e.target.value;
-            
-            setContent(value);
+            setContent(e.target.value);
           }}
           placeholder="Viết tiếp câu chuyện..."
           maxLength={500}
@@ -222,7 +226,7 @@ export default function Editor({
 
       <NotificationModal 
         isOpen={notification.isOpen} 
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        onClose={closeNotification}
         message={notification.message}
         type={notification.type}
         title={notification.title}

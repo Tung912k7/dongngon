@@ -30,9 +30,9 @@ export default async function DongNgonPage({
         // Privacy Filter: Only show Public works OR works created by the current user
         // We use .or() for (A OR B) and regular chain for AND
         if (user) {
-            query = query.or(`privacy.ilike.public,created_by.eq.${user.id}`);
+            query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
         } else {
-            query = query.ilike("privacy", "public");
+            query = query.eq("privacy", "Public");
         }
 
         if (q) {
@@ -42,7 +42,10 @@ export default async function DongNgonPage({
     })();
 
     if (error) {
-        console.error("Supabase server-side fetch error:", error);
+        console.error("Supabase server-side fetch error (raw):", error);
+        console.error("Supabase server-side fetch error (stringified):", JSON.stringify(error));
+        console.error("Error Code:", error.code);
+        console.error("Error Message:", error.message);
     }
 
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication
@@ -57,7 +60,8 @@ export default async function DongNgonPage({
                 work.status === "finished" ? "Hoàn thành" : 
                 work.status === "pending" ? "Đợi duyệt" : work.status,
         date: formatDate(work.created_at),
-        rawDate: work.created_at // Pass the string; Client will convert to Date object
+        rawDate: work.created_at, // Pass the string; Client will convert to Date object
+        is_author_private: (Array.isArray(work.profiles) ? work.profiles[0]?.is_private : (work.profiles as any)?.is_private) || false
     }));
 
     return (

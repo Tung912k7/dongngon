@@ -105,14 +105,45 @@ export default async function RootLayout({
   let has_seen_tour = true; // Default to true so we don't show it to unauthed or if error
   
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("nickname, role, has_seen_tour")
       .eq("id", user.id)
       .single();
-    nickname = profile?.nickname;
-    role = profile?.role;
-    has_seen_tour = profile?.has_seen_tour ?? false;
+    
+    if (profileError) {
+      console.error("Layout profile fetch error (details):", {
+        message: profileError.message || "NO_MESSAGE",
+        code: profileError.code || "NO_CODE",
+        details: profileError.details || "NO_DETAILS",
+        hint: profileError.hint || "NO_HINT"
+      });
+      console.error("Full profileError object:", JSON.stringify(profileError));
+    }
+    
+    if (!profile && user) {
+      console.log("No profile record found in DB, using metadata fallback for user:", user.id);
+      console.log("User Metadata Pen Name:", user.user_metadata?.nickname);
+      console.log("User Metadata Full Name:", user.user_metadata?.full_name);
+    }
+
+    // Aggressive fallback chain for the nickname
+    nickname = profile?.nickname || 
+               user.user_metadata?.nickname || 
+               user.user_metadata?.full_name || 
+               user.email?.split('@')[0] || 
+               "Thành viên";
+
+    role = profile?.role || user.user_metadata?.role || 'user';
+    
+    // Default to true if profile or the flag is missing, only show if strictly false
+    has_seen_tour = profile?.has_seen_tour ?? true;
+
+    console.log("Profile Sync Check:", { 
+      source: profile ? 'Database' : 'Auth Metadata',
+      nickname, 
+      id: user.id 
+    });
   }
 
   return (

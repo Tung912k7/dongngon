@@ -12,9 +12,18 @@ interface SettingsClientProps {
   initialNickname: string;
   initialAvatarUrl: string;
   initialBirthday: string | null;
+  initialDescription: string;
+  initialIsPrivate: boolean;
 }
 
-export default function SettingsClient({ user, initialNickname, initialAvatarUrl, initialBirthday }: SettingsClientProps) {
+export default function SettingsClient({ 
+  user, 
+  initialNickname, 
+  initialAvatarUrl, 
+  initialBirthday, 
+  initialDescription,
+  initialIsPrivate
+}: SettingsClientProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "account" | "interface">("profile");
 
   const tabs = [
@@ -65,6 +74,8 @@ export default function SettingsClient({ user, initialNickname, initialAvatarUrl
                 initialNickname={initialNickname} 
                 initialAvatarUrl={initialAvatarUrl} 
                 initialBirthday={initialBirthday}
+                initialDescription={initialDescription}
+                initialIsPrivate={initialIsPrivate}
                 userEmail={user.email || ""}
               />
             )}

@@ -36,6 +36,7 @@ export type Profile = {
   id: string; // UUID
   nickname: string;
   avatar_url?: string;
+  description?: string;
   role?: UserRole; // 'admin', 'mod', 'user'
   has_seen_tour?: boolean;
   updated_at: string;

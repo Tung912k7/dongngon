@@ -46,7 +46,7 @@ export const isEmailRegistered = async (email: string) => {
   return !!data;
 };
 
-export async function updateProfile(nickname: string, avatarUrl?: string, birthday?: string) {
+export async function updateProfile(nickname: string, avatarUrl?: string, birthday?: string, description?: string, isPrivate?: boolean) {
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -94,10 +94,11 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
     }
   }
 
-  // 5. Upsert Profile
+  // 5. Update Profile
   const updatePayload: any = {
-    id: user.id,
     nickname: sanitizedNickname,
+    description: description || null,
+    is_private: isPrivate,
     updated_at: new Date().toISOString(),
   };
 
@@ -109,7 +110,10 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
     updatePayload.birthday = finalBirthday;
   }
 
-  const { error } = await supabase.from("profiles").upsert(updatePayload);
+  const { error } = await supabase
+    .from("profiles")
+    .update(updatePayload)
+    .eq("id", user.id);
 
   if (error) {
     console.error("Profile update error:", error);
@@ -117,6 +121,7 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
   }
 
   revalidatePath("/profile");
+  revalidatePath("/settings");
   revalidatePath("/");
   return { success: true };
 }

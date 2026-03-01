@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Contribution } from "@/types/database";
 import { POETIC_FORM_LIMITS } from "@/utils/validation";
 import React from "react";
+import ContributionTooltip from "@/components/ContributionTooltip";
 
 export default function Feed({
   initialContributions,
@@ -84,11 +85,13 @@ export default function Feed({
           
           return (
             <React.Fragment key={contribution.id}>
-              <span className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                {contribution.content}
-                {/* Add space if not end of line and not already there */}
-                {!showBreak && !contribution.content.endsWith(' ') && (isSentenceMode || isCharacterMode) && ' '}
-              </span>
+              <ContributionTooltip contribution={contribution}>
+                <span className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  {contribution.content}
+                  {/* Add space if not end of line and not already there */}
+                  {!showBreak && !contribution.content.endsWith(' ') && (isSentenceMode || isCharacterMode) && ' '}
+                </span>
+              </ContributionTooltip>
               {showBreak && <br />}
             </React.Fragment>
           );

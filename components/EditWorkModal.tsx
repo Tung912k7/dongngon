@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateWork } from "@/actions/work";
 import { sanitizeTitle } from "@/utils/sanitizer";
 import { motion, AnimatePresence } from "framer-motion";
-import { Work } from "@/types/database";
+import { Work } from "@/stores/work-store";
 import { PrimaryButton } from "./PrimaryButton";
 
 interface EditWorkModalProps {

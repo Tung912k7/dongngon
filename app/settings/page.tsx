@@ -10,10 +10,10 @@ export default async function SettingsPage() {
     redirect("/dang-nhap");
   }
 
-  // Fetch user profile data (nickname, avatar, birthday)
+  // Fetch user profile data (nickname, avatar, birthday, description, is_private)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, avatar_url, birthday")
+    .select("nickname, avatar_url, birthday, description, is_private")
     .eq("id", user.id)
     .single();
 
@@ -24,6 +24,8 @@ export default async function SettingsPage() {
         initialNickname={profile?.nickname || ""} 
         initialAvatarUrl={profile?.avatar_url || ""} 
         initialBirthday={profile?.birthday || null}
+        initialDescription={profile?.description || ""}
+        initialIsPrivate={profile?.is_private || false}
       />
     </div>
   );

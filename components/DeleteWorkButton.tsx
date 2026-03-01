@@ -9,9 +9,10 @@ interface DeleteWorkButtonProps {
   workTitle: string;
   variant?: 'default' | 'menuItem';
   onAction?: () => void;
+  paddingClass?: string;
 }
 
-export default function DeleteWorkButton({ workId, workTitle, variant = 'default', onAction }: DeleteWorkButtonProps) {
+export default function DeleteWorkButton({ workId, workTitle, variant = 'default', onAction, paddingClass }: DeleteWorkButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -70,7 +71,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
       ) : (
         <button
           onClick={triggerOpen}
-          className="w-full text-left px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors uppercase tracking-wider"
+          className={`w-full text-left ${paddingClass || 'px-4 py-2'} text-sm font-bold text-red-600 hover:bg-red-50 transition-colors uppercase tracking-wider`}
         >
           Xóa
         </button>

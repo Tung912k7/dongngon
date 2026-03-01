@@ -7,11 +7,15 @@
   --font-quicksand: var(--font-quicksand), sans-serif;
   --font-ganh: var(--font-ganh-next), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam-next), sans-serif;
+
+  --color-literary-black: #171717;
+  --color-literary-gold: #D4AF37;
+  --color-paper: #FAFAFA;
 }
 
 :root {
-  --background: #F5F5F5;
-  --foreground: #07000B;
+  --background: #FAFAFA;
+  --foreground: #171717;
 }
 
 body {
@@ -84,3 +88,22 @@ h1, h2, h3, h4, h5, h6 {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
+/* Contribution tooltip animation */
+@keyframes contribution-tooltip-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Contribution hover underline reveal */
+.contribution-wrapper:hover > span {
+  text-decoration-color: var(--color-literary-gold, #D4AF37);
+}
+
+

@@ -126,20 +126,15 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          style={{
-            backgroundColor: isHovered ? "black" : "white",
-          }}
-          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95"
+          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-black hover:text-white cursor-pointer"
           title="Tạo tác phẩm mới"
         >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24" 
-            strokeWidth={2.5} 
-            stroke={isHovered ? "white" : "black"}
+            strokeWidth="2.5" 
+            stroke="currentColor"
             className="w-5 h-5 transition-colors"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
