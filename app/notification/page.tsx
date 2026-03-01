@@ -7,11 +7,13 @@ import { vi } from "date-fns/locale";
 import { getNotifications, markAsRead, markAllAsRead } from "@/actions/notification";
 import type { Notification } from "@/types/database";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { useNotificationStore } from "@/stores/notification-store";
 
 export default function NotificationPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { fetchUnreadCount } = useNotificationStore();
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -19,6 +21,8 @@ export default function NotificationPage() {
       const result = await getNotifications();
       if (result.success && result.notifications) {
         setNotifications(result.notifications);
+        const unread = result.notifications.filter(n => !n.is_read).length;
+        useNotificationStore.getState().setUnreadCount(unread);
       }
       setLoading(false);
     };
@@ -29,6 +33,7 @@ export default function NotificationPage() {
     if (!notif.is_read) {
       setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
       await markAsRead(notif.id);
+      fetchUnreadCount();
     }
     
     if (notif.work_id) {
@@ -39,6 +44,7 @@ export default function NotificationPage() {
   const handleMarkAllAsRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     await markAllAsRead();
+    fetchUnreadCount();
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;

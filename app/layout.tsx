@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import ChangelogModal from "@/components/ChangelogModal";
 import { ClientGlobalWrappers } from "@/components/ClientGlobalWrappers";
 import { CSPostHogProvider } from "./providers";
@@ -142,6 +143,7 @@ export default async function RootLayout({
             <main className="flex-1 w-full">
               {children}
             </main>
+            <Footer />
           </ClientGlobalWrappers>
         </CSPostHogProvider>
       </body>

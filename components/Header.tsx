@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
-import { getNotifications } from "@/actions/notification";
+import { useNotificationStore } from "@/stores/notification-store";
 
 interface HeaderProps {
   user: User | null;
@@ -28,21 +28,15 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadCount, fetchUnreadCount } = useNotificationStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   // Fetch unread notification count at Header level
   useEffect(() => {
     if (!user) return;
-    const fetchUnread = async () => {
-      const result = await getNotifications();
-      if (result.success && result.notifications) {
-        setUnreadCount(result.notifications.filter(n => !n.is_read).length);
-      }
-    };
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 60000);
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
   }, [user]);
 
