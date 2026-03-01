@@ -26,7 +26,7 @@ export type Notification = {
   user_id: string; // UUID
   work_id?: string; // UUID
   type: string; // 'contribution', 'announcement', 'system'
-  message: string;
+  content: string;
   is_read: boolean;
   created_at: string;
 };

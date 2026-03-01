@@ -101,7 +101,7 @@ export default function NotificationPage() {
                 {/* Content */}
                 <div className="flex-1">
                   <p className={`text-lg transition-colors ${!notif.is_read ? 'font-bold text-black' : 'text-gray-600'}`}>
-                    {notif.message}
+                    {notif.content}
                   </p>
                   <p className="text-[11px] text-gray-500 mt-2 uppercase tracking-widest font-bold">
                     {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: vi })}

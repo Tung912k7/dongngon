@@ -131,7 +131,7 @@ export async function submitContribution(workId: string, content: string, newLin
       user_id: work.created_by,
       work_id: workId,
       type: "contribution",
-      message: `${nickname} đã đóng góp tiếp nối vào tác phẩm "${work.title}".`,
+      content: `${nickname} đã đóng góp tiếp nối vào tác phẩm "${work.title}".`,
       is_read: false
     });
   }

@@ -94,7 +94,7 @@ export async function createAdminAnnouncement(message: string) {
   const notificationsToInsert = profiles.map(p => ({
     user_id: p.id,
     type: "announcement",
-    message: message,
+    content: message,
     is_read: false
   }));
 
