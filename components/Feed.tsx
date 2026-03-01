@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Contribution } from "@/types/database";
 import { POETIC_FORM_LIMITS } from "@/utils/validation";
@@ -24,7 +24,7 @@ export default function Feed({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 100;
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -70,7 +70,6 @@ export default function Feed({
   }, [supabase, workId]);
 
   const totalPages = Math.ceil(contributions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
 
   return (
     <div className="flex flex-col gap-8">
@@ -85,6 +84,8 @@ export default function Feed({
           
           return (
             <React.Fragment key={contribution.id}>
+              {/* Free verse manual line break */}
+              {contribution.new_line && <br />}
               <ContributionTooltip contribution={contribution}>
                 <span className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                   {contribution.content}

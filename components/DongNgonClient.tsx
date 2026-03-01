@@ -131,13 +131,7 @@ export default function DongNgonClient({
     try {
       const { data, error } = await query;
       if (error) {
-        console.error("Supabase fetch error (details):", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
-        console.error("Supabase fetch error (stringified):", JSON.stringify(error));
+        console.error("[KhoTang] Supabase fetch error:", error.code, error.message);
       } else if (data) {
         const mappedWorks = data.map((work: any) => ({
           ...work,
@@ -152,7 +146,6 @@ export default function DongNgonClient({
                   work.status === "pending" ? "Đợi duyệt" : work.status,
           date: formatDate(work.created_at || new Date().toISOString()),
           rawDate: new Date(work.created_at || new Date().toISOString()),
-          is_author_private: (Array.isArray(work.profiles) ? work.profiles[0]?.is_private : (work.profiles as any)?.is_private) || false
         }));
         setAllWorks(mappedWorks);
       }

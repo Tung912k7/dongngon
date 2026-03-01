@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-// Font defined in globals.css
 import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
+import ChangelogModal from "@/components/ChangelogModal";
 import { ClientGlobalWrappers } from "@/components/ClientGlobalWrappers";
+import { CSPostHogProvider } from "./providers";
 import { Be_Vietnam_Pro, Quicksand } from "next/font/google";
 import localFont from "next/font/local";
 
@@ -91,8 +92,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { CSPostHogProvider } from "./providers";
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -102,32 +101,20 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
   let nickname = null;
   let role = null;
-  let has_seen_tour = true; // Default to true so we don't show it to unauthed or if error
+  let has_seen_tour = true;
+  let last_seen_changelog = null;
   
   if (user) {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("nickname, role, has_seen_tour")
+      .select("nickname, role, has_seen_tour, last_seen_changelog")
       .eq("id", user.id)
       .single();
     
     if (profileError) {
-      console.error("Layout profile fetch error (details):", {
-        message: profileError.message || "NO_MESSAGE",
-        code: profileError.code || "NO_CODE",
-        details: profileError.details || "NO_DETAILS",
-        hint: profileError.hint || "NO_HINT"
-      });
-      console.error("Full profileError object:", JSON.stringify(profileError));
-    }
-    
-    if (!profile && user) {
-      console.log("No profile record found in DB, using metadata fallback for user:", user.id);
-      console.log("User Metadata Pen Name:", user.user_metadata?.nickname);
-      console.log("User Metadata Full Name:", user.user_metadata?.full_name);
+      console.error("[Layout] Profile fetch error:", profileError.code, profileError.message);
     }
 
-    // Aggressive fallback chain for the nickname
     nickname = profile?.nickname || 
                user.user_metadata?.nickname || 
                user.user_metadata?.full_name || 
@@ -135,15 +122,8 @@ export default async function RootLayout({
                "Thành viên";
 
     role = profile?.role || user.user_metadata?.role || 'user';
-    
-    // Default to true if profile or the flag is missing, only show if strictly false
     has_seen_tour = profile?.has_seen_tour ?? true;
-
-    console.log("Profile Sync Check:", { 
-      source: profile ? 'Database' : 'Auth Metadata',
-      nickname, 
-      id: user.id 
-    });
+    last_seen_changelog = profile?.last_seen_changelog || null;
   }
 
   return (
@@ -158,6 +138,7 @@ export default async function RootLayout({
         <CSPostHogProvider>
           <ClientGlobalWrappers hasSeenTour={has_seen_tour}>
             <Header user={user} nickname={nickname} role={role} />
+            {user && <ChangelogModal lastSeenVersion={last_seen_changelog} />}
             <main className="flex-1 w-full">
               {children}
             </main>

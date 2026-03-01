@@ -17,6 +17,7 @@ export type Contribution = {
   user_id: string; // UUID
   author_nickname: string;
   content: string;
+  new_line?: boolean; // When true, renders a line break before this contribution (Thơ tự do)
   created_at: string;
 };
 
@@ -39,6 +40,7 @@ export type Profile = {
   description?: string;
   role?: UserRole; // 'admin', 'mod', 'user'
   has_seen_tour?: boolean;
+  last_seen_changelog?: string;
   updated_at: string;
 };
 

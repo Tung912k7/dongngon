@@ -62,7 +62,7 @@ export default async function WorkPage({
     // 2. Fetch Contributions
     supabase
       .from("contributions")
-      .select("id, content, user_id, work_id, created_at, author_nickname")
+      .select("id, content, user_id, work_id, created_at, author_nickname, new_line")
       .eq("work_id", id)
       .order("created_at", { ascending: true }),
 

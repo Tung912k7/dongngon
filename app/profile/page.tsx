@@ -51,13 +51,7 @@ export default async function ProfilePage({
     .single();
 
   if (profileError) {
-    console.error("Profile page fetch error (details):", {
-      message: profileError.message || "NO_MESSAGE",
-      code: profileError.code || "NO_CODE",
-      details: profileError.details || "NO_DETAILS",
-      hint: profileError.hint || "NO_HINT",
-      targetId
-    });
+    console.error("[Profile] Fetch error:", profileError.code, profileError.message);
   }
 
   // Synthesis logic for the profile if DB fetch fails

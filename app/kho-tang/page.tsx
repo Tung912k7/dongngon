@@ -42,10 +42,7 @@ export default async function DongNgonPage({
     })();
 
     if (error) {
-        console.error("Supabase server-side fetch error (raw):", error);
-        console.error("Supabase server-side fetch error (stringified):", JSON.stringify(error));
-        console.error("Error Code:", error.code);
-        console.error("Error Message:", error.message);
+        console.error("[KhoTang] Server fetch error:", error.code, error.message);
     }
 
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication

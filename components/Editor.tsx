@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitContribution } from "@/actions/contribute";
@@ -43,6 +43,8 @@ export default function Editor({
 
   const isSubmittingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isFreeVerse = hinhThuc === "Tự do";
+  const [newLine, setNewLine] = useState(false);
 
   // Sync initial user prop with store if store is empty
   if (initialUser && !user) {
@@ -133,7 +135,7 @@ export default function Editor({
 
     try {
       const result = await Promise.race([
-        submitContribution(workId, cleanContent),
+        submitContribution(workId, cleanContent, isFreeVerse ? newLine : false),
         timeoutPromise
       ]) as { success?: boolean; error?: string };
       
@@ -141,6 +143,7 @@ export default function Editor({
         setError(result.error);
       } else {
         reset();
+        setNewLine(false);
         router.refresh();
       }
     } catch (err: unknown) {
@@ -219,6 +222,27 @@ export default function Editor({
           {isSubmitting ? "..." : "Gửi"}
         </PrimaryButton>
       </div>
+
+      {/* Free verse new line toggle */}
+      {isFreeVerse && (
+        <div className="flex items-center gap-2 mt-2 pl-1">
+          <button
+            type="button"
+            onClick={() => setNewLine(!newLine)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer border-2 ${
+              newLine
+                ? "bg-black text-white border-black"
+                : "bg-white text-gray-500 border-gray-300 hover:border-gray-400"
+            }`}
+          >
+            <span className="text-sm leading-none">↵</span>
+            <span>Xuống dòng</span>
+          </button>
+          {newLine && (
+            <span className="text-[10px] text-gray-400 italic">Câu này sẽ bắt đầu trên dòng mới</span>
+          )}
+        </div>
+      )}
       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
         Mỗi ngày chỉ được đóng góp 1 {writingRule === "1 kí tự" ? "kí tự" : "câu"}. 
         {writingRule === "1 câu" && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}

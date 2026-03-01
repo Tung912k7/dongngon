@@ -28,8 +28,23 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  // Fetch unread notification count at Header level
+  useEffect(() => {
+    if (!user) return;
+    const fetchUnread = async () => {
+      const result = await getNotifications();
+      if (result.success && result.notifications) {
+        setUnreadCount(result.notifications.filter(n => !n.is_read).length);
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     setMounted(true);
@@ -106,20 +121,6 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
   };
 
   const NotificationMenuItemContent = () => {
-    const [unreadCount, setUnreadCount] = useState(0);
-    useEffect(() => {
-      if (!user) return;
-      const fetchNotifications = async () => {
-        const result = await getNotifications();
-        if (result.success && result.notifications) {
-          setUnreadCount(result.notifications.filter(n => !n.is_read).length);
-        }
-      };
-      fetchNotifications();
-      const interval = setInterval(fetchNotifications, 60000);
-      return () => clearInterval(interval);
-    }, []);
-
     return (
       <div className="flex items-center gap-2">
         <span>Thông báo</span>
@@ -230,7 +231,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                            </div>
                            <div className="flex flex-col">
                               <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">Người dùng</span>
-                              <span className="text-xl font-black font-ganh leading-tight tracking-wide text-black">{nickname}</span>
+                              <span className={`text-xl font-black font-ganh leading-tight tracking-wide text-black ${unreadCount > 0 ? 'underline decoration-red-500 decoration-2 underline-offset-4' : ''}`}>{nickname}</span>
                            </div>
                         </div>
                         {role === "admin" && (
@@ -318,7 +319,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"}`}>
+                  <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"} ${unreadCount > 0 && !(mounted && isUserSectionActive) ? 'underline decoration-red-500 decoration-2 underline-offset-4' : ''}`}>
                     {nickname || "Tài khoản"}
                   </span>
                   {user && (

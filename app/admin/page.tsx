@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import AdminWelcome from "@/components/AdminWelcome";
+import AdminAnnouncementSender from "@/components/AdminAnnouncementSender";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -64,6 +65,11 @@ export default async function AdminDashboard() {
           <div className="text-sm text-slate-500 italic pb-8">
             Chưa có dữ liệu hoạt động.
           </div>
+        </div>
+
+        {/* Announcement Sender */}
+        <div className="lg:col-span-2">
+          <AdminAnnouncementSender />
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-fit">

@@ -6,7 +6,7 @@ import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeInput } from "@/utils/sanitizer";
 
-export async function submitContribution(workId: string, content: string) {
+export async function submitContribution(workId: string, content: string, newLine: boolean = false) {
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -112,10 +112,11 @@ export async function submitContribution(workId: string, content: string) {
     .from('contributions')
     .insert([
       {
-        work_id: id,                  // Phải có dấu gạch dưới
-        user_id: user.id,             // Phải có dấu gạch dưới
-        content: text,                // Khớp với cột 'content'
-        author_nickname: nickname     // Khớp với cột 'author_nickname'
+        work_id: id,
+        user_id: user.id,
+        content: text,
+        author_nickname: nickname,
+        new_line: newLine
       }
     ]);
 

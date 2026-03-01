@@ -116,13 +116,29 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
     .eq("id", user.id);
 
   if (error) {
-    console.error("Profile update error:", error);
+    console.error("[Profile] Update error:", error);
     return { error: getErrorMessage(error) };
   }
 
+  // 6. Sync author_nickname across works and contributions
+  const [worksSync, contribSync] = await Promise.all([
+    supabase
+      .from("works")
+      .update({ author_nickname: sanitizedNickname })
+      .eq("created_by", user.id),
+    supabase
+      .from("contributions")
+      .update({ author_nickname: sanitizedNickname })
+      .eq("user_id", user.id),
+  ]);
+
+  if (worksSync.error) console.error("[Profile] Works nickname sync error:", worksSync.error.message);
+  if (contribSync.error) console.error("[Profile] Contributions nickname sync error:", contribSync.error.message);
+
+  revalidatePath("/", "layout");
   revalidatePath("/profile");
   revalidatePath("/settings");
-  revalidatePath("/");
+  revalidatePath("/kho-tang");
   return { success: true };
 }
 
