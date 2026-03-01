@@ -104,8 +104,8 @@ export async function createAdminAnnouncement(message: string) {
     .insert(notificationsToInsert);
 
   if (insertError) {
-    console.error("Error broadcasting announcement:", insertError);
-    return { success: false, error: "Failed to broadcast announcement" };
+    console.error("[Announcement] Error broadcasting:", insertError.code, insertError.message);
+    return { success: false, error: `Lỗi hệ thống: ${insertError.message}` };
   }
 
   return { success: true };
