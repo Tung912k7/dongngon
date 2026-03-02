@@ -29,6 +29,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
 
   const [formData, setFormData] = useState({
     title: work.title,
+    description: work.description || "",
     category_type: work.category_type,
     hinh_thuc: work.sub_category || "",
     license: work.license || "public",
@@ -38,6 +39,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
   useEffect(() => {
     setFormData({
       title: work.title,
+      description: work.description || "",
       category_type: work.category_type,
       hinh_thuc: work.sub_category || "",
       license: work.license || "public",
@@ -64,6 +66,8 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     
     const updateData = {
       title: sanitizeTitle(formData.title),
+      description: formData.description,
+      license: formData.license,
     };
     
     const timeoutPromise = new Promise((_, reject) => 
@@ -131,6 +135,39 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                 {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
               </div>
 
+              <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">MÔ TẢ (TÙY CHỌN)</label>
+                    <span className={`text-[10px] font-bold ${formData.description.length > 450 ? 'text-red-500' : 'text-gray-400'}`}>
+                      {formData.description.length}/500
+                    </span>
+                  </div>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
+                    rows={3}
+                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-medium focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black resize-none"
+                    placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
+                  />
+              </div>
+
+              {work.license !== "public" && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-gray-400">QUYỀN RIÊNG TƯ</label>
+                  <select
+                    value={formData.license}
+                    onChange={(e) => setFormData({ ...formData, license: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-black rounded-2xl font-bold bg-white focus:outline-none text-sm text-black"
+                  >
+                    <option value="private">Riêng tư</option>
+                    <option value="public">Cộng đồng</option>
+                  </select>
+                  <p className="text-[10px] font-medium text-gray-400 italic tracking-tight">
+                    * Bạn có thể chuyển từ riêng tư sang cộng đồng, nhưng không thể làm ngược lại.
+                  </p>
+                </div>
+              )}
+
               <div className="pt-4 border-t border-gray-100">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Thông tin cố định (Không thể thay đổi)</p>
                 <div className="flex flex-wrap gap-2">
@@ -143,9 +180,11 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                   <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-500 uppercase">
                     {formData.writing_rule}
                   </div>
-                  <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-500 uppercase">
-                    {reverseMapping.license(formData.license)}
-                  </div>
+                  {work.license === "public" && (
+                    <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-500 uppercase">
+                      CỘNG ĐỒNG
+                    </div>
+                  )}
                 </div>
               </div>
 

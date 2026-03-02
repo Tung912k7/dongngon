@@ -77,6 +77,12 @@ export default function Editor({
     }
 
     if (limitType === '1 câu') {
+      // Allow dates like 02/03/2026 or 02-03-2026 without punctuation
+      const dateRegex = /^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/;
+      if (dateRegex.test(trimmed)) {
+        return true;
+      }
+
       const sentenceRegex = /[.?!]$/;
       return sentenceRegex.test(trimmed);
     }

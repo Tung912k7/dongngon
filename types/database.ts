@@ -7,6 +7,7 @@ export type Work = {
   license: string;
   limit_type: string; // '1_sentence_day'
   age_rating?: string; // 'all', '13+', '16+', '18+'
+  description?: string;
   created_at: string;
   created_by: string; // UUID
 };

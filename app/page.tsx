@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 import SectionFade from "@/components/SectionFade";
 
 import HeroSection from "@/components/HeroSection";
-import Footer from "@/components/Footer";
 import CumulativeSection from "@/components/CumulativeSection";
 
 export default async function Home() {
@@ -24,11 +23,6 @@ export default async function Home() {
 
       {/* Cumulative Section - Main Content Flow */}
       <CumulativeSection />
-
-      {/* Footer Section */}
-      <div className="w-full">
-         <Footer />
-      </div>
 
     </div>
   );

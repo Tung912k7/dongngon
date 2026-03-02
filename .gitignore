@@ -40,4 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Project specific ignores
 bug.md
+.agent/
+reports/
+tmp/
+.vscode/
+*.log
+scripts/inspect*
+scripts/check*
+scripts/test*
+scripts/list*
+scripts/extract*

@@ -31,15 +31,9 @@ export function sanitizeInput(input: string, shouldTrim: boolean = true): string
  */
 export function escapeHTML(input: string): string {
   if (!input) return "";
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#x27;',
-    "/": '&#x2F;'
-  };
-  return input.replace(/[&<>"'/]/g, (m) => map[m]);
+  // React and Next.js handle HTML escaping automatically for text content and metadata.
+  // Manual escaping here leads to "double-escaping" bugs in the UI.
+  return input;
 }
 
 /**

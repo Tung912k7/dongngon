@@ -12,6 +12,7 @@ export async function createWork(formData: {
   license: string;
   writing_rule: string;
   age_rating: string;
+  description?: string;
 }) {
   const supabase = await createClient();
 
@@ -73,6 +74,7 @@ export async function createWork(formData: {
     privacy: formData.license === "private" ? "Private" : "Public",
     limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
     age_rating: formData.age_rating,
+    description: formData.description?.trim() || null,
     created_by: user.id,
     author_nickname: authorNickname,
     status: "writing"
@@ -116,6 +118,8 @@ export async function deleteWork(workId: string) {
 
 export async function updateWork(workId: string, formData: {
   title: string;
+  description?: string;
+  license?: string;
 }) {
   const supabase = await createClient();
 
@@ -130,11 +134,20 @@ export async function updateWork(workId: string, formData: {
   }
 
   // 3. Update Work
+  const updatePayload: any = {
+    title: sanitizedTitle,
+    description: formData.description?.trim() || null,
+  };
+
+  // Only allow updating license if it's changing from private to public
+  if (formData.license === "public") {
+     updatePayload.license = "public";
+     updatePayload.privacy = "Public";
+  }
+
   const { error } = await supabase
     .from("works")
-    .update({
-      title: sanitizedTitle,
-    })
+    .update(updatePayload)
     .eq("id", workId)
     .eq("created_by", user.id);
 

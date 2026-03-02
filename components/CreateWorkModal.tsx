@@ -28,6 +28,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     license: "public",
     writing_rule: "1 câu",
     age_rating: "all",
+    description: "",
   });
 
   // Reset form when modal opens
@@ -40,6 +41,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
         license: "public",
         writing_rule: "1 câu",
         age_rating: "all",
+        description: "",
       });
       setFieldErrors({});
       setError(null);
@@ -99,6 +101,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
           license: "public",
           writing_rule: "1 câu",
           age_rating: "all",
+          description: "",
         });
       } else {
         setError(result.error || "Có lỗi xảy ra.");
@@ -176,6 +179,22 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     placeholder="Tên tác phẩm của bạn..."
                   />
                   {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400">MÔ TẢ (TÙY CHỌN)</label>
+                    <span className={`text-[10px] font-bold ${formData.description.length > 450 ? 'text-red-500' : 'text-gray-400'}`}>
+                      {formData.description.length}/500
+                    </span>
+                  </div>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
+                    rows={3}
+                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-medium focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm text-black resize-none"
+                    placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

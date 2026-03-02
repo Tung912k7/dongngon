@@ -7,6 +7,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.2.0",
+    date: "02/03/2026",
+    title: "Cải tiến quản lý tác phẩm & cá nhân hóa",
+    changes: [
+      "Thêm mô tả cho tác phẩm — giờ đây bạn có thể thêm mô tả chi tiết, hiển thị ngay trên Pop-up xem trước tác phẩm",
+      "Nâng cấp quyền riêng tư — cho phép chuyển đổi trạng thái tác phẩm từ \"Riêng tư\" sang \"Cộng đồng\"",
+      "Ô nhập ngày sinh thông minh — tích hợp lịch chọn và tự động định dạng DD/MM/YYYY chuẩn Việt Nam",
+      "Cải tiến bộ lọc nội dung — cho phép viết ngày tháng năm (Dạng nhật ký) mà không bắt buộc dấu câu kết thúc",
+    ],
+  },
+  {
     version: "1.1.0",
     date: "01/03/2026",
     title: "Cập nhật tính năng mới",

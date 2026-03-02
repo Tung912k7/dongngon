@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const supabase = await createClient();
   const { data: work } = await supabase
     .from("works")
-    .select("title, sub_category")
+    .select("title, sub_category, description")
     .eq("id", id)
     .single();
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   return {
     title: sanitizedTitle,
-    description: `Tác phẩm ${sanitizedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
+    description: work.description || `Tác phẩm ${sanitizedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
     openGraph: {
       title: `${sanitizedTitle} | Đồng ngôn`,
       description: `Đọc và đóng góp cho tác phẩm "${sanitizedTitle}" trên Đồng ngôn.`,
@@ -55,7 +55,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating, author_nickname")
+      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating, author_nickname, description")
       .eq("id", id)
       .single(),
     
@@ -90,20 +90,21 @@ export default async function WorkPage({
   }
 
   const work = workResponse.data;
+  // No need to re-sanitize what's already sanitized in the DB or handled by React
   if (work) {
-    work.title = sanitizeTitle(work.title);
+    // work.title is already cleaned on save
   }
 
   const contributions: Contribution[] = (contributionsResponse.data || []).map((c: Contribution) => ({
     ...c,
-    author_nickname: sanitizeNickname(c.author_nickname),
-    content: sanitizeTitle(c.content)
+    author_nickname: c.author_nickname,
+    content: c.content
   }));
 
   const voteCount = voteCountResponse.count;
 
   if (workResponse.error) {
-    console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error);
+    console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error.code, workResponse.error.message);
   }
 
   if (!work) {
@@ -200,6 +201,8 @@ export default async function WorkPage({
                 contributorCount={uniqueContributors}
             />
         </div>
+        
+
         
         <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-3">
           {/* Trang thai */}

@@ -14,6 +14,7 @@ export interface Work {
   created_by?: string;
   age_rating?: string;
   license?: string;
+  description?: string;
   // Mapped fields for UI
   type: string;
   hinh_thuc: string;

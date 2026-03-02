@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
+import WorkPreviewModal from "./WorkPreviewModal";
 import { formatDate } from "@/utils/date";
 
 interface WorkCardProps {
@@ -19,6 +20,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [showPrivateNotice, setShowPrivateNotice] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -46,8 +48,8 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} 
       className="w-full"
     >
-      <Link
-        href={`/work/${work.id}`}
+      <div
+        onClick={() => setIsPreviewOpen(true)}
         className="border sm:border-2 border-black/80 sm:border-black rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-8 bg-white hover:shadow-xl transition-shadow flex flex-col min-h-[220px] sm:h-[360px] relative group cursor-pointer w-full text-left"
       >
         {/* Main Content Area */}
@@ -111,7 +113,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
             </span>
           )}
         </div>
-      </Link>
+      </div>
 
       {/* Actions Menu Button - Floating on top */}
       {isOwner && !hideMenu && (
@@ -180,6 +182,11 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
           onClose={() => setIsEditOpen(false)} 
         />
       )}
+       <WorkPreviewModal 
+          work={work} 
+          isOpen={isPreviewOpen} 
+          onClose={() => setIsPreviewOpen(false)} 
+       />
 
       <AnimatePresence>
         {showPrivateNotice && (
