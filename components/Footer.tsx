@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 export default function Footer() {
@@ -19,7 +19,7 @@ export default function Footer() {
               className="hover:opacity-80 transition-opacity"
             >
               <Image 
-                src="/logo.webp" 
+                src="/webp file/logo.webp" 
                 alt="Đồng ngôn Logo" 
                 width={80} 
                 height={80} 
@@ -61,7 +61,7 @@ export default function Footer() {
       <AnimatePresence>
         {isLoveOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -69,7 +69,7 @@ export default function Footer() {
               className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
             />
             
-            <motion.div
+            <m.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -85,7 +85,7 @@ export default function Footer() {
               >
                 Đóng
               </button>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>
@@ -95,7 +95,7 @@ export default function Footer() {
         {isDonateOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -104,7 +104,7 @@ export default function Footer() {
             />
             
             {/* Modal Content */}
-            <motion.div
+            <m.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -125,21 +125,21 @@ export default function Footer() {
               </p>
               
               <div className="w-64 h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
                   className="w-full h-full p-2"
                 >
                   <img 
-                    src="/qr.png" 
+                    src="/webp file/qr.webp" 
                     alt="Mã QR Ủng hộ" 
                     className="w-full h-full object-contain" 
                     loading="lazy"
                   />
-                </motion.div>
+                </m.div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>

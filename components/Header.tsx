@@ -6,7 +6,7 @@ import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import { useNotificationStore } from "@/stores/notification-store";
 
@@ -159,7 +159,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
         {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -188,7 +188,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     {navLinks.map((link, i) => {
                       const isActive = getIsActive(link.href);
                       return (
-                        <motion.div
+                        <m.div
                           key={link.href}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -209,7 +209,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                               </svg>
                             )}
                           </Link>
-                        </motion.div>
+                        </m.div>
                       );
                     })}
                  </nav>
@@ -263,7 +263,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                     )}
                  </div>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -283,7 +283,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       `}
                     >
                     {showActiveState && (
-                      <motion.div
+                      <m.div
                         layoutId="active-pill"
                         className="absolute inset-0 bg-black rounded-full"
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -307,7 +307,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                   `}
                 >
                   {mounted && isUserSectionActive && (
-                    <motion.div
+                    <m.div
                       layoutId="active-pill"
                       className="absolute inset-0 bg-black rounded-full"
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -328,7 +328,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
 
                 <AnimatePresence>
                   {isDropdownOpen && user && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -371,7 +371,7 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       >
                         Đăng xuất
                       </MenuButton>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
               </div>

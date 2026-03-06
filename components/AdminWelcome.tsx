@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 export default function AdminWelcome() {
   const searchParams = useSearchParams();
@@ -53,7 +53,7 @@ export default function AdminWelcome() {
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] pointer-events-none">
         {/* Semi-transparent Dim Overlay */}
-        <motion.div 
+        <m.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -62,7 +62,7 @@ export default function AdminWelcome() {
         />
 
         {/* Floating Welcome Message */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -94,11 +94,11 @@ export default function AdminWelcome() {
                 </svg>
              </button>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Animated Arrow pointing to the specific button */}
         {arrowPos.top !== 0 && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ 
               opacity: 1, 
@@ -126,7 +126,7 @@ export default function AdminWelcome() {
              >
                 <path d="M0 20H45M45 20L35 10M45 20L35 30" stroke="black" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
              </svg>
-          </motion.div>
+          </m.div>
         )}
       </div>
     </AnimatePresence>

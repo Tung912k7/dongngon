@@ -5,7 +5,7 @@ import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "@/utils/imageCrop";
 import { createClient } from "@/utils/supabase/client";
@@ -163,7 +163,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
       <AnimatePresence>
         {isOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -175,7 +175,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
               aria-label="Đóng chỉnh sửa hồ sơ"
             />
             
-            <motion.div
+            <m.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -223,7 +223,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     <button
                       type="button"
                       onClick={() => {
-                        setAvatarUrl("/default_avatar.png");
+                        setAvatarUrl("/webp file/default_avatar.webp");
                         setImageSrc(null);
                         if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
@@ -277,11 +277,11 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     ) : (
                       <div className="flex flex-col items-center">
                         <Image
-                          src={avatarUrl || "/default_avatar.png"}
+                          src={avatarUrl || "/webp file/default_avatar.webp"}
                           alt="Current Avatar"
                           width={160}
                           height={160}
-                          className={`w-full h-full object-cover ${(avatarUrl === "/default_avatar.png" || !avatarUrl) ? 'scale-[1.5]' : ''}`}
+                          className={`w-full h-full object-cover ${(avatarUrl === "/webp file/default_avatar.webp" || !avatarUrl) ? 'scale-[1.5]' : ''}`}
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px]">
                           <p className="text-[10px] text-black font-black mt-4 tracking-widest uppercase bg-white px-4 py-2 border-2 border-black">Xem trước ảnh</p>
@@ -362,7 +362,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                   </PrimaryButton>
                 </div>
               </form>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>

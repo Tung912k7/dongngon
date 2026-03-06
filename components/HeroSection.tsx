@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import BrandHeader from "@/components/BrandHeader";
 import SearchBar from "@/components/SearchBar";
 import { LinkedButton } from "@/components/PrimaryButton";

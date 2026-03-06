@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 type BlacklistItem = {
   id: string;
@@ -145,14 +145,14 @@ export default function BlacklistPage() {
 
           <AnimatePresence>
             {regexError && (
-              <motion.div 
+              <m.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 className="bg-red-100 border-2 border-red-500 p-3 rounded-xl text-red-700 text-sm font-bold"
               >
                 ⚠️ Regex không hợp lệ: {regexError}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
@@ -185,7 +185,7 @@ export default function BlacklistPage() {
         ) : (
           <AnimatePresence mode="popLayout">
             {words.map((item) => (
-              <motion.div
+              <m.div
                 key={item.id}
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -208,7 +208,7 @@ export default function BlacklistPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>
                 </button>
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
         )}

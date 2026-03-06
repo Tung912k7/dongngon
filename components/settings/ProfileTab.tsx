@@ -115,7 +115,7 @@ export default function ProfileTab({
         <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
           <div className="w-32 h-32 rounded-full border-4 border-black overflow-hidden relative">
             <Image
-              src={avatarUrl || "/default_avatar.png"}
+              src={avatarUrl || "/webp file/default_avatar.webp"}
               alt="Avatar"
               fill
               className="object-cover"

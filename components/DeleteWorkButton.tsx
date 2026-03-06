@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { deleteWork } from "@/actions/work";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface DeleteWorkButtonProps {
   workId: string;
@@ -82,7 +82,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
         <AnimatePresence>
           {isOpen && (
             <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -90,7 +90,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               />
               
-              <motion.div
+              <m.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -118,7 +118,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
                     {isDeleting ? "ĐANG XÓA..." : "XÓA NGAY"}
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           )}
         </AnimatePresence>,

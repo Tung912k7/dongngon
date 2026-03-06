@@ -11,22 +11,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/dong-ngon`,
+      url: `${baseUrl}/kho-tang`,
       lastModified: new Date(),
-      changeFrequency: 'always',
-      priority: 0.8,
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/dang-nhap`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.3,
+      priority: 0.2,
     },
     {
       url: `${baseUrl}/dang-ky`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.3,
+      priority: 0.2,
     },
   ]
 }

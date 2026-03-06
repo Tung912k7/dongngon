@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
@@ -91,7 +91,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
 
       <AnimatePresence>
         {showPrivateNotice && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -113,7 +113,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
                 <p className="font-bold text-xs uppercase tracking-tight">Người dùng đã khoá tài khoản</p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -135,7 +135,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
 
           <AnimatePresence>
             {isMenuOpen && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.95, x: 10 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95, x: 10 }}
@@ -162,7 +162,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
                     onAction={() => setIsMenuOpen(false)}
                    />
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>

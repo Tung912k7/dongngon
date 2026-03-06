@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
-import EditWorkModal from "./EditWorkModal";
-import WorkPreviewModal from "./WorkPreviewModal";
+import dynamic from "next/dynamic";
+const EditWorkModal = dynamic(() => import("./EditWorkModal"), { ssr: false });
+const WorkPreviewModal = dynamic(() => import("./WorkPreviewModal"), { ssr: false });
 import { formatDate } from "@/utils/date";
 
 interface WorkCardProps {
@@ -42,7 +43,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
   }, []);
 
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} 
@@ -54,12 +55,12 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
       >
         {/* Main Content Area */}
         <div className="w-full flex-grow flex flex-col items-start gap-2 sm:gap-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">
             {work.title}
-          </h1>
+          </p>
           
           <div className="flex flex-col gap-0.5 sm:gap-1">
-            <h2 className="text-gray-500 font-medium text-base sm:text-lg flex items-center gap-1">
+            <p className="text-gray-500 font-medium text-base sm:text-lg flex items-center gap-1">
               Bởi: 
               <span 
                 onClick={(e) => {
@@ -76,12 +77,12 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
               >
                 {work.author_nickname}
               </span>
-            </h2>
-            <h2 className="flex items-center gap-2 text-gray-400 text-sm sm:text-base font-normal">
+            </p>
+            <p className="flex items-center gap-2 text-gray-400 text-sm sm:text-base font-normal">
               <span>{formatDate(work.created_at || new Date().toISOString())}</span>
               <span>•</span>
               <span>{work.age_rating === 'all' || work.age_rating === 'All' ? 'Mọi độ tuổi' : work.age_rating}</span>
-            </h2>
+            </p>
           </div>
         </div>
 
@@ -141,7 +142,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
 
           <AnimatePresence>
             {isMenuOpen && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -168,7 +169,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
                     onAction={() => setIsMenuOpen(false)}
                    />
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
@@ -190,7 +191,7 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
 
       <AnimatePresence>
         {showPrivateNotice && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -212,9 +213,9 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
                 <p className="font-bold text-sm">Người dùng đã khoá tài khoản</p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }

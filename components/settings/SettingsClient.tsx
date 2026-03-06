@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import ProfileTab from "./ProfileTab";
 import AccountTab from "./AccountTab";
 import InterfaceTab from "./InterfaceTab";
@@ -62,7 +62,7 @@ export default function SettingsClient({
 
         {/* Content Area */}
         <div className="flex-1 min-w-0">
-          <motion.div
+          <m.div
             key={activeTab}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -81,7 +81,7 @@ export default function SettingsClient({
             )}
             {activeTab === "account" && <AccountTab userEmail={user.email || ""} />}
             {activeTab === "interface" && <InterfaceTab />}
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </div>

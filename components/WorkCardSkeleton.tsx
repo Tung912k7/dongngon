@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export function WorkCardSkeleton() {
   return (
@@ -9,7 +9,7 @@ export function WorkCardSkeleton() {
         className="w-full h-[360px] p-8 flex flex-col items-start gap-4 bg-white relative overflow-hidden shadow-[10px_10px_0px_0px_rgba(0,0,0,0.05)]"
     >
       {/* Animated Shine Effect */}
-      <motion.div
+      <m.div
         animate={{
           x: ["-100%", "200%"],
         }}

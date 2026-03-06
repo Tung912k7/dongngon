@@ -15,7 +15,6 @@ import { createClient } from "@/utils/supabase/client";
 import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
 import { WorkGridSkeleton } from "@/components/WorkCardSkeleton";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import WorkCard from "@/components/WorkCard";
 
 const defaultFilters: FilterState = {
@@ -333,24 +332,6 @@ export default function DongNgonClient({
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [setCurrentPage]);
-
-const parentRef = useRef<HTMLDivElement>(null);
-
-  const columns = 3;
-  const rows = useMemo(() => {
-    const r = [];
-    for (let i = 0; i < paginatedWorks.length; i += columns) {
-      r.push(paginatedWorks.slice(i, i + columns));
-    }
-    return r;
-  }, [paginatedWorks]);
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 380,
-    overscan: 2,
-  });
 
   return (
     <div className="min-h-screen bg-white text-black">

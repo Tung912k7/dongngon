@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateWork } from "@/actions/work";
 import { sanitizeTitle } from "@/utils/sanitizer";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -102,7 +102,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -110,7 +110,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
           
-          <motion.div
+          <m.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -211,7 +211,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                 </PrimaryButton>
               </div>
             </form>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

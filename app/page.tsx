@@ -1,8 +1,15 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn",
-  description: "Suỵt",
+  title: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+  description:
+    "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy. Cùng nhau tạo nên những tác phẩm văn học độc đáo.",
+  openGraph: {
+    title: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+    description:
+      "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.",
+    type: "website",
+  },
 };
 
 import SectionFade from "@/components/SectionFade";

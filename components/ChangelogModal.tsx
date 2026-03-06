@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { CHANGELOG, LATEST_VERSION, ChangelogEntry } from "@/data/changelog";
 import { markChangelogSeen } from "@/actions/changelog";
 
@@ -29,7 +29,7 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
           <AnimatePresence>
             {isOpen && (
               <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -37,7 +37,7 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
                   className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                 />
 
-                <motion.div
+                <m.div
                   initial={{ scale: 0.92, opacity: 0, y: 30 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.92, opacity: 0, y: 30 }}
@@ -89,7 +89,7 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
                       Đã hiểu, tiếp tục
                     </button>
                   </div>
-                </motion.div>
+                </m.div>
               </div>
             )}
           </AnimatePresence>,

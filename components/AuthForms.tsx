@@ -7,10 +7,11 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
 import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
-import NotificationModal from "./NotificationModal";
+import dynamic from "next/dynamic";
+const NotificationModal = dynamic(() => import("./NotificationModal"), { ssr: false });
 import { PrimaryButton } from "./PrimaryButton";
 import { sanitizeNickname } from "@/utils/sanitizer";
-import DateInput from "@/components/DateInput";
+const DateInput = dynamic(() => import("@/components/DateInput"), { ssr: false });
 
 // --- Components ---
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -786,14 +787,14 @@ export function SignUpForm() {
           <div className="absolute right-[-25%] w-[125%] aspect-square pointer-events-none translate-y-[-5%]">
             {/* Love Hand Background */}
             <img 
-              src="/lovehand.png" 
+              src="/webp file/lovehand.webp" 
               alt="Love Hand" 
               className="w-full h-full object-contain"
             />
             {/* Cow Centered in Heart */}
             <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-52 h-52 flex items-center justify-center">
               <img 
-                src="/cow.png" 
+                src="/webp file/cow.webp" 
                 alt="Cow" 
                 className="w-full h-full object-contain"
               />

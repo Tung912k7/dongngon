@@ -1,5 +1,5 @@
 "use client";
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const ContributionSection = () => {
   return (
@@ -8,7 +8,7 @@ const ContributionSection = () => {
 
       <div className="container mx-auto px-4 sm:px-6 relative z-20 h-full flex flex-col justify-center items-start lg:pr-32">
         {/* Text Content */}
-        <motion.div 
+        <m.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
@@ -21,7 +21,7 @@ const ContributionSection = () => {
           <p className="font-be-vietnam text-lg md:text-xl lg:text-2xl text-gray-200">
             Bạn chỉ có thể đóng góp 1 kí tự (1 câu)/ 1 tác phẩm/ 1 ngày
           </p>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

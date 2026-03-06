@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import { createClient } from "@/utils/supabase/client";
@@ -21,7 +21,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
   const [profile, setProfile] = useState(initialProfile);
   const [nickname, setNickname] = useState(initialProfile.nickname || "");
   const [description, setDescription] = useState(initialProfile.description || "");
-  const [avatarUrl, setAvatarUrl] = useState(initialProfile.avatar_url || "/default_avatar.png");
+  const [avatarUrl, setAvatarUrl] = useState(initialProfile.avatar_url || "/webp file/default_avatar.webp");
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
   const handleCancel = () => {
     setNickname(profile.nickname || "");
     setDescription(profile.description || "");
-    setAvatarUrl(profile.avatar_url || "/default_avatar.png");
+    setAvatarUrl(profile.avatar_url || "/webp file/default_avatar.webp");
     setImageSrc(null);
     setIsEditing(false);
     setError(null);
@@ -144,7 +144,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               alt="Avatar"
               width={256}
               height={256}
-              className={`w-full h-full object-cover transition-transform duration-500 ${isEditing && !imageSrc ? 'scale-105 opacity-80' : ''} ${(!avatarUrl || avatarUrl === "/default_avatar.png") ? 'scale-[0.8]' : ''}`}
+              className={`w-full h-full object-cover transition-transform duration-500 ${isEditing && !imageSrc ? 'scale-105 opacity-80' : ''} ${(!avatarUrl || avatarUrl === "/webp file/default_avatar.webp") ? 'scale-[0.8]' : ''}`}
               priority
             />
           )}
@@ -230,14 +230,14 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
       {/* Error Message */}
       <AnimatePresence>
         {error && (
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="w-full p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded-2xl text-xs font-bold mb-6 text-center uppercase tracking-wide"
           >
             {error}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 

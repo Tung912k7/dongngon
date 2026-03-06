@@ -1,5 +1,5 @@
 "use client";
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const AboutSection = () => {
   return (
@@ -13,7 +13,7 @@ const AboutSection = () => {
                   <div 
                     className="w-full h-full"
                     style={{
-                      backgroundImage: "url('/pattern/pattern1.png')",
+                      backgroundImage: "url('/webp file/pattern1.webp')",
                       backgroundRepeat: 'repeat-y',
                       backgroundPosition: 'center top',
                       backgroundSize: '100% auto' 
@@ -26,7 +26,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-6 sm:px-10 md:px-16 relative z-20 h-full flex flex-col justify-center items-end gap-20 lg:gap-32">
         
         {/* Text Content - Top Right */}
-        <motion.div 
+        <m.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
@@ -36,10 +36,10 @@ const AboutSection = () => {
           <p className="font-be-vietnam text-xl md:text-2xl lg:text-3xl leading-relaxed text-gray-100 font-medium">
             Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn. Tại đây chúng tôi đề cao sự ngẫu hứng như cách dự án này được sinh ra.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Angled Image Cards - Bottom Right */}
-        <motion.div 
+        <m.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -61,7 +61,7 @@ const AboutSection = () => {
             </div>
           </div>
 
-        </motion.div>
+        </m.div>
 
       </div>
 

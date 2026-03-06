@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["http://192.168.0.100:3000"],
@@ -19,6 +20,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Security headers for ALL routes (no caching override here)
         source: "/(.*)",
         headers: [
           {
@@ -52,13 +54,45 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+        ],
+      },
+      {
+        // Next.js static JS/CSS bundles — truly immutable (content-hashed filenames)
+        source: "/_next/static/(.*)",
+        headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, must-revalidate",
+            value: "public, max-age=31536000, immutable",
           },
+        ],
+      },
+      {
+        // Next.js optimized images
+        source: "/_next/image(.*)",
+        headers: [
           {
-            key: "Vary",
-            value: "Accept-Encoding",
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        // Public static files (fonts, images, webp, etc.)
+        source: "/webp%20file/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=2592000, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      {
+        // Fonts
+        source: "/fonts/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
@@ -66,4 +100,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const analyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default analyzer(nextConfig);

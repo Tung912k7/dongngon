@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { createClient } from '@/utils/supabase/client';
 
 interface WorkWithCount {
@@ -68,7 +68,7 @@ const PopularContent = () => {
     <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-10 lg:gap-12 relative overflow-hidden py-6 md:py-8 lg:py-12">
       {/* 1. Title Section (Shelf Header) */}
       <div className="w-full max-w-4xl px-4 flex flex-col items-center justify-center gap-2 md:gap-3 relative z-20">
-        <motion.div 
+        <m.div 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
@@ -82,7 +82,7 @@ const PopularContent = () => {
             <div className="w-1 md:w-1.5 h-1 md:h-1.5 rotate-45 border border-white/30"></div>
             <div className="h-[1px] flex-1 max-w-[40px] md:max-w-[60px] bg-gradient-to-l from-transparent via-white/30 to-white/50"></div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* 2. Bookshelf Container */}
@@ -101,7 +101,7 @@ const PopularContent = () => {
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[105%] h-2 bg-black/60 blur-lg scale-x-90 rounded-full"></div>
 
                 {/* The Book Body */}
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, rotateY: 15, x: 10 }}
                   whileInView={{ opacity: 1, rotateY: isFeatured ? 0 : -5, x: 0 }}
                   whileHover={{ rotateY: 5, x: -3, scale: 1.05 }}
@@ -137,7 +137,7 @@ const PopularContent = () => {
                   {isFeatured && (
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-20"></div>
                   )}
-                </motion.div>
+                </m.div>
               </div>
 
               {/* Contributor Label (Compact) */}

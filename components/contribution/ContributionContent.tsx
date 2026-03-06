@@ -1,10 +1,10 @@
 "use client";
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const ContributionContent = () => {
   return (
     <div className="w-full">
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
@@ -58,7 +58,7 @@ const ContributionContent = () => {
           </div>
         </div>
 
-      </motion.div>
+      </m.div>
     </div>
   );
 };

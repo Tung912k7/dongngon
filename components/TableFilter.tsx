@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import WorkFilter from "./WorkFilter";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { FilterState } from "@/app/kho-tang/types";
 
 interface TableFilterProps {
@@ -57,7 +57,7 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
 
         <AnimatePresence>
           {isOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -65,7 +65,7 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
               className="absolute top-full -left-2 sm:left-0 mt-2 w-[calc(100vw-2rem)] sm:w-auto sm:min-w-[400px] md:min-w-[500px]"
             >
               <WorkFilter filters={filters} onApply={handleApply} />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

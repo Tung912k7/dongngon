@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
@@ -30,7 +30,7 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
   return (
     <div className="relative group perspective-1000">
       <Link href={`/work/${work.id}`} className="block">
-        <motion.div
+        <m.div
           whileHover={{ rotateY: -10, x: 5 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className="w-[180px] h-[260px] bg-white border-2 border-black rounded-r-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden flex flex-col p-4 transition-all group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
@@ -65,7 +65,7 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
             <p className="text-[10px] font-bold text-black truncate mb-0.5">{work.author_nickname}</p>
             <p className="text-[8px] text-gray-400 font-medium uppercase tracking-tighter">{work.date}</p>
           </div>
-        </motion.div>
+        </m.div>
       </Link>
 
       {/* Actions Menu (3 dots) - Only visible on hover for owner */}
@@ -86,7 +86,7 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
 
           <AnimatePresence>
             {isMenuOpen && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0.9, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
@@ -111,7 +111,7 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
                   paddingClass="px-4 py-2"
                   onAction={() => setIsMenuOpen(false)}
                 />
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>

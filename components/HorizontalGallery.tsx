@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useTransform, useScroll } from "framer-motion";
+import { m, useTransform, useScroll } from "framer-motion";
 import { useRef } from "react";
 
 const cards = [
@@ -9,7 +9,7 @@ const cards = [
     title: "Khởi Nguyên",
     subtitle: "Nơi bắt đầu những dòng chảy",
     color: "bg-red-500", // Placeholder gradient
-    img: "/pattern/pattern1.png" // Using available asset or color
+    img: "/webp file/pattern1.webp" // Using available asset or color
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const HorizontalGallery = () => {
   return (
     <section ref={targetRef} className="relative h-[300vh] bg-black">
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <motion.div style={{ x }} className="flex gap-24 px-24">
+        <m.div style={{ x }} className="flex gap-24 px-24">
           <div className="flex flex-col justify-center min-w-[30vw]">
              <h2 className="text-white font-ganh text-6xl md:text-8xl whitespace-nowrap">
                 Hành trình <br /> Sáng tạo
@@ -55,7 +55,7 @@ const HorizontalGallery = () => {
           {cards.map((card) => (
             <Card key={card.id} card={card} />
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

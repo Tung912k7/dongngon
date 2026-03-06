@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -27,7 +27,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
       {isOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           {/* Backdrop */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -36,7 +36,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
           />
 
           {/* Modal Container */}
-          <motion.div
+          <m.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -112,7 +112,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>
