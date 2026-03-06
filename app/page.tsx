@@ -12,8 +12,6 @@ export const metadata: Metadata = {
   },
 };
 
-import SectionFade from "@/components/SectionFade";
-
 import HeroSection from "@/components/HeroSection";
 import CumulativeSection from "@/components/CumulativeSection";
 
@@ -21,12 +19,11 @@ export default async function Home() {
   
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
-      
-      {/* Hero Section */}
-      {/* Hero Section */}
-      <SectionFade className="min-h-screen w-full flex items-center justify-center">
+
+      {/* Hero Section — no animation wrapper: must be immediately visible for LCP */}
+      <div className="min-h-screen w-full flex items-center justify-center">
         <HeroSection />
-      </SectionFade>
+      </div>
 
       {/* Cumulative Section - Main Content Flow */}
       <CumulativeSection />

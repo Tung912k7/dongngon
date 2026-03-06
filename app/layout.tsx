@@ -16,7 +16,7 @@ const quicksand = Quicksand({
 });
 
 const ganhType = localFont({
-  src: "../public/fonts/Ganh Type - Regular.ttf",
+  src: "../public/fonts/Ganh Type - Regular.woff2",
   display: "swap",
   variable: "--font-ganh-next",
   preload: true,
