@@ -4,6 +4,20 @@ import DongNgonClient from "@/components/DongNgonClient";
 import { Metadata } from "next";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 
+type WorkRow = {
+    id: string;
+    title: string;
+    category_type: string;
+    sub_category: string;
+    limit_type: string;
+    status: string;
+    created_at: string;
+    author_nickname: string;
+    privacy: string;
+    created_by: string;
+    age_rating: string | null;
+};
+
 export const metadata: Metadata = {
   title: "Đồng ngôn - Kho tàng tác phẩm",
   description: "Khám phá những áng thơ văn, câu nói hay và các tác phẩm sáng tác ngẫu hứng từ cộng đồng Đồng ngôn.",
@@ -46,19 +60,20 @@ export default async function DongNgonPage({
     }
 
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication
-    const mappedWorks = (rawWorks || []).map((work: Record<string, any>) => ({
+    const mappedWorks = ((rawWorks || []) as WorkRow[]).map((work) => ({
         ...work,
         title: sanitizeTitle(work.title),
         author_nickname: sanitizeNickname(work.author_nickname),
         type: work.category_type,
         hinh_thuc: work.sub_category,
         rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+        age_rating: work.age_rating ?? undefined,
         status: work.status === "writing" ? "Đang viết" : 
                 work.status === "finished" ? "Hoàn thành" : 
                 work.status === "pending" ? "Đợi duyệt" : work.status,
         date: formatDate(work.created_at),
-        rawDate: work.created_at, // Pass the string; Client will convert to Date object
-        is_author_private: (Array.isArray(work.profiles) ? work.profiles[0]?.is_private : (work.profiles as any)?.is_private) || false
+        rawDate: new Date(work.created_at),
+        is_author_private: false,
     }));
 
     return (

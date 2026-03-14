@@ -8,7 +8,17 @@ import { formatDate } from "@/utils/date";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 import ProfileSidebar from "@/components/ProfileSidebar";
 
-const sanitizeWork = (work: Record<string, any>): Work => {
+type WorkLike = Record<string, unknown> & {
+  title: string;
+  author_nickname: string;
+  category_type: string;
+  sub_category: string;
+  limit_type: string;
+  status: string;
+  created_at: string;
+};
+
+const sanitizeWork = (work: WorkLike): Work => {
   return {
     ...work,
     title: sanitizeTitle(work.title),
@@ -61,7 +71,7 @@ export default async function ProfilePage({
     full_name: currentUser.user_metadata?.full_name,
     avatar_url: currentUser.user_metadata?.avatar_url,
     is_private: false,
-    has_seen_tour: true,
+    has_acknowledged_welcome_message: true,
   } : null;
 
   const finalProfile = profile || syntheticProfile;
@@ -130,7 +140,7 @@ export default async function ProfilePage({
       .map(c => {
         const workData = c.works || (c as Record<string, unknown>).work;
         const finalWork = Array.isArray(workData) ? workData[0] : workData;
-        return [finalWork.id, sanitizeWork(finalWork as Record<string, any>)];
+        return [finalWork.id, sanitizeWork(finalWork as WorkLike)];
       }))
       .values()
   );

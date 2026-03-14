@@ -1,7 +1,7 @@
 import { Viewport, Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
+import { sanitizeTitle } from "@/utils/sanitizer";
 import { Contribution } from "@/types/database";
 import Link from "next/link";
 import Feed from "../../../components/Feed";

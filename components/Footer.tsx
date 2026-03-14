@@ -3,57 +3,105 @@
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import FooterQuote from "./FooterQuote";
 
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
   const [isLoveOpen, setIsLoveOpen] = useState(false);
 
+  const proseLinks = ["Tùy bút", "Nhật ký", "Hồi ký", "Tản văn"];
+  const poetryLinks = ["Tự do", "Tứ ngôn", "Ngũ ngôn", "Lục ngôn", "Thất ngôn", "Bát ngôn"];
+
+  const formHref = (form: string) => ({
+    pathname: "/kho-tang",
+    query: { form },
+  });
+
+  const columnHeadingClass =
+    "font-ganh font-medium tracking-tight text-[#2C2B29] text-[24px] md:text-[28px]";
+  const columnLinkClass =
+    "font-be-vietnam font-light text-[#2C2B29]/75 hover:text-black transition-colors duration-300 w-fit text-[16px] md:text-[18px]";
+
   return (
     <>
-      <footer className="w-full bg-white border-t border-black py-8 mt-auto">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:grid md:grid-cols-3 items-center gap-6">
-          {/* Logo */}
-          <div className="flex justify-center md:justify-start md:-ml-4">
-            <button 
+      <footer className="w-full mt-auto bg-[#F9F8F4] text-[#2C2B29] pt-20 lg:pt-32 pb-4">
+        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col md:flex-row justify-between items-start gap-16 md:gap-12 pb-16">
+          <section className="w-full max-w-sm flex flex-col gap-8 items-start">
+            <button
               onClick={() => setIsLoveOpen(true)}
-              className="hover:opacity-80 transition-opacity"
+              className="transition-opacity hover:opacity-80"
+              aria-label="Mở lời nhắn yêu thương"
             >
-              <Image 
-                src="/webp file/logo.webp" 
-                alt="Đồng ngôn Logo" 
-                width={80} 
-                height={80} 
-                className="w-16 h-16 object-contain"
+              <Image
+                src="/webp file/logo.webp"
+                alt="Đồng ngôn Logo"
+                width={160}
+                height={160}
+                className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-sm"
               />
             </button>
-          </div>
-            
 
-          {/* Copyright */}
-          <div 
-            className="text-base font-medium text-black text-center justify-self-center whitespace-nowrap"
-            suppressHydrationWarning
-          >
-            © {new Date().getFullYear()} Đồng ngôn bởi tôi và bạn trai
-          </div>
+            <FooterQuote />
+          </section>
 
-          {/* Links */}
-          <nav className="flex gap-8 text-sm md:text-base font-medium uppercase tracking-wider items-center justify-self-end text-black">
-            <a 
-              href="https://forms.gle/2ENzFe3rdUhkXTP59" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:opacity-75 transition-opacity"
-            >
-              Góp ý
-            </a>
-            <button 
-              onClick={() => setIsDonateOpen(true)}
-              className="hover:opacity-75 transition-opacity uppercase"
-            >
-              Giải cứu admin
-            </button>
-          </nav>
+          <div className="flex flex-row flex-wrap sm:flex-nowrap justify-start lg:justify-end gap-12 md:gap-20 lg:gap-24">
+            <nav aria-label="Danh mục Văn" className="flex flex-col items-start min-w-[100px] gap-6">
+              <h3 className={columnHeadingClass}>Văn</h3>
+              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                {proseLinks.map((label) => (
+                  <li key={label}>
+                    <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <nav aria-label="Danh mục Thơ" className="flex flex-col items-start min-w-[100px] gap-6">
+              <h3 className={columnHeadingClass}>Thơ</h3>
+              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                {poetryLinks.map((label) => (
+                  <li key={label}>
+                    <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <nav aria-label="Liên kết Kết nối" className="flex flex-col items-start min-w-[100px] gap-6">
+              <h3 className={columnHeadingClass}>Kết nối</h3>
+              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                <li>
+                  <a
+                    href="https://forms.gle/2ENzFe3rdUhkXTP59"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-opacity hover:opacity-70"
+                  >
+                    Góp ý
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setIsDonateOpen(true)}
+                    className="text-left transition-opacity hover:opacity-70"
+                  >
+                    Giải cứu admin
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div className="w-full border-t border-black/5 pt-6 pb-2 mt-10 md:mt-20">
+          <p className="mx-auto max-w-7xl px-8 text-center font-be-vietnam text-[13px] md:text-[14px] font-light tracking-[0.01em] text-[#2C2B29]/50">
+            © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình <span className="text-[#2C2B29]/60">❤️</span>
+          </p>
         </div>
       </footer>
 
@@ -129,12 +177,14 @@ export default function Footer() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="w-full h-full p-2"
+                  className="w-full h-full p-2 relative"
                 >
-                  <img 
-                    src="/webp file/qr.webp" 
-                    alt="Mã QR Ủng hộ" 
-                    className="w-full h-full object-contain" 
+                  <Image
+                    src="/webp file/qr.webp"
+                    alt="Mã QR Ủng hộ"
+                    fill
+                    sizes="256px"
+                    className="w-full h-full object-contain"
                     loading="lazy"
                   />
                 </m.div>

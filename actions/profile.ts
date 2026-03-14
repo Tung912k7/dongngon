@@ -95,7 +95,14 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
   }
 
   // 5. Update Profile
-  const updatePayload: any = {
+  const updatePayload: {
+    nickname: string;
+    description: string | null;
+    is_private: boolean | undefined;
+    updated_at: string;
+    avatar_url?: string;
+    birthday?: string;
+  } = {
     nickname: sanitizedNickname,
     description: description || null,
     is_private: isPrivate,
@@ -142,7 +149,7 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
   return { success: true };
 }
 
-export async function completeOnboarding() {
+export async function acknowledgeWelcomeMessage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -150,11 +157,11 @@ export async function completeOnboarding() {
 
   const { error } = await supabase
     .from("profiles")
-    .update({ has_seen_tour: true })
+    .update({ has_acknowledged_welcome_message: true })
     .eq("id", user.id);
 
   if (error) {
-    console.error("Error marking onboarding as complete:", error);
+    console.error("Error acknowledging welcome message:", error);
     return { error: getErrorMessage(error) };
   }
 

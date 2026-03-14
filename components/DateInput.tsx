@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 interface DateInputProps {
   value: string; // Expects YYYY-MM-DD
@@ -13,24 +13,24 @@ interface DateInputProps {
 }
 
 export default function DateInput({ value, onChange, disabled, className = "", placeholder = "DD/MM/YYYY", name, required }: DateInputProps) {
-  const [displayValue, setDisplayValue] = useState("");
+  const [draftValue, setDraftValue] = useState<string | null>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
 
-  // Convert YYYY-MM-DD to DD/MM/YYYY for display
-  useEffect(() => {
+  const formattedValue = useMemo(() => {
     if (value && value.includes("-")) {
       const parts = value.split("-");
       if (parts.length === 3) {
         const [y, m, d] = parts;
         // Basic check to ensure we have numbers
         if (y && m && d) {
-          setDisplayValue(`${d}/${m}/${y}`);
-          return;
+          return `${d}/${m}/${y}`;
         }
       }
     }
-    setDisplayValue(value || "");
+    return value || "";
   }, [value]);
+
+  const displayValue = draftValue ?? formattedValue;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -47,7 +47,7 @@ export default function DateInput({ value, onChange, disabled, className = "", p
       formatted = digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4, 8);
     }
 
-    setDisplayValue(formatted);
+    setDraftValue(formatted);
 
     // If completely filled (DD/MM/YYYY), send YYYY-MM-DD to parent
     if (formatted.length === 10) {
@@ -66,6 +66,7 @@ export default function DateInput({ value, onChange, disabled, className = "", p
     const val = e.target.value; // Native input returns YYYY-MM-DD
     if (val) {
       onChange(val);
+      setDraftValue(null);
     }
   };
 
@@ -94,6 +95,7 @@ export default function DateInput({ value, onChange, disabled, className = "", p
           name={name}
           value={displayValue}
           onChange={handleTextChange}
+          onBlur={() => setDraftValue(null)}
           disabled={disabled}
           required={required}
           placeholder={placeholder}

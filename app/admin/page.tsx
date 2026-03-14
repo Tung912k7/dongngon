@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import AdminWelcome from "@/components/AdminWelcome";
 import AdminAnnouncementSender from "@/components/AdminAnnouncementSender";
+import AdminReactivationNudgeRunner from "@/components/AdminReactivationNudgeRunner";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -72,6 +73,10 @@ export default async function AdminDashboard() {
           <AdminAnnouncementSender />
         </div>
 
+        <div className="lg:col-span-2">
+          <AdminReactivationNudgeRunner />
+        </div>
+
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-fit">
           <h2 className="text-lg font-bold text-slate-900 mb-4">Thao tác nhanh</h2>
           <div className="space-y-3">
@@ -99,12 +104,24 @@ export default async function AdminDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
               </Link>
-              <button className="w-full text-left px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between group">
-               <span>Cài đặt hệ thống</span>
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400 group-hover:text-slate-600">
-                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-               </svg>
-             </button>
+              <Link
+                href="/admin/quotes"
+                className="w-full text-left px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between group"
+              >
+                <span>Quản lý trích dẫn</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400 group-hover:text-slate-600">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </Link>
+              <Link
+                href="/admin/wiki"
+                className="w-full text-left px-4 py-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between group"
+              >
+                <span>Chỉnh sửa Wiki hướng dẫn</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400 group-hover:text-slate-600">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </Link>
           </div>
         </div>
       </div>

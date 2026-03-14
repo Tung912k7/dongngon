@@ -1,7 +1,7 @@
 "use server";
 
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
 
 export async function getNotifications() {
   const supabase = await createClient();
@@ -109,4 +109,56 @@ export async function createAdminAnnouncement(message: string) {
   }
 
   return { success: true };
+}
+
+export async function runReactivationNudgesNow() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "Unauthorized" };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") {
+    return { success: false, error: "Forbidden: Admins only" };
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
+
+  if (!supabaseUrl) {
+    return {
+      success: false,
+      error: "Thiếu NEXT_PUBLIC_SUPABASE_URL trong môi trường server",
+    };
+  }
+
+  if (!serviceRoleKey) {
+    return {
+      success: false,
+      error:
+        "Thiếu SUPABASE_SERVICE_ROLE_KEY (hoặc SUPABASE_SERVICE_ROLE) trong môi trường server",
+    };
+  }
+
+  const serviceClient = createServiceClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  const { data, error } = await serviceClient.rpc("enqueue_reactivation_nudges");
+
+  if (error) {
+    console.error("[ReactivationNudge] RPC error:", error.code, error.message);
+    return { success: false, error: `Lỗi hệ thống: ${error.message}` };
+  }
+
+  return { success: true, queuedCount: typeof data === "number" ? data : 0 };
 }

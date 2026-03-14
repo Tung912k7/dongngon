@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getNotifications } from '@/actions/notification';
+import type { Notification } from '@/types/database';
 
 interface NotificationState {
   unreadCount: number;
@@ -14,7 +15,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     try {
       const result = await getNotifications();
       if (result.success && result.notifications) {
-        const count = result.notifications.filter((n: any) => !n.is_read).length;
+        const count = result.notifications.filter((n: Notification) => !n.is_read).length;
         set({ unreadCount: count });
       }
     } catch (error) {

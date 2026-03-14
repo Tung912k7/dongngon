@@ -10,6 +10,12 @@ interface WorkWithCount {
   contributor_count: number;
 }
 
+type WorkWithContributionCountRow = {
+  id: string;
+  title: string;
+  contributions?: Array<{ count: number | null }> | null;
+};
+
 const PopularContent = () => {
   const [popularWorks, setPopularWorks] = useState<WorkWithCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,10 +33,10 @@ const PopularContent = () => {
         if (error) throw error;
 
         if (data) {
-          const mapped = data.map((work: any) => ({
+          const mapped = (data as WorkWithContributionCountRow[]).map((work) => ({
             id: work.id,
             title: work.title,
-            contributor_count: work.contributions[0]?.count || 0
+            contributor_count: work.contributions?.[0]?.count || 0
           }))
           .sort((a, b) => b.contributor_count - a.contributor_count)
           .slice(0, 3);
@@ -93,6 +99,7 @@ const PopularContent = () => {
           return (
             <Link 
               href={`/work/${work.id}`} 
+              prefetch={false}
               key={work.id} 
               className="flex flex-col items-center group perspective-1000 w-full md:w-auto active:scale-95 transition-transform"
             >

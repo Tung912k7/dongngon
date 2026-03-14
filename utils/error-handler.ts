@@ -1,8 +1,9 @@
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: unknown): string {
   if (!error) return "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
-  
-  const code = typeof error === 'string' ? error : error.code;
-  const message = typeof error === 'object' ? error.message : '';
+
+  const errorObj = typeof error === "object" && error !== null ? (error as Record<string, unknown>) : null;
+  const code = typeof error === 'string' ? error : (typeof errorObj?.code === "string" ? errorObj.code : undefined);
+  const message = typeof errorObj?.message === "string" ? errorObj.message : '';
 
   // Handle common Postgres error codes from Supabase
   switch (code) {

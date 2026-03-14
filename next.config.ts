@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     return [];
   },
   async headers() {
-    return [
+    const headers = [
       {
         // Security headers for ALL routes (no caching override here)
         source: "/(.*)",
@@ -61,47 +61,54 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        // Next.js static JS/CSS bundles — truly immutable (content-hashed filenames)
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-      {
-        // Next.js optimized images
-        source: "/_next/image(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=86400, stale-while-revalidate=604800",
-          },
-        ],
-      },
-      {
-        // Public static files (fonts, images, webp, etc.)
-        source: "/webp%20file/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=2592000, stale-while-revalidate=86400",
-          },
-        ],
-      },
-      {
-        // Fonts
-        source: "/fonts/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
     ];
+
+    if (process.env.NODE_ENV === "production") {
+      headers.push(
+        {
+          // Next.js static JS/CSS bundles — immutable in production
+          source: "/_next/static/(.*)",
+          headers: [
+            {
+              key: "Cache-Control",
+              value: "public, max-age=31536000, immutable",
+            },
+          ],
+        },
+        {
+          // Next.js optimized images
+          source: "/_next/image(.*)",
+          headers: [
+            {
+              key: "Cache-Control",
+              value: "public, max-age=86400, stale-while-revalidate=604800",
+            },
+          ],
+        },
+        {
+          // Public static files (fonts, images, webp, etc.)
+          source: "/webp%20file/(.*)",
+          headers: [
+            {
+              key: "Cache-Control",
+              value: "public, max-age=2592000, stale-while-revalidate=86400",
+            },
+          ],
+        },
+        {
+          // Fonts
+          source: "/fonts/(.*)",
+          headers: [
+            {
+              key: "Cache-Control",
+              value: "public, max-age=31536000, immutable",
+            },
+          ],
+        }
+      );
+    }
+
+    return headers;
   },
 };
 

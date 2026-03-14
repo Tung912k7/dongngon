@@ -4,13 +4,11 @@ import { useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUserStore } from "@/stores/user-store";
 import { useWorkStore, Work } from "@/stores/work-store";
-import Link from "next/link";
 import { formatDate } from "@/utils/date";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
 import dynamic from "next/dynamic";
 const TableFilter = dynamic(() => import("@/components/TableFilter"), { ssr: false });
 const CreateWorkModal = dynamic(() => import("@/components/CreateWorkModal"), { ssr: false });
-import { TagButton } from "@/components/TagButton";
 import { createClient } from "@/utils/supabase/client";
 import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
@@ -26,12 +24,30 @@ const defaultFilters: FilterState = {
   limit: "10",
 };
 
+type WorkRow = {
+  id: string;
+  title: string;
+  category_type: string;
+  sub_category: string;
+  limit_type: string;
+  status: string;
+  created_at?: string;
+  author_nickname: string;
+  privacy?: string;
+  created_by?: string;
+  age_rating?: string;
+};
+
+type AuthUser = {
+  id: string;
+};
+
 export default function DongNgonClient({ 
   initialWorks, 
   initialUser 
 }: { 
-  initialWorks: any[]; 
-  initialUser: any;
+  initialWorks: Work[];
+  initialUser: AuthUser | null;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -59,13 +75,17 @@ export default function DongNgonClient({
     if (isHydrated.current) return;
     
     // 1. Hydrate Stores with a single direct set call to minimize notifies
-    const updates: any = {};
+    const updates: { user?: AuthUser | null } = {};
     if (initialUser && !user) updates.user = initialUser;
     if (Object.keys(updates).length > 0) {
         useUserStore.setState(updates);
     }
 
-    const workUpdates: any = {};
+    const workUpdates: {
+      allWorks?: Work[];
+      filters?: FilterState;
+      currentPage?: number;
+    } = {};
     if (initialWorks && allWorks.length === 0) workUpdates.allWorks = initialWorks;
     
     // Initial Filters from URL
@@ -73,7 +93,7 @@ export default function DongNgonClient({
       category_type: searchParams.get("category") || "",
       hinh_thuc: searchParams.get("form") || "",
       writing_rule: searchParams.get("rule") || "",
-      sort_date: (searchParams.get("sort") as any) || "newest",
+      sort_date: searchParams.get("sort") || "newest",
       status: searchParams.get("status") || "",
       limit: searchParams.get("limit") || "10",
     };
@@ -83,7 +103,7 @@ export default function DongNgonClient({
     useWorkStore.setState(workUpdates);
     
     isHydrated.current = true;
-  }, []); 
+  }, [allWorks.length, initialUser, initialWorks, searchParams, user]); 
 
   // Stable URL sync - only runs when filters/currentPage changes
   useEffect(() => {
@@ -107,7 +127,7 @@ export default function DongNgonClient({
     }
   }, [filters, currentPage, searchParams]);
 
-  const fetchWorks = useCallback(async (supabaseClient?: any, searchQuery?: string) => {
+  const fetchWorks = useCallback(async (supabaseClient?: ReturnType<typeof createClient>, searchQuery?: string) => {
     // We should not set loading if we are already loading or if it's the first mount hydration
     setIsLoading(true);
     const sb = supabaseClient || createClient();
@@ -132,7 +152,7 @@ export default function DongNgonClient({
       if (error) {
         console.error("[KhoTang] Supabase fetch error:", error.code, error.message);
       } else if (data) {
-        const mappedWorks = data.map((work: any) => ({
+        const mappedWorks: Work[] = (data as WorkRow[]).map((work) => ({
           ...work,
           title: sanitizeTitle(work.title),
           author_nickname: sanitizeNickname(work.author_nickname),
@@ -148,7 +168,7 @@ export default function DongNgonClient({
         }));
         setAllWorks(mappedWorks);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Fetch implementation error:", err);
     } finally {
       setIsLoading(false);
@@ -273,20 +293,6 @@ export default function DongNgonClient({
     };
   }, [user]); // Only depend on current user for privacy filtering rules
 
-  const handleTagClick = useCallback((type: 'category' | 'hinh_thuc' | 'rule' | 'status', value: string) => {
-    const filterKeyMap: { [key: string]: keyof FilterState } = {
-      category: "category_type",
-      hinh_thuc: "hinh_thuc",
-      rule: "writing_rule",
-      status: "status"
-    };
-
-    const filterKey = filterKeyMap[type];
-    if (value) {
-      setFilters({ [filterKey]: value });
-    }
-  }, [setFilters]);
-
   const { paginatedWorks, totalPages } = useMemo(() => {
     let works = [...allWorks];
     works = works.filter((work) => {
@@ -396,7 +402,7 @@ export default function DongNgonClient({
                     <div key={work.id} className="flex justify-center sm:justify-start">
                         <WorkCard 
                         work={work} 
-                        isOwner={user && work.created_by === user.id} 
+                        isOwner={!!user && work.created_by === user.id}
                         hideMenu={true}
                         />
                     </div>

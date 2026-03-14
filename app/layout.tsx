@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { createClient } from "@/utils/supabase/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ClientGlobalWrappers } from "@/components/ClientGlobalWrappers";
@@ -10,9 +9,10 @@ import localFont from "next/font/local";
 
 const quicksand = Quicksand({
   subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["500"],
   variable: "--font-quicksand",
   display: "swap",
+  preload: false,
 });
 
 const ganhType = localFont({
@@ -92,40 +92,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  let nickname = null;
-  let role = null;
-  let has_seen_tour = true;
-  let last_seen_changelog = null;
-  
-  if (user) {
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("nickname, role, has_seen_tour, last_seen_changelog")
-      .eq("id", user.id)
-      .single();
-    
-    if (profileError) {
-      console.error("[Layout] Profile fetch error:", profileError.code, profileError.message);
-    }
-
-    nickname = profile?.nickname || 
-               user.user_metadata?.nickname || 
-               user.user_metadata?.full_name || 
-               user.email?.split('@')[0] || 
-               "Thành viên";
-
-    role = profile?.role || user.user_metadata?.role || 'user';
-    has_seen_tour = profile?.has_seen_tour ?? true;
-    last_seen_changelog = profile?.last_seen_changelog || null;
-  }
-
   return (
     <html lang="vi" suppressHydrationWarning className="scroll-smooth">
       <head>
@@ -172,8 +143,8 @@ export default async function RootLayout({
         className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col overflow-x-hidden`}
       >
         <CSPostHogProvider>
-          <ClientGlobalWrappers hasSeenTour={has_seen_tour} lastSeenChangelog={last_seen_changelog} hasUser={!!user}>
-            <Header user={user} nickname={nickname} role={role} />
+          <ClientGlobalWrappers>
+            <Header />
             <main className="flex-1 w-full">
               {children}
             </main>

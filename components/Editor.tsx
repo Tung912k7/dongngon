@@ -134,7 +134,6 @@ export default function Editor({
     }
 
     setError(null);
-
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 10000)
     );
@@ -150,6 +149,7 @@ export default function Editor({
       } else {
         reset();
         setNewLine(false);
+
         router.refresh();
       }
     } catch (err: unknown) {
@@ -196,6 +196,7 @@ export default function Editor({
           {warning}
         </div>
       )}
+
       <div className="flex gap-2">
         <textarea
           ref={textareaRef}
@@ -252,6 +253,15 @@ export default function Editor({
       <p className="text-xs text-gray-400 mt-2 text-center pl-2">
         Mỗi ngày chỉ được đóng góp 1 {writingRule === "1 kí tự" ? "kí tự" : "câu"}. 
         {writingRule === "1 câu" && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
+      </p>
+      <p className="text-xs text-gray-500 mt-2 text-center pl-2">
+        Cần hướng dẫn? Xem
+        {" "}
+        <Link href="/wiki" className="font-semibold text-black underline hover:opacity-70 transition-opacity">
+          Wiki
+        </Link>
+        {" "}
+        để nắm cách sử dụng đầy đủ.
       </p>
 
       <NotificationModal 

@@ -11,18 +11,42 @@ function AuthListener() {
   const router = useRouter();
   const pathname = usePathname();
 
+  async function identifyPosthogUser(userId: string) {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+    try {
+      const posthog = (await import('posthog-js')).default;
+      posthog.identify(userId);
+    } catch {
+      // Analytics should never break auth flow
+    }
+  }
+
+  async function resetPosthogUser() {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+    try {
+      const posthog = (await import('posthog-js')).default;
+      posthog.reset();
+    } catch {
+      // Analytics should never break auth flow
+    }
+  }
+
   useEffect(() => {
     const supabase = createClient();
     
     let hasSession = false;
     supabase.auth.getSession().then(({ data: { session } }) => {
       hasSession = !!session;
+      if (session?.user?.id) {
+        void identifyPosthogUser(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         const wasLoggedIn = hasSession;
         hasSession = false;
+        void resetPosthogUser();
         
         const isPublicPage = pathname === '/' || pathname === '/dong-ngon' || pathname.startsWith('/work/');
         if (!isPublicPage && (wasLoggedIn || pathname.startsWith('/profile') || pathname.startsWith('/settings'))) {
@@ -30,6 +54,9 @@ function AuthListener() {
         }
       } else if (event === 'SIGNED_IN') {
         hasSession = true;
+        if (session?.user?.id) {
+          void identifyPosthogUser(session.user.id);
+        }
       }
     });
 
@@ -61,7 +88,11 @@ class SimpleErrorBoundary extends Component<{ children: ReactNode }, { hasError:
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       import('posthog-js').then((m) => {
-        m.default.captureException(error, { extra: errorInfo as any });
+        m.default.captureException(error, {
+          extra: {
+            componentStack: errorInfo.componentStack,
+          },
+        });
       });
     }
   }

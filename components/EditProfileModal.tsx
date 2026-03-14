@@ -3,10 +3,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
-import Link from "next/link";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import Cropper from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 import { getCroppedImg } from "@/utils/imageCrop";
 import { createClient } from "@/utils/supabase/client";
 import { PrimaryButton } from "./PrimaryButton";
@@ -16,6 +16,8 @@ interface EditProfileModalProps {
   initialAvatarUrl: string;
   initialDescription?: string;
 }
+
+type UpdateProfileResult = Awaited<ReturnType<typeof updateProfile>>;
 
 export default function EditProfileModal({ initialNickname, initialAvatarUrl, initialDescription }: EditProfileModalProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,10 +32,10 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -98,7 +100,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
 
     let finalAvatarUrl = avatarUrl;
 
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 30000)
     );
 
@@ -118,7 +120,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
       const result = await Promise.race([
         updateProfile(sanitizeNickname(nickname), finalAvatarUrl, undefined, description),
         timeoutPromise
-      ]) as any;
+      ]) as UpdateProfileResult;
       
       if (result.success) {
         setIsOpen(false);
@@ -126,12 +128,12 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
       } else {
         setError(result.error || "Có lỗi xảy ra.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Profile update error:", err);
-      if (err.message === "TIMEOUT") {
+      if (err instanceof Error && err.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
-        setError(err.message || "Có lỗi xảy ra khi cập nhật hồ sơ.");
+        setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi cập nhật hồ sơ.");
       }
     } finally {
       setIsSubmitting(false);

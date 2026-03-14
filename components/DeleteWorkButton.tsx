@@ -13,6 +13,11 @@ interface DeleteWorkButtonProps {
   paddingClass?: string;
 }
 
+type WorkMutationResult = {
+  success?: boolean;
+  error?: string;
+};
+
 export default function DeleteWorkButton({ workId, workTitle, variant = 'default', onAction, paddingClass }: DeleteWorkButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -29,7 +34,7 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
       const result = await Promise.race([
         deleteWork(workId),
         timeoutPromise
-      ]) as any;
+      ]) as WorkMutationResult;
 
       if (result.success) {
         // 2. Chỉ khi xóa thành công ở DB mới cập nhật giao diện & đóng modal
@@ -39,9 +44,9 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
         console.error("Lỗi xóa từ Database:", result.error);
         alert(result.error || "Không thể xóa tác phẩm, vui lòng thử lại!");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete error:", err);
-      if (err.message === "TIMEOUT") {
+      if (err instanceof Error && err.message === "TIMEOUT") {
         alert("Yêu cầu xóa quá hạn (Timeout). Vui lòng thử lại sau.");
       } else {
         alert("Có lỗi xảy ra khi xóa tác phẩm.");

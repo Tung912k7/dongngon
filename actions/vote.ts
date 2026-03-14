@@ -3,9 +3,23 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "@/utils/error-handler";
+import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { captureServerEvent } from "@/utils/posthog-server";
+
+const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const VOTE_LIMIT = 10;
+const VOTE_WINDOW_MS = 60 * 1000;
+
+function isValidUuid(value: string) {
+  return UUID_V4_REGEX.test(value);
+}
 
 export async function voteEndWork(workId: string) {
   const supabase = await createClient();
+
+  if (!isValidUuid(workId)) {
+    return { error: "ID tác phẩm không hợp lệ." };
+  }
 
   // 1. Check Authentication
   const {
@@ -14,6 +28,18 @@ export async function voteEndWork(workId: string) {
 
   if (!user) {
     return { error: "Bạn cần đăng nhập để bình chọn." };
+  }
+
+  const voteRate = await checkRateLimitDistributed(
+    supabase,
+    `vote-end-work:user:${user.id}`,
+    VOTE_LIMIT,
+    VOTE_WINDOW_MS
+  );
+  if (!voteRate.allowed) {
+    return {
+      error: `Bạn thao tác quá nhanh. Vui lòng thử lại sau ${voteRate.retryAfterSeconds} giây.`,
+    };
   }
 
   // 2. Check if user is a contributor
@@ -71,19 +97,38 @@ export async function voteEndWork(workId: string) {
   
   const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
   const threshold = Math.max(1, Math.floor(uniqueContributors / 2) + 1);
+  let didTransitionToFinished = false;
 
   if (currentCount >= threshold) {
-     const { error: updateError } = await supabase
+     const { data: transitionedRow, error: updateError } = await supabase
        .from("works")
        .update({ status: "finished" })
        .eq("id", workId)
-       // Only update if it's NOT already finished or pending? 
-       // Actually, we can update writing -> finished.
-       .neq("status", "finished");
+       .neq("status", "finished")
+       .select("id")
+       .maybeSingle();
        
      if (updateError) {
          console.error("Critical error updating work status to finished:", updateError);
+     } else {
+         didTransitionToFinished = !!transitionedRow;
      }
+  }
+
+  await captureServerEvent(user.id, 'vote_submitted', {
+    work_id: workId,
+    event_source: 'server_action',
+    event_version: 1,
+  });
+
+  if (didTransitionToFinished) {
+    await captureServerEvent(user.id, 'work_completed', {
+      work_id: workId,
+      vote_count: currentCount,
+      unique_contributors: uniqueContributors,
+      event_source: 'server_action',
+      event_version: 1,
+    });
   }
 
   revalidatePath(`/work/${workId}`);

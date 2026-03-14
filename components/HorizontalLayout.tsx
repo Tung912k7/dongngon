@@ -15,6 +15,7 @@ interface HorizontalLayoutProps {
 }
 
 export default function HorizontalLayout({ works, profile }: HorizontalLayoutProps) {
+  void profile;
   const scrollRef = useHorizontalScroll();
 
   return (

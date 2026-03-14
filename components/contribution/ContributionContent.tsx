@@ -51,7 +51,7 @@ const ContributionContent = () => {
               {/* Highlight Box */}
               <div className="bg-black/60 border border-white/10 rounded-xl p-4 md:p-5 shadow-inner">
                 <p className="font-be-vietnam text-base md:text-lg text-yellow-50/90 italic font-light tracking-wide leading-relaxed">
-                  "Bạn chỉ có thể đóng góp 1 câu mỗi tác phẩm"
+                  &ldquo;Bạn chỉ có thể đóng góp 1 câu mỗi tác phẩm&rdquo;
                 </p>
               </div>
             </div>

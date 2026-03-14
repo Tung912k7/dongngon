@@ -13,5 +13,6 @@ export async function checkBlacklist(text: string): Promise<string | null> {
  * Still returns false by default as it cannot be truly sync with DB.
  */
 export function containsBadWords(text: string): boolean {
+  void text;
     return false;
 }

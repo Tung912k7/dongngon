@@ -40,7 +40,7 @@ export type Profile = {
   avatar_url?: string;
   description?: string;
   role?: UserRole; // 'admin', 'mod', 'user'
-  has_seen_tour?: boolean;
+  has_acknowledged_welcome_message?: boolean;
   last_seen_changelog?: string;
   updated_at: string;
 };

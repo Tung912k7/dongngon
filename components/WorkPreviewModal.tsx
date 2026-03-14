@@ -4,7 +4,6 @@ import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
 
 interface WorkPreviewModalProps {
   work: Work;
@@ -14,13 +13,8 @@ interface WorkPreviewModalProps {
 
 export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewModalProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+  if (typeof document === "undefined") return null;
 
   const content = (
     <AnimatePresence>

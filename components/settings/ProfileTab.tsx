@@ -203,7 +203,7 @@ export default function ProfileTab({
                 )}
               </div>
               <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider leading-relaxed select-none opacity-80">
-                Người khác sẽ thấy thông báo "Người dùng đã khoá tài khoản" khi nhấn vào tên của bạn.
+                Người khác sẽ thấy thông báo &ldquo;Người dùng đã khoá tài khoản&rdquo; khi nhấn vào tên của bạn.
               </p>
             </div>
             

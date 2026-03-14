@@ -19,7 +19,7 @@ const SearchBar = () => {
   }, 300);
 
   return (
-    <div id="tour-search" className="relative w-full md:w-[300px] group">
+    <div className="relative w-full md:w-[300px] group">
       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-black transition-colors duration-300 pointer-events-none">
         <svg
           xmlns="http://www.w3.org/2000/svg"

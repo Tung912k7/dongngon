@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateWork, deleteWork } from "@/actions/work";
-import { PrimaryButton } from "./PrimaryButton";
 import NotificationModal from "./NotificationModal";
 
 export default function WorkOwnerControls({ 

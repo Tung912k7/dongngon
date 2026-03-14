@@ -16,6 +16,8 @@ interface SettingsClientProps {
   initialIsPrivate: boolean;
 }
 
+type SettingsTabId = "profile" | "account" | "interface";
+
 export default function SettingsClient({ 
   user, 
   initialNickname, 
@@ -24,9 +26,9 @@ export default function SettingsClient({
   initialDescription,
   initialIsPrivate
 }: SettingsClientProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "account" | "interface">("profile");
+  const [activeTab, setActiveTab] = useState<SettingsTabId>("profile");
 
-  const tabs = [
+  const tabs: Array<{ id: SettingsTabId; label: string }> = [
     { id: "profile", label: "HỒ SƠ CÁ NHÂN" },
     { id: "account", label: "TÀI KHOẢN & BẢO MẬT" },
     { id: "interface", label: "GIAO DIỆN & NGÔN NGỮ" },
@@ -48,7 +50,7 @@ export default function SettingsClient({
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
               className={`w-full text-left px-6 py-4 rounded-xl font-bold uppercase tracking-wider transition-all duration-200 border-2 ${
                 activeTab === tab.id
                   ? "bg-black text-white border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"

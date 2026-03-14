@@ -1,9 +1,13 @@
 import { create } from 'zustand';
 
+type AuthUser = {
+  id: string;
+};
+
 interface UserState {
-  user: any | null;
+  user: AuthUser | null;
   isLoading: boolean;
-  setUser: (user: any | null) => void;
+  setUser: (user: AuthUser | null) => void;
   setIsLoading: (isLoading: boolean) => void;
 }
 

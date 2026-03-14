@@ -14,18 +14,22 @@ interface EditWorkModalProps {
   onClose: () => void;
 }
 
+type WorkMutationResult = {
+  success?: boolean;
+  error?: string;
+};
+
+const REVERSE_MAPPING = {
+  category: (val: string) => val,
+  rule: (val: string) => (val === "sentence" ? "1 câu" : "1 kí tự"),
+  license: (val: string) => (val === "public" ? "Cộng đồng" : "Riêng tư"),
+};
+
 export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
-  // Map database constants back to UI labels
-  const reverseMapping = {
-    category: (val: string) => val,
-    rule: (val: string) => (val === "sentence" ? "1 câu" : "1 kí tự"),
-    license: (val: string) => (val === "public" ? "Cộng đồng" : "Riêng tư"),
-  };
 
   const [formData, setFormData] = useState({
     title: work.title,
@@ -33,7 +37,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     category_type: work.category_type,
     hinh_thuc: work.sub_category || "",
     license: work.license || "public",
-    writing_rule: reverseMapping.rule(work.limit_type || "sentence"),
+    writing_rule: REVERSE_MAPPING.rule(work.limit_type || "sentence"),
   });
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
       category_type: work.category_type,
       hinh_thuc: work.sub_category || "",
       license: work.license || "public",
-      writing_rule: reverseMapping.rule(work.limit_type || "sentence"),
+      writing_rule: REVERSE_MAPPING.rule(work.limit_type || "sentence"),
     });
   }, [work]);
 
@@ -78,7 +82,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
       const result = await Promise.race([
         updateWork(work.id.toString(), updateData),
         timeoutPromise
-      ]) as any;
+      ]) as WorkMutationResult;
 
       if (result.success) {
         onClose();
@@ -86,9 +90,9 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
       } else {
         setError(result.error || "Có lỗi xảy ra.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Update work error:", err);
-      if (err.message === "TIMEOUT") {
+      if (err instanceof Error && err.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
         setError("Có lỗi xảy ra khi cập nhật tác phẩm.");

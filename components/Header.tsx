@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
@@ -11,8 +11,8 @@ import { createClient } from "@/utils/supabase/client";
 import { useNotificationStore } from "@/stores/notification-store";
 
 interface HeaderProps {
-  user: User | null;
-  nickname: string | null;
+  user?: User | null;
+  nickname?: string | null;
   role?: string | null;
 }
 
@@ -22,15 +22,51 @@ interface HeaderProps {
  * Mobile: Hamburger menu + Search bar
  * Desktop: Pill navigation + Centered search bar
  */
-const Header = ({ user, nickname, role }: HeaderProps) => {
+const Header = ({ user: initialUser = null, nickname: initialNickname = null, role: initialRole = null }: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [nickname, setNickname] = useState<string | null>(initialNickname);
+  const [role, setRole] = useState<string | null>(initialRole);
   const { unreadCount, fetchUnreadCount } = useNotificationStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
+
+  const loadUserProfile = useCallback(async (userOverride?: User | null) => {
+    const currentUser = userOverride === undefined
+      ? (await supabase.auth.getSession()).data.session?.user ?? null
+      : userOverride;
+
+    if (!currentUser) {
+      setUser(null);
+      setNickname(null);
+      setRole(null);
+      return;
+    }
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("nickname, role")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (error) {
+      console.error("[Header] Profile fetch error:", error.code, error.message);
+    }
+
+    setUser(currentUser);
+    setNickname(
+      profile?.nickname ||
+        currentUser.user_metadata?.nickname ||
+        currentUser.user_metadata?.full_name ||
+        currentUser.email?.split("@")[0] ||
+        "Thành viên"
+    );
+    setRole(profile?.role || currentUser.user_metadata?.role || "user");
+  }, [supabase]);
 
   // Fetch unread notification count at Header level
   useEffect(() => {
@@ -38,7 +74,19 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, fetchUnreadCount]);
+
+  useEffect(() => {
+    void loadUserProfile();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      void loadUserProfile(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [loadUserProfile, supabase]);
 
   useEffect(() => {
     setMounted(true);
@@ -66,6 +114,9 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    setNickname(null);
+    setRole(null);
     router.push("/");
     router.refresh();
   };
@@ -229,10 +280,12 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                            </div>
                         </div>
                         {role === "admin" && (
-                          <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-blue-600 flex items-center justify-between group">
+                          <>
+                           <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-blue-600 flex items-center justify-between group">
                              Hệ thống
                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                          </Link>
+                           </Link>
+                          </>
                         )}
                         <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
                            Hồ sơ cá nhân
@@ -336,13 +389,15 @@ const Header = ({ user, nickname, role }: HeaderProps) => {
                       className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden flex flex-col"
                     >
                       {role === "admin" && (
-                        <MenuLink
-                          href="/admin"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="text-blue-600 border-b border-black/10"
-                        >
-                          Hệ thống
-                        </MenuLink>
+                        <>
+                          <MenuLink
+                            href="/admin"
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="text-blue-600 border-b border-black/10"
+                          >
+                            Hệ thống
+                          </MenuLink>
+                        </>
                       )}
                       <MenuLink 
                         href="/profile" 

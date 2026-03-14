@@ -5,9 +5,23 @@ import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeInput } from "@/utils/sanitizer";
+import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { captureServerEvent } from "@/utils/posthog-server";
+
+const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const CONTRIBUTION_LIMIT = 15;
+const CONTRIBUTION_WINDOW_MS = 60 * 1000;
+
+function isValidUuid(value: string) {
+  return UUID_V4_REGEX.test(value);
+}
 
 export async function submitContribution(workId: string, content: string, newLine: boolean = false) {
   const supabase = await createClient();
+
+  if (!isValidUuid(workId)) {
+    return { error: "ID tác phẩm không hợp lệ." };
+  }
 
   // 1. Check Authentication
   const {
@@ -16,6 +30,18 @@ export async function submitContribution(workId: string, content: string, newLin
 
   if (!user) {
     return { error: "Bạn cần đăng nhập để viết tiếp." };
+  }
+
+  const contributionRate = await checkRateLimitDistributed(
+    supabase,
+    `contribute:user:${user.id}`,
+    CONTRIBUTION_LIMIT,
+    CONTRIBUTION_WINDOW_MS
+  );
+  if (!contributionRate.allowed) {
+    return {
+      error: `Bạn thao tác quá nhanh. Vui lòng thử lại sau ${contributionRate.retryAfterSeconds} giây.`,
+    };
   }
 
   // 1.1 Check Work Details (including limit_type)
@@ -85,10 +111,10 @@ export async function submitContribution(workId: string, content: string, newLin
     return { error: `Bạn chỉ được đóng góp 1 ${unit} mỗi ngày cho tác phẩm này.` };
   }
 
-  // 4. Get User Profile for Nickname & Age Check
+  // 4. Get User Profile for Nickname, Age Check & Activation State
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, birthday")
+    .select("nickname, birthday, activated_at")
     .eq("id", user.id)
     .single();
 
@@ -134,6 +160,31 @@ export async function submitContribution(workId: string, content: string, newLin
       content: `${nickname} đã đóng góp tiếp nối vào tác phẩm "${work.title}".`,
       is_read: false
     });
+  }
+
+  // Track contribution event
+  const isFirstContribution = !profile?.activated_at;
+  await captureServerEvent(user.id, 'contribution_submitted', {
+    work_id: workId,
+    is_first: isFirstContribution,
+    event_source: 'server_action',
+    event_version: 1,
+  });
+
+  // Activation milestone: first ever contribution
+  if (isFirstContribution) {
+    await captureServerEvent(user.id, 'user_activated', {
+      work_id: workId,
+      activation_type: 'first_contribution',
+      event_source: 'server_action',
+      event_version: 1,
+    });
+    // Mark activation timestamp (idempotent — only updates if still NULL)
+    await supabase
+      .from('profiles')
+      .update({ activated_at: new Date().toISOString() })
+      .eq('id', user.id)
+      .is('activated_at', null);
   }
 
   revalidatePath(`/work/${workId}`);

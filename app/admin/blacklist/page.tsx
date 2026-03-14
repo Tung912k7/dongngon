@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
@@ -15,13 +15,12 @@ export default function BlacklistPage() {
   const [words, setWords] = useState<BlacklistItem[]>([]);
   const [newWord, setNewWord] = useState("");
   const [isRegex, setIsRegex] = useState(false);
-  const [regexError, setRegexError] = useState<string | null>(null);
-  
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const supabase = createClient();
 
-  async function fetchBlacklist() {
+  const fetchBlacklist = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("blacklist_words")
@@ -34,27 +33,47 @@ export default function BlacklistPage() {
       setWords(data || []);
     }
     setLoading(false);
-  }
+  }, [supabase]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchBlacklist();
-  }, []);
-
-  // Live Regex Validation
-  useEffect(() => {
-    if (isRegex && newWord) {
-      try {
-        new RegExp(newWord);
-        setRegexError(null);
-      } catch (e: unknown) {
-        const error = e as Error;
-        setRegexError(error.message);
-      }
-    } else {
-      setRegexError(null);
+  const regexError = useMemo(() => {
+    if (!isRegex || !newWord) {
+      return null;
     }
-  }, [newWord, isRegex]);
+
+    try {
+      new RegExp(newWord);
+      return null;
+    } catch (e: unknown) {
+      const error = e as Error;
+      return error.message;
+    }
+  }, [isRegex, newWord]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadInitialBlacklist = async () => {
+      const { data, error } = await supabase
+        .from("blacklist_words")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!active) return;
+
+      if (error) {
+        console.error("Error fetching blacklist:", error);
+      } else {
+        setWords(data || []);
+      }
+      setLoading(false);
+    };
+
+    void loadInitialBlacklist();
+
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
 
 
   const handleAddWord = async (e: React.FormEvent) => {

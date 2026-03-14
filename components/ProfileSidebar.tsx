@@ -8,12 +8,21 @@ import { sanitizeNickname } from "@/utils/sanitizer";
 import { createClient } from "@/utils/supabase/client";
 import { getCroppedImg } from "@/utils/imageCrop";
 import Cropper from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 import { PrimaryButton, LinkedButton } from "./PrimaryButton";
 
+type SidebarProfile = {
+  nickname?: string;
+  description?: string;
+  avatar_url?: string;
+};
+
+type UpdateProfileResult = Awaited<ReturnType<typeof updateProfile>>;
+
 interface ProfileSidebarProps {
-  profile: any;
+  profile: SidebarProfile;
   isOwner: boolean;
-  currentUser: any;
+  currentUser: { id?: string } | null;
 }
 
 export default function ProfileSidebar({ profile: initialProfile, isOwner, currentUser }: ProfileSidebarProps) {
@@ -30,10 +39,10 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -88,17 +97,22 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
         }
       }
 
-      const result = await updateProfile(sanitizeNickname(nickname), finalAvatarUrl, undefined, description);
+      const result: UpdateProfileResult = await updateProfile(
+        sanitizeNickname(nickname),
+        finalAvatarUrl,
+        undefined,
+        description,
+      );
       
       if (result.success) {
         setAvatarUrl(finalAvatarUrl);
-        setProfile((prev: any) => ({ ...prev, nickname, description, avatar_url: finalAvatarUrl }));
+        setProfile((prev) => ({ ...prev, nickname, description, avatar_url: finalAvatarUrl }));
         setIsEditing(false);
         setImageSrc(null);
       } else {
         setError(result.error || "Có lỗi xảy ra.");
       }
-    } catch (err: any) {
+    } catch {
       setError("Có lỗi xảy ra khi cập nhật hồ sơ.");
     } finally {
       setIsSubmitting(false);

@@ -6,7 +6,6 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { getNotifications, markAsRead, markAllAsRead } from "@/actions/notification";
 import type { Notification } from "@/types/database";
-import { PrimaryButton } from "@/components/PrimaryButton";
 import { useNotificationStore } from "@/stores/notification-store";
 
 export default function NotificationPage() {

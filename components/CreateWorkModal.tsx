@@ -15,7 +15,6 @@ interface CreateWorkModalProps {
 export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWorkModalProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -50,11 +49,15 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
   // Automatically validate sub-category when category changes
   useEffect(() => {
-    const availableSubCategories = WORK_TYPES[formData.category_type]?.subCategories || [];
-    // If current sub-category is not valid for new category, pick the first one
-    if (isOpen && (!formData.hinh_thuc || !availableSubCategories.includes(formData.hinh_thuc))) {
-      setFormData(prev => ({ ...prev, hinh_thuc: availableSubCategories[0] || "" }));
-    }
+    if (!isOpen) return;
+
+    setFormData((prev) => {
+      const availableSubCategories = WORK_TYPES[prev.category_type]?.subCategories || [];
+      if (prev.hinh_thuc && availableSubCategories.includes(prev.hinh_thuc)) {
+        return prev;
+      }
+      return { ...prev, hinh_thuc: availableSubCategories[0] || "" };
+    });
   }, [formData.category_type, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {

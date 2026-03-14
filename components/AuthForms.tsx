@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
@@ -608,7 +609,7 @@ export function SignUpForm() {
     setLoading(true);
 
     // Timeout of 20 seconds for signup (multi-step checks)
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 20000)
     );
 
@@ -632,7 +633,7 @@ export function SignUpForm() {
       const isEmailTaken = await Promise.race([
         isEmailRegistered(data.email),
         timeoutPromise
-      ]) as any;
+      ]);
 
       if (isEmailTaken) {
         showNotification(`Email "${data.email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.`, "info", "Thông báo");
@@ -643,7 +644,7 @@ export function SignUpForm() {
       const isAvailable = await Promise.race([
         isNicknameAvailable(sanitizeNickname(data.penName)),
         timeoutPromise
-      ]) as any;
+      ]);
 
       if (!isAvailable) {
         showNotification(`Bút danh "${data.penName}" đã được sử dụng. Vui lòng chọn tên khác.`, "error");
@@ -664,7 +665,7 @@ export function SignUpForm() {
           }
         }),
         timeoutPromise
-      ]) as any;
+      ]);
 
       if (authError) {
         let errorMsg = authError.message;
@@ -786,16 +787,20 @@ export function SignUpForm() {
         <div className="hidden lg:flex relative h-full items-center">
           <div className="absolute right-[-25%] w-[125%] aspect-square pointer-events-none translate-y-[-5%]">
             {/* Love Hand Background */}
-            <img 
-              src="/webp file/lovehand.webp" 
-              alt="Love Hand" 
+            <Image
+              src="/webp file/lovehand.webp"
+              alt="Love Hand"
+              fill
+              sizes="(min-width: 1024px) 45vw, 90vw"
               className="w-full h-full object-contain"
             />
             {/* Cow Centered in Heart */}
-            <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-52 h-52 flex items-center justify-center">
-              <img 
-                src="/webp file/cow.webp" 
-                alt="Cow" 
+            <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-52 h-52 flex items-center justify-center relative">
+              <Image
+                src="/webp file/cow.webp"
+                alt="Cow"
+                fill
+                sizes="208px"
                 className="w-full h-full object-contain"
               />
             </div>
