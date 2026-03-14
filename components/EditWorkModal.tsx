@@ -21,7 +21,7 @@ type WorkMutationResult = {
 
 const REVERSE_MAPPING = {
   category: (val: string) => val,
-  rule: (val: string) => (val === "sentence" ? "1 câu" : "1 kí tự"),
+  rule: () => "1 câu",
   license: (val: string) => (val === "public" ? "Cộng đồng" : "Riêng tư"),
 };
 
@@ -37,7 +37,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     category_type: work.category_type,
     hinh_thuc: work.sub_category || "",
     license: work.license || "public",
-    writing_rule: REVERSE_MAPPING.rule(work.limit_type || "sentence"),
+    writing_rule: REVERSE_MAPPING.rule(),
   });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
       category_type: work.category_type,
       hinh_thuc: work.sub_category || "",
       license: work.license || "public",
-      writing_rule: REVERSE_MAPPING.rule(work.limit_type || "sentence"),
+      writing_rule: REVERSE_MAPPING.rule(),
     });
   }, [work]);
 

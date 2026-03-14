@@ -8,6 +8,7 @@ import Feed from "../../../components/Feed";
 import Editor from "../../../components/Editor";
 import VoteButton from "../../../components/VoteButton";
 import WorkOwnerControls from "../../../components/WorkOwnerControls";
+import { isReadOnlyProseSubCategory } from "@/data/workTypes";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -174,6 +175,12 @@ export default async function WorkPage({
   // Calculate unique contributors from the already fetched contributions
   const uniqueContributors = new Set(contributions?.map((c) => c.user_id) || []).size;
   const isCompleted = work.status === "finished";
+  const isOwner = !!user && user.id === work.created_by;
+  const isReadOnlySubCategory = isReadOnlyProseSubCategory(work.sub_category);
+  const canContribute = !isReadOnlySubCategory || isOwner;
+  const contributionBlockedMessage = isReadOnlySubCategory
+    ? "Mục này ở chế độ chỉ xem. Chỉ chủ tác phẩm mới có thể đóng góp."
+    : undefined;
 
 
   return (
@@ -191,7 +198,7 @@ export default async function WorkPage({
               <WorkOwnerControls 
                 workId={work.id} 
                 initialTitle={work.title} 
-                isOwner={!!user && user.id === work.created_by} 
+                isOwner={isOwner} 
               />
             </div>
             <VoteButton 
@@ -221,7 +228,6 @@ export default async function WorkPage({
           initialContributions={contributions || []} 
           workId={work.id} 
           limitType={work.limit_type}
-          hinhThuc={work.sub_category}
         />
       </section>
 
@@ -231,9 +237,11 @@ export default async function WorkPage({
             <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
                 <Editor 
                   workId={work.id} 
-                  writingRule={work.limit_type === "sentence" ? "1 câu" : "1 kí tự"} 
+                  writingRule="1 câu"
                   hinhThuc={work.sub_category} 
                   user={user}
+                  canContribute={canContribute}
+                  blockedMessage={contributionBlockedMessage}
                 />
             </div>
         </div>

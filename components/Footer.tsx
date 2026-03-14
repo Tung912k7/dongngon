@@ -5,12 +5,13 @@ import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import FooterQuote from "./FooterQuote";
+import { PROSE_SUBCATEGORIES } from "@/data/workTypes";
 
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
   const [isLoveOpen, setIsLoveOpen] = useState(false);
 
-  const proseLinks = ["Tùy bút", "Nhật ký", "Hồi ký", "Tản văn"];
+  const proseLinks = PROSE_SUBCATEGORIES;
   const poetryLinks = ["Tự do", "Tứ ngôn", "Ngũ ngôn", "Lục ngôn", "Thất ngôn", "Bát ngôn"];
 
   const formHref = (form: string) => ({

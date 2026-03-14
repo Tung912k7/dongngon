@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FilterState } from "@/app/kho-tang/types";
+import { PROSE_SUBCATEGORIES } from "@/data/workTypes";
 
 interface WorkFilterProps {
   filters: FilterState;
@@ -75,10 +76,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
             <option value="Thơ tự do">Tự do</option>
           </optgroup>
           <optgroup label="Văn xuôi">
-            <option value="Tùy bút">Tùy bút</option>
-            <option value="Nhật ký">Nhật ký</option>
-            <option value="Hồi ký">Hồi ký</option>
-            <option value="Tản văn">Tản văn</option>
+            {PROSE_SUBCATEGORIES.map((subCategory) => (
+              <option key={subCategory} value={subCategory}>{subCategory}</option>
+            ))}
           </optgroup>
         </select>
       </div>
@@ -91,7 +91,6 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           value={localFilters.writing_rule}
         >
           <option value="">Tất cả</option>
-          <option value="1 kí tự">1 kí tự</option>
           <option value="1 câu">1 câu</option>
         </select>
       </div>

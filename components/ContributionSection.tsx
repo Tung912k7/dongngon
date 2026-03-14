@@ -19,7 +19,7 @@ const ContributionSection = () => {
             Mọi tác phẩm đều thuộc về cộng đồng
           </h2>
           <p className="font-be-vietnam text-lg md:text-xl lg:text-2xl text-gray-200">
-            Bạn chỉ có thể đóng góp 1 kí tự (1 câu)/ 1 tác phẩm/ 1 ngày
+            Bạn chỉ có thể đóng góp 1 câu mỗi tác phẩm mỗi ngày
           </p>
         </m.div>
       </div>

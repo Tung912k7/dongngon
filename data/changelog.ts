@@ -7,6 +7,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.2.2",
+    date: "14/03/2026",
+    title: "Đơn giản hóa luật đóng góp",
+    changes: [
+      "Website nay chỉ còn áp dụng luật \"1 câu\" cho đóng góp",
+      "Đã gỡ bỏ luật cũ \"1 kí tự\" để cách viết thống nhất và dễ hiểu hơn",
+    ],
+  },
+  {
+    version: "1.2.1",
+    date: "14/03/2026",
+    title: "Thêm chế độ văn xuôi chỉ xem",
+    changes: [
+      "Thêm hai chế độ mới: \"Nhật ký (chỉ xem)\" và \"Hồi ký (chỉ xem)\"",
+      "Ở hai chế độ này, chỉ chủ tác phẩm mới được đóng góp, mọi người khác chỉ có thể đọc",
+    ],
+  },
+  {
     version: "1.2.0",
     date: "02/03/2026",
     title: "Cải tiến quản lý tác phẩm & cá nhân hóa",

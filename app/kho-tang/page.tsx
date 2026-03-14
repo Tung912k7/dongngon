@@ -66,7 +66,7 @@ export default async function DongNgonPage({
         author_nickname: sanitizeNickname(work.author_nickname),
         type: work.category_type,
         hinh_thuc: work.sub_category,
-        rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+        rule: "1 câu",
         age_rating: work.age_rating ?? undefined,
         status: work.status === "writing" ? "Đang viết" : 
                 work.status === "finished" ? "Hoàn thành" : 

@@ -158,7 +158,7 @@ export default function DongNgonClient({
           author_nickname: sanitizeNickname(work.author_nickname),
           type: work.category_type,
           hinh_thuc: work.sub_category,
-          rule: work.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+          rule: "1 câu",
           age_rating: work.age_rating,
           status: work.status === "writing" ? "Đang viết" : 
                   work.status === "finished" ? "Hoàn thành" : 
@@ -241,7 +241,7 @@ export default function DongNgonClient({
                 author_nickname: sanitizeNickname(newWork.author_nickname),
                 type: newWork.category_type,
                 hinh_thuc: newWork.sub_category,
-                rule: newWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+                rule: "1 câu",
                 age_rating: newWork.age_rating,
                 status: newWork.status === "writing" ? "Đang viết" : 
                         newWork.status === "finished" ? "Hoàn thành" : 
@@ -266,7 +266,7 @@ export default function DongNgonClient({
               author_nickname: sanitizeNickname(updatedWork.author_nickname),
               type: updatedWork.category_type,
               hinh_thuc: updatedWork.sub_category,
-              rule: updatedWork.limit_type === "sentence" ? "1 câu" : "1 kí tự",
+              rule: "1 câu",
               age_rating: updatedWork.age_rating,
               status: updatedWork.status === "writing" ? "Đang viết" : 
                       updatedWork.status === "finished" ? "Hoàn thành" : 

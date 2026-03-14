@@ -15,7 +15,7 @@ const UPDATE_WORK_WINDOW_MS = 60 * 1000;
 
 const ALLOWED_CATEGORIES = new Set(["Văn xuôi", "Thơ", "Tiểu thuyết"]);
 const ALLOWED_LICENSES = new Set(["public", "private"]);
-const ALLOWED_RULES = new Set(["1 câu", "sentence", "1 kí tự", "character"]);
+const ALLOWED_RULES = new Set(["1 câu", "sentence"]);
 
 function isValidUuid(value: string) {
   return UUID_V4_REGEX.test(value);
@@ -79,6 +79,14 @@ export async function createWork(formData: {
     return { error: "Quy tắc viết không hợp lệ." };
   }
 
+  const normalizedRule = formData.writing_rule === "1 câu" || formData.writing_rule === "sentence"
+    ? "sentence"
+    : null;
+
+  if (!normalizedRule) {
+    return { error: "Quy tắc viết không hợp lệ." };
+  }
+
   const sanitizedSubCategory = formData.hinh_thuc?.trim();
   if (!sanitizedSubCategory || sanitizedSubCategory.length > 60) {
     return { error: "Hình thức không hợp lệ." };
@@ -87,10 +95,6 @@ export async function createWork(formData: {
   const sanitizedDescription = formData.description?.trim();
   if (sanitizedDescription && sanitizedDescription.length > 1000) {
     return { error: "Mô tả quá dài (tối đa 1000 ký tự)." };
-  }
-
-  if (formData.writing_rule === "1 kí tự" || formData.writing_rule === "character") {
-    return { error: "Quy tắc 1 kí tự đang tạm thời bị khóa." };
   }
 
   // 3. Get User Profile for Nickname
@@ -109,10 +113,6 @@ export async function createWork(formData: {
       "Thơ": "Thơ",
       "Tiểu thuyết": "Tiểu thuyết"
     },
-    rule: {
-      "1 câu": "sentence",
-      "1 kí tự": "character"
-    }
   };
 
   // 5. Insert Work
@@ -122,7 +122,7 @@ export async function createWork(formData: {
     sub_category: sanitizedSubCategory,
     license: formData.license,
     privacy: formData.license === "private" ? "Private" : "Public",
-    limit_type: mapping.rule[formData.writing_rule as keyof typeof mapping.rule] || formData.writing_rule,
+    limit_type: normalizedRule,
     age_rating: formData.age_rating,
     description: sanitizedDescription || null,
     created_by: user.id,

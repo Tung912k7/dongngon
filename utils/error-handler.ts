@@ -14,7 +14,7 @@ export function getErrorMessage(error: unknown): string {
       return "Dữ liệu này đã tồn tại.";
       
     case '23514': // check_violation
-      if (message?.toLowerCase().includes('sentence') || message?.toLowerCase().includes('character')) {
+      if (message?.toLowerCase().includes('sentence')) {
         return "Nội dung không tuân thủ quy tắc về số câu/kí tự của tác phẩm này.";
       }
       if (message?.toLowerCase().includes('limit') || message?.toLowerCase().includes('rule')) {

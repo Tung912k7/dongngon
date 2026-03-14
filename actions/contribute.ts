@@ -7,6 +7,7 @@ import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeInput } from "@/utils/sanitizer";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
 import { captureServerEvent } from "@/utils/posthog-server";
+import { getReadOnlyProseContributionError } from "@/actions/contribute-policy";
 
 const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CONTRIBUTION_LIMIT = 15;
@@ -51,23 +52,39 @@ export async function submitContribution(workId: string, content: string, newLin
     .eq("id", workId)
     .single();
 
-  if (work?.status === "finished") {
+  if (!work) {
+    return { error: "Không tìm thấy tác phẩm." };
+  }
+
+  if (work.status === "finished") {
     return { error: "Tác phẩm này đã hoàn thành, không thể đóng góp thêm." };
   }
 
+  const readOnlyContributionError = getReadOnlyProseContributionError({
+    subCategory: work.sub_category,
+    ownerId: work.created_by,
+    contributorId: user.id,
+  });
+
+  if (readOnlyContributionError) {
+    return { error: readOnlyContributionError };
+  }
+
+  // The product now supports only the sentence rule.
+  // Treat any legacy stored values as sentence mode until normalized by migration.
+  const normalizedLimitType = "sentence";
+
   // 1.1.5 Poetic Form Validation
-  if (work?.sub_category) {
+  if (work.sub_category) {
     const { validatePoeticForm } = await import("@/utils/validation");
-    const poeticResult = validatePoeticForm(content, work.sub_category, work.limit_type);
+    const poeticResult = validatePoeticForm(content, work.sub_category, normalizedLimitType);
     if (!poeticResult.isValid) {
       return { error: poeticResult.error };
     }
   }
 
-  // 1.2 Sanitize Content based on limit_type
-  // For character mode, we might want to preserve a single leading space if provided
-  const isCharacterMode = work?.limit_type === 'character';
-  const sanitizedContent = sanitizeInput(content, !isCharacterMode);
+  // 1.2 Sanitize content for the active sentence rule.
+  const sanitizedContent = sanitizeInput(content, true);
 
   // 2. Validate Content
   if (!sanitizedContent || sanitizedContent.length === 0) {
@@ -107,8 +124,7 @@ export async function submitContribution(workId: string, content: string, newLin
     .gte("created_at", startOfDay.toISOString());
 
   if (recentContributions && recentContributions.length > 0) {
-    const unit = work?.limit_type === 'character' ? 'kí tự' : 'câu';
-    return { error: `Bạn chỉ được đóng góp 1 ${unit} mỗi ngày cho tác phẩm này.` };
+    return { error: "Bạn chỉ được đóng góp 1 câu mỗi ngày cho tác phẩm này." };
   }
 
   // 4. Get User Profile for Nickname, Age Check & Activation State
@@ -119,7 +135,7 @@ export async function submitContribution(workId: string, content: string, newLin
     .single();
 
   // 4.1 Perform Age Rating check on backend before contribution
-  if (work?.age_rating && work.age_rating !== "all") {
+  if (work.age_rating && work.age_rating !== "all") {
     const { calculateAge, isOldEnough } = await import("@/utils/age");
     const age = calculateAge(profile?.birthday);
     
