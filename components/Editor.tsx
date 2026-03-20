@@ -273,7 +273,7 @@ export default function Editor({
       <p className="text-xs text-gray-500 mt-2 text-center pl-2">
         Cần hướng dẫn? Xem
         {" "}
-        <Link href="/wiki" className="font-semibold text-black underline hover:opacity-70 transition-opacity">
+        <Link href="/hdsd" className="font-semibold text-black underline hover:opacity-70 transition-opacity">
           Wiki
         </Link>
         {" "}

@@ -13,7 +13,7 @@ export default async function SettingsPage() {
   // Fetch user profile data (nickname, avatar, birthday, description, is_private)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, avatar_url, birthday, description, is_private")
+    .select("nickname, avatar_url, birthday, description, is_private, public_fields")
     .eq("id", user.id)
     .single();
 
@@ -26,6 +26,7 @@ export default async function SettingsPage() {
         initialBirthday={profile?.birthday || null}
         initialDescription={profile?.description || ""}
         initialIsPrivate={profile?.is_private || false}
+        initialPublicFields={profile?.public_fields || {}}
       />
     </div>
   );

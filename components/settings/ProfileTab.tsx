@@ -15,6 +15,7 @@ interface ProfileTabProps {
   initialBirthday: string | null;
   initialDescription: string;
   initialIsPrivate: boolean;
+  initialPublicFields: Record<string, boolean>;
   userEmail: string;
 }
 
@@ -24,6 +25,7 @@ export default function ProfileTab({
   initialBirthday, 
   initialDescription, 
   initialIsPrivate,
+  initialPublicFields,
   userEmail 
 }: ProfileTabProps) {
   const router = useRouter();
@@ -32,6 +34,7 @@ export default function ProfileTab({
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [birthday, setBirthday] = useState(initialBirthday || "");
   const [isPrivate, setIsPrivate] = useState(initialIsPrivate);
+  const [publicFields, setPublicFields] = useState<Record<string, boolean>>(initialPublicFields || {});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -90,7 +93,9 @@ export default function ProfileTab({
         avatarUrl, 
         !initialBirthday && birthday && birthday.length === 10 ? birthday : undefined,
         description,
-        isPrivate
+        isPrivate,
+        undefined,
+        publicFields
       );
       
       console.log("Save result:", result);
@@ -188,10 +193,51 @@ export default function ProfileTab({
           />
         </div>
 
+        {/* CÀI ĐẶT HIỂN THỊ */}
+        <div className="pt-8 border-t-2 border-dashed border-gray-200 space-y-4">
+          <h4 className="font-black uppercase tracking-tight text-lg mb-4">Cài đặt hiển thị công khai</h4>
+          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-6">Chọn những thông tin bạn muốn người khác nhìn thấy khi họ xem hồ sơ của bạn.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { key: 'email', label: 'Email' },
+              { key: 'nickname', label: 'Bút danh' },
+              { key: 'id', label: 'Mã định danh' },
+              { key: 'description', label: 'Giới thiệu' },
+              { key: 'hashtags', label: 'Hashtag' },
+              { key: 'birthday', label: 'Ngày sinh' }
+            ].map(({ key, label }) => (
+              <label 
+                key={key} 
+                className="flex items-center justify-between p-4 bg-[#f5f5f5] border-2 border-black rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={(e) => {
+                  // Prevent default because we handle click on label + checkbox might double fire if we are not careful
+                }}
+              >
+                <span className="font-bold text-sm uppercase tracking-tight">{label}</span>
+                <div className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={publicFields[key] !== false}
+                    onChange={() => {
+                      setPublicFields(prev => ({
+                        ...prev,
+                        [key]: prev[key] === false ? true : false
+                      }));
+                    }}
+                    className="sr-only peer" 
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
         <div className="pt-8 border-t-2 border-dashed border-gray-200">
           <div 
             onClick={() => setIsPrivate(!isPrivate)}
-            className="flex items-center justify-between p-8 bg-white border-2 border-black rounded-[2.5rem] relative overflow-hidden group cursor-pointer hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-between p-8 bg-[#f5f5f5] border-2 border-black rounded-[2.5rem] relative overflow-hidden group cursor-pointer hover:bg-gray-50 transition-colors"
           >
             <div className="relative z-10 flex-1 pr-12">
               <div className="flex items-center gap-4 mb-2">

@@ -14,6 +14,7 @@ interface SettingsClientProps {
   initialBirthday: string | null;
   initialDescription: string;
   initialIsPrivate: boolean;
+  initialPublicFields: Record<string, boolean>;
 }
 
 type SettingsTabId = "profile" | "account" | "interface";
@@ -24,7 +25,8 @@ export default function SettingsClient({
   initialAvatarUrl, 
   initialBirthday, 
   initialDescription,
-  initialIsPrivate
+  initialIsPrivate,
+  initialPublicFields
 }: SettingsClientProps) {
   const [activeTab, setActiveTab] = useState<SettingsTabId>("profile");
 
@@ -53,8 +55,8 @@ export default function SettingsClient({
               onClick={() => setActiveTab(tab.id)}
               className={`w-full text-left px-6 py-4 rounded-xl font-bold uppercase tracking-wider transition-all duration-200 border-2 ${
                 activeTab === tab.id
-                  ? "bg-black text-white border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
-                  : "bg-white text-gray-500 border-transparent hover:bg-gray-50 hover:text-black"
+                  ? "bg-black text-white border-black"
+                  : "bg-[#f5f5f5] text-gray-500 border-transparent hover:bg-gray-50 hover:text-black"
               }`}
             >
               {tab.label}
@@ -69,7 +71,7 @@ export default function SettingsClient({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="bg-white border-2 border-black rounded-[2rem] p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="bg-[#f5f5f5] border-2 border-black rounded-[2rem] p-6 md:p-10"
           >
             {activeTab === "profile" && (
               <ProfileTab 
@@ -78,6 +80,7 @@ export default function SettingsClient({
                 initialBirthday={initialBirthday}
                 initialDescription={initialDescription}
                 initialIsPrivate={initialIsPrivate}
+                initialPublicFields={initialPublicFields}
                 userEmail={user.email || ""}
               />
             )}

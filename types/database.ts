@@ -43,5 +43,14 @@ export type Profile = {
   has_acknowledged_welcome_message?: boolean;
   last_seen_changelog?: string;
   updated_at: string;
+  hashtags?: string[];
+  public_fields?: {
+    email?: boolean;
+    nickname?: boolean;
+    id?: boolean;
+    description?: boolean;
+    hashtags?: boolean;
+    birthday?: boolean;
+  };
 };
 

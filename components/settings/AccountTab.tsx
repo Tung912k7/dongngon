@@ -51,7 +51,7 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
         <button
           onClick={handlePasswordReset}
           disabled={loading}
-          className="px-6 py-3 bg-white border-2 border-black text-black font-bold uppercase tracking-wider rounded-xl hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+          className="px-6 py-3 bg-[#f5f5f5] border-2 border-black text-black font-bold uppercase tracking-wider rounded-xl hover:bg-black hover:text-white transition-all active:translate-x-[2px] active:translate-y-[2px]"
         >
           {loading ? "Đang gửi..." : "Gửi email đổi mật khẩu"}
         </button>
@@ -62,7 +62,7 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
         <p className="text-sm text-red-500">
           Xóa tài khoản là hành động không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
         </p>
-        <button className="px-6 py-3 bg-white border-2 border-red-200 text-red-500 font-bold uppercase tracking-wider rounded-xl hover:bg-red-500 hover:text-white transition-all">
+        <button className="px-6 py-3 bg-[#f5f5f5] border-2 border-red-200 text-red-500 font-bold uppercase tracking-wider rounded-xl hover:bg-red-500 hover:text-white transition-all">
           Xóa tài khoản
         </button>
       </div>

@@ -46,7 +46,15 @@ export const isEmailRegistered = async (email: string) => {
   return !!data;
 };
 
-export async function updateProfile(nickname: string, avatarUrl?: string, birthday?: string, description?: string, isPrivate?: boolean) {
+export async function updateProfile(
+  nickname: string, 
+  avatarUrl?: string, 
+  birthday?: string, 
+  description?: string, 
+  isPrivate?: boolean,
+  hashtags?: string[],
+  publicFields?: Record<string, boolean>
+) {
   const supabase = await createClient();
 
   // 1. Check Authentication
@@ -107,6 +115,8 @@ export async function updateProfile(nickname: string, avatarUrl?: string, birthd
     description: description || null,
     is_private: isPrivate,
     updated_at: new Date().toISOString(),
+    hashtags: hashtags,
+    public_fields: publicFields,
   };
 
   if (avatarUrl !== undefined) {

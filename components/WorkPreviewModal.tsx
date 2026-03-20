@@ -90,7 +90,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                     router.push(`/work/${work.id}`);
                     onClose();
                   }}
-                  className="flex-1 py-4 bg-black text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] transition-all active:scale-95 text-xs sm:text-sm"
+                  className="flex-1 py-4 bg-black text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-800 transition-all active:scale-95 text-xs sm:text-sm"
                 >
                   VIẾT TIẾP
                 </button>

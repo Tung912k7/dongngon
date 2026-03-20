@@ -10,27 +10,28 @@ type WelcomeNotificationProps = {
   onDeferred?: () => void;
 };
 
-export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: WelcomeNotificationProps) {
+export default function WelcomeNotification({
+  onOnboardingSeen,
+  onDeferred,
+}: WelcomeNotificationProps) {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-
-  // Spring animations for smooth eye movement
-  const mouseX = useSpring(0, { stiffness: 150, damping: 20 });
-  const mouseY = useSpring(0, { stiffness: 150, damping: 20 });
+  const mouseX = useSpring(0, { stiffness: 150, damping: 15 });
+  const mouseY = useSpring(0, { stiffness: 150, damping: 15 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current) return;
-      
+
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
+
       // Calculate distance from center, capped at 4px range for subtle movement
       const moveX = Math.max(-4, Math.min(4, (e.clientX - centerX) / 20));
       const moveY = Math.max(-4, Math.min(4, (e.clientY - centerY) / 20));
-      
+
       mouseX.set(moveX);
       mouseY.set(moveY);
     };
@@ -58,7 +59,7 @@ export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: We
     } else {
       onDeferred?.();
     }
-    router.push("/wiki");
+    router.push("/hdsd");
   };
 
   if (!isVisible) return null;
@@ -79,14 +80,14 @@ export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: We
               <div className="w-12 h-12 rounded-[14px] border-[2.5px] border-black flex items-center justify-center relative">
                 <div className="w-6 h-[2.5px] bg-black rounded-full relative">
                   {/* Left Eye */}
-                  <m.div 
+                  <m.div
                     style={{ x: mouseX, y: mouseY }}
-                    className="absolute -top-3 left-0 w-[5px] h-[5px] bg-black rounded-full" 
+                    className="absolute -top-3 left-0 w-[5px] h-[5px] bg-black rounded-full"
                   />
                   {/* Right Eye */}
-                  <m.div 
+                  <m.div
                     style={{ x: mouseX, y: mouseY }}
-                    className="absolute -top-3 right-0 w-[5px] h-[5px] bg-black rounded-full shadow-[0px_0_0_black]" 
+                    className="absolute -top-3 right-0 w-[5px] h-[5px] bg-black rounded-full shadow-[0px_0_0_black]"
                   />
                   {/* Smile */}
                   <div className="absolute top-[10px] left-1/2 -translate-x-1/2 w-4 h-[6px] border-b-[2.5px] border-black rounded-full" />
@@ -101,10 +102,10 @@ export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: We
 
           <div className="space-y-2 mb-10">
             <p className="text-[#64748b] text-base leading-relaxed">
-               Tận hưởng những trải nghiệm tuyệt vời tại đây nhé!!!
+              Tận hưởng những trải nghiệm tuyệt vời tại đây nhé!!!
             </p>
             <p className="text-[#64748b] text-base leading-relaxed">
-              Bạn có thể bắt đầu ngay hoặc mở wiki để tìm hiểu thêm thông tin. Wiki có thể truy cập nhanh từ cài đặt.
+              Bạn có thể bắt đầu ngay hoặc mở hướng dẫn sử dụng để tìm hiểu thêm thông tin.
             </p>
           </div>
 
@@ -130,7 +131,7 @@ export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: We
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.25} stroke="currentColor" className="h-5 w-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
               </svg>
-              Hướng dẫn sử dụng
+              <span className="text-[#388186]">Hướng dẫn sử dụng</span>
             </m.button>
           </div>
         </m.div>
@@ -138,5 +139,3 @@ export default function WelcomeNotification({ onOnboardingSeen, onDeferred }: We
     </AnimatePresence>
   );
 }
-
-

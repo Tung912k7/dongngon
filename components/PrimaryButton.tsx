@@ -28,7 +28,7 @@ export const PrimaryButton = ({
       onMouseLeave={() => setIsHovered(false)}
       className={`px-10 py-2.5 border-[3px] border-black text-2xl rounded-full transition-all duration-300 hover:scale-[1.02] hover:shadow-lg font-bold disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center justify-center gap-2 ${className}`}
       style={{
-        backgroundColor: (isHovered && !disabled) ? "black" : (disabled ? "#f3f4f6" : "white"),
+        backgroundColor: (isHovered && !disabled) ? "black" : (disabled ? "#f3f4f6" : "#f5f5f5"),
         color: (isHovered && !disabled) ? "white" : (disabled ? "#9ca3af" : "black"),
       }}
     >
@@ -55,7 +55,7 @@ export const LinkedButton = ({
       onMouseLeave={() => setIsHovered(false)}
       className={`px-6 py-2 border-[3px] border-black text-center transition-all duration-300 rounded-full hover:scale-[1.02] hover:shadow-lg font-bold flex items-center justify-center gap-2 ${className}`}
       style={{
-        backgroundColor: isHovered ? "black" : "white",
+        backgroundColor: isHovered ? "black" : "#f5f5f5",
         color: isHovered ? "white" : "black",
       }}
     >

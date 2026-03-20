@@ -2,28 +2,23 @@
 
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-
-import {
-  deleteWikiArticle,
-  upsertWikiArticle,
-} from "@/actions/wiki";
-import type { WikiArticleRecord, WikiArticleUpsertInput } from "@/types/wiki";
-import WikiArticle from "@/components/wiki/WikiArticle";
+import { deleteHDSDArticle, upsertHDSDArticle } from "@/actions/hdsd";
+import type { HelpCenterArticleRecord, HelpCenterArticleUpsertInput } from "@/types/helpCenter";
 
 type Props = {
-  initialArticles: WikiArticleRecord[];
+  initialArticles: HelpCenterArticleRecord[];
 };
 
 type ArticleFormState = {
   id: string | null;
   slug: string;
-  sectionSlug: string;
-  sectionTitle: string;
+  section_slug: string;
+  section_title: string;
   title: string;
   summary: string;
-  contentMarkdown: string;
-  sortOrder: string;
-  isPublished: boolean;
+  content_markdown: string;
+  sort_order: string;
+  is_published: boolean;
 };
 
 type SectionFilter = "all" | string;
@@ -31,13 +26,13 @@ type SectionFilter = "all" | string;
 const defaultFormState: ArticleFormState = {
   id: null,
   slug: "",
-  sectionSlug: "",
-  sectionTitle: "",
+  section_slug: "",
+  section_title: "",
   title: "",
   summary: "",
-  contentMarkdown: "",
-  sortOrder: "0",
-  isPublished: true,
+  content_markdown: "",
+  sort_order: "0",
+  is_published: true,
 };
 
 function toSlug(value: string) {
@@ -59,8 +54,8 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-export default function AdminWikiEditor({ initialArticles }: Props) {
-  const [articles, setArticles] = useState<WikiArticleRecord[]>(initialArticles);
+export default function AdminHDSDEditor({ initialArticles }: Props) {
+  const [articles, setArticles] = useState<HelpCenterArticleRecord[]>(initialArticles);
   const [formState, setFormState] = useState<ArticleFormState>(defaultFormState);
   const [sectionFilter, setSectionFilter] = useState<SectionFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,25 +69,25 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
   const sections = useMemo(() => {
     const seen = new Map<string, string>();
     for (const a of articles) {
-      if (!seen.has(a.sectionSlug)) {
-        seen.set(a.sectionSlug, a.sectionTitle);
+      if (!seen.has(a.section_slug)) {
+        seen.set(a.section_slug, a.section_title);
       }
     }
     return Array.from(seen.entries()).map(([slug, title]) => ({ slug, title }));
   }, [articles]);
 
   const stats = useMemo(() => {
-    const published = articles.filter((a) => a.isPublished).length;
+    const published = articles.filter((a) => a.is_published).length;
     return { total: articles.length, published, draft: articles.length - published };
   }, [articles]);
 
   const filteredArticles = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return articles.filter((article) => {
-      const matchesSection = sectionFilter === "all" || article.sectionSlug === sectionFilter;
+      const matchesSection = sectionFilter === "all" || article.section_slug === sectionFilter;
       if (!matchesSection) return false;
       if (!query) return true;
-      return [article.title, article.summary, article.slug, article.sectionTitle].some((v) =>
+      return [article.title, article.summary, article.slug, article.section_title].some((v) =>
         v.toLowerCase().includes(query),
       );
     });
@@ -109,17 +104,17 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleEdit = useCallback((article: WikiArticleRecord) => {
+  const handleEdit = useCallback((article: HelpCenterArticleRecord) => {
     setFormState({
       id: article.id,
       slug: article.slug,
-      sectionSlug: article.sectionSlug,
-      sectionTitle: article.sectionTitle,
+      section_slug: article.section_slug,
+      section_title: article.section_title,
       title: article.title,
       summary: article.summary,
-      contentMarkdown: article.contentMarkdown,
-      sortOrder: String(article.sortOrder),
-      isPublished: article.isPublished,
+      content_markdown: article.content_markdown,
+      sort_order: String(article.sort_order),
+      is_published: article.is_published,
     });
     setMessage(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -134,11 +129,11 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
     event.preventDefault();
 
     const slug = formState.slug.trim();
-    const sectionSlug = formState.sectionSlug.trim();
-    const sectionTitle = formState.sectionTitle.trim();
+    const section_slug = formState.section_slug.trim();
+    const section_title = formState.section_title.trim();
     const title = formState.title.trim();
-    const contentMarkdown = formState.contentMarkdown.trim();
-    const sortOrder = Number(formState.sortOrder);
+    const content_markdown = formState.content_markdown.trim();
+    const sort_order = Number(formState.sort_order);
 
     if (!slug) {
       setMessage({ type: "error", text: "Slug bài viết là bắt buộc." });
@@ -150,12 +145,12 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
       return;
     }
 
-    if (!sectionSlug || !/^[a-z0-9-]+$/.test(sectionSlug)) {
+    if (!section_slug || !/^[a-z0-9-]+$/.test(section_slug)) {
       setMessage({ type: "error", text: "Slug chuyên mục không hợp lệ." });
       return;
     }
 
-    if (!sectionTitle) {
+    if (!section_title) {
       setMessage({ type: "error", text: "Tên chuyên mục là bắt buộc." });
       return;
     }
@@ -165,34 +160,34 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
       return;
     }
 
-    if (!contentMarkdown) {
+    if (!content_markdown) {
       setMessage({ type: "error", text: "Nội dung markdown là bắt buộc." });
       return;
     }
 
-    if (!Number.isInteger(sortOrder) || sortOrder < 0) {
+    if (!Number.isInteger(sort_order) || sort_order < 0) {
       setMessage({ type: "error", text: "Thứ tự hiển thị phải là số nguyên không âm." });
       return;
     }
 
-    const input: WikiArticleUpsertInput = {
+    const input: HelpCenterArticleUpsertInput = {
       ...(formState.id ? { id: formState.id } : {}),
       slug,
-      sectionSlug,
-      sectionTitle,
+      section_slug,
+      section_title,
       title,
       summary: formState.summary.trim(),
-      contentMarkdown,
-      sortOrder,
-      isPublished: formState.isPublished,
+      content_markdown,
+      sort_order,
+      is_published: formState.is_published,
     };
 
     startTransition(async () => {
       setMessage(null);
-      const result = await upsertWikiArticle(input);
+      const result = await upsertHDSDArticle(input);
 
-      if (!result.success) {
-        setMessage({ type: "error", text: result.error });
+      if (!result.success || !result.data) {
+        setMessage({ type: "error", text: result.error || "Lỗi không xác định." });
         return;
       }
 
@@ -204,15 +199,15 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             .map((a) => (a.id === saved.id ? saved : a))
             .sort(
               (a, b) =>
-                a.sectionTitle.localeCompare(b.sectionTitle) ||
-                a.sortOrder - b.sortOrder ||
+                a.section_title.localeCompare(b.section_title) ||
+                a.sort_order - b.sort_order ||
                 a.title.localeCompare(b.title),
             );
         }
         return [saved, ...prev].sort(
           (a, b) =>
-            a.sectionTitle.localeCompare(b.sectionTitle) ||
-            a.sortOrder - b.sortOrder ||
+            a.section_title.localeCompare(b.section_title) ||
+            a.sort_order - b.sort_order ||
             a.title.localeCompare(b.title),
         );
       });
@@ -226,17 +221,17 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
   };
 
   const handleDelete = useCallback(
-    (article: WikiArticleRecord) => {
+    (article: HelpCenterArticleRecord) => {
       if (!confirm(`Xóa bài viết "${article.title}"?`)) return;
 
       setRemovingId(article.id);
       setMessage(null);
 
       startTransition(async () => {
-        const result = await deleteWikiArticle(article.id);
+        const result = await deleteHDSDArticle(article.id);
 
         if (!result.success) {
-          setMessage({ type: "error", text: result.error });
+          setMessage({ type: "error", text: result.error || "Lỗi không xác định." });
           setRemovingId(null);
           return;
         }
@@ -249,27 +244,27 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
     [formState.id, resetForm],
   );
 
-  const handleTogglePublished = useCallback((article: WikiArticleRecord) => {
+  const handleTogglePublished = useCallback((article: HelpCenterArticleRecord) => {
     setMessage(null);
     startTransition(async () => {
-      const result = await upsertWikiArticle({
+      const result = await upsertHDSDArticle({
         id: article.id,
         slug: article.slug,
-        sectionSlug: article.sectionSlug,
-        sectionTitle: article.sectionTitle,
+        section_slug: article.section_slug,
+        section_title: article.section_title,
         title: article.title,
         summary: article.summary,
-        contentMarkdown: article.contentMarkdown,
-        sortOrder: article.sortOrder,
-        isPublished: !article.isPublished,
+        content_markdown: article.content_markdown,
+        sort_order: article.sort_order,
+        is_published: !article.is_published,
       });
 
-      if (!result.success) {
-        setMessage({ type: "error", text: result.error });
+      if (!result.success || !result.data) {
+        setMessage({ type: "error", text: result.error || "Lỗi không xác định." });
         return;
       }
 
-      setArticles((prev) => prev.map((a) => (a.id === result.data.id ? result.data : a)));
+      setArticles((prev) => prev.map((a) => (a.id === result.data.id ? result.data! : a)));
     });
   }, []);
 
@@ -289,17 +284,13 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             stroke="currentColor"
             className="w-5 h-5"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
         </Link>
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tighter italic">Quản lý trợ giúp</h1>
+          <h1 className="text-4xl font-black uppercase tracking-tighter italic">Quản lý HDSD</h1>
           <p className="mt-2 text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-            Nội dung trang Wiki / Help Center
+            Nội dung Hướng dẫn sử dụng
           </p>
         </div>
       </div>
@@ -333,7 +324,6 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
         </div>
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-          {/* Slug + SectionSlug row */}
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest pl-1">
@@ -354,14 +344,13 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
               </label>
               <input
                 type="text"
-                value={formState.sectionSlug}
+                value={formState.section_slug}
                 onChange={(e) => {
-                  handleFieldChange("sectionSlug", e.target.value);
-                  // Auto-fill sectionTitle if the slug matches a known section
+                  handleFieldChange("section_slug", e.target.value);
                   const known = sections.find((s) => s.slug === e.target.value.trim());
-                  if (known) handleFieldChange("sectionTitle", known.title);
+                  if (known) handleFieldChange("section_title", known.title);
                 }}
-                placeholder="vd: bat-dau-nhanh"
+                placeholder="vd: tai-khoan"
                 list="section-slugs"
                 className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium font-mono"
               />
@@ -373,7 +362,6 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             </div>
           </div>
 
-          {/* SectionTitle + Title row */}
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest pl-1">
@@ -381,9 +369,9 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
               </label>
               <input
                 type="text"
-                value={formState.sectionTitle}
-                onChange={(e) => handleFieldChange("sectionTitle", e.target.value)}
-                placeholder="vd: Bắt đầu nhanh"
+                value={formState.section_title}
+                onChange={(e) => handleFieldChange("section_title", e.target.value)}
+                placeholder="vd: Tài khoản"
                 className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
               />
             </div>
@@ -397,80 +385,51 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
                 value={formState.title}
                 onChange={(e) => {
                   handleFieldChange("title", e.target.value);
-                  // Auto-generate slug when creating a new article
                   if (!formState.id && !formState.slug) {
                     handleFieldChange("slug", toSlug(e.target.value));
                   }
                 }}
-                placeholder="vd: Đăng ký và hoàn thiện hồ sơ"
+                placeholder="vd: Hướng dẫn tạo tài khoản Đồng Ngôn"
                 className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
               />
             </div>
           </div>
 
-          {/* Summary */}
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest pl-1">
-              Tóm tắt{" "}
-              <span className="font-medium normal-case tracking-normal text-slate-400">
-                (tùy chọn, tối đa 320 ký tự)
-              </span>
+              Tóm tắt <span className="font-medium normal-case tracking-normal text-slate-400">(tùy chọn)</span>
             </label>
             <textarea
               value={formState.summary}
               onChange={(e) => handleFieldChange("summary", e.target.value)}
               rows={2}
               maxLength={320}
-              placeholder="Mô tả ngắn về bài viết..."
+              placeholder="Mô tả ngắn..."
               className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium resize-none"
             />
           </div>
 
-          {/* Content Markdown */}
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest pl-1">
-              Nội dung Markdown <span className="text-red-500">*</span>
-              <span className="ml-2 font-medium normal-case tracking-normal text-slate-400">
-                (dấu{" "}
-                <code className="bg-slate-100 px-1 rounded text-xs">- </code> đầu dòng để tạo danh
-                sách)
-              </span>
+              Nội dung (Markdown hoặc HTML) <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={formState.contentMarkdown}
-              onChange={(e) => handleFieldChange("contentMarkdown", e.target.value)}
+              value={formState.content_markdown}
+              onChange={(e) => handleFieldChange("content_markdown", e.target.value)}
               rows={10}
-              placeholder={`- Bước 1: Mô tả hành động.\n- Bước 2: Chi tiết tiếp theo.\n- Bước 3: Kết quả mong đợi.`}
+              placeholder="Nội dung bài viết..."
               className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-sm font-mono resize-y min-h-[160px]"
             />
-
-            <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-4">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500 mb-3">
-                Xem trước (đã sanitize)
-              </p>
-              {formState.contentMarkdown.trim() ? (
-                <WikiArticle
-                  articleId={formState.slug || "preview-article"}
-                  title={formState.title || "Tiêu đề bài viết"}
-                  summary={formState.summary || "Tóm tắt bài viết"}
-                  contentMarkdown={formState.contentMarkdown}
-                  compact
-                />
-              ) : (
-                <p className="text-sm text-slate-500 italic">Nhập markdown để xem trước.</p>
-              )}
-            </div>
           </div>
 
-          {/* SortOrder + isPublished row */}
           <div className="flex flex-wrap items-end gap-5">
             <div className="space-y-2 w-36">
               <label className="text-xs font-black uppercase tracking-widest pl-1">Thứ tự</label>
               <input
                 type="number"
                 min={0}
-                value={formState.sortOrder}
-                onChange={(e) => handleFieldChange("sortOrder", e.target.value)}
+                value={formState.sort_order}
+                onChange={(e) => handleFieldChange("sort_order", e.target.value)}
                 className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
               />
             </div>
@@ -478,8 +437,8 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             <label className="flex items-center gap-3 rounded-2xl border-4 border-black px-4 py-4 cursor-pointer flex-1">
               <input
                 type="checkbox"
-                checked={formState.isPublished}
-                onChange={(e) => handleFieldChange("isPublished", e.target.checked)}
+                checked={formState.is_published}
+                onChange={(e) => handleFieldChange("is_published", e.target.checked)}
                 className="h-5 w-5 accent-black"
               />
               <span className="text-sm font-bold uppercase tracking-[0.12em]">
@@ -488,12 +447,11 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             </label>
           </div>
 
-          {/* Buttons */}
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-4 bg-black text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-40 text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]"
+              className="w-full py-4 bg-teal-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-teal-700 transition-all active:scale-[0.98] disabled:opacity-40 text-sm"
             >
               {isPending ? "Đang lưu..." : isEditing ? "Lưu thay đổi" : "Thêm bài viết"}
             </button>
@@ -521,50 +479,39 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
             className={`mb-6 rounded-[1.25rem] border-4 p-4 font-bold ${
               message.type === "error"
                 ? "border-red-500 bg-red-50 text-red-700"
-                : "border-emerald-500 bg-emerald-50 text-emerald-700"
+                : "border-teal-500 bg-teal-50 text-teal-700"
             }`}
           >
             {message.text}
           </div>
         ) : null}
 
-        {/* Filter bar */}
         <div className="mb-6 grid gap-4 rounded-[1.5rem] border-4 border-black bg-white p-5 md:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-2">
-            <label
-              htmlFor="wiki-search"
-              className="text-xs font-black uppercase tracking-widest pl-1"
-            >
-              Tìm kiếm
-            </label>
+            <label htmlFor="hdsd-search" className="text-xs font-black uppercase tracking-widest pl-1">Tìm kiếm</label>
             <input
-              id="wiki-search"
+              id="hdsd-search"
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo tiêu đề, tóm tắt, slug..."
+              placeholder="Tiêu đề, tóm tắt, slug..."
               className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
             />
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="wiki-section-filter"
-              className="text-xs font-black uppercase tracking-widest pl-1"
-            >
+            <label htmlFor="hdsd-section-filter" className="text-xs font-black uppercase tracking-widest pl-1">
               Chuyên mục
             </label>
             <select
-              id="wiki-section-filter"
+              id="hdsd-section-filter"
               value={sectionFilter}
               onChange={(e) => setSectionFilter(e.target.value)}
               className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium bg-white"
             >
-              <option value="all">Tất cả chuyên mục</option>
+              <option value="all">Tất cả</option>
               {sections.map((s) => (
-                <option key={s.slug} value={s.slug}>
-                  {s.title}
-                </option>
+                <option key={s.slug} value={s.slug}>{s.title}</option>
               ))}
             </select>
           </div>
@@ -573,15 +520,10 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
         {articles.length === 0 ? (
           <div className="w-full py-16 text-center border-4 border-dashed border-slate-200 rounded-[2rem]">
             <p className="font-bold text-slate-400 italic">Chưa có bài viết nào trong hệ thống.</p>
-            <p className="mt-2 text-sm text-slate-400">
-              Hãy chạy SQL seed để thêm nội dung mặc định, hoặc dùng form trên để tạo bài mới.
-            </p>
           </div>
         ) : filteredArticles.length === 0 ? (
           <div className="w-full py-12 text-center border-4 border-dashed border-slate-200 rounded-[2rem]">
-            <p className="font-bold text-slate-400 italic">
-              Không có bài viết nào khớp với bộ lọc hiện tại.
-            </p>
+            <p className="font-bold text-slate-400 italic">Không tìm thấy bài viết.</p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -593,145 +535,75 @@ export default function AdminWikiEditor({ initialArticles }: Props) {
                 }`}
               >
                 <div className="flex flex-wrap items-start gap-4">
-                  {/* Left: content info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <span className="text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 border-black bg-slate-100">
-                        {article.sectionTitle}
+                        {article.section_title}
                       </span>
                       <span
                         className={`text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 ${
-                          article.isPublished
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          article.is_published
+                            ? "border-teal-500 bg-teal-50 text-teal-700"
                             : "border-slate-300 bg-slate-100 text-slate-500"
                         }`}
                       >
-                        {article.isPublished ? "Hiển thị" : "Nháp"}
+                        {article.is_published ? "Hiển thị" : "Nháp"}
                       </span>
                       <span className="text-xs text-slate-400 font-mono">{article.slug}</span>
                     </div>
 
-                    <h3 className="text-lg font-black truncate">{article.title}</h3>
+                    <h3 className="text-lg font-black truncate hover:underline">
+                      <Link href={`/hdsd/${article.section_slug}/${article.slug}`} target="_blank">
+                        {article.title}
+                      </Link>
+                    </h3>
 
                     {article.summary ? (
                       <p className="mt-1 text-sm text-slate-500 line-clamp-2">{article.summary}</p>
                     ) : null}
 
                     <p className="mt-2 text-xs text-slate-400">
-                      Thứ tự: {article.sortOrder} &nbsp;·&nbsp; Cập nhật:{" "}
-                      {formatDateTime(article.updatedAt)}
+                      Cập nhật: {formatDateTime(article.updated_at)}
                     </p>
                   </div>
 
-                  {/* Right: actions */}
                   <div className="flex flex-shrink-0 items-center gap-2">
-                    {/* Toggle published */}
                     <button
                       type="button"
                       onClick={() => handleTogglePublished(article)}
                       disabled={isPending}
-                      title={article.isPublished ? "Ẩn bài viết" : "Hiển thị bài viết"}
+                      title={article.is_published ? "Ẩn bài" : "Hiển thị"}
                       className="p-2.5 rounded-xl border-2 border-black hover:bg-slate-100 transition-colors disabled:opacity-40"
                     >
-                      {article.isPublished ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                          stroke="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                          stroke="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                          />
-                        </svg>
-                      )}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      </svg>
                     </button>
 
-                    {/* Edit */}
                     <button
                       type="button"
                       onClick={() => handleEdit(article)}
                       disabled={isPending}
-                      title="Chỉnh sửa"
                       className="p-2.5 rounded-xl border-2 border-black hover:bg-slate-100 transition-colors disabled:opacity-40"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        className="w-4 h-4"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
                       </svg>
                     </button>
 
-                    {/* Delete */}
                     <button
                       type="button"
                       onClick={() => handleDelete(article)}
                       disabled={isPending || removingId === article.id}
-                      title="Xóa bài viết"
                       className="p-2.5 rounded-xl border-2 border-red-400 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        className="w-4 h-4"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                       </svg>
                     </button>
                   </div>
                 </div>
-
-                {/* Markdown preview (truncated) */}
-                {article.contentMarkdown ? (
-                  <details className="mt-4">
-                    <summary className="text-xs font-black uppercase tracking-widest text-slate-400 cursor-pointer select-none hover:text-slate-600">
-                      Xem nội dung
-                    </summary>
-                    <pre className="mt-3 text-xs font-mono bg-slate-50 border-2 border-slate-200 rounded-xl p-4 whitespace-pre-wrap overflow-auto max-h-48 text-slate-700">
-                      {article.contentMarkdown}
-                    </pre>
-                  </details>
-                ) : null}
               </div>
             ))}
           </div>

@@ -5,29 +5,33 @@ import Link from "next/link";
 export default function InterfaceTab() {
   return (
     <div className="space-y-8">
+      {/* Header Section */}
       <div>
-        <h3 className="text-xl font-bold uppercase tracking-wide mb-2">Giao diện & Trải nghiệm</h3>
-        <p className="text-gray-500">Tùy chỉnh giao diện hiển thị theo sở thích của bạn.</p>
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-wide text-gray-900">
+          Giao diện & Trải nghiệm
+        </h2>
+        <p className="mt-2 text-sm text-gray-500">
+          Tùy chỉnh giao diện hiển thị theo sở thích của bạn.
+        </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Wiki */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-black text-white rounded-[2rem] border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
-          <div className="space-y-1">
-            <h4 className="font-bold uppercase tracking-wider text-sm">Wiki hướng dẫn</h4>
-            <p className="text-xs text-gray-400">Mở theo từng bài ngắn, đúng thứ bạn cần, không cần đọc tài liệu dài.</p>
+      {/* Help Center Card */}
+      <div className="bg-[#f5f5f5] p-6 md:p-8 rounded-2xl border border-black/10 transition-shadow">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+
+            <div>
+              <h3 className="text-lg font-bold text-[#388186] mb-1">Hướng dẫn sử dụng</h3>
+              <p className="text-sm text-gray-500">Truy cập hướng dẫn sử dụng và đọc các bài hướng dẫn chi tiết.</p>
+            </div>
           </div>
-          <div className="flex w-full md:w-auto flex-col sm:flex-row gap-2 shrink-0">
-            <Link
-              href="/wiki"
-              className="px-6 py-3 bg-white text-black rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-100 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 21a3 3 0 0 0 3-3V5.25A2.25 2.25 0 0 0 20.25 3H8.25A2.25 2.25 0 0 0 6 5.25V18a3 3 0 0 0 3 3m10.5 0h-10.5m10.5 0v-4.5m-10.5 4.5v-4.5m0 0h10.5" />
-              </svg>
-              Mở wiki
-            </Link>
-          </div>
+
+          <Link
+            href="/hdsd"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-colors whitespace-nowrap flex-shrink-0"
+          >
+            Xem
+          </Link>
         </div>
       </div>
     </div>

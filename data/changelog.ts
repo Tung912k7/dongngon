@@ -7,6 +7,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.3.0",
+    date: "20/03/2026",
+    title: "Nâng cấp hồ sơ & Quyền riêng tư",
+    changes: [
+      "Hồ sơ cá nhân mới — bổ sung Mã định danh (ID) và tính năng tạo Hashtag cá tính",
+      "Quản lý quyền riêng tư — cho phép tùy chỉnh ẩn/hiện Email, Bút danh, ID, Hashtag và Ngày sinh trong Cài đặt",
+      "Tiện ích sao chép nhanh — thêm nút sao chép Mã định danh kèm thông báo xác nhận",
+      "Định dạng ngày sinh mới — hiển thị ngày sinh chuẩn Việt Nam (DD/MM/YYYY) trên trang hồ sơ",
+      "Cải tiến HDSD — làm mới toàn bộ giao diện và cấu trúc nội dung trang Hướng dẫn sử dụng",
+    ],
+  },
+  {
     version: "1.2.2",
     date: "14/03/2026",
     title: "Đơn giản hóa luật đóng góp",
