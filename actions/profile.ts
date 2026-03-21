@@ -110,6 +110,8 @@ export async function updateProfile(
     updated_at: string;
     avatar_url?: string;
     birthday?: string;
+    hashtags?: string[];
+    public_fields?: Record<string, boolean>;
   } = {
     nickname: sanitizedNickname,
     description: description || null,
