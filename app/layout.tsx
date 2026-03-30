@@ -32,11 +32,11 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: {
-    default: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+    default: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
     template: "%s | Đồng ngôn",
   },
-  description: "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.",
-  keywords: ["thơ văn", "ngẫu hứng", "sáng tác", "văn học", "lưu trữ", "đồng ngôn", "tâm hồn"],
+  description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+  keywords: ["thơ văn", "ngẫu hứng", "sáng tác", "văn học", "đồng ngôn", "tâm hồn", 'kho tàng', 'thơ tự do', 'văn chương'],
   authors: [{ name: "Đồng ngôn" }],
   creator: "Đồng ngôn",
   publisher: "Đồng ngôn",
@@ -45,14 +45,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://dongngon.com"),
+  metadataBase: new URL("https://dongngon.vercel.app"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Đồng ngôn",
-    description: "Nơi lưu trữ những áng thơ văn và cảm xúc.",
-    url: "https://dongngon.com",
+    description: "Nhất ngôn xuất, vạn kiếp hồi thanh",
+    url: "https://dongngon.vercel.app",
     siteName: "Đồng ngôn",
     images: [
       {
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Đồng ngôn",
-    description: "Nơi lưu trữ những áng thơ văn và cảm xúc.",
+    description: "Nhất ngôn xuất, vạn kiếp hồi thanh",
     images: ["/webp%20file/logo.webp"],
   },
   icons: {
@@ -98,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className="scroll-smooth">
+    <html lang="vi" suppressHydrationWarning className="scroll-smooth relative">
       <head>
         <link rel="preconnect" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
@@ -110,28 +110,28 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "WebSite",
-                  "@id": "https://dongngon.com/#website",
-                  "url": "https://dongngon.com",
+                  "@id": "https://dongngon.vercel.app/#website",
+                  "url": "https://dongngon.vercel.app",
                   "name": "Đồng ngôn",
-                  "description": "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.",
+                  "description": "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
                   "inLanguage": "vi",
                   "potentialAction": {
                     "@type": "SearchAction",
                     "target": {
                       "@type": "EntryPoint",
-                      "urlTemplate": "https://dongngon.com/kho-tang?query={search_term_string}"
+                      "urlTemplate": "https://dongngon.vercel.app/kho-tang?query={search_term}"
                     },
-                    "query-input": "required name=search_term_string"
+                    "query-input": "required name=search_term"
                   }
                 },
                 {
                   "@type": "Organization",
-                  "@id": "https://dongngon.com/#organization",
+                  "@id": "https://dongngon.vercel.app/#organization",
                   "name": "Đồng ngôn",
-                  "url": "https://dongngon.com",
+                  "url": "https://dongngon.vercel.app",
                   "logo": {
                     "@type": "ImageObject",
-                    "url": "https://dongngon.com/webp%20file/logo.webp"
+                    "url": "https://dongngon.vercel.app/webp%20file/logo.webp"
                   }
                 }
               ]
@@ -140,7 +140,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col overflow-x-hidden`}
+        className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col overflow-x-hidden relative`}
       >
         <CSPostHogProvider>
           <ClientGlobalWrappers>

@@ -13,6 +13,7 @@ export default function PostHogAutoTracker() {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
 
     if (!initialized.current) {
+        initialized.current = true;
         import('posthog-js').then((m) => {
             const posthog = m.default;
             const posthogConfig: Partial<PostHogConfig> = {
@@ -24,7 +25,6 @@ export default function PostHogAutoTracker() {
               // enable_exception_autocapture is handled separately or no longer supported
             };
             posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, posthogConfig);
-            initialized.current = true;
             
             // Capture initial pageview
             let url = window.origin + pathname;

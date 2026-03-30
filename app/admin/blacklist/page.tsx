@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
+import { getBlacklistWords, addBlacklistWord, deleteBlacklistWord } from "@/actions/blacklist";
 
 type BlacklistItem = {
   id: string;
@@ -18,22 +18,13 @@ export default function BlacklistPage() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const supabase = createClient();
 
   const fetchBlacklist = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("blacklist_words")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching blacklist:", error);
-    } else {
-      setWords(data || []);
-    }
+    const result = await getBlacklistWords();
+    setWords(result.success ? result.data : []);
     setLoading(false);
-  }, [supabase]);
+  }, []);
 
   const regexError = useMemo(() => {
     if (!isRegex || !newWord) {
@@ -53,18 +44,9 @@ export default function BlacklistPage() {
     let active = true;
 
     const loadInitialBlacklist = async () => {
-      const { data, error } = await supabase
-        .from("blacklist_words")
-        .select("*")
-        .order("created_at", { ascending: false });
-
+      const result = await getBlacklistWords();
       if (!active) return;
-
-      if (error) {
-        console.error("Error fetching blacklist:", error);
-      } else {
-        setWords(data || []);
-      }
+      setWords(result.success ? result.data : []);
       setLoading(false);
     };
 
@@ -73,27 +55,17 @@ export default function BlacklistPage() {
     return () => {
       active = false;
     };
-  }, [supabase]);
-
+  }, []);
 
   const handleAddWord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWord.trim() || regexError) return;
 
     setSubmitting(true);
-    const { error } = await supabase
-      .from("blacklist_words")
-      .insert([{ 
-        word: newWord.trim(), 
-        is_regex: isRegex 
-      }]);
+    const result = await addBlacklistWord(newWord.trim(), isRegex);
 
-    if (error) {
-      if (error.code === "23505") {
-        alert("Pattern này đã có trong danh sách.");
-      } else {
-        alert("Lỗi: " + error.message);
-      }
+    if (!result.success) {
+      alert("Lỗi: " + result.error);
     } else {
       setNewWord("");
       setIsRegex(false);
@@ -105,13 +77,9 @@ export default function BlacklistPage() {
   const handleDeleteWord = async (id: string) => {
     if (!confirm("Xóa pattern này khỏi danh sách?")) return;
 
-    const { error } = await supabase
-      .from("blacklist_words")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      alert("Lỗi: " + error.message);
+    const result = await deleteBlacklistWord(id);
+    if (!result.success) {
+      alert("Lỗi: " + result.error);
     } else {
       fetchBlacklist();
     }

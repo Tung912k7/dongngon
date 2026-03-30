@@ -16,7 +16,7 @@ export async function checkBlacklist(text: string): Promise<string | null> {
     // Fetch from blacklist_words
     const { data: blacklist, error } = await supabase
       .from("blacklist_words")
-      .select("word, is_regex");
+      .select("pattern, is_regex");
 
     if (error) {
       // Log more detail on the server, but don't crash
@@ -31,17 +31,17 @@ export async function checkBlacklist(text: string): Promise<string | null> {
     for (const item of blacklist) {
       if (item.is_regex) {
         try {
-          const regex = new RegExp(item.word, 'i');
+          const regex = new RegExp(item.pattern, 'i');
           if (regex.test(textLower)) {
-            return item.word;
+            return item.pattern;
           }
         } catch {
-          console.error("Invalid regex in database:", item.word);
+          console.error("Invalid regex in database:", item.pattern);
         }
       } else {
-        const word = item.word.toLowerCase();
+        const word = item.pattern.toLowerCase();
         if (textLower.includes(word)) {
-          return item.word;
+          return item.pattern;
         }
       }
     }
@@ -50,4 +50,86 @@ export async function checkBlacklist(text: string): Promise<string | null> {
   }
 
   return null;
+}
+
+export async function getBlacklistWords() {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, data: [] };
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== "admin") return { success: false, data: [] };
+
+    const { data, error } = await supabase
+      .from("blacklist_words")
+      .select("id, pattern, is_regex, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[Blacklist] Fetch error:", error);
+      return { success: false, data: [] };
+    }
+
+    // Map `pattern` back to `word` for the frontend to minimize changes
+    const mappedData = data.map((item) => ({
+      id: item.id,
+      word: item.pattern,
+      is_regex: item.is_regex,
+      created_at: item.created_at
+    }));
+
+    return { success: true, data: mappedData || [] };
+  } catch (error) {
+    console.error("[Blacklist] Fetch error:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function addBlacklistWord(word: string, isRegex: boolean) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== "admin") return { success: false, error: "Forbidden" };
+
+    const { error } = await supabase
+      .from("blacklist_words")
+      .insert([{ pattern: word.trim(), is_regex: isRegex, created_by: user.id, type: isRegex ? 'regex' : 'word' }]);
+
+    if (error) {
+      if (error.code === "23505") {
+        return { success: false, error: "Pattern này đã có trong danh sách." };
+      }
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Unknown error" };
+  }
+}
+
+export async function deleteBlacklistWord(id: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== "admin") return { success: false, error: "Forbidden" };
+
+    const { error } = await supabase
+      .from("blacklist_words")
+      .delete()
+      .eq("id", id);
+
+    if (error) return { success: false, error: error.message };
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Unknown error" };
+  }
 }

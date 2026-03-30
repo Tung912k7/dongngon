@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Quên mật khẩu",
-  description: "Lấy lại mật khẩu tài khoản của bạn.",
+  description: "Lấy lại mật khẩu tài khoản.",
 };
 
 export default function ForgotPasswordPage() {

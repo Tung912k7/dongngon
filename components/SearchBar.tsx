@@ -6,7 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 const SearchBar = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const router = useRouter();
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -15,25 +15,19 @@ const SearchBar = () => {
     } else {
       params.delete("query");
     }
-    replace(`${pathname}?${params.toString()}`);
+    
+    if (pathname !== "/kho-tang") {
+      router.push(`/kho-tang?${params.toString()}`);
+    } else {
+      router.replace(`${pathname}?${params.toString()}`);
+    }
   }, 300);
 
   return (
     <div className="relative w-full md:w-[300px] group">
-      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-black transition-colors duration-300 pointer-events-none">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-black transition-colors duration-300 pointer-events-none z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </div>
       <input

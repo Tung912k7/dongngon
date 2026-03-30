@@ -40,13 +40,20 @@ export const PrimaryButton = ({
 export const LinkedButton = ({ 
   children, 
   href,
-  className = "" 
+  className = "",
+  inverse = false,
 }: { 
   children: React.ReactNode; 
   href: string;
   className?: string;
+  inverse?: boolean;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  const defaultBg = inverse ? "black" : "#f5f5f5";
+  const defaultColor = inverse ? "white" : "black";
+  const hoverBg = inverse ? "#f5f5f5" : "black";
+  const hoverColor = inverse ? "black" : "white";
   
   return (
     <Link
@@ -55,8 +62,8 @@ export const LinkedButton = ({
       onMouseLeave={() => setIsHovered(false)}
       className={`px-6 py-2 border-[3px] border-black text-center transition-all duration-300 rounded-full hover:scale-[1.02] hover:shadow-lg font-bold flex items-center justify-center gap-2 ${className}`}
       style={{
-        backgroundColor: isHovered ? "black" : "#f5f5f5",
-        color: isHovered ? "white" : "black",
+        backgroundColor: isHovered ? hoverBg : defaultBg,
+        color: isHovered ? hoverColor : defaultColor,
       }}
     >
       {children}

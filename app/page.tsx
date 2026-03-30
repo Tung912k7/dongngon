@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+  title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
   description:
-    "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy. Cùng nhau tạo nên những tác phẩm văn học độc đáo.",
+    "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
   openGraph: {
-    title: "Đồng ngôn - Nơi lưu trữ những áng thơ văn",
+    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
     description:
-      "Không gian tĩnh lặng để lưu trữ, chia sẻ và cảm nhận những áng thơ văn, câu nói hay và cảm xúc đong đầy.",
+      "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
     type: "website",
   },
 };

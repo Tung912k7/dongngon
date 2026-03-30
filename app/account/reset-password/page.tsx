@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Đổi mật khẩu",
-  description: "Cập nhật mật khẩu mới cho tài khoản của bạn.",
+  description: "Cập nhật mật khẩu mới cho tài khoản.",
 };
 
 export default function ResetPasswordPage() {
