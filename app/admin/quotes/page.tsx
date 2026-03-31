@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
-import * as XLSX from "xlsx";
+
 
 import { createClient } from "@/utils/supabase/client";
 
@@ -355,6 +355,7 @@ export default function AdminQuotesPage() {
     setMessage(null);
 
     try {
+      const XLSX = await import("xlsx");
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array" });
       const firstSheetName = workbook.SheetNames[0];

@@ -80,29 +80,48 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={onClose}
-                  className="flex-1 py-4 border-2 border-black text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-50 transition-all active:scale-95 text-xs sm:text-sm"
+                  onClick={() => {
+                    const shareUrl = `${window.location.origin}/work/${work.id}`;
+                    if (navigator.share) {
+                      navigator.share({
+                        title: work.title,
+                        text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
+                        url: shareUrl,
+                      }).catch(console.error);
+                    } else {
+                      navigator.clipboard.writeText(shareUrl);
+                      alert("Đã sao chép liên kết vào bộ nhớ tạm!");
+                    }
+                  }}
+                  className="flex-1 py-4 border-2 border-black text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-50 transition-all active:scale-95 text-xs sm:text-sm flex items-center justify-center gap-2"
                 >
-                  QUAY LẠI
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0-10.628a2.25 2.25 0 1 0 4.496-1.16 2.25 2.25 0 0 0-4.496 1.16Zm0 12.5a2.25 2.25 0 1 0 4.496-1.16 2.25 2.25 0 0 0-4.496 1.16Z" />
+                  </svg>
+                  CHIA SẺ
                 </button>
                 <button
                   onClick={() => {
                     router.push(`/work/${work.id}`);
                     onClose();
                   }}
-                  className="flex-1 py-4 bg-black text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-800 transition-all active:scale-95 text-xs sm:text-sm"
+                  className="flex-1 py-4 bg-black text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-800 transition-all active:scale-95 text-xs sm:text-sm flex items-center justify-center gap-2"
                 >
-                  VIẾT TIẾP
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                  </svg>
+                  THAM GIA
                 </button>
               </div>
             </div>
 
-            {/* Close Icon (Mobile) */}
+            {/* Close Button */}
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 text-gray-300 hover:text-black sm:hidden"
+              className="absolute top-6 right-6 md:top-8 md:right-8 text-black/20 hover:text-black transition-colors"
+              title="Đóng"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

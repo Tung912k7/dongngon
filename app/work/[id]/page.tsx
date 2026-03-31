@@ -15,20 +15,32 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const supabase = await createClient();
   const { data: work } = await supabase
     .from("works")
-    .select("title, sub_category, description")
+    .select("id, title, sub_category, description, author_nickname")
     .eq("id", id)
     .single();
 
   if (!work) return { title: "Không tìm thấy tác phẩm" };
   const sanitizedTitle = sanitizeTitle(work.title);
+  const description = work.description || `Đọc và đóng góp cho tác phẩm "${sanitizedTitle}" thuộc thể loại ${work.sub_category} trên Đồng ngôn.`;
 
   return {
     title: sanitizedTitle,
-    description: work.description || `Tác phẩm ${sanitizedTitle} thuộc thể loại ${work.sub_category} trên Đồng ngôn.`,
+    description,
     openGraph: {
       title: `${sanitizedTitle} | Đồng ngôn`,
-      description: `Đọc và đóng góp cho tác phẩm "${sanitizedTitle}" trên Đồng ngôn.`,
+      description,
+      url: `https://dongngon.vercel.app/work/${work.id}`,
+      siteName: "Đồng ngôn",
+      locale: "vi_VN",
       type: "article",
+      authors: [work.author_nickname],
+      section: work.sub_category,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${sanitizedTitle} | Đồng ngôn`,
+      description,
+      creator: "@dongngon",
     },
   };
 }
@@ -185,6 +197,40 @@ export default async function WorkPage({
 
   return (
     <div className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            "name": work.title,
+            "author": {
+              "@type": "Person",
+              "name": work.author_nickname
+            },
+            "genre": work.sub_category,
+            "inLanguage": "vi",
+            "description": work.description || `Tác phẩm ${work.title} thuộc thể loại ${work.sub_category} trên Đồng Ngôn.`,
+            "url": `https://dongngon.vercel.app/work/${work.id}`,
+            "isPartOf": {
+              "@type": "WebSite",
+              "@id": "https://dongngon.vercel.app/#website"
+            },
+            "contributor": {
+              "@type": "QuantitativeValue",
+              "value": uniqueContributors,
+              "unitText": "người đóng góp"
+            },
+            "creativeWorkStatus": isCompleted ? "Published" : "Draft",
+            "accessMode": "textual",
+            "interactionStatistic": {
+              "@type": "InteractionCounter",
+              "interactionType": "https://schema.org/WriteAction",
+              "userInteractionCount": contributions.length
+            }
+          })
+        }}
+      />
       <section className="mb-8 border-b pb-4">
         <Link
           href="/kho-tang"

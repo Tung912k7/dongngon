@@ -2,8 +2,10 @@ import { MetadataRoute } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { HELP_CENTER_SECTIONS } from '@/data/helpCenter'
 
+export const revalidate = 3600 // Revalidate sitemap every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://dongngon.com'
+  const baseUrl = 'https://dongngon.vercel.app'
   const supabase = await createClient()
 
   // --- Static pages ---

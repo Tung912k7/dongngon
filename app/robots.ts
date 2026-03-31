@@ -12,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         '/api/',
       ],
     },
-    sitemap: 'https://dongngon.com/sitemap.xml',
+    sitemap: 'https://dongngon.vercel.app/sitemap.xml',
   }
 }

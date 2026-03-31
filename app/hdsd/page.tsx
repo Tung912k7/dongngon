@@ -9,6 +9,8 @@ import HelpCenterClient from '@/components/hdsd/HelpCenterClient';
 import { ContactCard } from '@/components/hdsd/HelpCenterContact';
 import { FAQItem } from '@/components/hdsd/HelpCenterFAQ';
 
+import { Metadata } from 'next';
+
 const CONTACT_CARDS: ContactCard[] = [
   {
     icon: (
@@ -68,17 +70,83 @@ const FAQ_ITEMS: FAQItem[] = [
   },
 ];
 
+export const metadata: Metadata = {
+  title: "Hướng dẫn sử dụng | Đồng ngôn",
+  description: "Câu hỏi thường gặp và hướng dẫn sử dụng nền tảng sáng tác văn học cộng đồng Đồng ngôn.",
+  openGraph: {
+    title: "Hướng dẫn sử dụng | Đồng ngôn",
+    description: "Tìm thấy câu trả lời cho mọi thắc mắc về cách sử dụng Đồng ngôn tại đây.",
+    url: "https://dongngon.vercel.app/hdsd",
+    siteName: "Đồng ngôn",
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hướng dẫn sử dụng | Đồng ngôn",
+    description: "Khám phá các tính năng và cách tham gia sáng tác tại Đồng ngôn.",
+  },
+};
+
 export default async function HelpCenterPage() {
   // Fetch dynamic articles to calculate counts automatically
   const result = await getPublishedHDSDArticles();
   const articles = result.success ? result.data || [] : [];
 
   return (
-    <HelpCenterClient
-      sections={HELP_CENTER_SECTIONS}
-      articles={articles}
-      faqItems={FAQ_ITEMS}
-      contactCards={CONTACT_CARDS}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "FAQPage",
+                "name": "Hướng dẫn sử dụng Đồng Ngôn",
+                "description": "Câu hỏi thường gặp và hướng dẫn sử dụng nền tảng sáng tác văn học cộng đồng Đồng Ngôn.",
+                "url": "https://dongngon.vercel.app/hdsd",
+                "inLanguage": "vi",
+                "isPartOf": {
+                  "@type": "WebSite",
+                  "@id": "https://dongngon.vercel.app/#website"
+                },
+                "mainEntity": FAQ_ITEMS.map((faq) => ({
+                  "@type": "Question",
+                  "name": faq.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                  }
+                }))
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Trang chủ",
+                    "item": "https://dongngon.vercel.app"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Hướng dẫn sử dụng",
+                    "item": "https://dongngon.vercel.app/hdsd"
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
+      <HelpCenterClient
+        sections={HELP_CENTER_SECTIONS}
+        articles={articles}
+        faqItems={FAQ_ITEMS}
+        contactCards={CONTACT_CARDS}
+      />
+    </>
   );
 }

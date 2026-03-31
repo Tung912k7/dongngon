@@ -21,6 +21,19 @@ type WorkRow = {
 export const metadata: Metadata = {
   title: "Đồng ngôn - Kho tàng tác phẩm",
   description: "Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng. Triệu hạt giống tạo nên cánh đồng văn học bạt ngàn và vô tận.",
+  openGraph: {
+    title: "Kho tàng tác phẩm | Đồng ngôn",
+    description: "Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng. Triệu hạt giống tạo nên cánh đồng văn học bạt ngàn và vô tận.",
+    url: "https://dongngon.vercel.app/kho-tang",
+    siteName: "Đồng ngôn",
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kho tàng tác phẩm | Đồng ngôn",
+    description: "Khám phá hàng ngàn tác phẩm văn học ngẫu hứng tại Đồng ngôn.",
+  },
 };
 
 export default async function DongNgonPage({
@@ -79,9 +92,46 @@ export default async function DongNgonPage({
     });
 
     return (
-        <DongNgonClient 
-            initialWorks={mappedWorks} 
-            initialUser={user} 
-        />
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        "name": "Kho tàng tác phẩm",
+                        "description": "Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng. Triệu hạt giống tạo nên cánh đồng văn học bạt ngàn và vô tận.",
+                        "url": "https://dongngon.vercel.app/kho-tang",
+                        "isPartOf": {
+                            "@type": "WebSite",
+                            "@id": "https://dongngon.vercel.app/#website"
+                        },
+                        "inLanguage": "vi",
+                        "numberOfItems": mappedWorks.length,
+                        "breadcrumb": {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {
+                                    "@type": "ListItem",
+                                    "position": 1,
+                                    "name": "Trang chủ",
+                                    "item": "https://dongngon.vercel.app"
+                                },
+                                {
+                                    "@type": "ListItem",
+                                    "position": 2,
+                                    "name": "Kho tàng",
+                                    "item": "https://dongngon.vercel.app/kho-tang"
+                                }
+                            ]
+                        }
+                    })
+                }}
+            />
+            <DongNgonClient 
+                initialWorks={mappedWorks} 
+                initialUser={user} 
+            />
+        </>
     );
 }

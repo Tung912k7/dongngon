@@ -67,6 +67,65 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Article",
+                "headline": article.title,
+                "description": article.summary || article.title,
+                "url": `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`,
+                "dateModified": article.updated_at,
+                "inLanguage": "vi",
+                "isPartOf": {
+                  "@type": "WebSite",
+                  "@id": "https://dongngon.vercel.app/#website"
+                },
+                "publisher": {
+                  "@id": "https://dongngon.vercel.app/#organization"
+                },
+                "mainEntityOfPage": {
+                  "@type": "WebPage",
+                  "@id": `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`
+                },
+                "articleSection": sectionLabel,
+                "wordCount": article.content_markdown.split(/\s+/).length
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Trang chủ",
+                    "item": "https://dongngon.vercel.app"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Hướng dẫn sử dụng",
+                    "item": "https://dongngon.vercel.app/hdsd"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": sectionLabel,
+                    "item": `https://dongngon.vercel.app/hdsd/${sectionSlug}`
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 4,
+                    "name": article.title
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
       {/* ─── Breadcrumb ─── */}
       <div className="w-full bg-white border-b border-neutral-100">
         <div className="max-w-6xl mx-auto px-4 py-3">

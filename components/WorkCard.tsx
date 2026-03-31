@@ -54,12 +54,12 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
       >
         {/* Main Content Area */}
         <div className="w-full flex-grow flex flex-col items-start gap-2 sm:gap-4">
-          <p className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold line-clamp-2 leading-tight mb-2 text-gray-900">
             {work.title}
-          </p>
+          </h1>
           
           <div className="flex flex-col gap-0.5 sm:gap-1">
-            <p className="text-gray-500 font-medium text-base sm:text-lg flex items-center gap-1">
+            <h2 className="text-gray-700 font-semibold text-base sm:text-lg flex items-center gap-1">
               Bởi: 
               <span 
                 onClick={(e) => {
@@ -76,13 +76,14 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
               >
                 {work.author_nickname}
               </span>
-            </p>
-            <p className="flex items-center gap-2 text-gray-400 text-sm sm:text-base font-normal">
+            </h2>
+            <h3 className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-tight">
               <span>{formatDate(work.created_at || new Date().toISOString())}</span>
-                <span className="bg-black/5 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
-                   {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
-                </span>
-            </p>
+              <span className="flex items-center gap-1.5 tracking-wider">
+                <span className="transform scale-125">•</span>
+                {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
+              </span>
+            </h3>
           </div>
         </div>
 
