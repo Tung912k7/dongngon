@@ -274,7 +274,7 @@ export default function Editor({
         Cần hướng dẫn? Xem
         {" "}
         <Link href="/hdsd" className="font-semibold text-black underline hover:opacity-70 transition-opacity">
-          Wiki
+          Hướng dẫn
         </Link>
         {" "}
         để nắm cách sử dụng đầy đủ.

@@ -60,21 +60,23 @@ export default async function DongNgonPage({
     }
 
     // Pre-map the works on the server to avoid hydration mismatch/logic duplication
-    const mappedWorks = ((rawWorks || []) as WorkRow[]).map((work) => ({
-        ...work,
-        title: sanitizeTitle(work.title),
-        author_nickname: sanitizeNickname(work.author_nickname),
-        type: work.category_type,
-        hinh_thuc: work.sub_category,
-        rule: "1 câu",
-        age_rating: work.age_rating ?? undefined,
-        status: work.status === "writing" ? "Đang viết" : 
-                work.status === "finished" ? "Hoàn thành" : 
-                work.status === "pending" ? "Đợi duyệt" : work.status,
-        date: formatDate(work.created_at),
-        rawDate: new Date(work.created_at),
-        is_author_private: false,
-    }));
+    const mappedWorks = ((rawWorks || []) as WorkRow[]).map((work) => {
+        return {
+            ...work,
+            title: sanitizeTitle(work.title),
+            author_nickname: sanitizeNickname(work.author_nickname),
+            type: work.category_type,
+            hinh_thuc: work.sub_category,
+            rule: "1 câu",
+            age_rating: work.age_rating ?? undefined,
+            status: work.status === "writing" ? "Đang viết" : 
+                    work.status === "finished" ? "Hoàn thành" : 
+                    work.status === "pending" ? "Đợi duyệt" : work.status,
+            date: formatDate(work.created_at),
+            rawDate: new Date(work.created_at),
+            is_author_private: false,
+        };
+    });
 
     return (
         <DongNgonClient 

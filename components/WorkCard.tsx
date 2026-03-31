@@ -79,8 +79,9 @@ export default function WorkCard({ work, isOwner, hideMenu }: WorkCardProps) {
             </p>
             <p className="flex items-center gap-2 text-gray-400 text-sm sm:text-base font-normal">
               <span>{formatDate(work.created_at || new Date().toISOString())}</span>
-              <span>•</span>
-              <span>{work.age_rating === 'all' || work.age_rating === 'All' ? 'Mọi độ tuổi' : work.age_rating}</span>
+                <span className="bg-black/5 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
+                   {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
+                </span>
             </p>
           </div>
         </div>

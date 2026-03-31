@@ -51,7 +51,7 @@ export default function WelcomeNotification({
     router.push("/kho-tang");
   };
 
-  const handleOpenWiki = async () => {
+  const handleOpenTutorial = async () => {
     setIsVisible(false);
     const result = await acknowledgeWelcomeMessage();
     if (result.success) {
@@ -125,7 +125,7 @@ export default function WelcomeNotification({
             <m.button
               whileHover={{ scale: 1.01, backgroundColor: "#f1f5f9", borderColor: "#0f172a" }}
               whileTap={{ scale: 0.98 }}
-              onClick={handleOpenWiki}
+              onClick={handleOpenTutorial}
               className="w-full bg-slate-50 text-slate-900 border-2 border-slate-800 py-4 rounded-2xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.25} stroke="currentColor" className="h-5 w-5">

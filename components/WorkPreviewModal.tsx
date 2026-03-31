@@ -44,7 +44,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                    {work.type || work.category_type}
+                    {work.type}
                   </span>
                   {work.hinh_thuc && (
                     <span className="px-3 py-1 border-2 border-black text-black text-[10px] font-black uppercase tracking-widest rounded-full">
@@ -60,7 +60,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                 <div className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-[11px]">
                   <span>Bởi {work.author_nickname}</span>
                   <span>•</span>
-                  <span>{work.age_rating === 'all' ? 'Mọi độ tuổi' : work.age_rating}</span>
+                  <span>{work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}</span>
                 </div>
               </div>
 

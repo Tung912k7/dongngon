@@ -83,7 +83,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
              <span>{work.date}</span>
              <span>•</span>
              <span className="bg-black/5 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
-                {work.age_rating === 'all' || work.age_rating === 'All' ? 'Mọi độ tuổi' : work.age_rating}
+                {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
              </span>
           </div>
         </div>
