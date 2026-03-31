@@ -50,10 +50,10 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Đồng ngôn",
-    description: "Nhất ngôn xuất, vạn kiếp hồi thanh",
+    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
+    description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
     url: "https://dongngon.vercel.app",
-    siteName: "Đồng Ngôn",
+    siteName: "Đồng ngôn",
     images: [
       {
         url: "/webp%20file/logo.webp",
@@ -67,8 +67,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Đồng ngôn",
-    description: "Nhất ngôn xuất, vạn kiếp hồi thanh",
+    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
+    description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
     images: ["/webp%20file/logo.webp"],
   },
   icons: {
@@ -112,7 +112,7 @@ export default function RootLayout({
                   "@type": "WebSite",
                   "@id": "https://dongngon.vercel.app/#website",
                   "url": "https://dongngon.vercel.app",
-                  "name": "Đồng Ngôn",
+                  "name": "Đồng ngôn",
                   "alternateName": "Đồng ngôn",
                   "description": "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
                   "inLanguage": "vi",
@@ -129,14 +129,14 @@ export default function RootLayout({
                 {
                   "@type": "Organization",
                   "@id": "https://dongngon.vercel.app/#organization",
-                  "name": "Đồng Ngôn",
+                  "name": "Đồng ngôn",
                   "url": "https://dongngon.vercel.app",
                   "logo": {
                     "@type": "ImageObject",
                     "@id": "https://dongngon.vercel.app/#logo",
                     "url": "https://dongngon.vercel.app/webp%20file/logo.webp",
                     "contentUrl": "https://dongngon.vercel.app/webp%20file/logo.webp",
-                    "caption": "Đồng Ngôn",
+                    "caption": "Đồng ngôn",
                     "inLanguage": "vi",
                     "width": "800",
                     "height": "600"
@@ -149,7 +149,7 @@ export default function RootLayout({
                   "@type": "WebPage",
                   "@id": "https://dongngon.vercel.app/#webpage",
                   "url": "https://dongngon.vercel.app",
-                  "name": "Đồng Ngôn — Nhất ngôn xuất, vạn kiếp hồi thanh",
+                  "name": "Đồng ngôn — Nhất ngôn xuất, vạn kiếp hồi thanh",
                   "isPartOf": { "@id": "https://dongngon.vercel.app/#website" },
                   "about": { "@id": "https://dongngon.vercel.app/#organization" },
                   "description": "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
