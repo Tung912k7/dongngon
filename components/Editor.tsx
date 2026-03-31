@@ -15,6 +15,7 @@ export default function Editor({
   workId, 
   writingRule, 
   hinhThuc,
+  categoryType,
   user: initialUser,
   canContribute = true,
   blockedMessage
@@ -22,6 +23,7 @@ export default function Editor({
   workId: string; 
   writingRule: string; 
   hinhThuc?: string;
+  categoryType?: string;
   user: { id: string } | null;
   canContribute?: boolean;
   blockedMessage?: string;
@@ -48,6 +50,7 @@ export default function Editor({
   const isSubmittingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isFreeVerse = hinhThuc === "Tự do";
+  const isPoetry = categoryType === "Thơ";
   const [newLine, setNewLine] = useState(false);
   const isBlocked = !canContribute;
 
@@ -115,18 +118,21 @@ export default function Editor({
       return;
     }
 
-    const isValidRule = validateContent(cleanContent, writingRule);
-    
-    if (!isValidRule) {
-      let msg = "Nội dung không hợp lệ.";
-      if (writingRule === '1 câu') {
-        msg = "Nội dung phải kết thúc bằng dấu câu (. ! ?).";
+    // Poetry (Thơ) does not require sentence-ending punctuation
+    if (!isPoetry) {
+      const isValidRule = validateContent(cleanContent, writingRule);
+      
+      if (!isValidRule) {
+        let msg = "Nội dung không hợp lệ.";
+        if (writingRule === '1 câu') {
+          msg = "Nội dung phải kết thúc bằng dấu câu (. ! ?).";
+        }
+          
+          showNotification(msg, "info", "Sai quy tắc");
+          setIsSubmitting(false);
+          isSubmittingRef.current = false;
+          return;
       }
-        
-        showNotification(msg, "info", "Sai quy tắc");
-        setIsSubmitting(false);
-        isSubmittingRef.current = false;
-        return;
     }
 
     if (hinhThuc) {
@@ -174,17 +180,17 @@ export default function Editor({
 
   if (!user && !isBlocked) {
     return (
-      <div className="text-center py-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-        <p className="text-sm text-gray-500 font-medium">
+      <div className="text-center py-6 bg-[#fcfcfc] rounded-xl border-2 border-black border-dashed">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40">
           Bạn cần{" "}
-          <Link href="/dang-nhap" className="text-black font-bold underline hover:opacity-70 transition-opacity">
+          <Link href="/dang-nhap" className="text-black font-black underline hover:opacity-70 transition-opacity">
             đăng nhập
           </Link>{" "}
           hoặc{" "}
-          <Link href="/dang-ky" className="text-black font-bold underline hover:opacity-70 transition-opacity">
+          <Link href="/dang-ky" className="text-black font-black underline hover:opacity-70 transition-opacity">
             ghi danh
           </Link>{" "}
-          để đóng góp cho tác phẩm này.
+          để ghi dấu ấn.
         </p>
       </div>
     );
@@ -193,29 +199,29 @@ export default function Editor({
   return (
     <form onSubmit={handleSubmit} className="relative">
       {isBlocked && (
-        <div className="absolute -top-12 left-0 right-0 bg-amber-50 text-amber-700 text-xs p-2 rounded text-center border border-amber-200">
-          {blockedMessage || "Bạn không có quyền đóng góp cho tác phẩm này."}
+        <div className="absolute -top-14 left-0 right-0 bg-white border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
+          {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
         </div>
       )}
       {error && (
-        <div className="absolute -top-12 left-0 right-0 bg-red-50 text-red-600 text-sm p-2 rounded text-center border border-red-200">
+        <div className="absolute -top-14 left-0 right-0 bg-red-600 border-2 border-red-600 text-white font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)] text-center animate-in fade-in slide-in-from-bottom-2">
           {error}
         </div>
       )}
       {warning && !error && !isBlocked && (
-        <div className="absolute -top-12 left-0 right-0 bg-yellow-50 text-yellow-700 text-xs p-2 rounded text-center border border-yellow-200">
+        <div className="absolute -top-14 left-0 right-0 bg-literary-gold border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
           {warning}
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex items-end gap-2 sm:gap-3">
         <textarea
           ref={textareaRef}
           value={content}
           onChange={(e) => {
             setContent(e.target.value);
           }}
-          placeholder={isBlocked ? "Chế độ chỉ xem" : "Viết tiếp câu chuyện..."}
+          placeholder={isBlocked ? "CHẾ ĐỘ CHỈ XEM" : "VIẾT TIẾP CÂU CHUYỆN..."}
           maxLength={500}
           onKeyDown={(e) => {
             if (isBlocked) {
@@ -226,7 +232,7 @@ export default function Editor({
               handleSubmit(e);
             }
           }}
-          className="flex-grow p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black resize-none min-h-[46px] h-auto prose-input font-be-vietnam whitespace-pre-wrap"
+          className="flex-grow p-3 bg-[#fcfcfc] border-2 border-black rounded-xl focus:outline-none focus:bg-white transition-all resize-none min-h-[46px] h-auto font-be-vietnam text-sm placeholder:text-black/20 placeholder:font-bold placeholder:uppercase placeholder:tracking-widest"
           disabled={isSubmitting || isBlocked}
           rows={1}
           onInput={(e) => {
@@ -235,39 +241,43 @@ export default function Editor({
             target.style.height = target.scrollHeight + 'px';
           }}
         />
-        <PrimaryButton
-          type="submit"
-          className="!px-4 !py-1.5 !text-sm rounded-lg min-w-[70px]"
-          disabled={isSubmitting || isBlocked}
-        >
-          {isBlocked ? "Chỉ xem" : isSubmitting ? "..." : "Gửi"}
-        </PrimaryButton>
-      </div>
-
-      {/* Free verse new line toggle */}
-      {isFreeVerse && !isBlocked && (
-        <div className="flex items-center gap-2 mt-2 pl-1">
+        
+        {/* Free verse new line toggle - Integrated into main row */}
+        {isFreeVerse && !isBlocked && (
           <button
             type="button"
             onClick={() => setNewLine(!newLine)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer border-2 ${
+            title="Xuống dòng mới"
+            className={`flex items-center justify-center w-11 h-11 rounded-xl border-2 border-black transition-all duration-200 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none ${
               newLine
-                ? "bg-black text-white border-black"
-                : "bg-white text-gray-500 border-gray-300 hover:border-gray-400"
+                ? "bg-black text-literary-gold"
+                : "bg-white text-black/30 hover:text-black"
             }`}
           >
-            <span className="text-sm leading-none">↵</span>
-            <span>Xuống dòng</span>
+            <span className="text-xl font-bold">↵</span>
           </button>
-          {newLine && (
-            <span className="text-[10px] text-gray-400 italic">Câu này sẽ bắt đầu trên dòng mới</span>
+        )}
+
+        <PrimaryButton
+          type="submit"
+          className="!px-4 !h-11 rounded-xl min-w-[55px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          disabled={isSubmitting || isBlocked}
+        >
+          {isBlocked ? (
+             <span className="text-[10px] font-bold">LỜI</span>
+          ) : isSubmitting ? (
+             <span className="animate-pulse">...</span>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+            </svg>
           )}
-        </div>
-      )}
+        </PrimaryButton>
+      </div>
       {!isBlocked && (
         <p className="text-xs text-gray-400 mt-2 text-center pl-2">
           Mỗi ngày chỉ được đóng góp 1 câu.
-          {writingRule === "1 câu" && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
+          {writingRule === "1 câu" && !isPoetry && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
         </p>
       )}
       <p className="text-xs text-gray-500 mt-2 text-center pl-2">

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import Link from "next/link";
 
 export const PrimaryButton = ({ 
@@ -17,20 +15,27 @@ export const PrimaryButton = ({
   disabled?: boolean;
   className?: string;
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`px-10 py-2.5 border-[3px] border-black text-2xl rounded-full transition-all duration-300 hover:scale-[1.02] hover:shadow-lg font-bold disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center justify-center gap-2 ${className}`}
-      style={{
-        backgroundColor: (isHovered && !disabled) ? "black" : (disabled ? "#f3f4f6" : "#f5f5f5"),
-        color: (isHovered && !disabled) ? "white" : (disabled ? "#9ca3af" : "black"),
-      }}
+      className={`
+        px-10 py-3 
+        border-2 border-black 
+        bg-white text-black 
+        rounded-xl 
+        font-ganh font-bold text-xl uppercase tracking-widest
+        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+        transition-all duration-200
+        hover:-translate-x-1 hover:-translate-y-1 
+        hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
+        active:translate-x-0 active:translate-y-0 
+        active:shadow-none
+        disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:translate-0
+        inline-flex items-center justify-center gap-2 whitespace-nowrap
+        ${className}
+      `}
     >
       {children}
     </button>
@@ -48,23 +53,24 @@ export const LinkedButton = ({
   className?: string;
   inverse?: boolean;
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  const defaultBg = inverse ? "black" : "#f5f5f5";
-  const defaultColor = inverse ? "white" : "black";
-  const hoverBg = inverse ? "#f5f5f5" : "black";
-  const hoverColor = inverse ? "black" : "white";
-  
   return (
     <Link
       href={href}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`px-6 py-2 border-[3px] border-black text-center transition-all duration-300 rounded-full hover:scale-[1.02] hover:shadow-lg font-bold flex items-center justify-center gap-2 ${className}`}
-      style={{
-        backgroundColor: isHovered ? hoverBg : defaultBg,
-        color: isHovered ? hoverColor : defaultColor,
-      }}
+      className={`
+        px-8 py-3 
+        border-2 border-black 
+        ${inverse ? 'bg-black text-white hover:bg-black/90' : 'bg-white text-black hover:bg-gray-50'} 
+        rounded-xl 
+        font-ganh font-bold text-lg uppercase tracking-widest
+        ${inverse ? 'shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]' : 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'}
+        transition-all duration-200
+        hover:-translate-x-1 hover:-translate-y-1 
+        ${inverse ? 'hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]' : 'hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'}
+        active:translate-x-0 active:translate-y-0 
+        active:shadow-none
+        flex items-center justify-center gap-2 whitespace-nowrap
+        ${className}
+      `}
     >
       {children}
     </Link>

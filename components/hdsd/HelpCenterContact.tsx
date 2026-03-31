@@ -22,20 +22,20 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
       {cards.map((card, idx) => (
         <div
           key={idx}
-          className="flex flex-col items-center text-center p-8 rounded-2xl border border-neutral-200 bg-white"
+          className="flex flex-col items-center text-center p-10 rounded-xl border-2 border-black bg-white"
         >
           {/* Icon in circle */}
-          <div className="w-14 h-14 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-600 mb-4">
+          <div className="w-16 h-16 rounded-full border-2 border-black flex items-center justify-center text-black mb-6">
             {card.icon}
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-lg text-neutral-900 mb-1">
+          <h3 className="font-ganh font-bold text-xl md:text-2xl text-black mb-2 uppercase tracking-tight">
             {card.title}
           </h3>
 
           {/* Description */}
-          <p className="text-sm text-neutral-500 mb-5">
+          <p className="text-sm font-medium text-black/50 mb-8 max-w-[240px] leading-relaxed">
             {card.description}
           </p>
 
@@ -44,7 +44,16 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
             href={card.ctaHref || '#'}
             target={card.ctaHref?.startsWith('http') ? "_blank" : undefined}
             rel={card.ctaHref?.startsWith('http') ? "noopener noreferrer" : undefined}
-            className="inline-block px-5 py-2.5 rounded-full border-2 border-neutral-800 text-neutral-900 text-sm font-semibold hover:bg-neutral-800 hover:text-white transition-colors duration-200"
+            className="
+              inline-block px-8 py-3 
+              rounded-xl border-2 border-black 
+              bg-white text-black text-sm font-ganh font-bold uppercase tracking-widest
+              shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+              hover:-translate-x-1 hover:-translate-y-1 
+              hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+              active:translate-x-0 active:translate-y-0
+              transition-all duration-200
+            "
           >
             {card.ctaLabel}
           </a>

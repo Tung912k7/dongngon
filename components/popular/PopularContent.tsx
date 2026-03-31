@@ -1,23 +1,17 @@
 "use client";
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { m } from 'framer-motion';
 import { createClient } from '@/utils/supabase/client';
+import WorkCard from '@/components/WorkCard';
+import { Work } from '@/stores/work-store';
+import { formatDate } from '@/utils/date';
 
-interface WorkWithCount {
-  id: string;
-  title: string;
+interface WorkWithRepoCount extends Work {
   contributor_count: number;
 }
 
-type WorkWithContributionCountRow = {
-  id: string;
-  title: string;
-  contributions?: Array<{ count: number | null }> | null;
-};
-
 const PopularContent = () => {
-  const [popularWorks, setPopularWorks] = useState<WorkWithCount[]>([]);
+  const [popularWorks, setPopularWorks] = useState<WorkWithRepoCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,27 +20,34 @@ const PopularContent = () => {
         const supabase = createClient();
         const { data, error } = await supabase
           .from('works')
-          .select(`id, title, contributions:contributions(count)`)
+          .select(`
+            id, title, category_type, sub_category, 
+            status, created_at, author_nickname, 
+            created_by, age_rating,
+            contributions:contributions(count)
+          `)
           .eq('privacy', 'Public')
           .limit(10);
 
         if (error) throw error;
 
         if (data) {
-          const mapped = (data as WorkWithContributionCountRow[]).map((work) => ({
-            id: work.id,
-            title: work.title,
+          const mapped = data.map((work: any) => ({
+            ...work,
+            type: work.category_type,
+            hinh_thuc: work.sub_category,
+            rule: "1 câu",
+            date: formatDate(work.created_at),
+            rawDate: new Date(work.created_at),
+            status: work.status === "writing" ? "Đang viết" :
+              work.status === "finished" ? "Hoàn thành" :
+                work.status === "pending" ? "Đợi duyệt" : work.status,
             contributor_count: work.contributions?.[0]?.count || 0
           }))
-          .sort((a, b) => b.contributor_count - a.contributor_count)
-          .slice(0, 3);
+            .sort((a, b) => b.contributor_count - a.contributor_count)
+            .slice(0, 3);
 
-          if (mapped.length === 3) {
-            const ordered = [mapped[1], mapped[0], mapped[2]];
-            setPopularWorks(ordered);
-          } else {
-            setPopularWorks(mapped);
-          }
+          setPopularWorks(mapped);
         }
       } catch (err) {
         console.error('Error fetching popular works:', err);
@@ -59,10 +60,12 @@ const PopularContent = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col items-center justify-center gap-10 py-10 opacity-50">
-        <div className="h-8 w-64 bg-white/10 animate-pulse rounded"></div>
-        <div className="flex gap-8">
-          {[1, 2, 3].map(i => <div key={i} className="w-40 h-56 bg-white/5 animate-pulse rounded-lg"></div>)}
+      <div className="w-full flex flex-col items-center justify-center gap-10 py-20 opacity-50">
+        <div className="h-10 w-64 bg-white/10 animate-pulse rounded-xl border-2 border-white/20"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="w-full h-80 bg-white/5 animate-pulse rounded-xl border-2 border-white/10"></div>
+          ))}
         </div>
       </div>
     );
@@ -71,102 +74,71 @@ const PopularContent = () => {
   if (popularWorks.length === 0) return null;
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-6 md:gap-10 lg:gap-12 relative overflow-hidden py-6 md:py-8 lg:py-12">
-      {/* 1. Title Section (Shelf Header) */}
-      <div className="w-full max-w-4xl px-4 flex flex-col items-center justify-center gap-2 md:gap-3 relative z-20">
-        <m.div 
+    <div className="w-full flex flex-col items-center justify-center gap-8 md:gap-16 relative overflow-visible py-8 md:py-20">
+      {/* Title Section - Brutalist Header */}
+      <div className="w-full max-w-4xl px-4 flex flex-col items-center justify-center gap-4 relative z-20">
+        <m.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col items-center gap-1"
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center gap-3 md:gap-4"
         >
-          <h2 className="font-ganh text-xl md:text-3xl lg:text-4xl text-white tracking-[0.1em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] text-center">
-            BẢNG XẾP HẠNG
-          </h2>
-          <div className="flex items-center gap-2 md:gap-3 w-full justify-center">
-            <div className="h-[1px] flex-1 max-w-[40px] md:max-w-[60px] bg-gradient-to-r from-transparent via-white/30 to-white/50"></div>
-            <div className="w-1 md:w-1.5 h-1 md:h-1.5 rotate-45 border border-white/30"></div>
-            <div className="h-[1px] flex-1 max-w-[40px] md:max-w-[60px] bg-gradient-to-l from-transparent via-white/30 to-white/50"></div>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-4 sm:w-8 h-1 md:h-2 bg-white" />
+            <h2 className="font-ganh text-2xl md:text-4xl lg:text-5xl text-white tracking-[0.1em] sm:tracking-[0.15em] text-center uppercase font-bold">
+              Bảng xếp hạng
+            </h2>
+            <div className="w-4 sm:w-8 h-1 md:h-2 bg-white" />
           </div>
+
+          <p className="font-ganh text-[9px] md:text-xs text-white/40 uppercase tracking-[0.3em] sm:tracking-[0.5em] font-bold text-center">
+            Khám phá những hạt giống nảy mầm mạnh mẽ nhất
+          </p>
         </m.div>
       </div>
 
-      {/* 2. Bookshelf Container */}
-      <div className="flex flex-row items-end justify-center gap-2 sm:gap-4 md:gap-12 lg:gap-16 relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto h-[200px] sm:h-[260px] md:h-auto pb-4 md:pb-0">
-        {popularWorks.map((work, index) => {
-          const isFeatured = popularWorks.length === 3 ? index === 1 : index === 0;
+      {/* Horizontal Scroll Layout for Mobile / Grid for Desktop */}
+      <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-10 lg:gap-12 w-full max-w-6xl mx-auto px-6 md:px-8 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory no-scrollbar pb-10 md:pb-0 relative z-10 transition-all">
+        {popularWorks.map((work, index) => (
+          <m.div
+            key={work.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: index * 0.15 }}
+            className="relative min-w-[280px] sm:min-w-[320px] md:min-w-0 w-[85vw] md:w-auto snap-center flex-shrink-0"
+          >
+            {/* Rank Indicator Badge */}
+            <div className="absolute -top-2 -left-2 z-30 w-10 h-10 bg-white border-2 border-black rounded-full flex items-center justify-center font-ganh font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              {index + 1}
+            </div>
 
-          return (
-            <Link 
-              href={`/work/${work.id}`} 
-              prefetch={false}
-              key={work.id} 
-              className="flex flex-col items-center group perspective-1000 w-full md:w-auto active:scale-95 transition-transform"
-            >
-              <div className="relative mb-2 md:mb-4 lg:mb-6">
-                {/* Book Shadow Base */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[105%] h-2 bg-black/60 blur-lg scale-x-90 rounded-full"></div>
+            <WorkCard
+              work={work}
+              variant="home"
+              hideMenu={true}
+            />
 
-                {/* The Book Body */}
-                <m.div
-                  initial={{ opacity: 0, rotateY: 15, x: 10 }}
-                  whileInView={{ opacity: 1, rotateY: isFeatured ? 0 : -5, x: 0 }}
-                  whileHover={{ rotateY: 5, x: -3, scale: 1.05 }}
-                  whileTap={{ scale: 0.98, rotateY: 0 }}
-                  transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 }}
-                  className={`relative cursor-pointer rounded-l-[1.5px] rounded-r-[4px] transition-all duration-500 transform-style-3d backface-hidden ${
-                    isFeatured 
-                      ? 'w-24 h-36 sm:w-28 sm:h-40 md:w-40 md:h-56 lg:w-52 lg:h-72 shadow-[15px_15px_40px_rgba(0,0,0,0.9)] border-white/10' 
-                      : 'w-16 h-24 sm:w-20 sm:h-28 md:w-32 md:h-44 lg:w-40 lg:h-56 shadow-[10px_10px_30px_rgba(0,0,0,0.8)] border-white/5 opacity-80 group-hover:opacity-100'
-                  } bg-[#1a1a1a] border-y border-r overflow-hidden`}
-                  style={{ willChange: "transform, opacity" }}
-                >
-                  {/* Spine Detail */}
-                  <div className="absolute left-0 top-0 bottom-0 w-[10%] bg-gradient-to-r from-black/80 via-black/40 to-transparent border-r border-white/5 rounded-l-[1px] z-20"></div>
-                  
-                  {/* Star Icon - Moved Inside as Overlay */}
-                  {isFeatured && (
-                    <div className="absolute top-1 right-1 md:top-2 md:right-2 z-30 drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FDE047" stroke="#CA8A04" strokeWidth="0.5"/>
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* Internal Padding for Content */}
-                  <div className="relative h-full w-full p-2 sm:p-3 md:p-4 lg:p-6 flex flex-col justify-center items-center z-10 text-center">
-                    <span className="font-ganh text-[8px] sm:text-[10px] md:text-sm lg:text-base tracking-wide leading-tight px-0.5 sm:px-1 break-words drop-shadow-md overflow-hidden line-clamp-3">
-                      {work.title}
-                    </span>
-                  </div>
-
-                  {/* Subtle highlight for featured */}
-                  {isFeatured && (
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-20"></div>
-                  )}
-                </m.div>
-              </div>
-
-              {/* Contributor Label (Compact) */}
-              <div className={`flex flex-col items-center transition-all duration-300 ${isFeatured ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>
-                <div className={`px-2 md:px-3 py-0.5 md:py-1 rounded-sm flex flex-col items-center border backdrop-blur-sm ${
-                  isFeatured 
-                    ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-100/80' 
-                    : 'border-white/5 bg-white/5 text-gray-400 font-light'
-                }`}>
-                  <p className="font-be-vietnam text-[6px] sm:text-[7px] md:text-[8px] uppercase tracking-[0.2em] opacity-50 mb-0.5">
-                    Đóng góp bởi
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <span className="font-ganh text-sm md:text-lg lg:text-xl leading-none">{work.contributor_count}</span>
-                    <span className="font-be-vietnam text-[8px] md:text-[10px] lowercase">thành viên</span>
-                  </div>
+            {/* Contributor Count Footer for Home */}
+            <div className="mt-4 flex items-center justify-between px-2">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-5 h-5 rounded-full border border-white/20 bg-white/10" />
+                  ))}
                 </div>
+                <span className="font-be-vietnam text-[10px] text-white/50 uppercase tracking-widest font-bold">
+                  {work.contributor_count} câu
+                </span>
               </div>
-            </Link>
-          );
-        })}
+              <div className="w-8 h-[1px] bg-white/20" />
+            </div>
+          </m.div>
+        ))}
       </div>
+
+      {/* Background Decorative Elements */}
+      <div className="absolute top-1/2 left-0 w-32 h-32 border-2 border-white/5 rounded-full -translate-x-1/2 blur-2xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-64 h-64 border-2 border-white/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
     </div>
   );
 };

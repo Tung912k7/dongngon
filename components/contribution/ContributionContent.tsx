@@ -7,53 +7,64 @@ const ContributionContent = () => {
       <m.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         viewport={{ once: true }}
-        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-10 text-center md:text-left items-center mt-8 md:mt-16 lg:mt-20 p-4 max-w-6xl mx-auto"
+        className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 md:gap-12 lg:gap-16 text-left items-stretch p-4 max-w-6xl mx-auto"
       >
         {/* Left Column: Purpose & Description */}
-        <div className="lg:col-span-7 flex flex-col gap-5 md:gap-8">
-
-          <div className="space-y-2 lg:space-y-3">
-            <h2 className="font-ganh text-2xl md:text-3xl lg:text-4xl text-white tracking-wide">
-              Mục đích & Ý nghĩa
-            </h2>
-            <p className="font-be-vietnam text-sm md:text-base text-gray-300 leading-relaxed font-light">
-              <strong className="text-white font-medium">Đồng ngôn</strong> là một dự án vô tình xuất hiện trong cuộc trò chuyện của tôi và người ấy. Tôi mong đây có thể là nơi mọi người có thể là chính mình, cùng nhau tạo nên những tác phẩm ý nghĩa và đẹp đẽ.
+        <div className="lg:col-span-12 xl:col-span-7 flex flex-col gap-4 sm:gap-6 md:gap-10">
+          <div className="flex flex-col gap-3 sm:gap-4 md:gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-6 md:h-8 bg-white" />
+              <h2 className="font-ganh text-2xl md:text-4xl lg:text-5xl text-white tracking-tight font-bold uppercase transition-transform hover:translate-x-2 duration-300">
+                Câu chuyện
+              </h2>
+            </div>
+            <p className="font-be-vietnam text-sm md:text-base lg:text-lg text-white/70 leading-[1.6] max-w-2xl font-medium tracking-wide">
+              <strong className="text-white">Đồng ngôn</strong> là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.
             </p>
           </div>
 
-          <div className="space-y-2 lg:space-y-3 md:pl-5 md:border-l-[1px] md:border-white/20 pt-1">
-            <h3 className="font-ganh text-xl md:text-2xl lg:text-3xl text-white tracking-wide">
-              Sự độc đáo
-            </h3>
-            <p className="font-be-vietnam text-sm md:text-base text-gray-300 leading-relaxed font-light text-center md:text-left">
-              Cơ chế viết khác biệt khiến ta trở nên chậm rãi, để ta có thể nhìn lại, suy ngẫm và sắp xếp lại sự rối ren trong đầu. Thoát ra khỏi sự xô bồ của cuộc sống và yêu lấy bản thân ta.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+            <div className="space-y-3 md:space-y-4 border-l-2 border-white/10 pl-4 md:pl-6">
+              <h3 className="font-ganh text-lg md:text-xl lg:text-2xl text-white tracking-widest font-bold uppercase">
+                Khởi nguồn
+              </h3>
+              <p className="font-be-vietnam text-[13px] md:text-sm lg:text-base text-white/50 leading-relaxed">
+                Dự án vô tình xuất hiện trong cuộc trò chuyện của tôi và người ấy. Tôi mong đây có thể là nơi mọi người có thể là chính mình, cùng nhau tạo nên những tác phẩm ý nghĩa và đẹp đẽ.
+              </p>
+            </div>
+            <div className="space-y-3 md:space-y-4 border-l-2 border-white/10 pl-4 md:pl-6">
+              <h3 className="font-ganh text-lg md:text-xl lg:text-2xl text-white tracking-widest font-bold uppercase">
+                Sự độc đáo
+              </h3>
+              <p className="font-be-vietnam text-[13px] md:text-sm lg:text-base text-white/50 leading-relaxed">
+                Cơ chế viết khác biệt khiến ta trở nên chậm rãi, để ta có thể nhìn lại, suy ngẫm và sắp xếp lại sự rối ren trong đầu. Thoát ra khỏi sự xô bồ của cuộc sống và yêu lấy bản thân ta.
+              </p>
+            </div>
           </div>
-
         </div>
 
-        {/* Right Column: Rule Card (Glassmorphism) */}
-        <div className="lg:col-span-5 w-full mt-4 lg:mt-0 px-2 md:px-0">
-          <div className="relative p-5 md:p-6 lg:p-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md overflow-hidden group shadow-2xl active:scale-[0.98] transition-transform">
-            {/* Subtle glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+        {/* Right Column: Rule Card (Brutalist) */}
+        <div className="lg:col-span-12 xl:col-span-5 flex items-center justify-center">
+          <div className="relative w-full p-4 sm:p-6 md:p-10 rounded-2xl border-2 border-white bg-transparent group shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] sm:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] hover:shadow-[14px_14px_0px_0px_rgba(255,255,255,1)] transition-all cursor-default overflow-hidden">
+            <div className="relative z-10 flex flex-col gap-3 sm:gap-6 md:gap-8 text-center sm:text-left">
+              <div className="space-y-0.5 sm:space-y-1 sm:space-y-2">
+                <span className="font-be-vietnam text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Giao ước</span>
+                <h3 className="font-ganh text-lg sm:text-xl md:text-4xl text-white tracking-tight font-bold uppercase leading-none">
+                  Nguyên tắc
+                </h3>
+              </div>
 
-            <div className="relative z-10 flex flex-col gap-3 md:gap-4 lg:gap-5">
-              <h3 className="font-ganh text-2xl md:text-3xl lg:text-3xl text-white tracking-wide">
-                Nguyên tắc đóng góp
-              </h3>
-              <p className="font-be-vietnam text-sm md:text-base text-gray-400 font-light">
-                Mọi tác phẩm đều thuộc về cộng đồng:
-              </p>
-
-              {/* Highlight Box */}
-              <div className="bg-black/60 border border-white/10 rounded-xl p-4 md:p-5 shadow-inner">
-                <p className="font-be-vietnam text-base md:text-lg text-yellow-50/90 italic font-light tracking-wide leading-relaxed">
-                  &ldquo;Bạn chỉ có thể đóng góp 1 câu mỗi tác phẩm&rdquo;
+              <div className="bg-white text-black p-3 sm:p-4 md:p-8 rounded-xl border-2 border-black transform group-hover:-rotate-1 transition-transform">
+                <p className="font-ganh text-sm sm:text-base md:text-2xl font-bold italic tracking-tight leading-snug">
+                  &ldquo;Mỗi người chỉ có thể đóng góp duy nhất một câu cho mỗi tác phẩm.&rdquo;
                 </p>
               </div>
+
+              <p className="font-be-vietnam text-[9px] sm:text-[10px] text-white/40 font-bold uppercase tracking-widest">
+                Không giới hạn số lượng tác phẩm được đóng góp nha.
+              </p>
             </div>
           </div>
         </div>

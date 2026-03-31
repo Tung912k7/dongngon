@@ -81,20 +81,20 @@ export default function WorkOwnerControls({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="flex-grow px-3 py-1 border-2 border-black rounded-lg font-bold text-sm focus:outline-none"
+            className="flex-grow px-3 py-1 border-2 border-black rounded-xl font-bold text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
             autoFocus
           />
           <button 
             onClick={handleUpdate}
             disabled={isSubmitting}
-            className="text-xs font-bold uppercase tracking-widest text-green-600 hover:text-green-700"
+            className="text-xs font-bold font-ganh uppercase tracking-widest text-green-600 hover:text-green-700 transition-colors"
           >
             Lưu
           </button>
           <button 
             onClick={() => { setIsEditing(false); setTitle(initialTitle); }}
             disabled={isSubmitting}
-            className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600"
+            className="text-xs font-bold font-ganh uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
           >
             Hủy
           </button>
@@ -103,13 +103,13 @@ export default function WorkOwnerControls({
         <>
           <button 
             onClick={() => setIsEditing(true)}
-            className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
+            className="text-[10px] font-bold font-ganh uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
           >
             Chỉnh sửa
           </button>
           <button 
             onClick={handleDelete}
-            className="text-[10px] font-bold uppercase tracking-widest text-red-300 hover:text-red-600 transition-colors"
+            className="text-[10px] font-bold font-ganh uppercase tracking-widest text-red-300 hover:text-red-600 transition-colors"
           >
             Xóa
           </button>

@@ -26,16 +26,16 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
       className="
         group flex flex-col items-start
         p-6
-        rounded-2xl
-        border border-neutral-200
+        rounded-xl
+        border-2 border-black
         bg-white
         w-full
         min-h-[200px]
         text-left
         cursor-pointer
         transition-all duration-200 ease-out
-        hover:border-neutral-300 hover:shadow-md hover:-translate-y-0.5
-        focus:outline-none focus:ring-2 focus:ring-neutral-300
+        hover:-translate-y-0.5
+        focus:outline-none focus:bg-neutral-50
       "
       aria-label={`Xem chủ đề ${section.title}`}
     >
@@ -45,7 +45,7 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
       </span>
 
       {/* Title */}
-      <span className="font-bold text-lg text-neutral-900 mb-1.5 leading-snug">
+      <span className="font-ganh font-bold text-lg md:text-xl text-neutral-900 mb-1.5 leading-snug uppercase tracking-tight">
         {section.title}
       </span>
 

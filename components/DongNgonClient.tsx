@@ -343,6 +343,7 @@ export default function DongNgonClient({
     <div className="min-h-screen bg-white text-black">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 flex flex-col items-center">
         <div className="w-full max-w-6xl relative">
+          
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
               <TableFilter 

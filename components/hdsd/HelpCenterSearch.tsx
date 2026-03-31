@@ -35,13 +35,13 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
       <input
         id="help-center-search"
         className="
-          w-full px-6 py-3.5 pl-12 pr-6
-          rounded-full
-          border border-neutral-300
-          bg-white text-neutral-800
-          text-base
+          w-full px-6 py-4 pl-14 pr-6
+          rounded-xl
+          border-2 border-black
+          bg-white text-neutral-900
+          text-lg font-be-vietnam
           placeholder:text-neutral-400
-          focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-neutral-400
+          focus:outline-none focus:bg-neutral-50
           transition-all duration-200
         "
         type="search"

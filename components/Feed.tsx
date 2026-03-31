@@ -69,10 +69,22 @@ export default function Feed({
   const totalPages = Math.ceil(contributions.length / itemsPerPage);
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="text-lg leading-[1.8] text-gray-800 content-display">
-        {contributions.map((contribution) => {
+    <div className="flex flex-col gap-12">
+      <div className="text-xl md:text-2xl leading-[1.8] text-black font-medium font-be-vietnam content-display italic">
+        {contributions.map((contribution, index) => {
           const isSentenceMode = limitType === 'sentence' || limitType === '1 câu';
+          
+          // Check if previous contribution ends with sentence-ending punctuation
+          const prevContribution = index > 0 ? contributions[index - 1] : null;
+          const prevEndsWithPunctuation = prevContribution 
+            ? /[.?!]$/.test(prevContribution.content.trim()) 
+            : false;
+          
+          // For free verse: auto-capitalize after sentence-ending punctuation
+          let displayContent = contribution.content;
+          if (contribution.new_line && prevEndsWithPunctuation && displayContent.length > 0) {
+            displayContent = displayContent.charAt(0).toUpperCase() + displayContent.slice(1);
+          }
           
           return (
             <React.Fragment key={contribution.id}>
@@ -80,7 +92,9 @@ export default function Feed({
               {contribution.new_line && <br />}
               <ContributionTooltip contribution={contribution}>
                 <span className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  {contribution.content}
+                  {/* Auto-add space after previous sentence-ending punctuation in free verse */}
+                  {prevEndsWithPunctuation && !contribution.new_line && ' '}
+                  {displayContent}
                   {!contribution.content.endsWith(' ') && isSentenceMode && ' '}
                 </span>
               </ContributionTooltip>
@@ -93,35 +107,39 @@ export default function Feed({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4 border-t">
+        <div className="flex items-center justify-center gap-4 pt-10 border-t-2 border-black/5">
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 border-2 border-black rounded-xl font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border-2 border-black rounded-xl font-ganh font-bold text-[10px] uppercase tracking-widest disabled:opacity-20 disabled:cursor-not-allowed hover:-translate-x-1 transition-all"
           >
-            QUAY LẠI
+            &larr; TRƯỚC
           </button>
           
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             {[...Array(totalPages)].map((_, i) => (
               <button
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 rounded-xl border-2 border-black font-bold text-sm transition-all ${
-                  currentPage === i + 1 ? "bg-black text-white" : "hover:bg-gray-50"
+                className={`w-10 h-10 rounded-xl border-2 border-black font-ganh font-bold text-xs transition-all ${
+                  currentPage === i + 1 ? "bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "hover:bg-gray-50"
                 }`}
               >
                 {i + 1}
               </button>
             ))}
           </div>
+          
+          <div className="sm:hidden font-ganh font-bold text-xs">
+            {currentPage} / {totalPages}
+          </div>
 
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 border-2 border-black rounded-xl font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border-2 border-black rounded-xl font-ganh font-bold text-[10px] uppercase tracking-widest disabled:opacity-20 disabled:cursor-not-allowed hover:translate-x-1 transition-all"
           >
-            TIẾP THEO
+            SAU &rarr;
           </button>
         </div>
       )}

@@ -181,7 +181,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white border-4 border-black rounded-[2.5rem] p-6 md:p-10 w-full max-w-xl relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
+              className="bg-white border-2 border-black rounded-xl p-6 md:p-10 w-full max-w-xl relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
             >
               <style dangerouslySetInnerHTML={{ __html: `
                 .modal-scroll-container::-webkit-scrollbar {
@@ -205,7 +205,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                   scrollbar-color: #000 #f1f1f1;
                 }
               `}} />
-              <h2 className="text-3xl font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
+              <h2 className="text-3xl font-ganh font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6 font-sans">
                 {/* Consolidated Avatar Section */}
@@ -217,7 +217,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     <PrimaryButton
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="!px-4 !py-1.5 !text-[9px] rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                      className="!px-4 !py-1.5 !text-[9px] rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     >
                       CHỌN ẢNH TỪ THIẾT BỊ
                     </PrimaryButton>
@@ -229,7 +229,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                         setImageSrc(null);
                         if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
-                      className="px-6 py-2 bg-[#F9F9F9] border-2 border-black/10 rounded-full text-[10px] font-bold uppercase tracking-widest hover:border-black hover:bg-white transition-all text-gray-400 hover:text-black"
+                      className="px-6 py-2 bg-[#F9F9F9] border-2 border-black rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all text-black/30 hover:text-black"
                     >
                       PHỤC HỒI MẶC ĐỊNH
                     </button>
@@ -240,7 +240,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                   </div>
 
                   {/* Preview / Cropping Frame */}
-                  <div className="relative w-full h-[320px] bg-white rounded-3xl border-2 border-black overflow-hidden flex items-center justify-center group">
+                  <div className="relative w-full h-[320px] bg-[#fafafa] rounded-xl border-2 border-black overflow-hidden flex items-center justify-center group">
                     {imageSrc ? (
                       <div className="relative w-full h-full">
                         <Cropper
@@ -253,8 +253,8 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                           onZoomChange={setZoom}
                         />
                         {/* Zoom Control Overlay */}
-                        <div className="absolute bottom-4 left-4 right-4 bg-white p-3 rounded-2xl border-2 border-black flex items-center gap-4 z-10">
-                          <span className="text-[10px] font-black text-black">THU PHÓNG</span>
+                        <div className="absolute bottom-4 left-4 right-4 bg-white p-3 rounded-xl border-2 border-black flex items-center gap-4 z-10">
+                          <span className="text-[9px] font-black text-black uppercase tracking-widest">THU PHÓNG</span>
                           <input
                             type="range"
                             value={zoom}
@@ -311,7 +311,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                       if (fieldErrors.nickname) setFieldErrors(prev => ({ ...prev, nickname: "" }));
                     }}
                     maxLength={30}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? 'border-red-500 bg-red-50' : 'border-black'} rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm`}
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? 'border-red-500 bg-red-50' : 'border-black'} rounded-xl font-bold focus:outline-none focus:bg-white transition-all text-sm`}
                     placeholder="Nhập bút danh mới..."
                   />
                   {fieldErrors.nickname && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{fieldErrors.nickname}</p>}
@@ -323,7 +323,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     maxLength={200}
-                    className="w-full px-6 py-3 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-4 focus:ring-black/5 transition-all text-sm min-h-[120px] resize-none"
+                    className="w-full px-6 py-3 border-2 border-black rounded-xl font-bold focus:outline-none focus:bg-white transition-all text-sm min-h-[120px] resize-none"
                     placeholder="Hãy chia sẻ một chút về bản thân bạn..."
                   />
                   <div className="flex justify-end">
@@ -346,21 +346,20 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                       setIsOpen(false);
                       setImageSrc(null);
                     }}
-                    className="flex-1 py-3 border-2 border-black text-black font-bold uppercase tracking-widest rounded-xl hover:bg-gray-100 transition-all text-sm"
+                    className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded-xl hover:bg-gray-100 transition-all text-[10px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
                     HỦY
                   </button>
                   <PrimaryButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
+                    className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
                     {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                        ĐANG LƯU...
-                      </>
-                    ) : "LƯU THAY ĐỔI"}
+                      <>ĐANG LƯU...</>
+                    ) : (
+                      <>LƯU THAY ĐỔI</>
+                    )}
                   </PrimaryButton>
                 </div>
               </form>

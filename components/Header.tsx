@@ -136,7 +136,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`block px-6 py-3 text-lg font-normal font-ganh transition-colors ${className}`}
+        className={`block px-6 py-3 text-lg font-bold font-ganh transition-all ${className}`}
         style={{
           backgroundColor: isHovered ? "black" : "transparent",
           color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
@@ -154,7 +154,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`w-full block px-6 py-3 text-lg font-normal font-ganh transition-colors text-left ${className}`}
+        className={`w-full block px-6 py-3 text-lg font-bold font-ganh transition-all text-left ${className}`}
         style={{
           backgroundColor: isHovered ? "black" : "transparent",
           color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
@@ -190,7 +190,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
             
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center text-black active:scale-95 transition-all hover:bg-black hover:text-white group"
+              className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center text-black active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all hover:bg-black hover:text-white group"
               aria-label="Mở menu"
             >
               <div className="flex flex-col gap-[4px] items-center">
@@ -223,14 +223,14 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                     Đồng ngôn
                     <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
                  </Link>
-                 <button 
-                   onClick={() => setIsMobileMenuOpen(false)}
-                   className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center active:scale-95 transition-all hover:bg-black hover:text-white group"
-                 >
-                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                     <path d="M18 6L6 18M6 6l12 12" />
-                   </svg>
-                 </button>
+                  <button 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-black hover:text-white group"
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
               </div>
 
               {/* Menu Content */}
@@ -287,7 +287,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                            </Link>
                           </>
                         )}
-                        <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
+                        <Link href={`/profile?id=${user?.id}`} onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
                            Hồ sơ cá nhân
                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
@@ -300,16 +300,16 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
                         
-                        <button onClick={handleLogout} className="mt-8 w-full py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all hover:bg-red-500 hover:text-white shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]">
+                        <button onClick={handleLogout} className="mt-8 w-full py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] transition-all hover:bg-red-500 hover:text-white">
                            Đăng xuất
                         </button>
                       </>
                     ) : (
                       <div className="flex flex-col gap-4 mt-auto">
-                        <Link href="/dang-nhap" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-black text-white text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all border-2 border-black hover:opacity-90">
+                        <Link href="/dang-nhap" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-black text-white text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black hover:opacity-90">
                            Đăng nhập
                         </Link>
-                        <Link href="/dang-ky" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-white text-black border-2 border-black text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:scale-95 transition-all hover:bg-gray-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <Link href="/dang-ky" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-white text-black border-2 border-black text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5">
                            Tạo tài khoản
                         </Link>
                       </div>
@@ -331,18 +331,18 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                       key={link.href}
                       href={link.href}
                       className={`
-                        relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center
+                        relative px-4 sm:px-6 py-2 transition-all duration-200 flex items-center justify-center
                         ${showActiveState ? "text-white" : "text-black hover:opacity-70"}
                       `}
                     >
                     {showActiveState && (
                       <m.div
                         layoutId="active-pill"
-                        className="absolute inset-0 bg-black rounded-full"
+                        className="absolute inset-0 bg-black border-2 border-black rounded-xl"
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                       />
                     )}
-                    <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${showActiveState ? "text-white" : "text-black"}`}>
+                    <span className={`font-ganh font-bold text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${showActiveState ? "text-white" : "text-black"}`}>
                       {link.name}
                     </span>
                   </Link>
@@ -355,18 +355,18 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                   <button
                     onClick={() => user ? setIsDropdownOpen(!isDropdownOpen) : router.push("/dang-nhap")}
                   className={`
-                    relative px-4 sm:px-6 py-2 rounded-full transition-colors duration-200 flex items-center justify-center gap-2
+                    relative px-4 sm:px-6 py-2 transition-all duration-200 flex items-center justify-center gap-2
                     ${mounted && isUserSectionActive ? "text-white" : "text-black hover:opacity-70"}
                   `}
                 >
                   {mounted && isUserSectionActive && (
                     <m.div
                       layoutId="active-pill"
-                      className="absolute inset-0 bg-black rounded-full"
+                      className="absolute inset-0 bg-black border-2 border-black rounded-xl"
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <span className={`font-ganh font-normal text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"} ${unreadCount > 0 && !(mounted && isUserSectionActive) ? 'underline decoration-red-500 decoration-2 underline-offset-4' : ''}`}>
+                  <span className={`font-ganh font-bold text-xl md:text-2xl tracking-wide leading-none relative z-10 whitespace-nowrap ${mounted && isUserSectionActive ? "text-white" : "text-black"} ${unreadCount > 0 && !(mounted && isUserSectionActive) ? 'underline decoration-red-500 decoration-2 underline-offset-4' : ''}`}>
                     {nickname || "Tài khoản"}
                   </span>
                   {user && (
@@ -386,7 +386,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-2xl shadow-xl py-2 z-50 overflow-hidden flex flex-col"
+                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] py-2 z-50 overflow-hidden flex flex-col"
                     >
                       {role === "admin" && (
                         <>
@@ -400,7 +400,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                         </>
                       )}
                       <MenuLink 
-                        href="/profile" 
+                        href={`/profile?id=${user?.id}`} 
                         onClick={() => setIsDropdownOpen(false)}
                         className="border-b border-black/10"
                       >

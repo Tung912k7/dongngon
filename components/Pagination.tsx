@@ -31,12 +31,11 @@ export default function Pagination({
         <button
           key={i}
           onClick={() => onPageChange(i)}
-          className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-all font-bold ${
+          className={`w-10 h-10 flex items-center justify-center rounded-lg border-2 transition-all font-black text-sm ${
             currentPage === i
-              ? "bg-black border-black"
-              : "bg-white text-black border-black hover:bg-gray-100"
+              ? "bg-black border-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              : "bg-white text-black border-black hover:bg-black hover:text-white hover:-translate-y-0.5 active:translate-y-0"
           }`}
-          style={{ color: currentPage === i ? "white" : "black" }}
         >
           {i}
         </button>
@@ -50,10 +49,10 @@ export default function Pagination({
       <button
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className={`flex items-center gap-1 px-4 py-2 rounded-full border-2 border-black font-bold transition-all ${
+        className={`flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-black font-black text-xs uppercase tracking-widest transition-all ${
           currentPage === 1
             ? "opacity-30 cursor-not-allowed"
-            : "bg-white text-black hover:bg-gray-100"
+            : "bg-white text-black hover:bg-black hover:text-white hover:-translate-y-0.5"
         }`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
@@ -73,10 +72,10 @@ export default function Pagination({
       <button
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className={`flex items-center gap-1 px-4 py-2 rounded-full border-2 border-black font-bold transition-all ${
+        className={`flex items-center gap-1 px-4 py-2 rounded-lg border-2 border-black font-black text-xs uppercase tracking-widest transition-all ${
           currentPage === totalPages
             ? "opacity-30 cursor-not-allowed"
-            : "bg-white text-black hover:bg-gray-100"
+            : "bg-white text-black hover:bg-black hover:text-white hover:-translate-y-0.5"
         }`}
       >
         <span>Sau</span>

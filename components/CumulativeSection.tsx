@@ -42,9 +42,9 @@ const CumulativeSection = () => {
 
   return (
     <section ref={containerRef} className="relative w-full bg-black text-white h-[400vh] sm:h-[400dvh]">
-      <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-[#F5F5F5] to-transparent z-20 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-white to-transparent z-20 pointer-events-none"></div>
 
-      <div className="sticky top-0 h-[100dvh] min-h-[600px] w-full flex flex-col md:flex-row overflow-hidden">
+      <div className="sticky top-0 h-[100dvh] min-h-[100dvh] w-full flex flex-col md:flex-row lg:overflow-hidden">
 
         <aside className="hidden md:flex flex-col w-24 lg:w-32 h-full z-30 shrink-0 border-r border-white/10 bg-black">
           <Link
@@ -80,7 +80,7 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsAbout,
               zIndex: zIndexAbout,
             }}
-            className="absolute inset-0 flex items-center justify-center px-4 md:px-12 lg:px-20 pt-20 md:pt-0"
+            className="absolute inset-0 flex items-start md:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-40 sm:pt-24 md:pt-0 overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
             <div className="w-full max-w-5xl">
               <AboutContent />
@@ -94,7 +94,7 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsContribution,
               zIndex: zIndexContribution,
             }}
-            className="absolute inset-0 flex items-center justify-center px-4 md:px-12 lg:px-20 pt-20"
+            className="absolute inset-0 flex items-start md:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 sm:pt-24 md:pt-0 overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
             <div className="w-full max-w-5xl">
               <ContributionContent />
@@ -108,7 +108,7 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsPopular,
               zIndex: zIndexPopular,
             }}
-            className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-12 lg:px-20 pt-20 md:pt-[10vh] lg:pt-[12vh]"
+            className="absolute inset-0 flex flex-col items-start md:items-center justify-start md:justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-20 sm:pt-24 md:pt-[10vh] lg:pt-[12vh] overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
             <div className="w-full max-w-6xl">
               <PopularContent />

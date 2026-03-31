@@ -147,18 +147,52 @@ export default async function ProfilePage({
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Person",
+                "name": finalProfile.nickname,
+                "description": finalProfile.description || `Thành viên của cộng đồng sáng tác Đồng ngôn.`,
+                "image": finalProfile.avatar_url,
+                "url": `https://dongngon.vercel.app/profile?id=${finalProfile.id}`
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Trang chủ",
+                    "item": "https://dongngon.vercel.app"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Hồ sơ",
+                    "item": `https://dongngon.vercel.app/profile?id=${finalProfile.id}`
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
       <section className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Sidebar */}
-        <ProfileSidebar profile={finalProfile} isOwner={isOwner} currentUser={currentUser} />
+        <ProfileSidebar key={finalProfile.id} profile={finalProfile} isOwner={isOwner} currentUser={currentUser} />
 
         {/* Main Content */}
-        <div className="flex-1 w-full bg-white border-2 border-black rounded-[3rem] overflow-hidden">
+        <div className="flex-1 w-full bg-white border-2 border-black rounded-xl overflow-hidden">
           
           {/* Created Works Section */}
-          <div className="p-10 pb-0">
-            <div className="flex justify-between items-end mb-10 border-b-2 border-black pb-4">
-              <h2 className="text-3xl font-black uppercase tracking-tighter">TÁC PHẨM ĐÃ TẠO</h2>
+          <div className="p-6 md:p-10 pb-0">
+            <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
+              <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">TÁC PHẨM ĐÃ TẠO</h2>
               {isOwner && createdWorks && createdWorks.length > 0 && <CreateWorkModal />}
             </div>
             <div className="flex flex-col gap-4">
@@ -167,13 +201,13 @@ export default async function ProfilePage({
                   <WorkLibraryItem key={work.id} work={work} isOwner={isOwner} />
                 ))
               ) : (
-                <div className="w-full py-20 border-2 border-dashed border-black/10 rounded-[3rem] flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
-                  <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 opacity-20">
+                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
+                  <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-20">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                   </div>
-                  <p className="italic font-bold text-gray-400/40 uppercase tracking-[0.2em] text-[10px]">
+                  <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
                     {isOwner ? "Bạn chưa tạo tác phẩm nào" : "Tác giả chưa có tác phẩm công khai"}
                   </p>
                   {isOwner && <CreateWorkModal />}
@@ -182,15 +216,15 @@ export default async function ProfilePage({
             </div>
           </div>
 
-          <div className="p-10 pt-20">
-            <div className="flex justify-between items-end mb-10 border-b-2 border-black pb-4">
-              <h2 className="text-3xl font-black uppercase tracking-tighter">ĐÓNG GÓP CỦA TÔI</h2>
+          <div className="p-6 md:p-10 pt-16">
+            <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
+              <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">ĐÓNG GÓP CỦA TÔI</h2>
               {isOwner && contributedWorksList && contributedWorksList.length > 0 && (
                 <LinkedButton 
                   href="/kho-tang"
-                  className="!rounded-full !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                  className="!rounded-xl !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                 >
-                  ĐÓNG GÓP THÊM
+                  📖 ĐÓNG GÓP THÊM
                 </LinkedButton>
               )}
             </div>
@@ -200,19 +234,19 @@ export default async function ProfilePage({
                   <WorkLibraryItem key={work.id} work={work} isOwner={false} />
                 ))
               ) : (
-                <div className="w-full py-20 border-2 border-dashed border-black/10 rounded-[3rem] flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
-                  <div className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 opacity-20">
+                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
+                  <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-20">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                     </svg>
                   </div>
-                  <p className="italic font-bold text-gray-400/40 uppercase tracking-[0.2em] text-[10px]">
+                  <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
                     {isOwner ? "Bạn chưa có đóng góp nào" : "Chưa có đóng góp công khai nào"}
                   </p>
                   {isOwner && (
                     <LinkedButton 
                       href="/kho-tang"
-                      className="!px-10 !py-3 !rounded-full !text-xs !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                      className="!px-8 !py-3 !rounded-xl !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                     >
                       ĐÓNG GÓP NGAY
                     </LinkedButton>

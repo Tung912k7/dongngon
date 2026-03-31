@@ -38,6 +38,7 @@ export default function SettingsClient({
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[calc(100vh-100px)]">
+
       <style dangerouslySetInnerHTML={{__html: `
         @media (min-width: 1024px) {
           .settings-sidebar {

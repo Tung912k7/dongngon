@@ -16,13 +16,16 @@ export const TagButton = memo(({
   return (
     <span
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`border border-black rounded-full px-4 py-2 text-center text-sm overflow-hidden text-ellipsis whitespace-nowrap transition-colors cursor-pointer tag tracking-tight ${className}`}
-      style={{
-        backgroundColor: isHovered ? "black" : "white",
-        color: isHovered ? "white" : "black",
-      }}
+      className={`
+        border-2 border-black bg-white text-black
+        rounded-lg px-4 py-1.5 
+        text-center text-[11px] font-black uppercase tracking-wider
+        overflow-hidden text-ellipsis whitespace-nowrap 
+        transition-all duration-200 cursor-pointer 
+        hover:bg-black hover:text-white hover:-translate-y-0.5
+        active:translate-y-0
+        ${className}
+      `}
     >
       {children}
     </span>

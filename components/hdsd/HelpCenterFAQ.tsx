@@ -29,17 +29,17 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
         return (
           <div
             key={idx}
-            className="border border-neutral-200 rounded-2xl bg-white overflow-hidden transition-all duration-200"
+            className="border-2 border-black rounded-xl bg-white overflow-hidden"
           >
             <button
               id={`faq-item-${idx}`}
               type="button"
               onClick={() => toggle(idx)}
-              className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer group"
+              className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer group hover:bg-neutral-50 transition-colors"
               aria-expanded={isOpen}
               aria-controls={`faq-answer-${idx}`}
             >
-              <span className="text-base text-neutral-800 leading-relaxed pr-4 italic">
+              <span className="text-lg md:text-xl font-ganh font-bold text-neutral-900 leading-tight pr-4 uppercase tracking-tight">
                 {item.question}
               </span>
               {/* Chevron */}

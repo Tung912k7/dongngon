@@ -68,7 +68,7 @@ export default async function WorkPage({
     // 1. Fetch Work Details
     supabase
       .from("works")
-      .select("id, title, status, limit_type, sub_category, privacy, created_by, age_rating, author_nickname, description")
+      .select("id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description")
       .eq("id", id)
       .single(),
     
@@ -129,17 +129,21 @@ export default async function WorkPage({
   const isPrivate = work.privacy?.toLowerCase() === "private";
   if (isPrivate && (!user || user.id !== work.created_by)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-gray-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-          </svg>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
+        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
+          <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">Tác phẩm riêng tư</h1>
+          <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+            Bạn đang cố gắng truy cập địa hạt riêng tư của tác giả. Chỉ người sở hữu mới có quyền vào đây.
+          </p>
+          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+            Quay lại trang chủ
+          </Link>
         </div>
-        <h1 className="text-2xl font-bold mb-2">Tác phẩm riêng tư</h1>
-        <p className="text-gray-500 mb-8 max-w-xs">Bạn không có quyền truy cập vào nội dung này.</p>
-        <Link href="/kho-tang" className="px-6 py-2 bg-black text-white rounded-full font-bold">
-          Quay lại trang chủ
-        </Link>
       </div>
     );
   }
@@ -149,17 +153,19 @@ export default async function WorkPage({
   if (ageRating && ageRating.toLowerCase() !== "all") {
     if (!user) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-gray-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-            </svg>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
+          <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
+            <div className="w-16 h-16 bg-literary-gold text-black border-2 border-black rounded-lg flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-2xl font-black">{ageRating}</span>
+            </div>
+            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">Xác nhận độ tuổi</h1>
+            <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+              Tác phẩm này được giới hạn cho độ tuổi {ageRating}. Vui lòng đăng nhập để tiếp tục.
+            </p>
+            <Link href="/dang-nhap" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+              Đăng nhập
+            </Link>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Giới hạn độ tuổi</h1>
-          <p className="text-gray-500 mb-8 max-w-xs">Tác phẩm này được giới hạn cho độ tuổi {ageRating}. Vui lòng đăng nhập để xác nhận.</p>
-          <Link href="/dang-nhap" className="px-6 py-2 bg-black text-white rounded-full font-bold">
-            Đăng nhập
-          </Link>
         </div>
       );
     }
@@ -170,15 +176,19 @@ export default async function WorkPage({
     // Admin bypass optionally? We can just do strictly age for everyone except maybe created_by
     if (user.id !== work.created_by && !isOldEnough(age, ageRating)) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
-            <span className="text-2xl font-black text-red-500">{ageRating}</span>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-red-50">
+          <div className="max-w-sm w-full bg-white border-2 border-red-600 p-10 rounded-xl flex flex-col items-center transition-all shadow-[8px_8px_0px_0px_rgba(220,38,38,0.1)]">
+            <div className="w-16 h-16 bg-red-600 text-white rounded-lg flex items-center justify-center mb-6">
+               <span className="text-3xl font-black">{ageRating}</span>
+            </div>
+            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-red-600">Dừng bước!</h1>
+            <p className="text-red-950/60 font-medium mb-8 text-sm leading-relaxed">
+              Bạn chưa đủ tuổi để truy cập nội dung này. Quy tắc giới hạn {ageRating}+ được thực thi nghiêm ngặt.
+            </p>
+            <Link href="/kho-tang" className="w-full py-3 bg-red-600 text-white border-2 border-red-600 rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(220,38,38,0.4)] active:translate-x-0 active:translate-y-0 transition-all">
+              Quay lại an toàn
+            </Link>
           </div>
-          <h1 className="text-2xl font-bold mb-2 text-red-600">Nội dung giới hạn độ tuổi</h1>
-          <p className="text-gray-500 mb-8 max-w-xs">Bạn chưa đủ tuổi để xem tác phẩm này.</p>
-          <Link href="/kho-tang" className="px-6 py-2 bg-black text-white rounded-full font-bold">
-            Quay lại trang chủ
-          </Link>
         </div>
       );
     }
@@ -202,45 +212,83 @@ export default async function WorkPage({
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "CreativeWork",
-            "name": work.title,
-            "author": {
-              "@type": "Person",
-              "name": work.author_nickname
-            },
-            "genre": work.sub_category,
-            "inLanguage": "vi",
-            "description": work.description || `Tác phẩm ${work.title} thuộc thể loại ${work.sub_category} trên Đồng Ngôn.`,
-            "url": `https://dongngon.vercel.app/work/${work.id}`,
-            "isPartOf": {
-              "@type": "WebSite",
-              "@id": "https://dongngon.vercel.app/#website"
-            },
-            "contributor": {
-              "@type": "QuantitativeValue",
-              "value": uniqueContributors,
-              "unitText": "người đóng góp"
-            },
-            "creativeWorkStatus": isCompleted ? "Published" : "Draft",
-            "accessMode": "textual",
-            "interactionStatistic": {
-              "@type": "InteractionCounter",
-              "interactionType": "https://schema.org/WriteAction",
-              "userInteractionCount": contributions.length
-            }
+            "@graph": [
+              {
+                "@type": "CreativeWork",
+                "name": work.title,
+                "author": {
+                  "@type": "Person",
+                  "name": work.author_nickname
+                },
+                "genre": work.sub_category,
+                "inLanguage": "vi",
+                "description": work.description || `Tác phẩm ${work.title} thuộc thể loại ${work.sub_category} trên Đồng Ngôn.`,
+                "url": `https://dongngon.vercel.app/work/${work.id}`,
+                "isPartOf": {
+                  "@type": "WebSite",
+                  "@id": "https://dongngon.vercel.app/#website"
+                },
+                "contributor": {
+                  "@type": "QuantitativeValue",
+                  "value": uniqueContributors,
+                  "unitText": "người đóng góp"
+                },
+                "creativeWorkStatus": isCompleted ? "Published" : "Draft",
+                "accessMode": "textual",
+                "interactionStatistic": {
+                  "@type": "InteractionCounter",
+                  "interactionType": "https://schema.org/WriteAction",
+                  "userInteractionCount": contributions.length
+                }
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Trang chủ",
+                    "item": "https://dongngon.vercel.app"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Kho tàng",
+                    "item": "https://dongngon.vercel.app/kho-tang"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": work.title,
+                    "item": `https://dongngon.vercel.app/work/${work.id}`
+                  }
+                ]
+              }
+            ]
           })
         }}
       />
-      <section className="mb-8 border-b pb-4">
+      <section className="mb-10 border-b-2 border-black pb-8">
         <Link
           href="/kho-tang"
-          className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block "
+          className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
         >
-          &larr; Quay lại
+          <span className="text-lg group-hover:-translate-x-1 transition-transform">&larr;</span> QUAY LẠI KHO TÀNG
         </Link>
-        <div className="flex justify-between items-start">
-            <div className="flex-grow">
-              <h1 className="text-3xl font-bold">{work.title}</h1>
+        <div className="flex justify-between items-start gap-6">
+            <div className="flex-grow space-y-4">
+              <h1 className="text-2xl md:text-3xl font-ganh font-bold leading-tight tracking-tight text-black break-words max-w-xl">{work.title}</h1>
+              <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.1em]">
+                <div className="flex items-center gap-2">
+                  <span className="font-black tracking-[0.2em] text-literary-gold bg-black px-2 py-0.5 rounded-sm">{work.category_type}</span>
+                  <span className="text-black/40 tracking-[0.2em]">{work.sub_category}</span>
+                </div>
+                <span className="text-black/10 text-xs">•</span>
+                <div className={`flex items-center gap-2 ${isCompleted ? "text-red-600" : "text-green-600"}`}>
+                   <div className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-red-600" : "bg-green-600 animate-pulse"}`} />
+                   <span>{isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}</span>
+                </div>
+              </div>
               <WorkOwnerControls 
                 workId={work.id} 
                 initialTitle={work.title} 
@@ -253,18 +301,6 @@ export default async function WorkPage({
                 isCompleted={isCompleted} 
                 contributorCount={uniqueContributors}
             />
-        </div>
-        
-
-        
-        <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-3">
-          {/* Trang thai */}
-          <div className="flex items-center text-[10px] whitespace-nowrap">
-            <span className="font-bold text-gray-400 uppercase tracking-[0.1em] mr-1.5">TRẠNG THÁI:</span>
-            <span className={`font-black uppercase tracking-tight ${isCompleted ? "text-red-600" : "text-green-600"}`}>
-              {isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}
-            </span>
-          </div>
         </div>
       </section>
 
@@ -280,11 +316,12 @@ export default async function WorkPage({
       {/* Editor - Sticky at bottom */}
       {!isCompleted && (
         <div className="sticky bottom-6">
-            <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+            <div className="bg-white p-5 rounded-xl border-2 border-black relative z-20">
                 <Editor 
                   workId={work.id} 
                   writingRule="1 câu"
-                  hinhThuc={work.sub_category} 
+                  hinhThuc={work.sub_category}
+                  categoryType={work.category_type}
                   user={user}
                   canContribute={canContribute}
                   blockedMessage={contributionBlockedMessage}

@@ -26,59 +26,60 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal Container */}
           <m.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white border-4 border-black rounded-[2.5rem] p-8 md:p-12 w-full max-w-2xl relative z-10 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            className="bg-white border-2 border-black p-0 w-full max-w-4xl relative z-10 rounded-xl overflow-hidden flex flex-col md:flex-row min-h-[500px]"
           >
-            {/* Background Accent */}
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-gray-50 rounded-full -z-10 opacity-50" />
-
-            <div className="flex flex-col gap-8">
-              {/* Header Info */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                    {work.type}
-                  </span>
-                  {work.hinh_thuc && (
-                    <span className="px-3 py-1 border-2 border-black text-black text-[10px] font-black uppercase tracking-widest rounded-full">
-                      {work.hinh_thuc}
+            {/* Sidebar: Metadata & Quick Actions */}
+            <div className="w-full md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 flex flex-col bg-white">
+              <div className="mb-auto space-y-8">
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Phân loại</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest">
+                      {work.type}
                     </span>
-                  )}
+                    {work.hinh_thuc && (
+                      <span className="px-3 py-1 border border-black text-black text-[10px] font-black uppercase tracking-widest">
+                        {work.hinh_thuc}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-black leading-tight uppercase tracking-tight italic">
-                  {work.title}
-                </h2>
 
-                <div className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-[11px]">
-                  <span>Bởi {work.author_nickname}</span>
-                  <span>•</span>
-                  <span>{work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}</span>
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Thông tin</p>
+                  <div className="space-y-3">
+                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                        <span className="text-black/40">Độ tuổi</span>
+                        <span>{work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}</span>
+                     </div>
+                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                        <span className="text-black/40">Quy tắc</span>
+                        <span>{work.rule || "N/A"}</span>
+                     </div>
+                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                        <span className="text-black/40">Trạng thái</span>
+                        <div className="flex items-center gap-2">
+                           <div className={`w-1.5 h-1.5 rounded-full ${
+                              work.status === "Hoàn thành" ? "bg-green-500" :
+                              work.status === "Đang viết" ? "bg-blue-500" :
+                              "bg-yellow-500"
+                           }`} />
+                           <span>{work.status}</span>
+                        </div>
+                     </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Description Content */}
-              <div className="min-h-[120px] max-h-[300px] overflow-y-auto pr-4 scrollbar-hide">
-                {work.description ? (
-                  <p className="text-lg md:text-xl font-medium text-gray-800 leading-relaxed font-be-vietnam italic">
-                    &ldquo;{work.description}&rdquo;
-                  </p>
-                ) : (
-                  <p className="text-gray-400 font-bold uppercase tracking-widest text-sm text-center py-8 border-2 border-dashed border-gray-100 rounded-3xl">
-                    Tác phẩm này chưa có lời dẫn.
-                  </p>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="mt-8 pt-8 border-t border-black/5 flex flex-col gap-3">
                 <button
                   onClick={() => {
                     const shareUrl = `${window.location.origin}/work/${work.id}`;
@@ -93,38 +94,64 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                       alert("Đã sao chép liên kết vào bộ nhớ tạm!");
                     }
                   }}
-                  className="flex-1 py-4 border-2 border-black text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-50 transition-all active:scale-95 text-xs sm:text-sm flex items-center justify-center gap-2"
+                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0-10.628a2.25 2.25 0 1 0 4.496-1.16 2.25 2.25 0 0 0-4.496 1.16Zm0 12.5a2.25 2.25 0 1 0 4.496-1.16 2.25 2.25 0 0 0-4.496 1.16Z" />
-                  </svg>
-                  CHIA SẺ
+                  SHARE
                 </button>
                 <button
                   onClick={() => {
                     router.push(`/work/${work.id}`);
                     onClose();
                   }}
-                  className="flex-1 py-4 bg-black text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-gray-800 transition-all active:scale-95 text-xs sm:text-sm flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black hover:bg-literary-gold hover:border-literary-gold hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                  </svg>
-                  THAM GIA
+                  ĐẾN TÁC PHẨM
                 </button>
               </div>
             </div>
 
-            {/* Close Button */}
-            <button 
-              onClick={onClose}
-              className="absolute top-6 right-6 md:top-8 md:right-8 text-black/20 hover:text-black transition-colors"
-              title="Đóng"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {/* Main Content: Title & Text */}
+            <div className="flex-1 p-8 md:p-14 flex flex-col relative">
+              {/* Close Button */}
+              <button 
+                onClick={onClose}
+                className="absolute top-6 right-6 text-black/20 hover:text-black transition-colors"
+                title="Đóng"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="flex-grow flex flex-col justify-center">
+                <div className="mb-10 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-[2px] bg-black" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">GIỚI THIỆU</span>
+                  </div>
+                  <h2 className="text-3xl md:text-6xl font-ganh font-bold text-black leading-[1.4] tracking-tight break-words pb-2">
+                    {work.title}
+                  </h2>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/60">
+                    Bởi {work.author_nickname}
+                  </p>
+                </div>
+
+                <div className="max-h-[300px] overflow-y-auto pr-6 scrollbar-hide">
+                  {work.description ? (
+                    <p className="text-lg md:text-2xl font-medium text-gray-800 leading-relaxed font-be-vietnam italic">
+                      &ldquo;{work.description}&rdquo;
+                    </p>
+                  ) : (
+                    <div className="py-12 border-2 border-dashed border-black/5 flex flex-col items-center justify-center text-center">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/20">
+                        Chưa có lời dẫn cho tác phẩm này.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </m.div>
         </div>
       )}

@@ -86,7 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('id, updated_at')
       .eq('privacy', 'Public')
       .order('updated_at', { ascending: false })
-      .limit(1000)
+      .limit(50000)
 
     if (works) {
       workPages = works.map((work) => ({

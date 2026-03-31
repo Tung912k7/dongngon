@@ -39,10 +39,10 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
   const [hashtags, setHashtags] = useState<string[]>(initialProfile.hashtags || []);
   const [hashtagInput, setHashtagInput] = useState("");
   const [avatarUrl, setAvatarUrl] = useState(initialProfile.avatar_url || "/webp file/default_avatar.webp");
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Image Upload & Crop State
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -114,7 +114,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
         hashtags, // hashtags
         profile.public_fields // publicFields
       );
-      
+
       if (result.success) {
         setAvatarUrl(finalAvatarUrl);
         setProfile((prev) => ({ ...prev, nickname, description, avatar_url: finalAvatarUrl, hashtags }));
@@ -142,17 +142,15 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
   };
 
   return (
-    <div className="w-full md:w-1/3 bg-white p-10 rounded-[4rem] border-2 border-black flex flex-col items-center shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] relative transition-all duration-500">
-      
-      {/* Title */}
-      <div className="mb-14 text-center">
-        <h1 className="text-5xl font-bold uppercase tracking-tight mb-3">HỒ SƠ</h1>
-        <div className="w-12 h-2.5 bg-black mx-auto"></div>
+    <div className="w-full md:w-1/3 bg-white p-6 md:p-10 rounded-xl border-2 border-black flex flex-col items-center relative transition-all duration-500">
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-ganh font-bold uppercase tracking-tight mb-2">HỒ SƠ</h1>
+        <div className="text-[10px] font-bold text-black/20 uppercase tracking-[0.5em] text-center">Identity</div>
       </div>
 
       {/* Avatar Section */}
-      <div className="relative group w-64 h-64 mb-16">
-        <div className={`w-full h-full border-2 border-black flex items-center justify-center overflow-hidden bg-white transition-all duration-300 ${isEditing ? 'ring-4 ring-black/5' : ''}`}>
+      <div className="relative group w-48 h-48 mb-12">
+        <div className={`w-full h-full border-2 border-black flex items-center justify-center overflow-hidden bg-[#fafafa] transition-all duration-300 ${isEditing ? 'ring-4 ring-black/5' : ''}`}>
           {imageSrc && isEditing ? (
             <div className="relative w-full h-full z-20">
               <Cropper
@@ -177,7 +175,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
           )}
 
           {isEditing && !imageSrc && (
-            <div 
+            <div
               onClick={() => fileInputRef.current?.click()}
               className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-10"
             >
@@ -201,8 +199,8 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               onChange={(e) => setZoom(Number(e.target.value))}
               className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
             />
-            <button 
-              onClick={() => { setImageSrc(null); if (fileInputRef.current) fileInputRef.current.value =""; }}
+            <button
+              onClick={() => { setImageSrc(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
               className="text-[10px] font-bold text-red-500 uppercase hover:underline"
             >
               Hủy
@@ -216,14 +214,14 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
       {/* Info Section */}
       <div className="w-full space-y-8 text-left px-2 mb-12">
         {(isOwner || profile.public_fields?.id !== false) && (
-          <div className="border-b border-gray-100 pb-2 flex justify-between items-end">
+          <div className="border-b-2 border-black/10 pb-4 mb-4 flex justify-between items-end">
             <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">MÃ ĐỊNH DANH</p>
-              <p className="text-xs font-mono text-gray-400 select-all truncate bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+              <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">MÃ ĐỊNH DANH</p>
+              <p className="text-xs font-mono text-black select-all truncate bg-gray-50 px-3 py-1.5 rounded-xl border-2 border-black">
                 {profile.id}
               </p>
             </div>
-            <button 
+            <button
               onClick={() => {
                 navigator.clipboard.writeText(profile.id);
                 alert("Đã sao chép mã định danh thành công!");
@@ -239,46 +237,46 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
         )}
 
         {(isOwner || profile.public_fields?.nickname !== false) && (
-          <div className="border-b border-gray-100 pb-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
+          <div className="border-b-2 border-black/10 pb-4 mb-4">
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
             {isEditing ? (
               <input
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="text-2xl font-bold text-black tracking-tight w-full bg-gray-50 border-2 border-black p-2 rounded-xl focus:outline-none"
+                className="text-xl font-ganh font-bold text-black tracking-tight w-full bg-white border-2 border-black px-3 py-2 rounded-xl focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                 placeholder="Nhập bút danh..."
                 maxLength={30}
               />
             ) : (
-              <p className="text-3xl font-bold text-black tracking-tight">{profile.nickname}</p>
+              <p className="text-3xl font-ganh font-bold text-black tracking-wide leading-none">{profile.nickname}</p>
             )}
           </div>
         )}
 
         {(isOwner || profile.public_fields?.email !== false) && profile.email && (
-          <div className="border-b border-gray-100 pb-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">EMAIL</p>
+          <div className="border-b-2 border-black/10 pb-4 mb-4">
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">EMAIL</p>
             <p className="text-sm font-medium text-black/80">{profile.email}</p>
           </div>
         )}
 
         {(isOwner || profile.public_fields?.birthday !== false) && profile.birthday && (
-          <div className="border-b border-gray-100 pb-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">NGÀY SINH</p>
+          <div className="border-b-2 border-black/10 pb-4 mb-4">
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">NGÀY SINH</p>
             <p className="text-sm font-medium text-black/80">{formatDate(profile.birthday)}</p>
           </div>
         )}
-        
+
         {(isOwner || profile.public_fields?.description !== false) && (
-          <div className="border-b border-gray-100 pb-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2">GIỚI THIỆU</p>
+          <div className="border-b-2 border-black/10 pb-4 mb-4">
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">GIỚI THIỆU</p>
             {isEditing ? (
               <div className="relative">
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="text-sm font-medium text-black/80 w-full bg-gray-50 border-2 border-black p-4 rounded-2xl focus:outline-none min-h-[120px] resize-none"
+                  className="text-sm font-medium text-black/80 w-full bg-white border-2 border-black p-4 rounded-xl focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all min-h-[120px] resize-none"
                   placeholder="Lời giới thiệu của bạn..."
                   maxLength={200}
                 />
@@ -296,8 +294,8 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
 
         {/* HASHTAGS SECTION */}
         {(isOwner || profile.public_fields?.hashtags !== false) && (
-          <div className="pb-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-3">HASHTAG</p>
+          <div className="pb-4">
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-3">HASHTAG</p>
             {isEditing ? (
               <div className="space-y-3">
                 <div className="flex gap-2">
@@ -321,16 +319,16 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                     placeholder="Thêm hashtag..."
                     maxLength={15}
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => {
-                        if (hashtagInput.trim() && hashtags.length < 5) {
-                          const tag = hashtagInput.trim().replace(/^#/, '');
-                          if (!hashtags.includes(tag)) {
-                            setHashtags([...hashtags, tag]);
-                          }
-                          setHashtagInput("");
+                      if (hashtagInput.trim() && hashtags.length < 5) {
+                        const tag = hashtagInput.trim().replace(/^#/, '');
+                        if (!hashtags.includes(tag)) {
+                          setHashtags([...hashtags, tag]);
                         }
+                        setHashtagInput("");
+                      }
                     }}
                     className="px-4 py-2 bg-black text-white rounded-xl font-bold text-xs"
                   >
@@ -339,9 +337,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {hashtags.map((tag, idx) => (
-                    <span key={idx} className="bg-gray-100 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight flex items-center gap-2 border border-black/5">
+                    <span key={idx} className="bg-white text-black px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight flex items-center gap-2 border-2 border-black transform transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
                       #{tag}
-                      <button onClick={() => setHashtags(hashtags.filter((_, i) => i !== idx))} className="hover:text-red-500 font-bold">×</button>
+                      <button onClick={() => setHashtags(hashtags.filter((_, i) => i !== idx))} className="hover:text-red-500 font-bold flex items-center">×</button>
                     </span>
                   ))}
                 </div>
@@ -351,7 +349,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               <div className="flex flex-wrap gap-2">
                 {profile.hashtags && profile.hashtags.length > 0 ? (
                   profile.hashtags.map((tag, idx) => (
-                    <span key={idx} className="bg-[#f5f5f5] text-teal-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-teal-100">
+                    <span key={idx} className="bg-white text-black px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border-2 border-black transform transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
                       #{tag}
                     </span>
                   ))
@@ -367,7 +365,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
       {/* Error Message */}
       <AnimatePresence>
         {error && (
-          <m.div 
+          <m.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -382,34 +380,34 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
       <div className="w-full space-y-4">
         {isOwner ? (
           isEditing ? (
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <button
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="flex-1 py-3 border-2 border-black text-black font-bold uppercase tracking-widest rounded-full hover:bg-gray-100 transition-all text-xs active:scale-95 disabled:opacity-50"
+                className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded-xl hover:bg-gray-50 active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] disabled:opacity-50"
               >
                 HỦY
               </button>
-              <PrimaryButton 
+              <PrimaryButton
                 onClick={handleSave}
                 disabled={isSubmitting}
-                className="flex-1 !py-3 !text-xs !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 {isSubmitting ? "ĐANG LƯU..." : "LƯU LẠI"}
               </PrimaryButton>
             </div>
           ) : (
-            <PrimaryButton 
+            <PrimaryButton
               onClick={() => setIsEditing(true)}
-              className="w-full !py-4 !text-sm !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+              className="w-full !py-3.5 !text-xs !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
             >
               CHỈNH SỬA HỒ SƠ
             </PrimaryButton>
           )
         ) : currentUser && (
-          <LinkedButton 
-            href="/profile" 
-            className="w-full !rounded-full !py-4 !text-[11px] !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+          <LinkedButton
+            href={`/profile?id=${currentUser.id}`}
+            className="w-full !rounded-xl !py-3.5 !text-[10px] !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
           >
             VỀ HỒ SƠ TÔI
           </LinkedButton>

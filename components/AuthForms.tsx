@@ -54,7 +54,7 @@ const InputField = ({
 
   return (
     <div className="mb-6 group">
-      <label className="block text-black text-lg mb-2 font-bold">{label}</label>
+      <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">{label}</label>
       <div className="relative">
         {type === "date" ? (
           <DateInput
@@ -63,7 +63,7 @@ const InputField = ({
               // Creating a synthetic event-like object to trigger the parent's generic handleChange
               onChange({ target: { name, value: val } } as React.ChangeEvent<HTMLInputElement>);
             }}
-            className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem]`}
+            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded-xl`}
           />
         ) : (
           <input 
@@ -74,7 +74,7 @@ const InputField = ({
             maxLength={maxLength}
             autoComplete={autoComplete}
             required={required}
-            className={`w-full px-5 py-3 border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none transition-all rounded-[1rem] ${isPassword ? 'pr-12' : ''}`}
+            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded-xl ${isPassword ? 'pr-12' : ''}`}
           />
         )}
         {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
@@ -123,23 +123,23 @@ const Checkbox = ({
         name={name}
         checked={checked} 
         onChange={onChange} 
-        className={`peer h-7 w-7 cursor-pointer appearance-none rounded-none border-[3px] ${error ? 'border-red-500 bg-red-50' : 'border-black'} checked:bg-black transition-all`} 
+        className={`peer h-6 w-6 cursor-pointer appearance-none rounded-sm border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} checked:bg-black transition-all`} 
       />
       <svg
-        className="absolute h-5 w-5 pointer-events-none hidden peer-checked:block text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute h-4 w-4 pointer-events-none hidden peer-checked:block text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="5"
+        strokeWidth="6"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     </div>
-    <div className="text-black text-base select-none">
-      <label htmlFor={name} className="cursor-pointer font-bold">{label}</label>
+    <div className="text-black text-sm select-none">
+      <label htmlFor={name} className="cursor-pointer font-bold uppercase tracking-tight text-[11px]">{label}</label>
       {error && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{error}</p>}
     </div>
   </div>
@@ -276,10 +276,10 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
+    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-bold text-black mb-2 italic">Hồ sơ</h1>
-        <div className="h-0.5 w-12 bg-black mx-auto" />
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">Đăng nhập</h1>
+        <div className="h-1 w-16 bg-black mx-auto" />
       </div>
       
       <div className="space-y-2">
@@ -377,10 +377,10 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
+    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-bold text-black mb-2 italic">Quên mật khẩu</h1>
-        <div className="h-0.5 w-12 bg-black mx-auto" />
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">Quên mật khẩu</h1>
+        <div className="h-1 w-16 bg-black mx-auto" />
       </div>
 
       <p className="text-center text-gray-500 mb-8 text-sm">
@@ -467,10 +467,10 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-12">
+    <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-5xl font-bold text-black mb-2 italic text-nowrap">Đổi mật khẩu</h1>
-        <div className="h-0.5 w-12 bg-black mx-auto" />
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">Đổi mật khẩu</h1>
+        <div className="h-1 w-16 bg-black mx-auto" />
       </div>
       
       <div className="space-y-2">
@@ -698,10 +698,11 @@ export function SignUpForm() {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center animate-fade-in">
         {/* Left Side: Form */}
-        <div className="w-full flex justify-center lg:justify-end -mt-12">
+        <div className="w-full flex justify-center lg:justify-end">
           <form onSubmit={handleSubmit} className="w-full max-w-lg">
-            <div className="text-center mb-6">
-              <h1 className="text-5xl font-bold text-black mb-2">Ghi danh</h1>
+            <div className="text-center mb-8">
+              <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">Ghi danh</h1>
+              <div className="h-1 w-16 bg-black mx-auto" />
             </div>
           
           <div className="space-y-4">

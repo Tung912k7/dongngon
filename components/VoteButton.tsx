@@ -60,8 +60,13 @@ export default function VoteButton({
 
   if (isCompleted) {
     return (
-      <div className="text-center text-gray-500 text-sm">
-        Tác phẩm đã hoàn thành ({count} phiếu bầu)
+      <div className="flex flex-col items-center gap-2">
+        <div className="px-6 py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] opacity-70">
+          Tác phẩm đã hoàn thành
+        </div>
+        <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
+          {count} Phiếu bầu • Quyết định tập thể
+        </p>
       </div>
     );
   }
@@ -89,20 +94,20 @@ export default function VoteButton({
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
-       {error && <span className="text-red-500 text-xs">{error}</span>}
+    <div className="flex flex-col items-end gap-2">
+       {error && <span className="text-red-600 font-bold text-[10px] uppercase tracking-tighter bg-red-50 px-2 py-0.5 border border-red-600 rounded-sm">{error}</span>}
       <button
         onClick={handleVote}
         disabled={hasVoted || isLoading}
-        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        className="group relative px-4 py-2 bg-white border-2 border-black rounded-xl transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:translate-0 disabled:shadow-none flex items-center gap-2"
       >
-        <span>🛑 Kết thúc tác phẩm</span>
-        <span className="bg-gray-800 text-white rounded-full text-xs px-2 py-0.5">
+        <span className="font-ganh text-[10px] font-bold uppercase tracking-widest">🛑 Kết thúc</span>
+        <span className="bg-black text-white rounded-md text-[9px] font-black px-1.5 py-0.5 transition-colors group-hover:bg-literary-gold group-hover:text-black">
           {count}/{threshold}
         </span>
       </button>
-      <p className="text-xs text-gray-400 max-w-xs text-center">
-        Tác phẩm sẽ tự động hoàn thành khi đủ {threshold} phiếu (hơn 1/2 số người đóng góp).
+      <p className="text-[9px] font-bold uppercase tracking-widest text-black/30 max-w-[180px] text-right leading-tight">
+        Cần {threshold} phiếu ({Math.floor((threshold/contributorCount)*100)}%) để đóng tác phẩm
       </p>
     </div>
   );

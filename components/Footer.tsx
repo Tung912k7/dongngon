@@ -39,7 +39,7 @@ export default function Footer() {
                 alt="Đồng ngôn Logo"
                 width={160}
                 height={160}
-                className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-sm"
+                className="w-32 h-32 md:w-40 md:h-40 object-contain"
               />
             </button>
 
@@ -87,6 +87,11 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
+                  <Link href="/ve-chung-toi" prefetch={false} className="transition-opacity hover:opacity-70">
+                    Về chúng tôi
+                  </Link>
+                </li>
+                <li>
                   <button
                     onClick={() => setIsDonateOpen(true)}
                     className="text-left transition-opacity hover:opacity-70"
@@ -99,7 +104,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="w-full border-t border-black/5 pt-6 pb-2 mt-10 md:mt-20">
+        <div className="w-full border-t-2 border-black pt-6 pb-2 mt-10 md:mt-20">
           <p className="mx-auto max-w-7xl px-8 text-center font-be-vietnam text-[13px] md:text-[14px] font-light tracking-[0.01em] text-[#2C2B29]/50">
             © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình <span className="text-[#2C2B29]/60">❤️</span>
           </p>
@@ -122,15 +127,15 @@ export default function Footer() {
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              className="relative bg-white border-4 border-black p-8 rounded-[2rem] shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] max-w-xs w-full flex flex-col items-center text-center"
+              className="relative bg-white border-4 border-black p-8 rounded-xl max-w-xs w-full flex flex-col items-center text-center"
             >
               <div className="mb-4 text-4xl animate-bounce">❤️</div>
-              <p className="text-2xl font-bold text-black italic">
+              <p className="text-2xl font-ganh font-bold text-black italic">
                 &quot;Yêu bé nhiều :33&quot;
               </p>
               <button 
                 onClick={() => setIsLoveOpen(false)}
-                className="mt-6 px-6 py-2 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-all active:scale-95"
+                className="mt-6 px-8 py-2 bg-black text-white font-ganh font-bold rounded-xl hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
               >
                 Đóng
               </button>
@@ -157,7 +162,7 @@ export default function Footer() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative bg-white p-8 rounded-lg shadow-xl max-w-sm w-full flex flex-col items-center"
+              className="relative bg-white p-8 rounded-xl border-4 border-black max-w-sm w-full flex flex-col items-center"
             >
               <button 
                 onClick={() => setIsDonateOpen(false)}
@@ -169,11 +174,11 @@ export default function Footer() {
                 </svg>
               </button>
 
-              <p className="text-center text-xl font-medium text-black mb-4">
+              <p className="text-center text-xl font-ganh font-bold text-black mb-4">
                 Cảm ơn bạn đã đồng hành cùng Đồng ngôn!
               </p>
               
-              <div className="w-64 h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
+              <div className="w-64 h-64 flex items-center justify-center border-2 border-black rounded-xl overflow-hidden">
                 <m.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}

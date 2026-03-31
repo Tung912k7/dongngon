@@ -41,29 +41,29 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
     <div className="w-full relative group">
       <Link
         href={`/work/${work.id}`}
-        className="flex items-center gap-4 p-4 sm:p-6 bg-white border-2 border-black rounded-2xl hover:bg-gray-50 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+        className="flex items-center gap-4 p-4 sm:p-5 bg-white border-2 border-black rounded-xl hover:bg-gray-50 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
       >
         {/* Status indicator */}
-        <div className={`w-2 h-10 rounded-full flex-shrink-0 ${
-          work.status === "Hoàn thành" ? "bg-green-500" :
-          work.status === "Đang viết" ? "bg-blue-500" :
-          "bg-yellow-500"
+        <div className={`w-1.5 h-12 rounded-sm flex-shrink-0 ${
+          work.status === "Hoàn thành" ? "bg-red-600" :
+          work.status === "Đang viết" ? "bg-green-600" :
+          "bg-literary-gold"
         }`} title={work.status} />
 
         {/* Content */}
         <div className="flex-grow min-w-0 pr-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-1">
-            <h3 className="text-lg font-bold text-black truncate tracking-tight">{work.title}</h3>
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-1">
+            <h3 className="text-xl font-ganh font-bold text-black truncate tracking-tight">{work.title}</h3>
             <div className="flex flex-wrap gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+              <span className="text-[9px] font-black uppercase tracking-widest text-literary-gold bg-black px-2 py-0.5 rounded-sm">
                 {work.type}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-black/30">
                 {work.hinh_thuc}
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+          <div className="flex items-center gap-2 text-[10px] text-black/40 font-bold uppercase tracking-widest">
              <span 
                onClick={(e) => {
                  e.preventDefault();
@@ -79,10 +79,10 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
              >
                {work.author_nickname}
              </span>
-             <span>•</span>
+             <span className="opacity-20">•</span>
              <span>{work.date}</span>
-             <span>•</span>
-             <span className="bg-black/5 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
+             <span className="opacity-20">•</span>
+             <span className="bg-black/5 px-1.5 py-0.5 rounded-sm text-[9px]">
                 {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
              </span>
           </div>

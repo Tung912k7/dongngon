@@ -5,8 +5,7 @@ import { m } from "framer-motion";
 export function WorkCardSkeleton() {
   return (
     <div 
-        style={{ border: '2px solid black', borderRadius: '2.5rem' }}
-        className="w-full h-[360px] p-8 flex flex-col items-start gap-4 bg-white relative overflow-hidden shadow-[10px_10px_0px_0px_rgba(0,0,0,0.05)]"
+        className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded-xl relative overflow-hidden"
     >
       {/* Animated Shine Effect */}
       <m.div
@@ -24,21 +23,21 @@ export function WorkCardSkeleton() {
 
       {/* Title Placeholder */}
       <div className="flex flex-col gap-3 w-full">
-        <div className="h-8 w-11/12 bg-black/5 rounded-full" />
-        <div className="h-8 w-3/4 bg-black/5 rounded-full" />
+        <div className="h-8 w-11/12 bg-black/5 rounded-md" />
+        <div className="h-8 w-3/4 bg-black/5 rounded-md" />
       </div>
 
       {/* Metadata Placeholder */}
       <div className="flex flex-col gap-2 mt-2 w-full">
-        <div className="h-4 w-1/2 bg-black/5 rounded-full" />
-        <div className="h-4 w-1/3 bg-black/5 rounded-full" />
+        <div className="h-4 w-1/2 bg-black/5 rounded-md" />
+        <div className="h-4 w-1/3 bg-black/5 rounded-md" />
       </div>
 
       {/* Tags Placeholder */}
       <div className="mt-auto flex gap-2 pt-4 w-full">
-        <div className="h-6 w-20 bg-black/5 rounded-full" />
-        <div className="h-6 w-16 bg-black/5 rounded-full" />
-        <div className="h-6 w-24 bg-black/5 rounded-full" />
+        <div className="h-6 w-20 bg-black/5 rounded-md" />
+        <div className="h-6 w-16 bg-black/5 rounded-md" />
+        <div className="h-6 w-24 bg-black/5 rounded-md" />
       </div>
     </div>
   );

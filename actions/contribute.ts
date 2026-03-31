@@ -48,7 +48,7 @@ export async function submitContribution(workId: string, content: string, newLin
   // 1.1 Check Work Details (including limit_type)
   const { data: work } = await supabase
     .from("works")
-    .select("status, limit_type, sub_category, created_by, title, age_rating")
+    .select("status, limit_type, category_type, sub_category, created_by, title, age_rating")
     .eq("id", workId)
     .single();
 
@@ -70,6 +70,8 @@ export async function submitContribution(workId: string, content: string, newLin
     return { error: readOnlyContributionError };
   }
 
+  const isPoetry = work.category_type === "Thơ";
+
   // The product now supports only the sentence rule.
   // Treat any legacy stored values as sentence mode until normalized by migration.
   const normalizedLimitType = "sentence";
@@ -84,7 +86,8 @@ export async function submitContribution(workId: string, content: string, newLin
   }
 
   // 1.2 Sanitize content for the active sentence rule.
-  const sanitizedContent = sanitizeInput(content, true);
+  // Poetry (Thơ) does not require sentence-ending punctuation
+  const sanitizedContent = sanitizeInput(content, !isPoetry);
 
   // 2. Validate Content
   if (!sanitizedContent || sanitizedContent.length === 0) {

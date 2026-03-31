@@ -47,7 +47,7 @@ export default function NotificationModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className={`relative z-10 w-full max-w-sm ${bgColor} border-2 ${borderColor} rounded-2xl p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
+            className={`relative z-10 w-full max-w-sm ${bgColor} border-2 ${borderColor} rounded-xl p-6`}
           >
             <div className="text-center">
               {type === "error" && (
@@ -65,7 +65,7 @@ export default function NotificationModal({
                 </div>
               )}
               
-              <h3 className={`text-xl font-bold mb-2 uppercase tracking-tight ${iconColor}`}>
+              <h3 className={`text-xl font-ganh font-bold mb-2 uppercase tracking-tight ${iconColor}`}>
                 {title || (type === "error" ? "Lỗi" : type === "success" ? "Thành công" : "Thông báo")}
               </h3>
                <p className="text-gray-700 text-sm font-medium leading-relaxed whitespace-pre-line">
@@ -75,7 +75,7 @@ export default function NotificationModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-6 w-full py-2 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:opacity-80 transition-all border-2 border-black"
+                className="mt-6 w-full py-3 bg-black text-white text-xs font-bold font-ganh uppercase tracking-widest rounded-xl hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black"
               >
                 ĐÃ HIỂU
               </button>
