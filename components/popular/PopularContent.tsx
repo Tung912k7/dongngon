@@ -98,7 +98,7 @@ const PopularContent = () => {
       </div>
 
       {/* Horizontal Scroll Layout for Mobile / Grid for Desktop */}
-      <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-10 lg:gap-12 w-full max-w-6xl mx-auto px-6 md:px-8 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory no-scrollbar pb-10 md:pb-0 relative z-10 transition-all">
+      <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-10 lg:gap-12 w-full max-w-6xl mx-auto px-6 md:px-8 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory no-scrollbar pb-10 md:pb-0 pt-6 relative z-10 transition-all mt-12 md:mt-0">
         {popularWorks.map((work, index) => (
           <m.div
             key={work.id}

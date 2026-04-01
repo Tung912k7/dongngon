@@ -80,9 +80,9 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsAbout,
               zIndex: zIndexAbout,
             }}
-            className="absolute inset-0 flex items-start md:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-40 sm:pt-24 md:pt-0 overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
+            className="absolute inset-0 flex items-start md:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-[22vh] sm:pt-24 overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
-            <div className="w-full max-w-5xl">
+            <div className="w-full max-w-none">
               <AboutContent />
             </div>
           </m.div>
@@ -94,9 +94,9 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsContribution,
               zIndex: zIndexContribution,
             }}
-            className="absolute inset-0 flex items-start md:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-8 sm:pt-24 md:pt-0 overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
+            className="absolute inset-0 flex items-start md:items-start lg:items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-16 sm:pt-24 md:pt-[15vh] overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
-            <div className="w-full max-w-5xl">
+            <div className="w-full max-w-none">
               <ContributionContent />
             </div>
           </m.div>
@@ -108,7 +108,7 @@ const CumulativeSection = () => {
               pointerEvents: pointerEventsPopular,
               zIndex: zIndexPopular,
             }}
-            className="absolute inset-0 flex flex-col items-start md:items-center justify-start md:justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-20 sm:pt-24 md:pt-[10vh] lg:pt-[12vh] overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
+            className="absolute inset-0 flex flex-col items-start md:items-center justify-start md:justify-center px-4 sm:px-8 md:px-12 lg:px-20 pt-[25vh] sm:pt-24 md:pt-[18vh] lg:pt-[22vh] overflow-y-auto lg:overflow-y-visible no-scrollbar pb-8"
           >
             <div className="w-full max-w-6xl">
               <PopularContent />
