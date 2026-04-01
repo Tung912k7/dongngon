@@ -106,9 +106,9 @@ export default async function ProfilePage({
     .eq("created_by", targetId)
     .order("created_at", { ascending: false });
 
-  // Privacy Filter: If not owner, only show Public works
+  // Privacy & Test Filter: If not owner, only show Public AND non-test works
   if (!isOwner) {
-    worksQuery = worksQuery.ilike("privacy", "public");
+    worksQuery = worksQuery.ilike("privacy", "public").eq("is_test", false);
   }
 
   const { data: rawCreatedWorks } = await worksQuery;
@@ -130,9 +130,10 @@ export default async function ProfilePage({
 
         if (!finalWork || !finalWork.id || finalWork.created_by === targetId) return false;
         
-        // Privacy check for public visitors
-        if (!isOwner && finalWork.privacy !== "public" && finalWork.privacy !== "Public" && finalWork.privacy !== "PUBLIC") {
-          return false;
+        // Privacy & Test check for public visitors
+        if (!isOwner) {
+          const isPublic = ["public", "Public", "PUBLIC"].includes(finalWork.privacy);
+          if (!isPublic || finalWork.is_test || c.is_test) return false;
         }
 
         return true;

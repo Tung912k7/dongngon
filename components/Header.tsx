@@ -136,9 +136,9 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`block px-6 py-3 text-lg font-bold font-ganh transition-all ${className}`}
+        className={`block px-6 py-3 text-lg font-bold font-ganh transition-colors ${className}`}
         style={{
-          backgroundColor: isHovered ? "black" : "transparent",
+          backgroundColor: isHovered ? "#D4A155" : "transparent",
           color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
         }}
       >
@@ -154,9 +154,9 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`w-full block px-6 py-3 text-lg font-bold font-ganh transition-all text-left ${className}`}
+        className={`w-full text-left px-6 py-3 text-lg font-bold font-ganh transition-colors ${className}`}
         style={{
-          backgroundColor: isHovered ? "black" : "transparent",
+          backgroundColor: isHovered ? "#D4A155" : "transparent",
           color: isHovered ? "white" : (className.includes("text-") ? undefined : "black"),
         }}
       >
@@ -215,6 +215,8 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              role="navigation"
+              aria-label="Menu chính"
               className="fixed inset-0 bg-white z-[100] sm:hidden flex flex-col"
             >
               {/* Menu Header */}
@@ -250,7 +252,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                             onClick={() => setIsMobileMenuOpen(false)}
                             className={`
                               font-ganh text-[40px] leading-tight font-black tracking-tight flex items-center justify-between
-                              ${isActive ? "text-black" : "text-gray-300 hover:text-black transition-colors"}
+                              ${isActive ? "text-black" : "text-gray-400 hover:text-literary-gold transition-colors"}
                             `}
                           >
                             {link.name}

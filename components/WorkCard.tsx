@@ -65,23 +65,23 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 bg-black flex-shrink-0" />
-              <span className={`text-[10px] uppercase tracking-[0.2em] ${isHome ? "font-bold text-black" : "font-black text-black/40"}`}>
+              <span className={`text-[11px] uppercase tracking-[0.2em] ${isHome ? "font-bold text-black" : "font-black text-black/70"}`}>
                 {work.type}
               </span>
             </div>
             {!isHome && (
-              <div className="text-[10px] font-bold text-black/60 uppercase tracking-widest pl-4.5">
+              <div className="text-[11px] font-bold text-black/60 uppercase tracking-widest pl-4.5">
                 {formatDate(work.created_at || new Date().toISOString())}
               </div>
             )}
           </div>
           
-          <div className="flex flex-col items-end gap-1">
-             <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border border-black ${isHome ? "bg-black text-white" : "bg-transparent text-black"}`}>
+          <div className="flex flex-col items-end gap-1.5">
+             <span className={`text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 border border-black ${isHome ? "bg-black text-white" : "bg-transparent text-black"}`}>
                 {work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}
              </span>
              {work.rule && !isHome && (
-               <span className="text-[9px] font-bold uppercase tracking-tighter text-black/30">
+               <span className="text-[11px] font-black uppercase tracking-tighter text-black/70">
                  {work.rule}
                </span>
              )}
@@ -90,25 +90,25 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
 
         {/* Center: High-Impact Title */}
         <div className="flex-grow flex flex-col justify-center py-4">
-          <h1 className={`text-xl sm:text-2xl md:text-3xl font-ganh leading-[1.3] tracking-tight text-black line-clamp-3 break-words
+          <h2 className={`text-xl sm:text-2xl md:text-3xl font-ganh leading-[1.3] tracking-tight text-black line-clamp-3 break-words
             ${isHome ? "font-bold uppercase group-hover:text-black" : "font-bold group-hover:text-literary-gold transition-colors duration-500"}
           `}>
             {work.title}
-          </h1>
+          </h2>
         </div>
 
         {/* Bottom: Status & Author Signature */}
         <div className="mt-auto pt-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-t border-black/5">
-           <div className="flex items-center gap-2.5">
-              <div className={`w-2 h-2 rounded-full border border-black/10 ${
-                work.status === "Hoàn thành" ? "bg-green-500" :
-                work.status === "Đang viết" ? "bg-blue-500" :
-                "bg-yellow-500"
-              }`} />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-black/60">
-                {work.status}
-              </span>
-           </div>
+            <div className="flex items-center gap-2.5">
+               <div className={`w-2 h-2 rounded-full border border-black/10 ${
+                 work.status === "Hoàn thành" ? "bg-green-600" :
+                 work.status === "Đang viết" ? "bg-blue-600" :
+                 "bg-yellow-600"
+               }`} />
+               <span className="text-[11px] font-bold uppercase tracking-widest text-black/70">
+                 {work.status}
+               </span>
+            </div>
 
            <div 
              className="relative group/author self-start sm:self-auto"

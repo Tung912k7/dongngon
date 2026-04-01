@@ -7,6 +7,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.4.0",
+    date: "01/04/2026",
+    title: "Nâng cấp Trải nghiệm & Hiệu năng",
+    changes: [
+      "Cải thiện hiệu năng và trải nghiệm của trang web",
+      "Trải nghiệm đọc mượt mà — bổ sung tính năng để mang đến trải nghiệm tốt hơn khi đọc và đóng góp vào tác phẩm",
+      "Tìm kiếm thông minh — nâng cao và cải thiện chức năng tìm kiếm, giúp việc tìm kiếm trở nên dễ dàng hơn",
+      "Giao diện nhất quán — chuẩn hóa giao diện, mang đến sự liền mạch và đồng bộ khi nhìn",
+      "Bạn có thể truy cập vào sổ tay hướng dẫn thông qua trang chủ hoặc cài đặt",
+    ],
+  },
+  {
     version: "1.3.0",
     date: "20/03/2026",
     title: "Nâng cấp hồ sơ & Quyền riêng tư",

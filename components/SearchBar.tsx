@@ -33,6 +33,7 @@ const SearchBar = () => {
       <input
         type="text"
         placeholder="Tìm kiếm tác phẩm..."
+        aria-label="Tìm kiếm tác phẩm"
         maxLength={100}
         className="w-full border-2 border-black rounded-xl py-3 pl-12 pr-6 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white text-base transition-all duration-200 placeholder:text-black/30 text-black"
         onChange={(e) => handleSearch(e.target.value)}

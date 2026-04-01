@@ -85,6 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from('works')
       .select('id, updated_at')
       .eq('privacy', 'Public')
+      .eq('is_test', false)
       .order('updated_at', { ascending: false })
       .limit(50000)
 

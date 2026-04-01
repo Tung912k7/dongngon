@@ -27,6 +27,7 @@ const PopularContent = () => {
             contributions:contributions(count)
           `)
           .eq('privacy', 'Public')
+          .eq('is_test', false)
           .limit(10);
 
         if (error) throw error;

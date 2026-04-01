@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Contribution } from "@/types/database";
 import React from "react";
 import ContributionTooltip from "@/components/ContributionTooltip";
+
+const ITEMS_PER_BATCH = 50;
 
 export default function Feed({
   initialContributions,
@@ -18,8 +20,8 @@ export default function Feed({
   const [contributions, setContributions] = useState<Contribution[]>(
     initialContributions
   );
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 100;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -57,6 +59,8 @@ export default function Feed({
             );
             return updatedContributions;
           });
+          // Auto-expand visible count so new contributions are immediately visible
+          setVisibleCount(prev => prev + 1);
         }
       )
       .subscribe();
@@ -66,16 +70,39 @@ export default function Feed({
     };
   }, [supabase, workId]);
 
-  const totalPages = Math.ceil(contributions.length / itemsPerPage);
+  // Infinite scroll: observe sentinel element
+  const loadMore = useCallback(() => {
+    setVisibleCount(prev => Math.min(prev + ITEMS_PER_BATCH, contributions.length));
+  }, [contributions.length]);
+
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  const visibleContributions = contributions.slice(0, visibleCount);
+  const hasMore = visibleCount < contributions.length;
 
   return (
     <div className="flex flex-col gap-12">
       <div className="text-xl md:text-2xl leading-[1.8] text-black font-medium font-be-vietnam content-display italic">
-        {contributions.map((contribution, index) => {
+        {visibleContributions.map((contribution, index) => {
           const isSentenceMode = limitType === 'sentence' || limitType === '1 câu';
           
           // Check if previous contribution ends with sentence-ending punctuation
-          const prevContribution = index > 0 ? contributions[index - 1] : null;
+          const prevContribution = index > 0 ? visibleContributions[index - 1] : null;
           const prevEndsWithPunctuation = prevContribution 
             ? /[.?!]$/.test(prevContribution.content.trim()) 
             : false;
@@ -106,41 +133,25 @@ export default function Feed({
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 pt-10 border-t-2 border-black/5">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-6 py-2 border-2 border-black rounded-xl font-ganh font-bold text-[10px] uppercase tracking-widest disabled:opacity-20 disabled:cursor-not-allowed hover:-translate-x-1 transition-all"
-          >
-            &larr; TRƯỚC
-          </button>
-          
-          <div className="hidden sm:flex items-center gap-2">
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 rounded-xl border-2 border-black font-ganh font-bold text-xs transition-all ${
-                  currentPage === i + 1 ? "bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : "hover:bg-gray-50"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+      {/* Infinite scroll sentinel */}
+      {hasMore && (
+        <div ref={loadMoreRef} className="flex items-center justify-center py-8">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 bg-black/20 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/30">
+              Đang tải thêm...
+            </span>
+            <div className="w-2 h-2 bg-black/20 rounded-full animate-pulse" style={{ animationDelay: "0.3s" }} />
           </div>
-          
-          <div className="sm:hidden font-ganh font-bold text-xs">
-            {currentPage} / {totalPages}
-          </div>
+        </div>
+      )}
 
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className="px-6 py-2 border-2 border-black rounded-xl font-ganh font-bold text-[10px] uppercase tracking-widest disabled:opacity-20 disabled:cursor-not-allowed hover:translate-x-1 transition-all"
-          >
-            SAU &rarr;
-          </button>
+      {/* Summary when all loaded */}
+      {!hasMore && contributions.length > ITEMS_PER_BATCH && (
+        <div className="flex items-center justify-center gap-4 pt-6 border-t-2 border-black/5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/30">
+            {contributions.length} dòng • Đã hiển thị tất cả
+          </span>
         </div>
       )}
     </div>

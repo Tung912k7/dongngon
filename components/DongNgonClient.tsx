@@ -3,9 +3,7 @@
 import { useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUserStore } from "@/stores/user-store";
-import { useWorkStore, Work } from "@/stores/work-store";
-import { formatDate } from "@/utils/date";
-import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
+import { Work } from "@/stores/work-store";
 import dynamic from "next/dynamic";
 const TableFilter = dynamic(() => import("@/components/TableFilter"), { ssr: false });
 const CreateWorkModal = dynamic(() => import("@/components/CreateWorkModal"), { ssr: false });
@@ -24,171 +22,54 @@ const defaultFilters: FilterState = {
   limit: "10",
 };
 
-type WorkRow = {
-  id: string;
-  title: string;
-  category_type: string;
-  sub_category: string;
-  limit_type: string;
-  status: string;
-  created_at?: string;
-  author_nickname: string;
-  privacy?: string;
-  created_by?: string;
-  age_rating?: string;
-};
-
 type AuthUser = {
   id: string;
 };
 
-export default function DongNgonClient({ 
-  initialWorks, 
-  initialUser 
-}: { 
+export default function DongNgonClient({
+  initialWorks,
+  initialUser,
+  totalCount,
+  totalPages,
+  currentPage,
+}: {
   initialWorks: Work[];
   initialUser: AuthUser | null;
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+  const supabase = useMemo(() => createClient(), []);
+
   // Zustand stores
-  const { 
-    user, 
-    setUser 
-  } = useUserStore();
-  
-  const { 
-    allWorks, 
-    filters, 
-    currentPage, 
-    isLoading,
-    setAllWorks,
-    setFilters,
-    setCurrentPage,
-    setIsLoading 
-  } = useWorkStore();
-  
-  // Unified initialization logic to prevent re-render loops
+  const { user, setUser } = useUserStore();
+
+  // Read filters from URL (server is the source of truth)
+  const filters: FilterState = useMemo(() => ({
+    category_type: searchParams.get("category") || "",
+    hinh_thuc: searchParams.get("form") || "",
+    writing_rule: searchParams.get("rule") || "",
+    sort_date: searchParams.get("sort") || "newest",
+    status: searchParams.get("status") || "",
+    limit: searchParams.get("limit") || "10",
+  }), [searchParams]);
+
+  const q = searchParams.get("query") || "";
+
+  // Initialize user store from server-provided data
   const isHydrated = useRef(false);
   useEffect(() => {
     if (isHydrated.current) return;
-    
-    // 1. Hydrate Stores with a single direct set call to minimize notifies
-    const updates: { user?: AuthUser | null } = {};
-    if (initialUser && !user) updates.user = initialUser;
-    if (Object.keys(updates).length > 0) {
-        useUserStore.setState(updates);
+    if (initialUser && !user) {
+      useUserStore.setState({ user: initialUser });
     }
-
-    const workUpdates: {
-      allWorks?: Work[];
-      filters?: FilterState;
-      currentPage?: number;
-    } = {};
-    if (initialWorks && allWorks.length === 0) workUpdates.allWorks = initialWorks;
-    
-    // Initial Filters from URL
-    const urlFilters = {
-      category_type: searchParams.get("category") || "",
-      hinh_thuc: searchParams.get("form") || "",
-      writing_rule: searchParams.get("rule") || "",
-      sort_date: searchParams.get("sort") || "newest",
-      status: searchParams.get("status") || "",
-      limit: searchParams.get("limit") || "10",
-    };
-    workUpdates.filters = urlFilters;
-    workUpdates.currentPage = parseInt(searchParams.get("page") || "1");
-
-    useWorkStore.setState(workUpdates);
-    
     isHydrated.current = true;
-  }, [allWorks.length, initialUser, initialWorks, searchParams, user]); 
+  }, [initialUser, user]);
 
-  // Stable URL sync - only runs when filters/currentPage changes
+  // Keep user synced with auth state changes (login/logout)
   useEffect(() => {
-    if (!isHydrated.current) return;
-    
-    const params = new URLSearchParams();
-    if (filters.category_type) params.set("category", filters.category_type);
-    if (filters.hinh_thuc) params.set("form", filters.hinh_thuc);
-    if (filters.writing_rule) params.set("rule", filters.writing_rule);
-    if (filters.sort_date !== "newest") params.set("sort", filters.sort_date);
-    if (filters.status) params.set("status", filters.status);
-    if (filters.limit !== "10") params.set("limit", filters.limit);
-    if (currentPage > 1) params.set("page", currentPage.toString());
-    
-    const query = searchParams.get("query");
-    if (query) params.set("query", query);
-
-    const newPath = `/kho-tang${params.toString() ? `?${params.toString()}` : ""}`;
-    if (window.location.search !== `?${params.toString()}` && params.toString() !== "") {
-        window.history.replaceState(null, "", newPath);
-    }
-  }, [filters, currentPage, searchParams]);
-
-  const fetchWorks = useCallback(async (supabaseClient?: ReturnType<typeof createClient>, searchQuery?: string) => {
-    // We should not set loading if we are already loading or if it's the first mount hydration
-    setIsLoading(true);
-    const sb = supabaseClient || createClient();
-    
-    let query = sb
-      .from("works")
-      .select("id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by, age_rating")
-      .order("created_at", { ascending: false });
-
-    if (user) {
-      query = query.or(`privacy.eq.Public,created_by.eq.${user.id}`);
-    } else {
-      query = query.eq("privacy", "Public");
-    }
-
-    if (searchQuery) {
-      query = query.or(`title.ilike.%${searchQuery}%,author_nickname.ilike.%${searchQuery}%`);
-    }
-
-    try {
-      const { data, error } = await query;
-      if (error) {
-        console.error("[KhoTang] Supabase fetch error:", error.code, error.message);
-      } else if (data) {
-        const mappedWorks: Work[] = (data as WorkRow[]).map((work) => ({
-          ...work,
-          title: sanitizeTitle(work.title),
-          author_nickname: sanitizeNickname(work.author_nickname),
-          type: work.category_type,
-          hinh_thuc: work.sub_category,
-          rule: "1 câu",
-          age_rating: work.age_rating,
-          status: work.status === "writing" ? "Đang viết" : 
-                  work.status === "finished" ? "Hoàn thành" : 
-                  work.status === "pending" ? "Đợi duyệt" : work.status,
-          date: formatDate(work.created_at || new Date().toISOString()),
-          rawDate: new Date(work.created_at || new Date().toISOString()),
-        }));
-        setAllWorks(mappedWorks);
-      }
-    } catch (err: unknown) {
-      console.error("Fetch implementation error:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, setAllWorks, setIsLoading]);
-
-  const q = searchParams.get("query") || "";
-  const isFirstMount = useRef(true);
-
-  // Fetch works based on query or user change
-  useEffect(() => {
-    const supabase = createClient();
-    if (!isFirstMount.current) {
-        fetchWorks(supabase, q);
-    }
-  }, [q, fetchWorks]); 
-
-  // Stable User Sync (Avoids triggering loop)
-  useEffect(() => {
-    const supabase = createClient();
     const syncUser = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser && !user) {
@@ -196,17 +77,53 @@ export default function DongNgonClient({
       }
     };
     syncUser();
-    
-    // Set first mount finished after potential hydration or first render
-    if (isFirstMount.current) {
-        isFirstMount.current = false;
-    }
-  }, [user, setUser]);
+  }, [user, setUser, supabase]);
 
-  // 2. Handle real-time subscription (Stable: no allWorks dependency)
+  // Navigate with filters — triggers server re-fetch via URL change
+  const navigateWithFilters = useCallback((
+    newFilters: Partial<FilterState>,
+    newPage?: number,
+    newQuery?: string,
+  ) => {
+    const merged = { ...filters, ...newFilters };
+    const params = new URLSearchParams();
+
+    if (merged.category_type) params.set("category", merged.category_type);
+    if (merged.hinh_thuc) params.set("form", merged.hinh_thuc);
+    if (merged.writing_rule) params.set("rule", merged.writing_rule);
+    if (merged.sort_date !== "newest") params.set("sort", merged.sort_date);
+    if (merged.status) params.set("status", merged.status);
+    if (merged.limit !== "10") params.set("limit", merged.limit);
+
+    const page = newPage ?? 1;
+    if (page > 1) params.set("page", page.toString());
+
+    const query = newQuery ?? q;
+    if (query) params.set("query", query);
+
+    const queryString = params.toString();
+    router.push(`/kho-tang${queryString ? `?${queryString}` : ""}`);
+  }, [filters, q, router]);
+
+  const handleApplyFilters = useCallback((newFilters: FilterState) => {
+    navigateWithFilters(newFilters, 1);
+  }, [navigateWithFilters]);
+
+  const handleResetFilters = useCallback(() => {
+    navigateWithFilters(defaultFilters, 1, "");
+  }, [navigateWithFilters]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    navigateWithFilters({}, newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [navigateWithFilters]);
+
+  const handleCreateSuccess = useCallback(() => {
+    router.refresh();
+  }, [router]);
+
+  // Realtime subscription — refresh page data on changes
   useEffect(() => {
-    const supabase = createClient();
-    
     const channel = supabase
       .channel("public:works")
       .on(
@@ -216,74 +133,9 @@ export default function DongNgonClient({
           schema: "public",
           table: "works",
         },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            const newWork = payload.new;
-            
-            // Fetch author privacy status for new items to ensure popup works
-            const fetchAndMap = async () => {
-              const { data: authorData } = await supabase
-                .from("profiles")
-                .select("is_private")
-                .eq("id", newWork.created_by)
-                .single();
-
-              const privacy = newWork.privacy?.toLowerCase();
-              const isPublic = privacy === 'public';
-              const isOwner = user && newWork.created_by === user.id;
-              
-              if (!isPublic && !isOwner) return;
-              
-              const mappedNewWork: Work = {
-                ...newWork,
-                id: newWork.id,
-                title: sanitizeTitle(newWork.title),
-                author_nickname: sanitizeNickname(newWork.author_nickname),
-                type: newWork.category_type,
-                hinh_thuc: newWork.sub_category,
-                rule: "1 câu",
-                age_rating: newWork.age_rating,
-                status: newWork.status === "writing" ? "Đang viết" : 
-                        newWork.status === "finished" ? "Hoàn thành" : 
-                        newWork.status === "pending" ? "Đợi duyệt" : newWork.status,
-                date: formatDate(newWork.created_at),
-                rawDate: new Date(newWork.created_at),
-                is_author_private: authorData?.is_private || false
-              };
-              
-              useWorkStore.setState((state) => ({
-                allWorks: [mappedNewWork, ...state.allWorks]
-              }));
-            };
-
-            fetchAndMap();
-          } else if (payload.eventType === "UPDATE") {
-            const updatedWork = payload.new;
-            const mappedUpdatedWork: Work = {
-              ...updatedWork,
-              id: updatedWork.id,
-              title: sanitizeTitle(updatedWork.title),
-              author_nickname: sanitizeNickname(updatedWork.author_nickname),
-              type: updatedWork.category_type,
-              hinh_thuc: updatedWork.sub_category,
-              rule: "1 câu",
-              age_rating: updatedWork.age_rating,
-              status: updatedWork.status === "writing" ? "Đang viết" : 
-                      updatedWork.status === "finished" ? "Hoàn thành" : 
-                      updatedWork.status === "pending" ? "Đợi duyệt" : updatedWork.status,
-              date: formatDate(updatedWork.created_at),
-              rawDate: new Date(updatedWork.created_at)
-            };
-
-            useWorkStore.setState((state) => ({
-              allWorks: state.allWorks.map(w => w.id === updatedWork.id ? mappedUpdatedWork : w)
-            }));
-
-          } else if (payload.eventType === "DELETE") {
-            useWorkStore.setState((state) => ({
-              allWorks: state.allWorks.filter(w => w.id !== payload.old.id)
-            }));
-          }
+        () => {
+          // On any INSERT, UPDATE, or DELETE → let the server refetch
+          router.refresh();
         }
       )
       .subscribe();
@@ -291,75 +143,27 @@ export default function DongNgonClient({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]); // Only depend on current user for privacy filtering rules
+  }, [supabase, router]);
 
-  const { paginatedWorks, totalPages } = useMemo(() => {
-    let works = [...allWorks];
-    works = works.filter((work) => {
-      if (filters.category_type) {
-        if (work.type !== filters.category_type) return false;
-      }
-      if (filters.hinh_thuc) {
-        if (work.hinh_thuc !== filters.hinh_thuc) return false;
-      }
-      if (filters.writing_rule) {
-        if (work.rule !== filters.writing_rule) return false;
-      }
-      if (filters.status) {
-        if (work.status !== filters.status) return false;
-      }
-      
-      const privacy = work.privacy?.toLowerCase();
-      const isPublic = privacy === 'public';
-      const isOwner = user && work.created_by === user.id;
-      return isPublic || isOwner;
-    });
-
-    works.sort((a, b) => {
-      const timeA = new Date(a.rawDate || '').getTime();
-      const timeB = new Date(b.rawDate || '').getTime();
-      if (filters.sort_date === 'oldest') return timeA - timeB;
-      return timeB - timeA;
-    });
-
-    const limit = parseInt(filters.limit) || 10;
-    const totalItems = works.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const safePage = Math.min(currentPage, Math.max(1, totalPages));
-    const start = (safePage - 1) * limit;
-    
-    return {
-      paginatedWorks: works.slice(start, start + limit),
-      totalPages
-    };
-  }, [allWorks, filters, currentPage, user]);
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [setCurrentPage]);
+  // Determine if any filters are active
+  const hasActiveFilters = filters.category_type || filters.hinh_thuc ||
+    filters.writing_rule || filters.status;
 
   return (
     <div className="min-h-screen bg-white text-black">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 flex flex-col items-center">
         <div className="w-full max-w-6xl relative">
-          
+
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
-              <TableFilter 
-                filters={filters} 
-                onApplyFilters={(newFilters: Partial<FilterState>) => {
-                  setFilters(newFilters);
-                  setCurrentPage(1);
-                }} 
+              <TableFilter
+                filters={filters}
+                onApplyFilters={handleApplyFilters}
               />
               <span className="font-bold uppercase tracking-wider text-sm">Bộ lọc</span>
-              {(filters.category_type || filters.hinh_thuc || filters.writing_rule || filters.status) && (
-                <button 
-                  onClick={() => {
-                    setFilters(defaultFilters);
-                    setCurrentPage(1);
-                  }}
+              {hasActiveFilters && (
+                <button
+                  onClick={handleResetFilters}
                   className="ml-4 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors bg-red-50 px-2 py-1 rounded-md"
                   title="Xóa tất cả bộ lọc"
                 >
@@ -370,39 +174,42 @@ export default function DongNgonClient({
                 </button>
               )}
             </div>
-            {user ? (
-              <CreateWorkModal onSuccess={() => fetchWorks(undefined, q)} />
-            ) : (
-              <button
-                onClick={() => router.push('/dang-nhap')}
-                className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-black hover:text-white cursor-pointer"
-                title="Tạo tác phẩm mới"
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  strokeWidth="2.5" 
-                  stroke="currentColor"
-                  className="w-5 h-5 transition-colors"
+
+            {/* Total count indicator */}
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-black/30 hidden sm:block">
+                {totalCount} tác phẩm
+              </span>
+              {user ? (
+                <CreateWorkModal onSuccess={handleCreateSuccess} />
+              ) : (
+                <button
+                  onClick={() => router.push('/dang-nhap')}
+                  className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-literary-gold hover:text-white cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none"
+                  title="Tạo tác phẩm mới"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </button>
-            )}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2.5"
+                    stroke="currentColor"
+                    className="w-5 h-5 transition-colors"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
-          {isLoading ? (
-            <div className="py-10">
-              <WorkGridSkeleton count={filters.limit ? parseInt(filters.limit) : 6} />
-            </div>
-          ) : paginatedWorks.length > 0 ? (
+          {initialWorks.length > 0 ? (
             <div className="flex flex-col gap-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedWorks.map((work) => (
+                {initialWorks.map((work) => (
                     <div key={work.id} className="flex justify-center sm:justify-start">
-                        <WorkCard 
-                        work={work} 
+                        <WorkCard
+                        work={work}
                         isOwner={!!user && work.created_by === user.id}
                         hideMenu={true}
                         />
@@ -410,7 +217,7 @@ export default function DongNgonClient({
                 ))}
               </div>
 
-              <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
@@ -419,8 +226,8 @@ export default function DongNgonClient({
           ) : (
             <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
                  {user ? (
-                   <CreateWorkModal 
-                    onSuccess={() => fetchWorks(undefined, q)}
+                   <CreateWorkModal
+                    onSuccess={handleCreateSuccess}
                     customTrigger={
                      <button className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-black hover:text-black transition-all bg-white" title="Tạo tác phẩm mới">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10 sm:w-12 sm:h-12">

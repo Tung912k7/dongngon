@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const supabase = await createClient();
   const { data: work } = await supabase
     .from("works")
-    .select("id, title, sub_category, description, author_nickname")
+    .select("id, title, sub_category, description, author_nickname, is_test")
     .eq("id", id)
     .single();
 
@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: sanitizedTitle,
     description,
+    robots: work.is_test ? { index: false, follow: false } : undefined,
     openGraph: {
       title: `${sanitizedTitle} | Đồng ngôn`,
       description,
@@ -75,7 +76,7 @@ export default async function WorkPage({
     // 2. Fetch Contributions
     supabase
       .from("contributions")
-      .select("id, content, user_id, work_id, created_at, author_nickname, new_line")
+      .select("id, content, user_id, work_id, created_at, author_nickname, new_line, is_test")
       .eq("work_id", id)
       .order("created_at", { ascending: true }),
 
@@ -96,11 +97,14 @@ export default async function WorkPage({
   if (user) {
     const { data: profileData } = await supabase
       .from("profiles")
-      .select("birthday")
+      .select("birthday, is_test_account")
       .eq("id", user.id)
       .single();
     profile = profileData;
   }
+
+  const isTester = !!profile?.is_test_account;
+
 
   const work = workResponse.data;
   // No need to re-sanitize what's already sanitized in the DB or handled by React
@@ -108,11 +112,13 @@ export default async function WorkPage({
     // work.title is already cleaned on save
   }
 
-  const contributions: Contribution[] = (contributionsResponse.data || []).map((c: Contribution) => ({
-    ...c,
-    author_nickname: c.author_nickname,
-    content: c.content
-  }));
+  const contributions: Contribution[] = (contributionsResponse.data || [])
+    .filter((c: any) => isTester || !c.is_test || (user && c.user_id === user.id))
+    .map((c: any) => ({
+      ...c,
+      author_nickname: c.author_nickname,
+      content: c.content
+    }));
 
   const voteCount = voteCountResponse.count;
 
@@ -271,21 +277,21 @@ export default async function WorkPage({
       <section className="mb-10 border-b-2 border-black pb-8">
         <Link
           href="/kho-tang"
-          className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
+          className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
         >
           <span className="text-lg group-hover:-translate-x-1 transition-transform">&larr;</span> QUAY LẠI KHO TÀNG
         </Link>
         <div className="flex justify-between items-start gap-6">
             <div className="flex-grow space-y-4">
               <h1 className="text-2xl md:text-3xl font-ganh font-bold leading-tight tracking-tight text-black break-words max-w-xl">{work.title}</h1>
-              <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-[0.1em]">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.1em]">
                 <div className="flex items-center gap-2">
                   <span className="font-black tracking-[0.2em] text-literary-gold bg-black px-2 py-0.5 rounded-sm">{work.category_type}</span>
-                  <span className="text-black/40 tracking-[0.2em]">{work.sub_category}</span>
+                  <span className="text-black/60 tracking-[0.2em]">{work.sub_category}</span>
                 </div>
-                <span className="text-black/10 text-xs">•</span>
-                <div className={`flex items-center gap-2 ${isCompleted ? "text-red-600" : "text-green-600"}`}>
-                   <div className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-red-600" : "bg-green-600 animate-pulse"}`} />
+                <span className="text-black/20 text-xs">•</span>
+                <div className={`flex items-center gap-2 ${isCompleted ? "text-red-700" : "text-green-700"}`}>
+                   <div className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-red-700" : "bg-green-700 animate-pulse"}`} />
                    <span>{isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}</span>
                 </div>
               </div>

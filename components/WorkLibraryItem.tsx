@@ -45,8 +45,8 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
       >
         {/* Status indicator */}
         <div className={`w-1.5 h-12 rounded-sm flex-shrink-0 ${
-          work.status === "Hoàn thành" ? "bg-red-600" :
-          work.status === "Đang viết" ? "bg-green-600" :
+          work.status === "Hoàn thành" ? "bg-green-600" :
+          work.status === "Đang viết" ? "bg-blue-600" :
           "bg-literary-gold"
         }`} title={work.status} />
 

@@ -146,6 +146,8 @@ export default function ContributionTooltip({
       {isOpen && (
         <div
           ref={tooltipRef}
+          role="dialog"
+          aria-modal="true"
           className={`absolute z-50 left-1/2 -translate-x-1/2 ${position === "above" ? "bottom-full mb-3" : "top-full mt-3"
             }`}
           style={{ animation: "contribution-tooltip-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}

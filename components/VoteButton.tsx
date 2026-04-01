@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { voteEndWork } from "@/actions/vote";
 import { createClient } from "@/utils/supabase/client";
 
@@ -20,7 +20,7 @@ export default function VoteButton({
   const [hasVoted, setHasVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const channel = supabase
@@ -106,7 +106,7 @@ export default function VoteButton({
           {count}/{threshold}
         </span>
       </button>
-      <p className="text-[9px] font-bold uppercase tracking-widest text-black/30 max-w-[180px] text-right leading-tight">
+      <p className="text-[9px] font-bold uppercase tracking-widest text-black/70 max-w-[180px] text-right leading-tight">
         Cần {threshold} phiếu ({Math.floor((threshold/contributorCount)*100)}%) để đóng tác phẩm
       </p>
     </div>
