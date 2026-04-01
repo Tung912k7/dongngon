@@ -1,5 +1,56 @@
 import { createClient } from "@/utils/supabase/server";
+import { Metadata } from 'next';
 import { redirect } from "next/navigation";
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ id?: string }> }): Promise<Metadata> {
+  const { id } = await searchParams;
+  const supabase = await createClient();
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  const targetId = id || currentUser?.id;
+  const baseUrl = "https://dongngon.vercel.app";
+
+  if (!targetId) return { title: "Hồ sơ" };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nickname, description, avatar_url")
+    .eq("id", targetId)
+    .single();
+
+  if (!profile) return { title: "Không tìm thấy hồ sơ" };
+
+  const nickname = profile.nickname || "Người dùng ẩn danh";
+  const ogImageUrl = new URL(`${baseUrl}/api/og`);
+  ogImageUrl.searchParams.set("type", "profile");
+  ogImageUrl.searchParams.set("author", nickname);
+
+  return {
+    title: `${nickname} | Đồng ngôn`,
+    description: profile.description || `Xem hồ sơ và các tác phẩm của ${nickname} trên Đồng ngôn.`,
+    openGraph: {
+      title: `${nickname} | Hồ sơ Đồng ngôn`,
+      description: profile.description || `Xem hồ sơ và các tác phẩm của ${nickname} trên Đồng ngôn.`,
+      url: `${baseUrl}/profile?id=${targetId}`,
+      siteName: "Đồng ngôn",
+      images: [
+        {
+          url: ogImageUrl.toString(),
+          width: 1200,
+          height: 630,
+          alt: nickname,
+        },
+      ],
+      locale: "vi_VN",
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${nickname} | Hồ sơ Đồng ngôn`,
+      description: profile.description || `Xem hồ sơ và các tác phẩm của ${nickname} trên Đồng ngôn.`,
+      images: [ogImageUrl.toString()],
+    },
+  };
+}
 import { Work } from "@/stores/work-store";
 import CreateWorkModal from "@/components/CreateWorkModal";
 import { LinkedButton } from "@/components/PrimaryButton";
