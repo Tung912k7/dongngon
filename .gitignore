@@ -62,3 +62,5 @@ knowledge/
 .claude/
 .cursor/
 .copilot/
+.github/agents/
+**/*.agent.md
