@@ -1,14 +1,14 @@
 import { Metadata } from "next";
-import AboutUsContent from "@/components/about/AboutContent";
+import FullAboutContent from "@/components/about/FullAboutContent";
 
 export const metadata: Metadata = {
-  title: "Về chúng tôi | Đồng ngôn",
+  title: "Về chúng tôi",
   description:
-    "Đồng ngôn — nền tảng sáng tác văn học cộng đồng, nơi nhiều người cùng viết nên một tác phẩm. Tìm hiểu về sứ mệnh, tầm nhìn và đội ngũ đứng sau Đồng ngôn.",
+    "Sự ra đời đầy ngẫu hứng của cái thứ gọi là Đồng ngôn",
   openGraph: {
-    title: "Về chúng tôi | Đồng ngôn",
+    title: "Về chúng tôi",
     description:
-      "Câu chuyện đằng sau Đồng ngôn — nền tảng sáng tác văn học cộng đồng nơi chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+      "Sự ra đời đầy ngẫu hứng của cái thứ gọi là Đồng ngôn",
     url: "https://dongngon.vercel.app/ve-chung-toi",
     siteName: "Đồng ngôn",
     locale: "vi_VN",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Về chúng tôi | Đồng ngôn",
     description:
-      "Khám phá câu chuyện, sứ mệnh và giá trị cốt lõi của Đồng ngôn.",
+      "Khám phá sự ra đời và ý nghĩa của Đồng ngôn",
   },
 };
 
@@ -32,10 +32,11 @@ export default function AboutUsPage() {
             "@context": "https://schema.org",
             "@graph": [
               {
+                "@id": "https://dongngon.vercel.app/ve-chung-toi/#webpage",
                 "@type": "AboutPage",
-                name: "Về chúng tôi — Đồng ngôn",
+                name: "Về chúng tôi",
                 description:
-                  "Tìm hiểu về sứ mệnh, tầm nhìn và đội ngũ đứng sau nền tảng sáng tác văn học cộng đồng Đồng ngôn.",
+                  "Thông tin chi tiết về sự ra đời và ý nghĩa của Đồng ngôn",
                 url: "https://dongngon.vercel.app/ve-chung-toi",
                 inLanguage: "vi",
                 isPartOf: {
@@ -64,9 +65,9 @@ export default function AboutUsPage() {
           }),
         }}
       />
-      <div className="min-h-screen bg-black bg-[radial-gradient(#ffffff1a_1px,transparent_1px)] [background-size:20px_20px] flex items-center justify-center py-20">
+      <div className="min-h-screen bg-black bg-[radial-gradient(#ffffff1a_1px,transparent_1px)] [background-size:20px_20px] flex flex-col items-center pt-32 pb-40">
         <div className="w-full max-w-7xl mx-auto">
-          <AboutUsContent />
+          <FullAboutContent />
         </div>
       </div>
     </>

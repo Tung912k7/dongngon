@@ -63,6 +63,7 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = Boolean(formState.id);
 
@@ -268,6 +269,81 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
     });
   }, []);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = [".md", ".txt"];
+    const extension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+    if (!validTypes.includes(extension)) {
+      setMessage({ type: "error", text: "Vui lòng chọn file .md hoặc .txt" });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content) {
+        handleFieldChange("content_markdown", content);
+        setMessage({ type: "success", text: `Đã tải nội dung từ file: ${file.name}` });
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownloadSample = () => {
+    const sampleContent = `# Hướng dẫn viết bài (Mẫu chuẩn)
+
+Đây là bản mẫu tích hợp cả **Markdown** và các thẻ **HTML** được hỗ trợ tại Đồng Ngôn.
+
+---
+
+## 📸 1. Cách chèn hình ảnh
+Cú pháp: \`![Mô tả ảnh](https://url-anh.jpg)\`
+
+---
+
+## 🛠️ 2. Các thẻ HTML được hỗ trợ
+Hệ thống hỗ trợ các thẻ HTML cơ bản để tùy chỉnh giao diện bài viết:
+
+- **Ngắt dòng**: Dùng thẻ \`<br />\` để ngắt dòng thủ công.
+- **Văn bản**: 
+  - \`<b>Chữ đậm</b>\` -> <b>Chữ đậm</b>
+  - \`<i>Chữ nghiêng</i>\` -> <i>Chữ nghiêng</i>
+  - \`<u>Gạch chân</u>\` -> <u>Gạch chân</u>
+  - \`<small>Chữ nhỏ</small>\` -> <small>Chữ nhỏ</small>
+- **Căn lề (Lưu ý: dùng thẻ div style nếu cần phức tạp)**:
+  - \`<center>Nội dung căn giữa</center>\` -> <center>Căn giữa</center>
+- **Danh sách (HTML)**:
+  \`<ul><li>Mục 1</li><li>Mục 2</li></ul>\`
+- **Lời dẫn (Blockquote)**:
+  \`<blockquote>Nội dung lời dẫn trích dẫn</blockquote>\`
+
+---
+
+## 🖋️ 3. Định dạng Markdown nhanh
+- **Tiêu đề**: Dùng \`#\`, \`##\`, \`###\`
+- **Danh sách**: Dùng \`-\` hoặc \`1.\`
+- **Mẹo/Lưu ý**: Dùng blockquote Markdown (\`>\`)
+
+> 💡 **Mẹo:** Nên sử dụng Markdown cho văn bản thuần và HTML khi cần căn chỉnh vị trí hoặc các kiểu chữ đặc biệt (như gạch chân).
+
+---
+
+Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
+
+    const blob = new Blob([sampleContent], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dong-ngon-huong-dan-mau.md";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header */}
@@ -409,10 +485,49 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-black uppercase tracking-widest pl-1">
-              Nội dung (Markdown hoặc HTML) <span className="text-red-500">*</span>
-            </label>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 pl-1">
+              <label className="text-xs font-black uppercase tracking-widest">
+                Nội dung (Markdown hoặc HTML) <span className="text-red-500">*</span>
+              </label>
+              
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept=".md,.txt"
+                  className="hidden"
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-black border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Tải từ máy tính
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadSample}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-black text-white hover:bg-slate-800 border-2 border-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Tải file mẫu
+                </button>
+              </div>
+            </div>
+
             <textarea
               value={formState.content_markdown}
               onChange={(e) => handleFieldChange("content_markdown", e.target.value)}

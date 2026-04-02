@@ -53,3 +53,12 @@ scripts/check*
 scripts/test*
 scripts/list*
 scripts/extract*
+
+# Metadata & Documentation
+metadata.md
+documents/
+knowledge/
+.gemini/
+.claude/
+.cursor/
+.copilot/

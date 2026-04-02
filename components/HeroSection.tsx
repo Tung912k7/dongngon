@@ -34,7 +34,7 @@ const HeroSection = () => {
                         <LinkedButton 
                             href="/hdsd" 
                             inverse 
-                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-xl border-2 border-black hover:bg-black/5 active:scale-[0.98] transition-all"
                         >
                             Hướng dẫn
                         </LinkedButton>

@@ -275,3 +275,39 @@ export async function deleteNotifications(ids: string[]) {
 
   return { success: true };
 }
+
+export async function sendIdeaToAdmins(
+  targetId: string,
+  penName: string,
+  description: string
+) {
+  const supabase = await createClient();
+  
+  // Lấy danh sách ID của tất cả admin
+  const { data: admins } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("role", "admin");
+
+  if (!admins || admins.length === 0) {
+    return { success: false, error: "Không tìm thấy Admin nào để tiếp nhận ý tưởng." };
+  }
+
+  const message = `💡 Ý tưởng mới từ [${penName}] (ID: ${targetId}):\n- Mô tả: ${description}`;
+
+  const notificationsToInsert = admins.map(admin => ({
+    user_id: admin.id,
+    type: "system",
+    content: message,
+    is_read: false
+  }));
+
+  const { error } = await supabase.from("notifications").insert(notificationsToInsert);
+
+  if (error) {
+    console.error("Error creating idea notification:", error);
+    return { success: false, error: "Không thể gửi ý tưởng. Vui lòng thử lại sau." };
+  }
+
+  return { success: true };
+}
