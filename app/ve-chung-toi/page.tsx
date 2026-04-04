@@ -2,13 +2,11 @@ import { Metadata } from "next";
 import FullAboutContent from "@/components/about/FullAboutContent";
 
 export const metadata: Metadata = {
-  title: "Về chúng tôi",
-  description:
-    "Sự ra đời đầy ngẫu hứng của cái thứ gọi là Đồng ngôn",
+  title: "Về nhà Đồng ngôn | Chúng tôi là ai?",
+  description: "Đồng ngôn là gì? Chúng tôi là ai?",
   openGraph: {
-    title: "Về chúng tôi",
-    description:
-      "Sự ra đời đầy ngẫu hứng của cái thứ gọi là Đồng ngôn",
+    title: "Đồng ngôn ăn được không? | Hành trình và Tương lai",
+    description: "Đồng ngôn là gì? Chúng tôi là ai?",
     url: "https://dongngon.vercel.app/ve-chung-toi",
     siteName: "Đồng ngôn",
     locale: "vi_VN",
@@ -16,9 +14,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Về chúng tôi | Đồng ngôn",
-    description:
-      "Khám phá sự ra đời và ý nghĩa của Đồng ngôn",
+    title: "Về nhà Đồng ngôn | Chúng tôi là ai?",
+    description: "Đồng ngôn là gì? Chúng tôi là ai?",
   },
 };
 
@@ -34,9 +31,8 @@ export default function AboutUsPage() {
               {
                 "@id": "https://dongngon.vercel.app/ve-chung-toi/#webpage",
                 "@type": "AboutPage",
-                name: "Về chúng tôi",
-                description:
-                  "Thông tin chi tiết về sự ra đời và ý nghĩa của Đồng ngôn",
+                name: "Về nhà Đồng ngôn | Chúng tôi là ai?",
+                description: "Đồng ngôn là gì? Chúng tôi là ai?",
                 url: "https://dongngon.vercel.app/ve-chung-toi",
                 inLanguage: "vi",
                 isPartOf: {

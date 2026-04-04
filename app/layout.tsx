@@ -32,11 +32,11 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: {
-    default: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
+    default: "Đồng ngôn | Ngẫu hứng, Kho tàng văn học, Văn thơ, Cùng nhau sáng tạo",
     template: "%s | Đồng ngôn",
   },
-  description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
-  keywords: ["thơ văn", "ngẫu hứng", "sáng tác", "văn học", "đồng ngôn", "tâm hồn", 'kho tàng', 'thơ tự do', 'văn chương'],
+  description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+  keywords: ["sáng tác thơ văn", "văn học cộng đồng", "viết lách", "ngẫu hứng", "đồng ngôn", "sáng tạo", "kho tàng", "sự tự do", "văn chương"],
   authors: [{ name: "Đồng ngôn" }],
   creator: "Đồng ngôn",
   publisher: "Đồng ngôn",
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
-    description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+    title: "Đồng ngôn - Sao còn chưa bấm vào...?",
+    description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
     url: "https://dongngon.vercel.app",
     siteName: "Đồng ngôn",
     images: [
@@ -67,8 +67,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
-    description: "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+    title: "Đồng ngôn - Sao còn chưa bấm vào...?",
+    description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
     images: ["/webp%20file/logo.webp"],
   },
   icons: {
@@ -114,7 +114,7 @@ export default function RootLayout({
                   "url": "https://dongngon.vercel.app",
                   "name": "Đồng ngôn",
                   "alternateName": "Đồng ngôn",
-                  "description": "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+                  "description": "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
                   "inLanguage": "vi",
                   "publisher": { "@id": "https://dongngon.vercel.app/#organization" },
                   "potentialAction": {
@@ -149,10 +149,10 @@ export default function RootLayout({
                   "@type": "WebPage",
                   "@id": "https://dongngon.vercel.app/#webpage",
                   "url": "https://dongngon.vercel.app",
-                  "name": "Đồng ngôn — Nhất ngôn xuất, vạn kiếp hồi thanh",
+                  "name": "Đồng ngôn | Ngẫu hứng, Kho tàng văn học, Văn thơ, Cùng nhau sáng tạo",
                   "isPartOf": { "@id": "https://dongngon.vercel.app/#website" },
                   "about": { "@id": "https://dongngon.vercel.app/#organization" },
-                  "description": "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+                  "description": "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
                   "inLanguage": "vi"
                 },
                 {

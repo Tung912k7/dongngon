@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
+  title: "Đồng ngôn - Sự bay bổng của cảm hứng",
   description:
-    "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+    "Nhất ngôn xuất, vạn kiếp hồi thanh - Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai...",
   openGraph: {
-    title: "Đồng ngôn - Nhất ngôn xuất, vạn kiếp hồi thanh",
+    title: "Đồng ngôn - Sự bay bổng của cảm hứng",
     description:
-      "Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.",
+      "Nhất ngôn xuất, vạn kiếp hồi thanh - Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai...",
     type: "website",
   },
 };
@@ -16,7 +16,7 @@ import HeroSection from "@/components/HeroSection";
 import CumulativeSection from "@/components/CumulativeSection";
 
 export default async function Home() {
-  
+
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
 
