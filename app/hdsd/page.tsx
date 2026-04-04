@@ -41,8 +41,12 @@ const CONTACT_CARDS: ContactCard[] = [
 
 const FAQ_ITEMS: FAQItem[] = [
   {
-    question: 'Làm cách nào để đăng ký tài khoản trên Đồng Ngôn?',
-    answer: 'Nhấn vào nút "Đăng ký" ở góc phải trên cùng. Bạn có thể đăng ký bằng email hoặc thông qua tài khoản Google. Sau khi đăng ký, bạn cần xác thực email để kích hoạt tài khoản.',
+    question: 'Định hướng tương lai của Đồng ngôn là gì?',
+    answer: 'Khi nền tảng đủ lớn, chúng mình sẽ thêm các lựa chọn ngôn ngữ cho các tác phẩm để làm đa dạng hơn không chỉ về thể loại mà còn ngôn ngữ của các tác phẩm.',
+  },
+  {
+    question: 'Đồng ngôn do mấy người làm?',
+    answer: 'Đồng ngôn hiện tại có 1 người phát triển và vận hành, còn bạn kia thì sẽ hỗ trợ tuỳ tình hình.',
   },
   {
     question: 'Tôi có thể tạo những loại tác phẩm nào?',
@@ -50,23 +54,19 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Làm cách nào để đóng góp vào tác phẩm chung?',
-    answer: 'Truy cập trang tác phẩm chung, nhấn "Đóng góp" để gửi phần viết của bạn. Tác giả gốc sẽ xem xét và phê duyệt đóng góp.',
+    answer: 'Truy cập trang Kho tàng, Chọn 1 tác phẩm mà bạn muốn và bấm vào nút "Đến tác phẩm" để đọc và đóng góp cho tác phẩm.',
   },
   {
     question: 'Tại sao tác phẩm của tôi bị đánh dấu hoặc hạn chế?',
     answer: 'Tác phẩm có thể bị đánh dấu nếu vi phạm quy định cộng đồng về nội dung. Bạn có thể xem chi tiết lý do trong mục Thông báo và gửi phản hồi nếu cho rằng đây là nhầm lẫn.',
   },
   {
-    question: 'Làm cách nào để đặt lại mật khẩu?',
-    answer: 'Nhấn "Quên mật khẩu" trên trang đăng nhập, nhập email đã đăng ký. Bạn sẽ nhận được liên kết đặt lại mật khẩu qua email trong vòng vài phút.',
-  },
-  {
     question: 'Tôi có thể chỉnh sửa tác phẩm sau khi xuất bản không?',
     answer: 'Có, bạn có thể chỉnh sửa tác phẩm bất cứ lúc nào. Mở tác phẩm đã đăng, nhấn biểu tượng Chỉnh sửa để cập nhật nội dung. Lịch sử chỉnh sửa sẽ được lưu lại.',
   },
   {
-    question: 'Vai trò kiểm duyệt viên làm gì?',
-    answer: 'Kiểm duyệt viên giúp duy trì chất lượng nội dung trên nền tảng bằng cách xem xét tác phẩm được báo cáo, đảm bảo tuân thủ quy định cộng đồng và hỗ trợ giải quyết tranh chấp nội dung.',
+    question: 'Tôi có thể chỉnh sửa tác phẩm sau khi xuất bản không?',
+    answer: 'Có, bạn có thể chỉnh sửa tác phẩm bất cứ lúc nào. Mở tác phẩm đã đăng, nhấn biểu tượng Chỉnh sửa để cập nhật nội dung. Lịch sử chỉnh sửa sẽ được lưu lại.',
   },
 ];
 

@@ -9,11 +9,28 @@ import { getPublishedHDSDArticles } from '@/actions/hdsd';
 import HelpCenterBreadcrumb from '@/components/hdsd/HelpCenterBreadcrumb';
 import HelpCenterIconMap from '@/components/hdsd/HelpCenterIconMap';
 import type { HelpCenterArticleRecord } from '@/types/helpCenter';
+import { Metadata } from 'next';
 
 interface HelpCenterSectionPageProps {
   params: Promise<{
     section: string;
   }>;
+}
+
+export async function generateMetadata({ params }: HelpCenterSectionPageProps): Promise<Metadata> {
+  const { section: sectionId } = await params;
+  const section = HELP_CENTER_SECTIONS.find((s) => s.id === sectionId);
+  
+  if (!section) return { title: "Không tìm thấy danh mục" };
+  
+  return {
+    title: `${section.title} | Hướng dẫn sử dụng`,
+    description: section.description,
+    openGraph: {
+      title: `${section.title} | Hướng dẫn sử dụng Đồng ngôn`,
+      description: section.description,
+    },
+  };
 }
 
 export default async function HelpCenterSectionPage({ params }: HelpCenterSectionPageProps) {

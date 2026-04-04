@@ -9,12 +9,30 @@ import { getHDSDArticleBySlug, getPublishedHDSDArticles } from '@/actions/hdsd';
 import { HELP_CENTER_SECTIONS } from '@/data/helpCenter';
 import HelpCenterBreadcrumb from '@/components/hdsd/HelpCenterBreadcrumb';
 import HelpCenterArticleSidebar from '@/components/hdsd/HelpCenterArticleSidebar';
+import { Metadata } from 'next';
 
 interface HelpCenterArticlePageProps {
   params: Promise<{
     section: string;
     article: string;
   }>;
+}
+
+export async function generateMetadata({ params }: HelpCenterArticlePageProps): Promise<Metadata> {
+  const { section: sectionSlug, article: articleSlug } = await params;
+  const article = await getHDSDArticleBySlug(sectionSlug, articleSlug);
+  
+  if (!article) return { title: "Không tìm thấy bài viết" };
+  
+  return {
+    title: `${article.title} | Hướng dẫn`,
+    description: article.summary || `Hướng dẫn chi tiết về bài viết: ${article.title}`,
+    openGraph: {
+      title: `${article.title} | Hướng dẫn sử dụng Đồng ngôn`,
+      description: article.summary || `Hướng dẫn chi tiết về bài viết: ${article.title}`,
+      type: "article",
+    },
+  };
 }
 
 export default async function HelpCenterArticlePage({ params }: HelpCenterArticlePageProps) {

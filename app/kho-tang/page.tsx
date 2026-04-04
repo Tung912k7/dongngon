@@ -21,10 +21,10 @@ type WorkRow = {
 
 export const metadata: Metadata = {
   title: "Đồng ngôn - Kho tàng tác phẩm",
-  description: "Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng. Triệu hạt giống tạo nên cánh đồng văn học bạt ngàn và vô tận.",
+  description: "Khám phá và đóng góp vào kho tàng văn học cộng đồng tại Đồng ngôn. Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng.",
   openGraph: {
     title: "Kho tàng tác phẩm | Đồng ngôn",
-    description: "Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng. Triệu hạt giống tạo nên cánh đồng văn học bạt ngàn và vô tận.",
+    description: "Khám phá và đóng góp vào kho tàng văn học cộng đồng tại Đồng ngôn. Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng.",
     url: "https://dongngon.vercel.app/kho-tang",
     siteName: "Đồng ngôn",
     locale: "vi_VN",
