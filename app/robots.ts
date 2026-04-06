@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
  
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://dongngon.vercel.app').replace(/\/$/, '')
+
   return {
     rules: {
       userAgent: '*',
@@ -12,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         '/api/',
       ],
     },
-    sitemap: 'https://dongngon.vercel.app/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
