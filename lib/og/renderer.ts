@@ -1,13 +1,13 @@
 import { createRenderer } from '@ogify/core';
-import fs from 'fs';
-import path from 'path';
 import { getBrutalistWorkTemplate } from './templates';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 // Helper to get local font as ArrayBuffer
 export async function getLocalFont(fontPath: string): Promise<ArrayBuffer> {
-  const absolutePath = path.join(process.cwd(), 'public', fontPath);
-  const fontFile = fs.readFileSync(absolutePath);
-  return fontFile.buffer.slice(fontFile.byteOffset, fontFile.byteOffset + fontFile.byteLength);
+  const absolutePath = join(process.cwd(), 'public', fontPath);
+  const buffer = await readFile(absolutePath);
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
 }
 
 // Function to handle async registration

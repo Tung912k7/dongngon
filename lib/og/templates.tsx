@@ -3,7 +3,7 @@ import { defineTemplate, objectToStyle } from '@ogify/core';
 import { getLocalFont } from './renderer';
 
 export const getBrutalistWorkTemplate = async () => {
-  const ganhFont = await getLocalFont('fonts/Ganh Type - Regular.woff2');
+  // const ganhFont = await getLocalFont('fonts/Ganh Type - Regular.woff2');
 
   return defineTemplate({
     fonts: [
@@ -12,12 +12,12 @@ export const getBrutalistWorkTemplate = async () => {
         weight: 700,
         style: 'normal',
       },
-      {
+      /* {
         name: 'Ganh Type',
         data: ganhFont,
         weight: 400,
         style: 'normal',
-      },
+      }, */
     ],
     renderer: ({ params }: any) => {
       const { title, subtitle, brandName = 'Đồng ngôn', accentColor = '#D4A155' } = params;
@@ -43,7 +43,7 @@ export const getBrutalistWorkTemplate = async () => {
             fontWeight: 'bold',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            fontFamily: 'Ganh Type',
+            fontFamily: 'Be Vietnam Pro',
           })}">
             ${brandName}
           </div>
