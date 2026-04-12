@@ -2,7 +2,7 @@ import { getOGRenderer } from '@/lib/og/renderer';
 import { createClient } from '@/utils/supabase/server';
 import { sanitizeTitle } from '@/utils/sanitizer';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const alt = 'Đồng ngôn - Tác phẩm';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';

@@ -1,6 +1,6 @@
 import { getOGRenderer } from '@/lib/og/renderer';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const alt = 'Đồng ngôn - Nơi văn chương hội tụ';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
