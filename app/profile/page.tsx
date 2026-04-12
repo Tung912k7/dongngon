@@ -20,9 +20,12 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   if (!profile) return { title: "Không tìm thấy hồ sơ" };
 
   const nickname = profile.nickname || "Người dùng ẩn danh";
+  const userDescription = profile.description || `Xem hồ sơ và các tác phẩm của ${nickname} trên Đồng ngôn.`;
+  
   const ogImageUrl = new URL(`${baseUrl}/api/og`);
   ogImageUrl.searchParams.set("type", "profile");
   ogImageUrl.searchParams.set("author", nickname);
+  ogImageUrl.searchParams.set("description", userDescription);
 
   return {
     title: `${nickname} | Đồng ngôn`,

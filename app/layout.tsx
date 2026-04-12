@@ -54,14 +54,6 @@ export const metadata: Metadata = {
     description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
     url: "https://dongngon.vercel.app",
     siteName: "Đồng ngôn",
-    images: [
-      {
-        url: "/webp%20file/logo.webp",
-        width: 800,
-        height: 600,
-        alt: "Đồng ngôn Logo",
-      },
-    ],
     locale: "vi_VN",
     type: "website",
   },
@@ -69,7 +61,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Đồng ngôn - Sao còn chưa bấm vào...?",
     description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
-    images: ["/webp%20file/logo.webp"],
   },
   icons: {
     icon: "/webp%20file/logo.webp",

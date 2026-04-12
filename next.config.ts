@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["@ogify/core", "@ogify/templates"],
   allowedDevOrigins: ["http://192.168.0.100:3000"],
   compress: true,
   images: {

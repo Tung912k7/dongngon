@@ -24,13 +24,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const sanitizedTitle = sanitizeTitle(work.title);
   const description = work.description || `Đọc và đóng góp cho tác phẩm "${sanitizedTitle}" thuộc thể loại ${work.sub_category} trên Đồng ngôn.`;
 
-  // Dynamic OG image URL
-  const ogImageUrl = new URL(`${baseUrl}/api/og`);
-  ogImageUrl.searchParams.set("title", sanitizedTitle);
-  ogImageUrl.searchParams.set("author", work.author_nickname);
-  ogImageUrl.searchParams.set("category", work.sub_category);
-  ogImageUrl.searchParams.set("status", work.status === "finished" ? "HOÀN THÀNH" : "ĐANG VIẾT");
-
   return {
     title: sanitizedTitle,
     description,
@@ -40,14 +33,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description,
       url: `${baseUrl}/work/${work.id}`,
       siteName: "Đồng ngôn",
-      images: [
-        {
-          url: ogImageUrl.toString(),
-          width: 1200,
-          height: 630,
-          alt: sanitizedTitle,
-        },
-      ],
       locale: "vi_VN",
       type: "article",
       authors: [work.author_nickname],
@@ -57,7 +42,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       card: "summary_large_image",
       title: `${sanitizedTitle} | Đồng ngôn`,
       description,
-      images: [ogImageUrl.toString()],
       creator: "@dongngon",
     },
   };
