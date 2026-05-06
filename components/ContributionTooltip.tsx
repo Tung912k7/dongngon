@@ -27,6 +27,7 @@ export default function ContributionTooltip({
   const [reported, setReported] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
   const [position, setPosition] = useState<"above" | "below">("above");
+  const [align, setAlign] = useState<"center" | "left" | "right">("center");
   const [view, setView] = useState<"main" | "report" | "custom_reason">("main");
   const [customReason, setCustomReason] = useState("");
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,18 @@ export default function ContributionTooltip({
       if (wrapperRef.current) {
         const rect = wrapperRef.current.getBoundingClientRect();
         setPosition(rect.top < 160 ? "below" : "above");
+
+        const tooltipWidth = 240; // max width estimate
+        const screenWidth = window.innerWidth;
+        const center = rect.left + rect.width / 2;
+
+        if (center - tooltipWidth / 2 < 16) {
+          setAlign("left");
+        } else if (center + tooltipWidth / 2 > screenWidth - 16) {
+          setAlign("right");
+        } else {
+          setAlign("center");
+        }
       }
 
       setIsOpen((prev) => !prev);
@@ -109,7 +122,7 @@ export default function ContributionTooltip({
   // Close on outside click or ESC
   useEffect(() => {
     if (!isOpen) return;
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: MouseEvent | TouchEvent) => {
       if (
         tooltipRef.current && !tooltipRef.current.contains(e.target as Node) &&
         wrapperRef.current && !wrapperRef.current.contains(e.target as Node)
@@ -117,9 +130,11 @@ export default function ContributionTooltip({
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setIsOpen(false); };
     document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown, { passive: true });
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
       document.removeEventListener("keydown", onKey);
     };
   }, [isOpen]);
@@ -148,13 +163,14 @@ export default function ContributionTooltip({
           ref={tooltipRef}
           role="dialog"
           aria-modal="true"
-          className={`absolute z-50 left-1/2 -translate-x-1/2 ${position === "above" ? "bottom-full mb-3" : "top-full mt-3"
-            }`}
-          style={{ animation: "contribution-tooltip-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
+          className={`absolute z-50 ${
+            align === "left" ? "left-0" : align === "right" ? "right-0" : "left-1/2 -translate-x-1/2"
+          } ${position === "above" ? "bottom-full mb-3" : "top-full mt-3"}`}
         >
           <div
             className="bg-white rounded-2xl overflow-hidden min-w-[160px] max-w-[220px]"
             style={{
+              animation: "contribution-tooltip-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards",
               border: "2px solid #171717",
               boxShadow: "3px 3px 0px 0px #171717",
             }}
