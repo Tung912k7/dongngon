@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { deleteHDSDArticle, upsertHDSDArticle } from "@/actions/hdsd";
+import { HELP_CENTER_SECTIONS } from "@/data/helpCenter";
 import type { HelpCenterArticleRecord, HelpCenterArticleUpsertInput } from "@/types/helpCenter";
 
 type Props = {
@@ -35,6 +36,8 @@ const defaultFormState: ArticleFormState = {
   is_published: true,
 };
 
+const CUSTOM_SECTION_VALUE = "__custom__";
+
 function toSlug(value: string) {
   return value
     .trim()
@@ -52,6 +55,66 @@ function formatDateTime(value: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function parseTemplateHeader(rawText: string) {
+  const text = rawText.trimStart();
+
+  let headerBlock = "";
+  let content = rawText;
+
+  if (text.startsWith("---")) {
+    const lines = text.split(/\r?\n/);
+    if (lines[0].trim() === "---") {
+      let endIndex = -1;
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === "---") {
+          endIndex = i;
+          break;
+        }
+      }
+
+      if (endIndex > 0) {
+        headerBlock = lines.slice(1, endIndex).join("\n");
+        content = lines.slice(endIndex + 1).join("\n").trimStart();
+      }
+    }
+  }
+
+  if (!headerBlock && text.startsWith("<!--")) {
+    const endComment = text.indexOf("-->");
+    if (endComment > -1) {
+      headerBlock = text.slice(4, endComment).trim();
+      content = text.slice(endComment + 3).trimStart();
+    }
+  }
+
+  const metadata: Partial<ArticleFormState> = {};
+  if (headerBlock) {
+    const lines = headerBlock.split(/\r?\n/);
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) continue;
+      const separatorIndex = line.indexOf(":");
+      if (separatorIndex < 0) continue;
+
+      const key = line.slice(0, separatorIndex).trim().toLowerCase();
+      const value = line.slice(separatorIndex + 1).trim().replace(/^['\"]|['\"]$/g, "");
+
+      if (key === "slug") metadata.slug = value;
+      if (key === "section_slug") metadata.section_slug = value;
+      if (key === "section_title") metadata.section_title = value;
+      if (key === "title") metadata.title = value;
+      if (key === "summary") metadata.summary = value;
+      if (key === "sort_order") metadata.sort_order = value;
+      if (key === "is_published") metadata.is_published = value.toLowerCase() === "true";
+    }
+  }
+
+  return {
+    metadata,
+    content,
+  };
 }
 
 export default function AdminHDSDEditor({ initialArticles }: Props) {
@@ -76,6 +139,27 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
     }
     return Array.from(seen.entries()).map(([slug, title]) => ({ slug, title }));
   }, [articles]);
+
+  const sectionOptions = useMemo(() => {
+    const combined = new Map<string, string>();
+    for (const section of HELP_CENTER_SECTIONS) {
+      combined.set(section.id, section.title);
+    }
+    for (const section of sections) {
+      combined.set(section.slug, section.title);
+    }
+
+    return Array.from(combined.entries())
+      .map(([slug, title]) => ({ slug, title }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [sections]);
+
+  const isCustomSection = useMemo(
+    () =>
+      Boolean(formState.section_slug) &&
+      !sectionOptions.some((option) => option.slug === formState.section_slug),
+    [formState.section_slug, sectionOptions],
+  );
 
   const stats = useMemo(() => {
     const published = articles.filter((a) => a.is_published).length;
@@ -131,7 +215,8 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
 
     const slug = formState.slug.trim();
     const section_slug = formState.section_slug.trim();
-    const section_title = formState.section_title.trim();
+    const selectedSection = sectionOptions.find((option) => option.slug === section_slug);
+    const section_title = (selectedSection?.title || formState.section_title).trim();
     const title = formState.title.trim();
     const content_markdown = formState.content_markdown.trim();
     const sort_order = Number(formState.sort_order);
@@ -273,19 +358,59 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const validTypes = [".md", ".txt"];
+    const validTypes = [".md", ".txt", ".html"];
     const extension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
     if (!validTypes.includes(extension)) {
-      setMessage({ type: "error", text: "Vui lòng chọn file .md hoặc .txt" });
+      setMessage({ type: "error", text: "Vui lòng chọn file .md, .txt hoặc .html" });
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (content) {
-        handleFieldChange("content_markdown", content);
-        setMessage({ type: "success", text: `Đã tải nội dung từ file: ${file.name}` });
+      const rawText = event.target?.result as string;
+      if (rawText) {
+        const parsed = parseTemplateHeader(rawText);
+        const nextState: ArticleFormState = {
+          ...formState,
+          ...parsed.metadata,
+          content_markdown: parsed.content || formState.content_markdown,
+        };
+
+        if (nextState.section_slug) {
+          const selected = sectionOptions.find((option) => option.slug === nextState.section_slug);
+          if (selected) {
+            nextState.section_title = selected.title;
+          }
+        }
+
+        if (!nextState.slug && nextState.title) {
+          nextState.slug = toSlug(nextState.title);
+        }
+
+        setFormState(nextState);
+
+        const warnings: string[] = [];
+        if (!nextState.slug) warnings.push("Slug bài viết trống");
+        if (!nextState.title) warnings.push("Tiêu đề trống");
+        if (!nextState.section_slug) warnings.push("Chuyên mục trống");
+        if (!nextState.content_markdown) warnings.push("Nội dung trống");
+
+        const filledMetaCount = Object.keys(parsed.metadata).length;
+        let messageText = filledMetaCount > 0
+          ? `Đã nạp nội dung và ${filledMetaCount} trường metadata từ file: ${file.name}`
+          : `Đã tải nội dung từ file: ${file.name}`;
+        
+        if (nextState.slug && !parsed.metadata.slug && nextState.title) {
+          messageText += ` (auto-tạo slug từ tiêu đề)`;
+        }
+
+        const messageType = warnings.length > 0 ? "error" : "success";
+        const warningText = warnings.length > 0 ? `\n⚠️ ${warnings.join(", ")}` : "";
+
+        setMessage({
+          type: messageType,
+          text: messageText + warningText,
+        });
       }
     };
     reader.readAsText(file);
@@ -293,7 +418,17 @@ export default function AdminHDSDEditor({ initialArticles }: Props) {
   };
 
   const handleDownloadSample = () => {
-    const sampleContent = `# Hướng dẫn viết bài (Mẫu chuẩn)
+    const sampleContent = `---
+slug: huong-dan-tao-tai-khoan
+section_slug: tai-khoan
+section_title: Tài khoản
+title: Hướng dẫn tạo tài khoản Đồng Ngôn
+summary: Bài viết hướng dẫn nhanh cách đăng ký tài khoản mới.
+sort_order: 1
+is_published: true
+---
+
+# Hướng dẫn viết bài (Mẫu chuẩn)
 
 Đây là bản mẫu tích hợp cả **Markdown** và các thẻ **HTML** được hỗ trợ tại Đồng Ngôn.
 
@@ -337,7 +472,7 @@ Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "dong-ngon-huong-dan-mau.md";
+    a.download = "dong-ngon-huong-dan-mau-day-du.md";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -416,42 +551,75 @@ Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
 
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest pl-1">
-                Slug chuyên mục <span className="text-red-500">*</span>
+                Chuyên mục <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                value={formState.section_slug}
+              <select
+                value={isCustomSection ? CUSTOM_SECTION_VALUE : formState.section_slug}
                 onChange={(e) => {
-                  handleFieldChange("section_slug", e.target.value);
-                  const known = sections.find((s) => s.slug === e.target.value.trim());
-                  if (known) handleFieldChange("section_title", known.title);
+                  const selected = e.target.value;
+                  if (selected === CUSTOM_SECTION_VALUE) {
+                    handleFieldChange("section_slug", "");
+                    handleFieldChange("section_title", "");
+                    return;
+                  }
+
+                  const option = sectionOptions.find((item) => item.slug === selected);
+                  if (!option) return;
+
+                  handleFieldChange("section_slug", option.slug);
+                  handleFieldChange("section_title", option.title);
                 }}
-                placeholder="vd: tai-khoan"
-                list="section-slugs"
-                className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium font-mono"
-              />
-              <datalist id="section-slugs">
-                {sections.map((s) => (
-                  <option key={s.slug} value={s.slug} />
+                className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium bg-white"
+              >
+                <option value="">Chọn chuyên mục</option>
+                {sectionOptions.map((option) => (
+                  <option key={option.slug} value={option.slug}>
+                    {option.title}
+                  </option>
                 ))}
-              </datalist>
+                <option value={CUSTOM_SECTION_VALUE}>Tự nhập chuyên mục mới</option>
+              </select>
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest pl-1">
-                Tên chuyên mục <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formState.section_title}
-                onChange={(e) => handleFieldChange("section_title", e.target.value)}
-                placeholder="vd: Tài khoản"
-                className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
-              />
-            </div>
+          {isCustomSection || !formState.section_slug ? (
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest pl-1">
+                  Slug chuyên mục <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formState.section_slug}
+                  onChange={(e) => handleFieldChange("section_slug", e.target.value)}
+                  placeholder="vd: tai-khoan"
+                  className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium font-mono"
+                />
+              </div>
 
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest pl-1">
+                  Tên chuyên mục <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formState.section_title}
+                  onChange={(e) => handleFieldChange("section_title", e.target.value)}
+                  placeholder="vd: Tài khoản"
+                  className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border-4 border-black bg-slate-50 px-5 py-4">
+              <p className="text-xs font-black uppercase tracking-widest text-slate-500">Slug chuyên mục</p>
+              <p className="mt-1 font-mono text-sm">{formState.section_slug}</p>
+              <p className="mt-3 text-xs font-black uppercase tracking-widest text-slate-500">Tên chuyên mục</p>
+              <p className="mt-1 font-semibold">{formState.section_title}</p>
+            </div>
+          )}
+
+          <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest pl-1">
                 Tiêu đề <span className="text-red-500">*</span>
@@ -496,7 +664,7 @@ Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileUpload}
-                  accept=".md,.txt"
+                  accept=".md,.txt,.html"
                   className="hidden"
                 />
                 
@@ -523,7 +691,7 @@ Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
                   </svg>
-                  Tải file mẫu
+                  Tải file mẫu đầy đủ
                 </button>
               </div>
             </div>
@@ -549,17 +717,17 @@ Chúc bạn có những bài viết hướng dẫn đẹp mắt!`;
               />
             </div>
 
-            <label className="flex items-center gap-3 rounded-2xl border-4 border-black px-4 py-4 cursor-pointer flex-1">
-              <input
-                type="checkbox"
-                checked={formState.is_published}
-                onChange={(e) => handleFieldChange("is_published", e.target.checked)}
-                className="h-5 w-5 accent-black"
-              />
-              <span className="text-sm font-bold uppercase tracking-[0.12em]">
-                Hiển thị cho người dùng
-              </span>
-            </label>
+            <div className="space-y-2 flex-1 min-w-[220px]">
+              <label className="text-xs font-black uppercase tracking-widest pl-1">Trạng thái</label>
+              <select
+                value={formState.is_published ? "published" : "draft"}
+                onChange={(e) => handleFieldChange("is_published", e.target.value === "published")}
+                className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium bg-white"
+              >
+                <option value="published">Hiển thị cho người dùng</option>
+                <option value="draft">Lưu bản nháp (ẩn)</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">

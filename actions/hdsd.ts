@@ -5,27 +5,30 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { HelpCenterArticleRecord, HelpCenterArticleUpsertInput } from "@/types/helpCenter";
 
-function getAdminSupabaseConfig() {
+function getSupabaseUrl() {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 
   if (!supabaseUrl) {
     throw new Error("Missing Supabase URL for admin operations");
   }
 
-  if (!supabaseServiceKey) {
-    throw new Error("Missing Supabase service role key for admin operations");
-  }
-
-  return { supabaseUrl, supabaseServiceKey };
+  return supabaseUrl;
 }
 
-// Use service role key to bypass RLS for admin operations
-function createAdminClient() {
-  const { supabaseUrl, supabaseServiceKey } = getAdminSupabaseConfig();
+function getSupabaseServiceRoleKey() {
+  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE || null;
+}
 
-  return createSupabaseClient(supabaseUrl, supabaseServiceKey);
+async function createHDSDWriteClient() {
+  const supabaseUrl = getSupabaseUrl();
+  const supabaseServiceKey = getSupabaseServiceRoleKey();
+
+  if (supabaseServiceKey) {
+    return createSupabaseClient(supabaseUrl, supabaseServiceKey);
+  }
+
+  console.warn("[HDSD] Service role key missing; falling back to authenticated admin client.");
+  return await createClient();
 }
 
 // Check admin role
@@ -66,8 +69,8 @@ export async function getAdminHDSDArticles(): Promise<{ success: boolean; data?:
     const isAdmin = await checkAdmin();
     if (!isAdmin) return { success: false, error: "Unauthorized" };
     
-    const adminDb = createAdminClient();
-    const { data, error } = await adminDb
+    const supabase = await createClient();
+    const { data, error } = await supabase
       .from("help_center_articles")
       .select("*")
       .order("section_title", { ascending: true })
@@ -102,7 +105,7 @@ export async function upsertHDSDArticle(input: HelpCenterArticleUpsertInput) {
     const isAdmin = await checkAdmin();
     if (!isAdmin) return { success: false, error: "Unauthorized" };
 
-    const adminDb = createAdminClient();
+    const adminDb = await createHDSDWriteClient();
     
     const payload = {
       ...input,
@@ -132,7 +135,7 @@ export async function deleteHDSDArticle(id: string) {
     const isAdmin = await checkAdmin();
     if (!isAdmin) return { success: false, error: "Unauthorized" };
 
-    const adminDb = createAdminClient();
+    const adminDb = await createHDSDWriteClient();
     const { error } = await adminDb
       .from("help_center_articles")
       .delete()
