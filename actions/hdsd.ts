@@ -5,14 +5,25 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { HelpCenterArticleRecord, HelpCenterArticleUpsertInput } from "@/types/helpCenter";
 
+function getAdminSupabaseConfig() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
+
+  if (!supabaseUrl) {
+    throw new Error("Missing Supabase URL for admin operations");
+  }
+
+  if (!supabaseServiceKey) {
+    throw new Error("Missing Supabase service role key for admin operations");
+  }
+
+  return { supabaseUrl, supabaseServiceKey };
+}
+
 // Use service role key to bypass RLS for admin operations
 function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Missing Supabase admin credentials");
-  }
+  const { supabaseUrl, supabaseServiceKey } = getAdminSupabaseConfig();
 
   return createSupabaseClient(supabaseUrl, supabaseServiceKey);
 }
@@ -64,7 +75,7 @@ export async function getAdminHDSDArticles(): Promise<{ success: boolean; data?:
 
     if (error) return { success: false, error: error.message };
     return { success: true, data: data as HelpCenterArticleRecord[] };
-  } catch (error) {
+  } catch {
     return { success: false, error: "Internal server error" };
   }
 }
@@ -81,7 +92,7 @@ export async function getPublishedHDSDArticles(): Promise<{ success: boolean; da
 
     if (error) return { success: false, error: error.message };
     return { success: true, data: data as HelpCenterArticleRecord[] };
-  } catch (error) {
+  } catch {
     return { success: false, error: "Internal server error" };
   }
 }
@@ -111,6 +122,7 @@ export async function upsertHDSDArticle(input: HelpCenterArticleUpsertInput) {
     
     return { success: true, data: data as HelpCenterArticleRecord };
   } catch (error) {
+    console.error("[HDSD] Failed to upsert article:", error);
     return { success: false, error: "Internal server error" };
   }
 }
@@ -133,6 +145,7 @@ export async function deleteHDSDArticle(id: string) {
     
     return { success: true };
   } catch (error) {
+    console.error("[HDSD] Failed to delete article:", error);
     return { success: false, error: "Internal server error" };
   }
 }
