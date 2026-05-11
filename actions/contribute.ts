@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeInput } from "@/utils/sanitizer";
@@ -42,6 +43,21 @@ export async function submitContribution(workId: string, content: string, newLin
   if (!contributionRate.allowed) {
     return {
       error: `Bạn thao tác quá nhanh. Vui lòng thử lại sau ${contributionRate.retryAfterSeconds} giây.`,
+    };
+  }
+
+  // IP-based Rate Limiting
+  const headerList = await headers();
+  const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  const ipRate = await checkRateLimitDistributed(
+    supabase,
+    `contribute:ip:${ip}`,
+    20, // 20 requests per window for the same IP
+    CONTRIBUTION_WINDOW_MS
+  );
+  if (!ipRate.allowed) {
+    return {
+      error: "Phát hiện quá nhiều yêu cầu từ địa chỉ IP của bạn. Vui lòng thử lại sau.",
     };
   }
 
@@ -162,6 +178,9 @@ export async function submitContribution(workId: string, content: string, newLin
 
   if (error) {
     console.error("Error submitting contribution:", error);
+    if (error.code === '23505') {
+      return { error: "Bạn đã đóng góp cho tác phẩm này hôm nay rồi. Hãy quay lại vào ngày mai nhé!" };
+    }
     return { error: getErrorMessage(error) };
   }
 

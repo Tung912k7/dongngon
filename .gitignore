@@ -48,11 +48,9 @@ reports/
 tmp/
 .vscode/
 *.log
-scripts/inspect*
-scripts/check*
-scripts/test*
-scripts/list*
-scripts/extract*
+scripts/
+build_log.md
+proxy.ts
 
 # Metadata & Documentation
 metadata.md
@@ -64,3 +62,8 @@ knowledge/
 .copilot/
 .github/agents/
 **/*.agent.md
+CHANGELOG.md
+seo_analysis.md
+social-media-strategy.md
+admin-hide-user-feature.md
+plan-sepayIntegrationAndThankYouPopup.prompt.md

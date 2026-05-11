@@ -10,6 +10,7 @@ import NotificationModal from "./NotificationModal";
 import { validatePoeticForm } from "@/utils/validation";
 import { useUserStore } from "@/stores/user-store";
 import { useEditorStore } from "@/stores/editor-store";
+import ConfirmModal from "./ConfirmModal";
 
 export default function Editor({ 
   workId, 
@@ -52,6 +53,7 @@ export default function Editor({
   const isFreeVerse = hinhThuc === "Tự do";
   const isPoetry = categoryType === "Thơ";
   const [newLine, setNewLine] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const isBlocked = !canContribute;
 
   // Sync initial user prop with store if store is empty
@@ -146,6 +148,17 @@ export default function Editor({
     }
 
     setError(null);
+    setShowConfirm(true);
+  };
+
+  const executeSubmit = async () => {
+    if (isSubmitting || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+
+    const currentContent = textareaRef.current?.value ?? content;
+    const cleanContent = currentContent.trim();
+
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("TIMEOUT")), 10000)
     );
@@ -161,7 +174,6 @@ export default function Editor({
       } else {
         reset();
         setNewLine(false);
-
         router.refresh();
       }
     } catch (err: unknown) {
@@ -296,6 +308,14 @@ export default function Editor({
         message={notification.message}
         type={notification.type}
         title={notification.title}
+      />
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={executeSubmit}
+        title="Bạn đã hài lòng chưa?"
+        message="Một khi bạn bấm 'Hài lòng', nội dung này sẽ được ghi nhận vĩnh viễn và không thể chỉnh sửa."
       />
     </form>
   );

@@ -7,68 +7,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: "1.4.0",
-    date: "01/04/2026",
-    title: "Nâng cấp Trải nghiệm & Hiệu năng",
+    version: "1.5.0",
+    date: "11/05/2026",
+    title: "Tối ưu hạ tầng & Hệ thống viết thời gian thực",
     changes: [
-      "Cải thiện hiệu năng và trải nghiệm của trang web",
-      "Trải nghiệm đọc mượt mà — bổ sung tính năng để mang đến trải nghiệm tốt hơn khi đọc và đóng góp vào tác phẩm",
-      "Tìm kiếm thông minh — nâng cao và cải thiện chức năng tìm kiếm, giúp việc tìm kiếm trở nên dễ dàng hơn",
-      "Giao diện nhất quán — chuẩn hóa giao diện, mang đến sự liền mạch và đồng bộ khi nhìn",
-      "Bạn có thể truy cập vào sổ tay hướng dẫn thông qua trang chủ hoặc cài đặt",
-    ],
-  },
-  {
-    version: "1.3.0",
-    date: "20/03/2026",
-    title: "Nâng cấp hồ sơ & Quyền riêng tư",
-    changes: [
-      "Hồ sơ cá nhân mới — bổ sung Mã định danh (ID) và tính năng tạo Hashtag cá tính",
-      "Quản lý quyền riêng tư — cho phép tùy chỉnh ẩn/hiện Email, Bút danh, ID, Hashtag và Ngày sinh trong Cài đặt",
-      "Tiện ích sao chép nhanh — thêm nút sao chép Mã định danh kèm thông báo xác nhận",
-      "Định dạng ngày sinh mới — hiển thị ngày sinh chuẩn Việt Nam (DD/MM/YYYY) trên trang hồ sơ",
-      "Cải tiến HDSD — làm mới toàn bộ giao diện và cấu trúc nội dung trang Hướng dẫn sử dụng",
-    ],
-  },
-  {
-    version: "1.2.2",
-    date: "14/03/2026",
-    title: "Đơn giản hóa luật đóng góp",
-    changes: [
-      "Website nay chỉ còn áp dụng luật \"1 câu\" cho đóng góp",
-      "Đã gỡ bỏ luật cũ \"1 kí tự\" để cách viết thống nhất và dễ hiểu hơn",
-    ],
-  },
-  {
-    version: "1.2.1",
-    date: "14/03/2026",
-    title: "Thêm chế độ văn xuôi chỉ xem",
-    changes: [
-      "Thêm hai chế độ mới: \"Nhật ký (chỉ xem)\" và \"Hồi ký (chỉ xem)\"",
-      "Ở hai chế độ này, chỉ chủ tác phẩm mới được đóng góp, mọi người khác chỉ có thể đọc",
-    ],
-  },
-  {
-    version: "1.2.0",
-    date: "02/03/2026",
-    title: "Cải tiến quản lý tác phẩm & cá nhân hóa",
-    changes: [
-      "Thêm mô tả cho tác phẩm — giờ đây bạn có thể thêm mô tả chi tiết, hiển thị ngay trên Pop-up xem trước tác phẩm",
-      "Nâng cấp quyền riêng tư — cho phép chuyển đổi trạng thái tác phẩm từ \"Riêng tư\" sang \"Cộng đồng\"",
-      "Ô nhập ngày sinh thông minh — tích hợp lịch chọn và tự động định dạng DD/MM/YYYY chuẩn Việt Nam",
-      "Cải tiến bộ lọc nội dung — cho phép viết ngày tháng năm (Dạng nhật ký) mà không bắt buộc dấu câu kết thúc",
-    ],
-  },
-  {
-    version: "1.1.0",
-    date: "01/03/2026",
-    title: "Cập nhật tính năng mới",
-    changes: [
-      "Thêm nút \"Xuống dòng\" cho Thơ tự do — tự chọn vị trí xuống dòng khi đóng góp",
-      "Tooltip đóng góp mới — nhấn vào câu để xem tác giả, sao chép hoặc xem hồ sơ",
-      "Bút danh đồng bộ — đổi tên sẽ tự động cập nhật trên tất cả tác phẩm và đóng góp",
-      "Gạch chân đỏ thông báo — tên người dùng sẽ được gạch chân đỏ khi có thông báo chưa đọc",
-      "Sửa lỗi popup xóa tác phẩm bị lệch trên trang hồ sơ",
+      "Tối ưu khung hiển thị văn bản",
+      "Bổ sung chức năng xác nhận trước khi gửi đóng góp",
+      "Tăng cường bảo mật",
     ],
   },
 ];
