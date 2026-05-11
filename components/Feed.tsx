@@ -1,21 +1,35 @@
+"use client";
+
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { createClient } from "@/utils/supabase/client";
 import { Virtuoso } from "react-virtuoso";
-// ... (imports remain same)
+import ContributionTooltip from "./ContributionTooltip";
+import { Contribution } from "@/types/database";
+
+// Extend the base Contribution type to include the joined user_profile
+interface FeedContribution extends Contribution {
+  user_profile?: {
+    pen_name?: string;
+    hashtag?: string;
+    custom_id?: string;
+  };
+}
 
 export default function Feed({
   initialContributions,
   workId,
   limitType,
 }: {
-  initialContributions: Contribution[];
+  initialContributions: FeedContribution[];
   workId: string;
   limitType?: string;
 }) {
-  const [contributions, setContributions] = useState<Contribution[]>(
+  const [contributions, setContributions] = useState<FeedContribution[]>(
     initialContributions
   );
   const supabase = useMemo(() => createClient(), []);
   const virtuosoRef = useRef<any>(null);
-  const bufferRef = useRef<Contribution[]>([]);
+  const bufferRef = useRef<FeedContribution[]>([]);
   const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -58,7 +72,7 @@ export default function Feed({
           filter: `work_id=eq.${workId}`,
         },
         (payload) => {
-          const newContrib = payload.new as Contribution;
+          const newContrib = payload.new as FeedContribution;
           bufferRef.current.push(newContrib);
           
           if (!flushTimeoutRef.current) {
@@ -74,7 +88,7 @@ export default function Feed({
     };
   }, [supabase, workId, flushBuffer]);
 
-  const renderContribution = (index: number, contribution: Contribution) => {
+  const renderContribution = (index: number, contribution: FeedContribution) => {
     const isSentenceMode = limitType === 'sentence' || limitType === '1 câu';
     const prevContribution = index > 0 ? contributions[index - 1] : null;
     const prevEndsWithPunctuation = prevContribution 
@@ -120,7 +134,7 @@ export default function Feed({
       />
       
       {contributions.length === 0 && (
-        <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy là người đầu tiên đóng góp.</p>
+        <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy trở thành người đầu tiên.</p>
       )}
 
       {contributions.length > 50 && (

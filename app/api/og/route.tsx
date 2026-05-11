@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
 
     const title = searchParams.get('title') || 'Đồng ngôn';
     const author = searchParams.get('author') || 'Nghiên bút';
+    const text = searchParams.get('text') || '';
     const category = searchParams.get('category') || 'Văn chương';
     const status = searchParams.get('status') || '';
     const type = searchParams.get('type') || 'work';
@@ -23,6 +24,14 @@ export async function GET(req: NextRequest) {
       buffer = await renderer.renderToImage('brutalist-work', {
         title: author,
         subtitle: truncatedDesc,
+      }, {
+        width: 1200,
+        height: 630,
+      });
+    } else if (type === 'contribution' && text) {
+      buffer = await renderer.renderToImage('brutalist-quote', {
+        text: text,
+        author: author,
       }, {
         width: 1200,
         height: 630,

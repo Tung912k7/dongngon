@@ -217,10 +217,38 @@ export default async function WorkPage({
   const isCompleted = work.status === "finished";
   const isOwner = !!user && user.id === work.created_by;
   const isReadOnlySubCategory = isReadOnlyProseSubCategory(work.sub_category);
-  const canContribute = !isReadOnlySubCategory || isOwner;
-  const contributionBlockedMessage = isReadOnlySubCategory
+  
+  let canContribute = !isReadOnlySubCategory || isOwner;
+  let contributionBlockedMessage = isReadOnlySubCategory
     ? "Mục này ở chế độ chỉ xem. Chỉ chủ tác phẩm mới có thể đóng góp."
     : undefined;
+
+  // Check daily limit for current user (Vietnam Timezone)
+  if (canContribute && user) {
+    const vnDate = new Intl.DateTimeFormat('en-CA', { 
+      timeZone: 'Asia/Ho_Chi_Minh',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date());
+    
+    // startOfDay VN is vnDateT00:00:00+07:00
+    const startOfDayVN = `${vnDate}T00:00:00+07:00`;
+    
+    const { data: todayContribution } = await supabase
+      .from("contributions")
+      .select("id")
+      .eq("work_id", id)
+      .eq("user_id", user.id)
+      .gte("created_at", startOfDayVN)
+      .limit(1)
+      .single();
+
+    if (todayContribution) {
+      canContribute = false;
+      contributionBlockedMessage = "Hôm nay bạn đã tham gia vào tác phẩm này!";
+    }
+  }
 
 
   return (

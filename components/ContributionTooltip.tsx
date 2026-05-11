@@ -28,7 +28,7 @@ export default function ContributionTooltip({
   const [isReporting, setIsReporting] = useState(false);
   const [position, setPosition] = useState<"above" | "below">("above");
   const [align, setAlign] = useState<"center" | "left" | "right">("center");
-  const [view, setView] = useState<"main" | "report" | "custom_reason">("main");
+  const [view, setView] = useState<"main" | "report" | "custom_reason" | "share">("main");
   const [customReason, setCustomReason] = useState("");
   const tooltipRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLSpanElement>(null);
@@ -89,6 +89,31 @@ export default function ContributionTooltip({
     setIsOpen(false);
     router.push(`/profile?id=${contribution.user_id}`);
   }, [router, contribution.user_id]);
+
+  const handleCopyLink = useCallback(async () => {
+    const url = `${window.location.origin}/work/${contribution.work_id}?c=${contribution.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+      setIsOpen(false);
+    }, 1200);
+  }, [contribution.work_id, contribution.id]);
+
+  const handleDownloadCard = useCallback(() => {
+    const ogUrl = `/api/og?text=${encodeURIComponent(contribution.content)}&author=${encodeURIComponent(contribution.author_nickname)}&type=contribution`;
+    window.open(ogUrl, '_blank');
+    setIsOpen(false);
+  }, [contribution.content, contribution.author_nickname]);
 
   const handleReport = useCallback(async (reason: string) => {
     if (isReporting || reported) return;
@@ -236,6 +261,24 @@ export default function ContributionTooltip({
 
                   <div style={{ height: "2px", backgroundColor: "#171717" }} />
 
+                  {/* Share Menu */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setView("share"); }}
+                    className="w-full flex items-center justify-between gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                      </svg>
+                      <span>Chia sẻ</span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3 text-gray-400 group-hover:text-black transition-colors">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </button>
+
+                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+
                   {/* Open Report Reasons Submenu */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setView("report"); }}
@@ -251,6 +294,61 @@ export default function ContributionTooltip({
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3 text-gray-400 group-hover:text-red-400 transition-colors">
                       <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                     </svg>
+                  </button>
+                </div>
+              </>
+            ) : view === "share" ? (
+              // Share Submenu View
+              <>
+                <div
+                  className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors"
+                  style={{ backgroundColor: "#171717" }}
+                  onClick={(e) => { e.stopPropagation(); setView("main"); }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="white" className="w-3 h-3 hover:text-gray-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                  </svg>
+                  <span className="text-[11px] font-bold text-white uppercase tracking-widest pl-1">
+                    Chia sẻ
+                  </span>
+                </div>
+
+                <div style={{ height: "2px", backgroundColor: "#171717" }} />
+
+                <div className="flex flex-col">
+                  {/* Copy Link */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleCopyLink(); }}
+                    className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                  >
+                    {copied ? (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#16a34a" className="w-3.5 h-3.5">
+                          <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                        </svg>
+                        <span style={{ color: "#16a34a" }}>Đã chép!</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                        <span>Chép liên kết</span>
+                      </>
+                    )}
+                  </button>
+
+                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+
+                  {/* Download Social Card */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDownloadCard(); }}
+                    className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                    <span>Tải ảnh thẻ</span>
                   </button>
                 </div>
               </>

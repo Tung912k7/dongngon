@@ -1,5 +1,5 @@
 import { createRenderer } from '@ogify/core';
-import { getBrutalistWorkTemplate } from './templates';
+import { getBrutalistWorkTemplate, getBrutalistQuoteTemplate } from './templates';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -12,11 +12,15 @@ export async function getLocalFont(fontPath: string): Promise<ArrayBuffer> {
 
 // Function to handle async registration
 export async function getOGRenderer() {
-  const brutalistWorkTemplate = await getBrutalistWorkTemplate();
+  const [brutalistWorkTemplate, brutalistQuoteTemplate] = await Promise.all([
+    getBrutalistWorkTemplate(),
+    getBrutalistQuoteTemplate(),
+  ]);
   
   return createRenderer({
     templates: {
       'brutalist-work': brutalistWorkTemplate,
+      'brutalist-quote': brutalistQuoteTemplate,
     },
   });
 }

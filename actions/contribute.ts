@@ -47,18 +47,26 @@ export async function submitContribution(workId: string, content: string, newLin
   }
 
   // IP-based Rate Limiting
-  const headerList = await headers();
-  const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "unknown";
-  const ipRate = await checkRateLimitDistributed(
-    supabase,
-    `contribute:ip:${ip}`,
-    20, // 20 requests per window for the same IP
-    CONTRIBUTION_WINDOW_MS
-  );
-  if (!ipRate.allowed) {
-    return {
-      error: "Phát hiện quá nhiều yêu cầu từ địa chỉ IP của bạn. Vui lòng thử lại sau.",
-    };
+  let ip = "unknown";
+  try {
+    const headerList = await headers();
+    ip = headerList.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  } catch {
+    // Falls back to unknown in environments where headers() is unavailable (like Vitest)
+  }
+
+  if (ip !== "unknown") {
+    const ipRate = await checkRateLimitDistributed(
+      supabase,
+      `contribute:ip:${ip}`,
+      20, // 20 requests per window for the same IP
+      CONTRIBUTION_WINDOW_MS
+    );
+    if (!ipRate.allowed) {
+      return {
+        error: "Phát hiện quá nhiều yêu cầu từ địa chỉ IP của bạn. Vui lòng thử lại sau.",
+      };
+    }
   }
 
   // 1.1 Check Work Details (including limit_type)
@@ -120,19 +128,25 @@ export async function submitContribution(workId: string, content: string, newLin
     return { error: "Nội dung của bạn chứa từ khóa không phù hợp với tiêu chuẩn cộng đồng." };
   }
 
-  // 3. Check Daily Limit
-  const startOfDay = new Date();
-  startOfDay.setUTCHours(0, 0, 0, 0);
+  // 3. Check Daily Limit (Vietnam Timezone)
+  const vnDate = new Intl.DateTimeFormat('en-CA', { 
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
+  
+  const startOfDayVN = `${vnDate}T00:00:00+07:00`;
   
   const { data: recentContributions } = await supabase
     .from("contributions")
     .select("created_at")
     .eq("work_id", workId)
     .eq("user_id", user.id)
-    .gte("created_at", startOfDay.toISOString());
+    .gte("created_at", startOfDayVN);
 
   if (recentContributions && recentContributions.length > 0) {
-    return { error: "Bạn chỉ được đóng góp 1 câu mỗi ngày cho tác phẩm này." };
+    return { error: "Hôm nay bạn đã tham gia vào tác phẩm này." };
   }
 
   // 4. Get User Profile for Nickname & Activation State
@@ -179,7 +193,7 @@ export async function submitContribution(workId: string, content: string, newLin
   if (error) {
     console.error("Error submitting contribution:", error);
     if (error.code === '23505') {
-      return { error: "Bạn đã đóng góp cho tác phẩm này hôm nay rồi. Hãy quay lại vào ngày mai nhé!" };
+      return { error: "Hôm nay bạn đã tham gia vào tác phẩm này!" };
     }
     return { error: getErrorMessage(error) };
   }

@@ -11,9 +11,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "11/05/2026",
     title: "Tối ưu hạ tầng & Hệ thống viết thời gian thực",
     changes: [
-      "Tối ưu khung hiển thị văn bản",
+      "Tính năng chia sẻ những câu văn hay",
+      "Tối ưu hiển thị",
       "Bổ sung chức năng xác nhận trước khi gửi đóng góp",
-      "Tăng cường bảo mật",
+      "Tăng cường bảo mật và bảo vệ dữ liệu",
     ],
   },
 ];

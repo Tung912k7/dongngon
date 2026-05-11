@@ -11,6 +11,7 @@ import { validatePoeticForm } from "@/utils/validation";
 import { useUserStore } from "@/stores/user-store";
 import { useEditorStore } from "@/stores/editor-store";
 import ConfirmModal from "./ConfirmModal";
+import { getTimeUntilNextVN0, formatCountdown } from "@/utils/date";
 
 export default function Editor({ 
   workId, 
@@ -54,6 +55,7 @@ export default function Editor({
   const isPoetry = categoryType === "Thơ";
   const [newLine, setNewLine] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const isBlocked = !canContribute;
 
   // Sync initial user prop with store if store is empty
@@ -83,21 +85,50 @@ export default function Editor({
     return () => clearTimeout(delayDebounceFn);
   }, [content, isBlocked, setWarning]);
 
-  const validateContent = (content: string, limitType: string) => {
+  // Countdown logic for daily limit
+  useEffect(() => {
+    if (!isBlocked || !blockedMessage?.includes("đã tham gia")) {
+      setTimeLeft(null);
+      return;
+    }
+
+    const updateTimer = () => {
+      setTimeLeft(getTimeUntilNextVN0());
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [isBlocked, blockedMessage]);
+
+  const validateContent = (content: string, limitType: string): { isValid: boolean; error?: string } => {
     const trimmed = content.trim();
 
     if (limitType === '1 câu') {
       // Allow dates like 02/03/2026 or 02-03-2026 without punctuation
       const dateRegex = /^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/;
       if (dateRegex.test(trimmed)) {
-        return true;
+        return { isValid: true };
       }
 
-      const sentenceRegex = /[.?!]$/;
-      return sentenceRegex.test(trimmed);
+      // 1. Must end with punctuation
+      if (!/[.?!]$/.test(trimmed)) {
+        return { isValid: false, error: "Câu văn phải kết thúc bằng dấu chấm . , chấm hỏi ? hoặc chấm than !." };
+      }
+
+      // 2. Must not have punctuation in the middle
+      const firstPunctMatch = trimmed.match(/[.?!]/);
+      if (firstPunctMatch) {
+        const firstPunctIndex = firstPunctMatch.index!;
+        const remainingFromFirstPunct = trimmed.slice(firstPunctIndex);
+        
+        if (!/^[.?!]+$/.test(remainingFromFirstPunct)) {
+          return { isValid: false, error: "Mỗi ngày bạn chỉ được đóng góp 1 câu duy nhất." };
+        }
+      }
     }
 
-    return true;
+    return { isValid: true };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,18 +153,13 @@ export default function Editor({
 
     // Poetry (Thơ) does not require sentence-ending punctuation
     if (!isPoetry) {
-      const isValidRule = validateContent(cleanContent, writingRule);
+      const validation = validateContent(cleanContent, writingRule);
       
-      if (!isValidRule) {
-        let msg = "Nội dung không hợp lệ.";
-        if (writingRule === '1 câu') {
-          msg = "Nội dung phải kết thúc bằng dấu câu (. ! ?).";
-        }
-          
-          showNotification(msg, "info", "Sai quy tắc");
-          setIsSubmitting(false);
-          isSubmittingRef.current = false;
-          return;
+      if (!validation.isValid) {
+        showNotification(validation.error || "Nội dung không hợp lệ.", "info", "Sai quy tắc");
+        setIsSubmitting(false);
+        isSubmittingRef.current = false;
+        return;
       }
     }
 
@@ -152,7 +178,6 @@ export default function Editor({
   };
 
   const executeSubmit = async () => {
-    if (isSubmitting || isSubmittingRef.current) return;
     isSubmittingRef.current = true;
     setIsSubmitting(true);
 
@@ -209,10 +234,18 @@ export default function Editor({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
+    <form onSubmit={handleSubmit} className="relative group">
       {isBlocked && (
-        <div className="absolute -top-14 left-0 right-0 bg-white border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
-          {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-xl transition-all duration-500">
+          <div className="bg-black text-white px-4 py-2 rounded-lg shadow-[4px_4px_0px_0px_rgba(212,175,55,1)] flex flex-col items-center gap-1 animate-in zoom-in-95 duration-300">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-literary-gold/80">Quay lại sau</span>
+            <span className="text-xl font-black tracking-widest tabular-nums font-mono">
+              {timeLeft !== null ? formatCountdown(timeLeft) : "--:--:--"}
+            </span>
+          </div>
+          <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-black bg-white/80 px-3 py-1 rounded-full border border-black/10">
+             {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
+          </p>
         </div>
       )}
       {error && (
@@ -226,7 +259,7 @@ export default function Editor({
         </div>
       )}
 
-      <div className="flex items-end gap-2 sm:gap-3">
+      <div className={`flex items-end gap-2 sm:gap-3 transition-all duration-500 ${isBlocked ? "blur-[2px] opacity-50 select-none" : ""}`}>
         <textarea
           ref={textareaRef}
           value={content}
@@ -286,7 +319,7 @@ export default function Editor({
           )}
         </PrimaryButton>
       </div>
-      {!isBlocked && (
+      {isBlocked ? null : (
         <p className="text-xs text-gray-400 mt-2 text-center pl-2">
           Mỗi ngày chỉ được đóng góp 1 câu.
           {writingRule === "1 câu" && !isPoetry && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
@@ -312,7 +345,11 @@ export default function Editor({
 
       <ConfirmModal
         isOpen={showConfirm}
-        onClose={() => setShowConfirm(false)}
+        onClose={() => {
+          setShowConfirm(false);
+          setIsSubmitting(false);
+          isSubmittingRef.current = false;
+        }}
         onConfirm={executeSubmit}
         title="Bạn đã hài lòng chưa?"
         message="Một khi bạn bấm 'Hài lòng', nội dung này sẽ được ghi nhận vĩnh viễn và không thể chỉnh sửa."
