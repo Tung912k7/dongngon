@@ -42,7 +42,7 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
           <h4 className="font-black text-lg uppercase tracking-tight">Mật khẩu</h4>
         </div>
         <p className="text-[11px] text-black/50 font-bold uppercase tracking-widest leading-relaxed max-w-lg">
-          Để đảm bảo an toàn, chúng tôi khuyên bạn nên sử dụng mật khẩu mạnh (trên 12 ký tự) và duy nhất cho tài khoản này.
+          Để đảm bảo an toàn, chúng mình khuyên bạn nên sử dụng mật khẩu mạnh (trên 12 ký tự) và duy nhất cho tài khoản này.
         </p>
         
         {message && (

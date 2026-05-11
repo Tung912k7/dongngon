@@ -90,13 +90,13 @@ export async function updateProfile(
   // 4. Handle Birthday Logic (Cannot be changed after it is set once)
   let finalBirthday = undefined;
   if (birthday) {
-    const { data: currentProfile } = await supabase
-      .from("profiles")
+    const { data: currentPrivateData } = await supabase
+      .from("user_private_data")
       .select("birthday")
       .eq("id", user.id)
       .single();
 
-    if (!currentProfile?.birthday) {
+    if (!currentPrivateData?.birthday) {
       // Allow setting it because it was not set previously
       finalBirthday = birthday;
     }
@@ -109,7 +109,6 @@ export async function updateProfile(
     is_private: boolean | undefined;
     updated_at: string;
     avatar_url?: string;
-    birthday?: string;
     hashtags?: string[];
     public_fields?: Record<string, boolean>;
   } = {
@@ -124,9 +123,15 @@ export async function updateProfile(
   if (avatarUrl !== undefined) {
     updatePayload.avatar_url = avatarUrl;
   }
-  
+
   if (finalBirthday !== undefined) {
-    updatePayload.birthday = finalBirthday;
+    const { error: privateError } = await supabase
+      .from("user_private_data")
+      .update({ birthday: finalBirthday })
+      .eq("id", user.id);
+    if (privateError) {
+      console.error("[Profile] Update private data error:", privateError);
+    }
   }
 
   const { error } = await supabase

@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     title: "Kho tàng tác phẩm | Đồng ngôn",
     description: "Khám phá hàng ngàn tác phẩm văn học ngẫu hứng tại Đồng ngôn.",
   },
+  alternates: {
+    canonical: "/kho-tang",
+  },
 };
 
 // Map UI status labels back to DB values for server-side filtering
@@ -75,7 +78,18 @@ export default async function DongNgonPage({
     const page = Math.max(parseInt(params.page || "1") || 1, 1);
 
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Parallelize data fetching
+    const [
+      userResponse,
+      hiddenProfilesResponse
+    ] = await Promise.all([
+      supabase.auth.getUser(),
+      supabase.from("profiles").select("id").eq("is_hidden", true)
+    ]);
+
+    const user = userResponse.data.user;
+    const hiddenUserIds = (hiddenProfilesResponse.data || []).map(p => p.id);
 
     // 1. IMPROVED SEARCH: Pre-search in contributions if query exists
     let contentMatchedWorkIds: string[] = [];
@@ -92,13 +106,18 @@ export default async function DongNgonPage({
         }
     }
 
-    // 2. Build server-side query on works table
+    // 3. Build server-side query on works table
     let query = supabase
         .from("works")
         .select(
             "id, title, category_type, sub_category, limit_type, status, created_at, author_nickname, privacy, created_by, age_rating, description",
             { count: "exact" }
         );
+
+    // Filter out works by hidden users
+    if (hiddenUserIds.length > 0) {
+        query = query.not("created_by", "in", `(${hiddenUserIds.join(",")})`)
+    }
 
     // Privacy & Test filter
     if (user) {

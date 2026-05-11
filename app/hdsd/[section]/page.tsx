@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: HelpCenterSectionPageProps): 
       title: `${section.title} | Hướng dẫn sử dụng Đồng ngôn`,
       description: section.description,
     },
+    alternates: {
+      canonical: `/hdsd/${sectionId}`,
+    },
   };
 }
 

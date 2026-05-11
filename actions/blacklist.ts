@@ -58,8 +58,8 @@ export async function getBlacklistWords() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, data: [] };
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== "admin") return { success: false, data: [] };
+    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    if (privateData?.role !== "admin") return { success: false, data: [] };
 
     const { data, error } = await supabase
       .from("blacklist_words")
@@ -92,8 +92,8 @@ export async function addBlacklistWord(word: string, isRegex: boolean) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Unauthorized" };
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== "admin") return { success: false, error: "Forbidden" };
+    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
 
     const { error } = await supabase
       .from("blacklist_words")
@@ -118,8 +118,8 @@ export async function deleteBlacklistWord(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Unauthorized" };
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== "admin") return { success: false, error: "Forbidden" };
+    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
 
     const { error } = await supabase
       .from("blacklist_words")

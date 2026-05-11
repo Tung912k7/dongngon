@@ -49,13 +49,19 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
 
     const { data: profile, error } = await supabase
       .from("profiles")
-      .select("nickname, role")
+      .select("nickname")
       .eq("id", currentUser.id)
       .single();
 
     if (error) {
       console.error("[Header] Profile fetch error:", error.code, error.message);
     }
+
+    const { data: privateData } = await supabase
+      .from("user_private_data")
+      .select("role")
+      .eq("id", currentUser.id)
+      .single();
 
     setUser(currentUser);
     setNickname(
@@ -65,7 +71,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         currentUser.email?.split("@")[0] ||
         "Thành viên"
     );
-    setRole(profile?.role || currentUser.user_metadata?.role || "user");
+    setRole(privateData?.role || currentUser.user_metadata?.role || "user");
   }, [supabase]);
 
   // Fetch unread notification count at Header level
@@ -188,16 +194,22 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
               <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
             </Link>
             
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center text-black active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all hover:bg-black hover:text-white group"
-              aria-label="Mở menu"
+            <button
+              onClick={() => setIsMobileMenuOpen((s) => !s)}
+              className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center text-black transition-colors group"
+              aria-label={isMobileMenuOpen ? "Đóng menu" : "Mở menu"}
             >
-              <div className="flex flex-col gap-[4px] items-center">
-                <span className="w-[18px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
-                <span className="w-[16px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
-                <span className="w-[18px] h-[2px] bg-black group-hover:bg-white transition-colors rounded-full"></span>
-              </div>
+              {isMobileMenuOpen ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              ) : (
+                <div className="flex flex-col gap-[4px] items-center">
+                  <span className="w-[18px] h-[2px] bg-black transition-colors rounded-full"></span>
+                  <span className="w-[16px] h-[2px] bg-black transition-colors rounded-full"></span>
+                  <span className="w-[18px] h-[2px] bg-black transition-colors rounded-full"></span>
+                </div>
+              )}
             </button>
           </div>
           
@@ -225,9 +237,10 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                     Đồng ngôn
                     <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
                  </Link>
-                  <button 
+                  <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-black hover:text-white group"
+                    aria-label="Đóng menu"
+                    className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center transition-colors text-black"
                   >
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M18 6L6 18M6 6l12 12" />

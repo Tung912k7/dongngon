@@ -47,7 +47,9 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://dongngon.vercel.app"),
   alternates: {
-    canonical: "/",
+    languages: {
+      "vi-VN": "/",
+    },
   },
   openGraph: {
     title: "Đồng ngôn - Sao còn chưa bấm vào...?",

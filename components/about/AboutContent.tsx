@@ -39,7 +39,7 @@ const AboutContent = () => {
         </div>
 
         <h2 className="font-ganh text-[45px] sm:text-4xl md:text-6xl lg:text-6xl leading-[1.3] sm:leading-[1.4] text-white tracking-tighter font-bold uppercase mb-12 md:mb-10">
-          &ldquo;Tại đây chúng tôi đề cao sự ngẫu hứng như cách dự án này được sinh ra.&rdquo;
+          &ldquo;Tại đây chúng mình đề cao sự ngẫu hứng như cách dự án này được sinh ra.&rdquo;
         </h2>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-6 mt-16 md:mt-12">

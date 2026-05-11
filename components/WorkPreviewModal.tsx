@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,24 @@ interface WorkPreviewModalProps {
 
 export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewModalProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (!isOpen) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen, onClose]);
 
   if (typeof document === "undefined") return null;
 
@@ -34,10 +53,13 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
             initial={{ scale: 0.95, opacity: 0, y: 10 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 10 }}
-            className="bg-white border-2 border-black p-0 w-full max-w-4xl relative z-10 rounded-xl overflow-hidden flex flex-col md:flex-row min-h-[500px]"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Preview of ${work.title}`}
+            className="bg-white border-2 border-black p-0 w-full max-w-lg md:max-w-4xl relative z-10 rounded-xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
           >
             {/* Sidebar: Metadata & Quick Actions */}
-            <div className="w-full md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 flex flex-col bg-white">
+            <div className="hidden md:flex md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 md:flex-col bg-white">
               <div className="mb-auto space-y-8">
                 <div className="space-y-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Phân loại</p>
@@ -111,11 +133,11 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
             </div>
 
             {/* Main Content: Title & Text */}
-            <div className="flex-1 p-8 md:p-14 flex flex-col relative">
+            <div className="flex-1 p-6 md:p-14 flex flex-col relative">
               {/* Close Button */}
               <button 
                 onClick={onClose}
-                className="absolute top-6 right-6 text-black/20 hover:text-black transition-colors"
+                className="absolute top-4 right-4 md:top-6 md:right-6 text-black/40 hover:text-black transition-colors p-2 rounded-full"
                 title="Đóng"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
@@ -129,7 +151,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                     <div className="w-12 h-[2px] bg-black" />
                     <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">GIỚI THIỆU</span>
                   </div>
-                  <h2 className="text-3xl md:text-6xl font-ganh font-bold text-black leading-[1.4] tracking-tight break-words pb-2">
+                  <h2 className="text-2xl md:text-6xl font-ganh font-bold text-black leading-[1.4] tracking-tight break-words pb-2">
                     {work.title}
                   </h2>
                   <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/60">
@@ -137,7 +159,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                   </p>
                 </div>
 
-                <div className="max-h-[300px] overflow-y-auto pr-6 scrollbar-hide">
+                <div className="max-h-[60vh] md:max-h-[300px] overflow-y-auto pr-6 scrollbar-hide">
                   {work.description ? (
                     <p className="text-lg md:text-2xl font-medium text-gray-800 leading-relaxed font-be-vietnam italic">
                       &ldquo;{work.description}&rdquo;
@@ -149,6 +171,37 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                       </p>
                     </div>
                   )}
+                </div>
+
+                {/* Mobile actions (visible only on small screens) */}
+                <div className="md:hidden mt-6 flex flex-col gap-3">
+                  <button
+                    onClick={() => {
+                      const shareUrl = `${window.location.origin}/work/${work.id}`;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: work.title,
+                          text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
+                          url: shareUrl,
+                        }).catch(console.error);
+                      } else {
+                        navigator.clipboard.writeText(shareUrl);
+                        alert("Đã sao chép liên kết vào bộ nhớ tạm!");
+                      }
+                    }}
+                    className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white text-[12px]"
+                  >
+                    SHARE
+                  </button>
+                  <button
+                    onClick={() => {
+                      router.push(`/work/${work.id}`);
+                      onClose();
+                    }}
+                    className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black text-[12px]"
+                  >
+                    ĐẾN TÁC PHẨM
+                  </button>
                 </div>
               </div>
             </div>

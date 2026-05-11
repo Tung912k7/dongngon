@@ -39,10 +39,10 @@ export type Profile = {
   nickname: string;
   avatar_url?: string;
   description?: string;
-  role?: UserRole; // 'admin', 'mod', 'user'
   has_acknowledged_welcome_message?: boolean;
   last_seen_changelog?: string;
   updated_at: string;
+  is_hidden?: boolean;
   hashtags?: string[];
   public_fields?: {
     email?: boolean;
@@ -54,3 +54,9 @@ export type Profile = {
   };
 };
 
+export type UserPrivateData = {
+  id: string; // UUID
+  birthday?: string; // DATE
+  role?: UserRole;
+  is_test_account?: boolean;
+};

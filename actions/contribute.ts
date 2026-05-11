@@ -100,19 +100,8 @@ export async function submitContribution(workId: string, content: string, newLin
 
   const blacklistViolation = await checkBlacklist(sanitizedContent);
   if (blacklistViolation) {
-    // If blacklisted, we still allow the contribution but mark the work as pending
-    console.log(`Blacklist violation detected: "${blacklistViolation}". Marking work ${workId} as pending.`);
-    
-    // Update work status to pending
-    const { error: statusError } = await supabase
-      .from("works")
-      .update({ status: "pending" })
-      .eq("id", workId);
-
-    if (statusError) {
-      console.error("Error updating work status:", statusError);
-      return { error: "Không thể cập nhật trạng thái tác phẩm để xử lý vi phạm." };
-    }
+    console.warn(`[Moderation] Blocked contribution from user ${user.id} containing blacklisted pattern: "${blacklistViolation}"`);
+    return { error: "Nội dung của bạn chứa từ khóa không phù hợp với tiêu chuẩn cộng đồng." };
   }
 
   // 3. Check Daily Limit
@@ -130,17 +119,23 @@ export async function submitContribution(workId: string, content: string, newLin
     return { error: "Bạn chỉ được đóng góp 1 câu mỗi ngày cho tác phẩm này." };
   }
 
-  // 4. Get User Profile for Nickname, Age Check & Activation State
+  // 4. Get User Profile for Nickname & Activation State
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, birthday, activated_at")
+    .select("nickname, activated_at")
     .eq("id", user.id)
     .single();
 
   // 4.1 Perform Age Rating check on backend before contribution
   if (work.age_rating && work.age_rating !== "all") {
+    const { data: privateData } = await supabase
+      .from("user_private_data")
+      .select("birthday")
+      .eq("id", user.id)
+      .single();
+
     const { calculateAge, isOldEnough } = await import("@/utils/age");
-    const age = calculateAge(profile?.birthday);
+    const age = calculateAge(privateData?.birthday);
     
     if (user.id !== work.created_by && !isOldEnough(age, work.age_rating)) {
       return { error: `Bạn chưa đủ tuổi (${work.age_rating}) để đóng góp vào tác phẩm này.` };

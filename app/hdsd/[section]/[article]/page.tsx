@@ -251,7 +251,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
               <div className="p-6 bg-neutral-900 text-white rounded-[24px] overflow-hidden relative group">
                 <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-teal-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                 <h4 className="font-bold mb-2 relative z-10">Vẫn chưa tìm thấy điều bạn cần?</h4>
-                <p className="text-sm text-neutral-400 mb-4 relative z-10">Chúng tôi luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào.</p>
+                <p className="text-sm text-neutral-400 mb-4 relative z-10">Chúng mình luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào.</p>
                 <a href="/lien-he" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-teal-400 hover:text-teal-300 transition-colors relative z-10">
                   Liên hệ ngay
                   <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

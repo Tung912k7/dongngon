@@ -114,6 +114,13 @@ export default async function ProfilePage({
     .eq("id", targetId)
     .single();
 
+  let currentUserProfile = null;
+  if (currentUser) {
+    const { data: p } = await supabase.from("user_private_data").select("role").eq("id", currentUser.id).single();
+    currentUserProfile = p;
+  }
+  const isAdmin = currentUserProfile?.role === "admin";
+
   if (profileError) {
     console.error("[Profile] Fetch error:", profileError.code, profileError.message);
   }
@@ -135,7 +142,24 @@ export default async function ProfilePage({
     redirect("/");
   }
 
-  // Add account privacy check
+  // Add account privacy and hidden checks
+  if (finalProfile.is_hidden && !isOwner && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mx-auto shadow-xl">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-10 h-10">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+             </svg>
+          </div>
+          <h1 className="text-2xl font-black uppercase tracking-widest">Không tìm thấy hồ sơ</h1>
+          <p className="text-gray-500 font-medium">Hồ sơ này không tồn tại hoặc đã bị vô hiệu hóa.</p>
+          <LinkedButton href="/" className="mt-8 border-2 border-black px-6 py-2 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">Quay lại trang chủ</LinkedButton>
+        </div>
+      </div>
+    );
+  }
+
   if (finalProfile.is_private && !isOwner) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">

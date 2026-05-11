@@ -118,6 +118,17 @@ function createSupabaseMock({
             select: profilesSelect,
             update: profilesUpdate,
           };
+        case "user_private_data": {
+          const privateDataSingle = vi.fn(async () => ({
+            data: profile ? { birthday: profile.birthday } : null,
+            error: null,
+          }));
+          const privateDataEq = vi.fn(() => ({ single: privateDataSingle }));
+          const privateDataSelect = vi.fn(() => ({ eq: privateDataEq }));
+          return {
+            select: privateDataSelect,
+          };
+        }
         case "notifications":
           return {
             insert: notificationsInsert,

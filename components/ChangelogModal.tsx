@@ -56,7 +56,7 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
                   </div>
 
                   {/* Content */}
-                  <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
+                  <div data-lenis-prevent className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
                     {unseenEntries.map((entry) => (
                       <div key={entry.version}>
                         <div className="flex items-center gap-2 mb-3">

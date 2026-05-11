@@ -813,7 +813,7 @@ export function SignUpForm() {
       {activeModal && (
         <Portal>
           <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-6 animate-fade-in backdrop-blur-sm" onClick={() => setActiveModal(null)}>
-            <div className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto relative border-[3px] border-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div data-lenis-prevent className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto relative border-[3px] border-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold text-black uppercase">
                   {activeModal === "terms" ? "Các Điều Khoản" : "Quy Định Đồng Ngôn"}

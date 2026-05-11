@@ -61,7 +61,7 @@ export async function forgotPassword(email: string) {
   if (!ipLimit.allowed || !emailLimit.allowed) {
     return {
       success: true,
-      message: "Nếu email tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu.",
+      message: "Nếu email tồn tại, chúng mình sẽ gửi hướng dẫn đặt lại mật khẩu.",
     };
   }
 
@@ -78,13 +78,13 @@ export async function forgotPassword(email: string) {
     console.error("Forgot password request failed:", getErrorMessage(error));
     return {
       success: true,
-      message: "Nếu email tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu.",
+      message: "Nếu email tồn tại, chúng mình sẽ gửi hướng dẫn đặt lại mật khẩu.",
     };
   }
 
   return {
     success: true,
-    message: "Nếu email tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu.",
+    message: "Nếu email tồn tại, chúng mình sẽ gửi hướng dẫn đặt lại mật khẩu.",
   };
 }
 

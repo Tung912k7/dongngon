@@ -103,7 +103,7 @@ class SimpleErrorBoundary extends Component<{ children: ReactNode }, { hasError:
         <div className="flex items-center justify-center min-h-[200px] p-4 text-center">
           <div>
             <h2 className="text-xl font-bold mb-2">Đã có lỗi xảy ra</h2>
-            <p className="text-gray-600 mb-4">Chúng tôi đã ghi nhận lỗi này và sẽ sớm khắc phục.</p>
+            <p className="text-gray-600 mb-4">Chúng mình đã ghi nhận lỗi này và sẽ sớm khắc phục.</p>
             <button 
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"

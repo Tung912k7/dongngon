@@ -34,7 +34,7 @@ const AboutSection = () => {
           className="w-full max-w-4xl"
         >
           <p className="font-be-vietnam text-xl md:text-2xl lg:text-3xl leading-relaxed text-gray-100 font-medium">
-            Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn. Tại đây chúng tôi đề cao sự ngẫu hứng như cách dự án này được sinh ra.
+            Lần đầu tiên, một dự án viết văn kiểu mới. Nơi mọi người cùng nhau tạo nên những tác phẩm độc đáo, không giới hạn. Tại đây chúng mình đề cao sự ngẫu hứng như cách dự án này được sinh ra.
           </p>
         </m.div>
 

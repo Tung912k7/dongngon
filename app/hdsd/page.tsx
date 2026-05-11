@@ -86,6 +86,9 @@ export const metadata: Metadata = {
     title: "Hướng dẫn sử dụng | Đồng ngôn",
     description: "Khám phá các tính năng và cách tham gia sáng tác tại Đồng ngôn.",
   },
+  alternates: {
+    canonical: "/hdsd",
+  },
 };
 
 export default async function HelpCenterPage() {

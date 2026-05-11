@@ -37,7 +37,14 @@ async function checkAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) return false;
-  return true; 
+
+  const { data: privateData } = await supabase
+    .from("user_private_data")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  return privateData?.role === "admin";
 }
 
 // Fetch a single published article by slug

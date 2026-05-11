@@ -71,14 +71,14 @@ export async function createAdminAnnouncement(message: string, targetNicknamesSt
 
   if (!user) return { success: false, error: "Unauthorized" };
 
-  // Verify if it's an admin (Role check based on your profile table)
-  const { data: profile } = await supabase
-    .from("profiles")
+  // Verify if it's an admin (Role check based on your user_private_data table)
+  const { data: privateData } = await supabase
+    .from("user_private_data")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
+  if (privateData?.role !== "admin") {
     return { success: false, error: "Forbidden: Admins only" };
   }
 
@@ -128,13 +128,13 @@ export async function searchUserNicknames(keyword: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, data: [] };
 
-  const { data: profile } = await supabase
-    .from("profiles")
+  const { data: privateData } = await supabase
+    .from("user_private_data")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") return { success: false, data: [] };
+  if (privateData?.role !== "admin") return { success: false, data: [] };
 
   const { data, error } = await supabase
     .from("profiles")
@@ -152,13 +152,13 @@ export async function runReactivationNudgesNow() {
 
   if (!user) return { success: false, error: "Unauthorized" };
 
-  const { data: profile } = await supabase
-    .from("profiles")
+  const { data: privateData } = await supabase
+    .from("user_private_data")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
+  if (privateData?.role !== "admin") {
     return { success: false, error: "Forbidden: Admins only" };
   }
 
@@ -220,7 +220,7 @@ export async function reportContribution(
 
   // Lấy danh sách ID của tất cả admin
   const { data: admins } = await supabase
-    .from("profiles")
+    .from("user_private_data")
     .select("id")
     .eq("role", "admin");
 
@@ -285,7 +285,7 @@ export async function sendIdeaToAdmins(
   
   // Lấy danh sách ID của tất cả admin
   const { data: admins } = await supabase
-    .from("profiles")
+    .from("user_private_data")
     .select("id")
     .eq("role", "admin");
 

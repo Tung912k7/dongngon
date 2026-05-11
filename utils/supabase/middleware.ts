@@ -42,13 +42,13 @@ export async function updateSession(request: NextRequest) {
       return response
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
+    const { data: privateData } = await supabase
+      .from('user_private_data')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (privateData?.role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/'
       const response = NextResponse.redirect(url)

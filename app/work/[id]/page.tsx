@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { sanitizeTitle } from "@/utils/sanitizer";
 import { Contribution } from "@/types/database";
 import Link from "next/link";
-import Feed from "../../../components/Feed";
-import Editor from "../../../components/Editor";
-import VoteButton from "../../../components/VoteButton";
-import WorkOwnerControls from "../../../components/WorkOwnerControls";
+import dynamic from "next/dynamic";
+const Feed = dynamic(() => import("../../../components/Feed"));
+const Editor = dynamic(() => import("../../../components/Editor"));
+const VoteButton = dynamic(() => import("../../../components/VoteButton"));
+const WorkOwnerControls = dynamic(() => import("../../../components/WorkOwnerControls"));
 import { isReadOnlyProseSubCategory } from "@/data/workTypes";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -44,6 +45,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description,
       creator: "@dongngon",
     },
+    alternates: {
+      canonical: `/work/${work.id}`,
+    },
   };
 }
 
@@ -60,58 +64,53 @@ export default async function WorkPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Parallelize all data fetching
+  // Parallelize all initial data fetching
   const [
     workResponse,
     contributionsResponse,
     voteCountResponse,
     userResponse
   ] = await Promise.all([
-    // 1. Fetch Work Details
     supabase
       .from("works")
       .select("id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description")
       .eq("id", id)
       .single(),
-    
-    // 2. Fetch Contributions
     supabase
       .from("contributions")
       .select("id, content, user_id, work_id, created_at, author_nickname, new_line, is_test")
       .eq("work_id", id)
       .order("created_at", { ascending: true }),
-
-    // 3. Fetch Vote Count
     supabase
       .from("finish_votes")
       .select("*", { count: "exact", head: true })
       .eq("work_id", id),
-
-    // 4. Fetch Current User
     supabase.auth.getUser()
   ]);
 
+  const work = workResponse.data;
+
+  // Error logging and existence check
+  if (workResponse.error || !work) {
+    if (workResponse.error) {
+      console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error.code, workResponse.error.message);
+    }
+    notFound();
+  }
+
   const user = userResponse.data.user;
 
-  // 5. Fetch User Profile
-  let profile = null;
-  if (user) {
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("birthday, is_test_account")
-      .eq("id", user.id)
-      .single();
-    profile = profileData;
-  }
+  // Secondary parallel fetch for profile and author profile
+  const [profileResponse, authorProfileResponse] = await Promise.all([
+    user ? supabase.from("user_private_data").select("birthday, is_test_account, role").eq("id", user.id).single() : Promise.resolve({ data: null }),
+    supabase.from("profiles").select("is_hidden").eq("id", work.created_by).single()
+  ]);
 
+  const profile = profileResponse.data;
+  const authorProfile = authorProfileResponse.data;
   const isTester = !!profile?.is_test_account;
-
-
-  const work = workResponse.data;
-  // No need to re-sanitize what's already sanitized in the DB or handled by React
-  if (work) {
-    // work.title is already cleaned on save
-  }
+  const isAdmin = profile?.role === "admin";
+  const isAuthorHidden = authorProfile?.is_hidden;
 
   const contributions: Contribution[] = (contributionsResponse.data || [])
     .filter((c: any) => isTester || !c.is_test || (user && c.user_id === user.id))
@@ -122,15 +121,6 @@ export default async function WorkPage({
     }));
 
   const voteCount = voteCountResponse.count;
-
-  if (workResponse.error) {
-    console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error.code, workResponse.error.message);
-  }
-
-  if (!work) {
-    console.warn(`[WorkPage] Work not found for ID: ${id}`);
-    notFound();
-  }
 
   // Permission Check: If work is private, only owner can view
   const isPrivate = work.privacy?.toLowerCase() === "private";
@@ -146,6 +136,27 @@ export default async function WorkPage({
           <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">Tác phẩm riêng tư</h1>
           <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
             Bạn đang cố gắng truy cập địa hạt riêng tư của tác giả. Chỉ người sở hữu mới có quyền vào đây.
+          </p>
+          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+            Quay lại trang chủ
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthorHidden && (!user || (user.id !== work.created_by && !isAdmin))) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
+        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
+          <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">Không tìm thấy tác phẩm</h1>
+          <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+            Tác phẩm này không tồn tại hoặc đã bị vô hiệu hóa.
           </p>
           <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
             Quay lại trang chủ
@@ -272,7 +283,7 @@ export default async function WorkPage({
                 ]
               }
             ]
-          })
+          }).replace(/</g, "\\u003c")
         }}
       />
       <section className="mb-10 border-b-2 border-black pb-8">

@@ -133,8 +133,8 @@ const FullAboutContent = () => {
 
       {/* 🛡️ Page Header */}
       <div className="mb-40 md:mb-64 flex flex-col items-center text-center">
-        <h1 className="font-ganh text-6xl sm:text-8xl md:text-[140px] font-black text-white uppercase leading-none tracking-tighter mb-4">
-          Về chúng tôi
+        <h1 className="font-ganh text-5xl sm:text-8xl md:text-[130px] font-black text-white uppercase leading-tight tracking-tighter mb-4">
+          Về chúng mình
         </h1>
       </div>
 
@@ -146,7 +146,7 @@ const FullAboutContent = () => {
         decoration={<DecorationBlock content="Đồng <br/> ngôn" />}
       >
         <p className="mb-6">
-          Dự án chợt loé lên trong đầu của người ấy khi chúng tôi đang học bài cùng nhau
+          Dự án chợt loé lên trong đầu của người ấy khi chúng mình đang học bài cùng nhau.
           <span className="text-white font-bold italic ml-2">Một ý tưởng độc đáo, kì lạ và có một chút điên rồ.</span>
         </p>
         <p>
@@ -184,7 +184,7 @@ const FullAboutContent = () => {
         {!isSubmitted ? (
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-4">
             <p className="text-white/40 text-sm mb-2">
-              Chúng tôi luôn lắng nghe những đóng góp, góp ý của mọi người để ngày một tốt hơn!
+              Chúng mình luôn lắng nghe những đóng góp, góp ý của mọi người để ngày một tốt hơn!
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -242,7 +242,7 @@ const FullAboutContent = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h4 className="text-white font-ganh text-2xl uppercase mb-2">Cảm ơn bạn! Ý tưởng của bạn,chúng tôi đã nhận được!</h4>
+            <h4 className="text-white font-ganh text-2xl uppercase mb-2">Cảm ơn bạn! Ý tưởng của bạn,chúng mình đã nhận được!</h4>
             <p className="text-white/40 text-sm">Chúc bạn một ngày tốt lành 🫰</p>
             <button
               onClick={() => setIsSubmitted(false)}
@@ -258,7 +258,7 @@ const FullAboutContent = () => {
       <div className="py-20 text-center flex flex-col items-center">
         <div className="w-[1px] h-32 bg-gradient-to-b from-white to-transparent mb-12" />
         <p className="font-ganh text-white/40 text-4xl sm:text-6xl md:text-9xl uppercase font-black tracking-tighter select-none">
-          LMBF 💕
+          Hihi 💕
         </p>
       </div>
 

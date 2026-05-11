@@ -88,7 +88,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/ve-chung-toi" prefetch={false} className="transition-opacity hover:opacity-70">
-                    Về chúng tôi
+                    Về chúng mình
                   </Link>
                 </li>
                 <li>
