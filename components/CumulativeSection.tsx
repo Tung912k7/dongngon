@@ -56,7 +56,7 @@ const CumulativeSection = () => {
               <div
                 className="w-full h-full"
                 style={{
-                  backgroundImage: "url('/webp file/pattern1.webp')",
+                  backgroundImage: "url('/webp/pattern1.webp')",
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'center',
                   backgroundSize: 'cover'
@@ -122,3 +122,4 @@ const CumulativeSection = () => {
 };
 
 export default CumulativeSection;
+

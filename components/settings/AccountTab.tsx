@@ -2,27 +2,23 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 export default function AccountTab({ userEmail }: { userEmail: string }) {
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const handlePasswordReset = async () => {
     setLoading(true);
-    setMessage(null);
     const supabase = createClient();
     
-    // Send password reset email to the user
-    // Note: This usually requires a redirect URL to a password reset page.
-    // For now we just trigger the email.
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
       redirectTo: `${window.location.origin}/auth/callback?next=/settings`,
     });
 
     if (error) {
-      setMessage({ type: 'error', text: "Không thể gửi email: " + error.message });
+      toast.error("Không thể gửi email: " + error.message);
     } else {
-      setMessage({ type: 'success', text: "Đã gửi email đặt lại mật khẩu! Vui lòng kiểm tra hộp thư." });
+      toast.success("Đã gửi email đặt lại mật khẩu! Vui lòng kiểm tra hộp thư.");
     }
     setLoading(false);
   };
@@ -45,13 +41,6 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
           Để đảm bảo an toàn, chúng mình khuyên bạn nên sử dụng mật khẩu mạnh (trên 12 ký tự) và duy nhất cho tài khoản này.
         </p>
         
-        {message && (
-          <div className={`p-3 rounded-lg text-sm font-bold ${
-            message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}>
-            {message.text}
-          </div>
-        )}
 
         <button
           onClick={handlePasswordReset}
@@ -76,3 +65,4 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
     </div>
   );
 }
+

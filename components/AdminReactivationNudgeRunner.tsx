@@ -48,14 +48,14 @@ export default function AdminReactivationNudgeRunner() {
         type="button"
         onClick={handleRun}
         disabled={isRunning}
-        className="px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        className="px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-widest rounded hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isRunning ? "Đang chạy..." : "Chạy ngay"}
       </button>
 
       {status && (
         <div
-          className={`mt-3 px-4 py-2.5 rounded-xl text-sm font-medium ${
+          className={`mt-3 px-4 py-2.5 rounded text-sm font-medium ${
             status.type === "success"
               ? "bg-green-50 text-green-700 border border-green-200"
               : "bg-red-50 text-red-600 border border-red-200"
@@ -67,3 +67,4 @@ export default function AdminReactivationNudgeRunner() {
     </div>
   );
 }
+

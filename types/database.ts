@@ -60,3 +60,4 @@ export type UserPrivateData = {
   role?: UserRole;
   is_test_account?: boolean;
 };
+

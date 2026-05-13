@@ -13,7 +13,7 @@ const AboutSection = () => {
                   <div 
                     className="w-full h-full"
                     style={{
-                      backgroundImage: "url('/webp file/pattern1.webp')",
+                      backgroundImage: "url('/webp/pattern1.webp')",
                       backgroundRepeat: 'repeat-y',
                       backgroundPosition: 'center top',
                       backgroundSize: '100% auto' 
@@ -71,3 +71,4 @@ const AboutSection = () => {
 };
 
 export default AboutSection;
+

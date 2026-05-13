@@ -4,14 +4,19 @@ import type { Notification } from '@/types/database';
 
 interface NotificationState {
   unreadCount: number;
+  isFetching: boolean;
   setUnreadCount: (count: number) => void;
   fetchUnreadCount: () => Promise<void>;
 }
 
-export const useNotificationStore = create<NotificationState>((set) => ({
+export const useNotificationStore = create<NotificationState>((set, get) => ({
   unreadCount: 0,
+  isFetching: false,
   setUnreadCount: (count) => set({ unreadCount: count }),
   fetchUnreadCount: async () => {
+    if (get().isFetching) return;
+
+    set({ isFetching: true });
     try {
       const result = await getNotifications();
       if (result.success && result.notifications) {
@@ -20,6 +25,9 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       }
     } catch (error) {
       console.error('[Notification Store] Fetch error:', error);
+    } finally {
+      set({ isFetching: false });
     }
   },
 }));
+

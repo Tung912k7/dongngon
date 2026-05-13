@@ -5,10 +5,10 @@ import SettingsClient from "@/components/settings/SettingsClient";
 export default async function SettingsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   if (!user) {
     redirect("/dang-nhap");
   }
+  // Auth check is now handled by middleware.ts
 
   // Fetch user profile data (nickname, avatar, description, is_private)
   const { data: profile } = await supabase
@@ -37,3 +37,4 @@ export default async function SettingsPage() {
     </div>
   );
 }
+

@@ -29,7 +29,7 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
         return (
           <div
             key={idx}
-            className="border-2 border-black rounded-xl bg-white overflow-hidden"
+            className="border-2 border-black rounded bg-white overflow-hidden"
           >
             <button
               id={`faq-item-${idx}`}
@@ -76,3 +76,4 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
 };
 
 export default HelpCenterFAQ;
+

@@ -41,3 +41,4 @@ export interface HelpCenterArticleUpsertInput {
   sort_order?: number;
   is_published?: boolean;
 }
+

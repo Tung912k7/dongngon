@@ -60,7 +60,7 @@ import { LinkedButton } from "@/components/PrimaryButton";
 import WorkLibraryItem from "@/components/WorkLibraryItem";
 import { formatDate } from "@/utils/date";
 import { sanitizeTitle, sanitizeNickname } from "@/utils/sanitizer";
-import ProfileSidebar from "@/components/ProfileSidebar";
+import ProfileSidebar, { SidebarProfile } from "@/components/ProfileSidebar";
 
 type WorkLike = Record<string, unknown> & {
   title: string;
@@ -114,16 +114,18 @@ export default async function ProfilePage({
     .eq("id", targetId)
     .single();
 
-  let currentUserProfile = null;
-  if (currentUser) {
-    const { data: p } = await supabase.from("user_private_data").select("role").eq("id", currentUser.id).single();
-    currentUserProfile = p;
-  }
-  const isAdmin = currentUserProfile?.role === "admin";
-
   if (profileError) {
     console.error("[Profile] Fetch error:", profileError.code, profileError.message);
   }
+
+  // Fetch private data (role and birthday)
+  const { data: privateData } = await supabase
+    .from("user_private_data")
+    .select("role, birthday")
+    .eq("id", targetId)
+    .single();
+
+  const isAdmin = privateData?.role === "admin";
 
   // Synthesis logic for the profile if DB fetch fails
   const syntheticProfile = (isOwner && currentUser) ? {
@@ -135,7 +137,10 @@ export default async function ProfilePage({
     has_acknowledged_welcome_message: true,
   } : null;
 
-  const finalProfile = profile || syntheticProfile;
+  const finalProfile = {
+    ...(profile || syntheticProfile),
+    birthday: privateData?.birthday || null
+  } as SidebarProfile;
 
   if (!finalProfile) {
     console.error("Profile not found and no fallback available, redirecting to home");
@@ -154,7 +159,7 @@ export default async function ProfilePage({
           </div>
           <h1 className="text-2xl font-black uppercase tracking-widest">Không tìm thấy hồ sơ</h1>
           <p className="text-gray-500 font-medium">Hồ sơ này không tồn tại hoặc đã bị vô hiệu hóa.</p>
-          <LinkedButton href="/" className="mt-8 border-2 border-black px-6 py-2 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">Quay lại trang chủ</LinkedButton>
+          <LinkedButton href="/" className="mt-8 border-2 border-black px-6 py-2 rounded font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">Quay lại trang chủ</LinkedButton>
         </div>
       </div>
     );
@@ -171,44 +176,47 @@ export default async function ProfilePage({
           </div>
           <h1 className="text-2xl font-black uppercase tracking-widest">Người dùng đã khoá tài khoản</h1>
           <p className="text-gray-500 font-medium">Hồ sơ này đã được chủ sở hữu đặt ở chế độ riêng tư.</p>
-          <LinkedButton href="/" className="mt-8 border-2 border-black px-6 py-2 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">Quay lại trang chủ</LinkedButton>
+          <LinkedButton href="/" className="mt-8 border-2 border-black px-6 py-2 rounded font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all">Quay lại trang chủ</LinkedButton>
         </div>
       </div>
     );
   }
 
-  // Fetch Created Works of targetId
+  // 3. Prepare Works Query
   let worksQuery = supabase
     .from("works")
     .select("*")
     .eq("created_by", targetId)
     .order("created_at", { ascending: false });
 
-  // Privacy & Test Filter: If not owner, only show Public AND non-test works
   if (!isOwner) {
     worksQuery = worksQuery.ilike("privacy", "public").eq("is_test", false);
   }
 
-  const { data: rawCreatedWorks } = await worksQuery;
+  // 4. Parallel Data Fetching
+  const [worksResult, contributionsResult, savedWorksResult] = await Promise.all([
+    worksQuery,
+    supabase.from("contributions").select("*, works(*)").eq("user_id", targetId),
+    isOwner 
+      ? supabase.from("saved_works").select("*, work:works(*)").eq("user_id", targetId).order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] })
+  ]);
+
+  const rawCreatedWorks = worksResult.data;
+  const contributions = contributionsResult.data;
+  const savedWorksData = savedWorksResult.data;
+
   const createdWorks = (rawCreatedWorks || []).map(sanitizeWork);
 
-  // Fetch Contributed Works (Unique)
-  const { data: contributions } = await supabase
-    .from("contributions")
-    .select("*, works(*)")
-    .eq("user_id", targetId);
-
-  // Filter unique works from contributions
+  // 5. Filter unique works from contributions
   const contributedWorksList = Array.from(
     new Map((contributions || [])
       .filter(c => {
-        // Handle works as object or array, with singular/plural fallback
         const workData = c.works || (c as Record<string, unknown>).work;
         const finalWork = Array.isArray(workData) ? workData[0] : workData;
 
         if (!finalWork || !finalWork.id || finalWork.created_by === targetId) return false;
         
-        // Privacy & Test check for public visitors
         if (!isOwner) {
           const isPublic = ["public", "Public", "PUBLIC"].includes(finalWork.privacy);
           if (!isPublic || finalWork.is_test || c.is_test) return false;
@@ -223,6 +231,20 @@ export default async function ProfilePage({
       }))
       .values()
   );
+  
+  // 6. Fetch Saved Works (Processed from parallel result)
+  let savedWorksList: Work[] = [];
+  if (isOwner) {
+    savedWorksList = (savedWorksData || [])
+      .map(sw => {
+        const workData = (sw as any).work || (sw as any).works;
+        const finalWork = Array.isArray(workData) ? workData[0] : workData;
+        
+        if (!finalWork) return null;
+        return sanitizeWork(finalWork);
+      })
+      .filter(Boolean) as Work[];
+  }
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24">
@@ -266,7 +288,7 @@ export default async function ProfilePage({
         <ProfileSidebar key={finalProfile.id} profile={finalProfile} isOwner={isOwner} currentUser={currentUser} />
 
         {/* Main Content */}
-        <div className="flex-1 w-full bg-white border-2 border-black rounded-xl overflow-hidden">
+        <div className="flex-1 w-full bg-white border-2 border-black rounded overflow-hidden">
           
           {/* Created Works Section */}
           <div className="p-6 md:p-10 pb-0">
@@ -280,7 +302,7 @@ export default async function ProfilePage({
                   <WorkLibraryItem key={work.id} work={work} isOwner={isOwner} />
                 ))
               ) : (
-                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
+                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
                   <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-20">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -301,7 +323,7 @@ export default async function ProfilePage({
               {isOwner && contributedWorksList && contributedWorksList.length > 0 && (
                 <LinkedButton 
                   href="/kho-tang"
-                  className="!rounded-xl !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                  className="!rounded !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                 >
                   📖 ĐÓNG GÓP THÊM
                 </LinkedButton>
@@ -313,7 +335,7 @@ export default async function ProfilePage({
                   <WorkLibraryItem key={work.id} work={work} isOwner={false} />
                 ))
               ) : (
-                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
+                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
                   <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-20">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -325,7 +347,7 @@ export default async function ProfilePage({
                   {isOwner && (
                     <LinkedButton 
                       href="/kho-tang"
-                      className="!px-8 !py-3 !rounded-xl !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                      className="!px-8 !py-3 !rounded !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                     >
                       ĐÓNG GÓP NGAY
                     </LinkedButton>
@@ -334,10 +356,37 @@ export default async function ProfilePage({
               )}
             </div>
           </div>
-
+          
+          {/* Saved Works Section (Owner only) */}
+          {isOwner && (
+            <div className="p-6 md:p-10 pt-16">
+              <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
+                <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">TÁC PHẨM ĐÃ LƯU</h2>
+              </div>
+              <div className="flex flex-col gap-4">
+                {savedWorksList && savedWorksList.length > 0 ? (
+                  savedWorksList.map((work) => (
+                    <WorkLibraryItem key={work.id} work={work} isOwner={false} initialSaved={true} />
+                  ))
+                ) : (
+                  <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
+                    <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 opacity-20">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                      </svg>
+                    </div>
+                    <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
+                      Bạn chưa lưu tác phẩm nào
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
       </section>
     </div>
   );
 }
+

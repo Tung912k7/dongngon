@@ -238,3 +238,20 @@ export async function submitContribution(workId: string, content: string, newLin
   revalidatePath("/profile");
   return { success: true };
 }
+
+export async function getContributionsChunk(workId: string, offset: number, limit: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("contributions")
+    .select("id, content, user_id, work_id, created_at, author_nickname, new_line, is_test")
+    .eq("work_id", workId)
+    .order("created_at", { ascending: true })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error("Error fetching contributions chunk:", error);
+    return { success: false, data: [] };
+  }
+  return { success: true, data: data as any[] };
+}
+

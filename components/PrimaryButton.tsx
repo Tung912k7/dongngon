@@ -24,7 +24,7 @@ export const PrimaryButton = ({
         px-10 py-3 
         border-2 border-black 
         bg-white text-black 
-        rounded-xl 
+        rounded-[4px] 
         font-ganh font-bold text-xl uppercase tracking-widest
         shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
         transition-all duration-200
@@ -60,7 +60,7 @@ export const LinkedButton = ({
         px-8 py-3 
         border-2 border-black 
         ${inverse ? 'bg-black text-white hover:bg-black/90' : 'bg-white text-black hover:bg-gray-50'} 
-        rounded-xl 
+        rounded-[4px] 
         font-ganh font-bold text-lg uppercase tracking-widest
         ${inverse ? 'shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]' : 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'}
         transition-all duration-200
@@ -76,3 +76,4 @@ export const LinkedButton = ({
     </Link>
   );
 };
+

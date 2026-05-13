@@ -26,7 +26,7 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
       className="
         group flex flex-col items-start
         p-6
-        rounded-xl
+        rounded
         border-2 border-black
         bg-white
         w-full
@@ -67,3 +67,4 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
 };
 
 export default HelpCenterSectionCard;
+

@@ -24,3 +24,4 @@ export function isOldEnough(age: number | null, rating: string | null | undefine
 
   return age >= requiredAge;
 }
+

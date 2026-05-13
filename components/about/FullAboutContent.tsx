@@ -195,7 +195,7 @@ const FullAboutContent = () => {
                   value={formData.id}
                   onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
                   placeholder="Mã định danh..."
-                  className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
+                  className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
                 />
               </div>
               <div className="space-y-2">
@@ -205,7 +205,7 @@ const FullAboutContent = () => {
                   value={formData.penName}
                   onChange={(e) => setFormData(prev => ({ ...prev, penName: e.target.value }))}
                   placeholder="Bút danh của bạn..."
-                  className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
+                  className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
                 />
               </div>
             </div>
@@ -216,7 +216,7 @@ const FullAboutContent = () => {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Mô tả ý tưởng của bạn..."
-                className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-4 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam min-h-[120px] resize-none"
+                className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-4 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam min-h-[120px] resize-none"
               />
             </div>
 
@@ -225,7 +225,7 @@ const FullAboutContent = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full border-2 border-white text-white font-ganh text-xl uppercase py-4 rounded-xl transition-all active:scale-[0.98] mt-2 group flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-black'}`}
+              className={`w-full border-2 border-white text-white font-ganh text-xl uppercase py-4 rounded transition-all active:scale-[0.98] mt-2 group flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-black'}`}
             >
               {isSubmitting ? 'Đang gửi...' : 'Gửi ý tưởng'}
               {!isSubmitting && (
@@ -267,3 +267,4 @@ const FullAboutContent = () => {
 };
 
 export default FullAboutContent;
+

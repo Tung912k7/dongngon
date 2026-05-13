@@ -6,10 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import FooterQuote from "./FooterQuote";
 import { PROSE_SUBCATEGORIES } from "@/data/workTypes";
+import { useZenStore } from "@/stores/zen-store";
 
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
   const [isLoveOpen, setIsLoveOpen] = useState(false);
+  const { isZenMode } = useZenStore();
 
   const proseLinks = PROSE_SUBCATEGORIES;
   const poetryLinks = ["Tự do", "Tứ ngôn", "Ngũ ngôn", "Lục ngôn", "Thất ngôn", "Bát ngôn"];
@@ -26,90 +28,100 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="w-full mt-auto bg-[#F9F8F4] text-[#2C2B29] pt-20 lg:pt-32 pb-4">
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col md:flex-row justify-between items-start gap-16 md:gap-12 pb-16">
-          <section className="w-full max-w-sm flex flex-col gap-8 items-start">
-            <button
-              onClick={() => setIsLoveOpen(true)}
-              className="transition-opacity hover:opacity-80"
-              aria-label="Mở lời nhắn yêu thương"
-            >
-              <Image
-                src="/webp file/logo.webp"
-                alt="Đồng ngôn Logo"
-                width={160}
-                height={160}
-                className="w-32 h-32 md:w-40 md:h-40 object-contain"
-              />
-            </button>
+      <AnimatePresence>
+        {!isZenMode && (
+          <m.footer
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full mt-auto bg-[#F9F8F4] text-[#2C2B29] pt-20 lg:pt-32 pb-4"
+          >
+            <div className="max-w-7xl mx-auto px-8 lg:px-16 flex flex-col md:flex-row justify-between items-start gap-16 md:gap-12 pb-16">
+              <section className="w-full max-w-sm flex flex-col gap-8 items-start">
+                <button
+                  onClick={() => setIsLoveOpen(true)}
+                  className="transition-opacity hover:opacity-80"
+                  aria-label="Mở lời nhắn yêu thương"
+                >
+                  <Image
+                    src="/webp/logo.webp"
+                    alt="Đồng ngôn Logo"
+                    width={160}
+                    height={160}
+                    className="w-32 h-32 md:w-40 md:h-40 object-contain"
+                  />
+                </button>
 
-            <FooterQuote />
-          </section>
+                <FooterQuote />
+              </section>
 
-          <div className="flex flex-row flex-wrap sm:flex-nowrap justify-start lg:justify-end gap-12 md:gap-20 lg:gap-24">
-            <nav aria-label="Danh mục Văn" className="flex flex-col items-start min-w-[100px] gap-6">
-              <h3 className={columnHeadingClass}>Văn</h3>
-              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
-                {proseLinks.map((label) => (
-                  <li key={label}>
-                    <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+              <div className="flex flex-row flex-wrap sm:flex-nowrap justify-start lg:justify-end gap-12 md:gap-20 lg:gap-24">
+                <nav aria-label="Danh mục Văn" className="flex flex-col items-start min-w-[100px] gap-6">
+                  <h3 className={columnHeadingClass}>Văn</h3>
+                  <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                    {proseLinks.map((label) => (
+                      <li key={label}>
+                        <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
 
-            <nav aria-label="Danh mục Thơ" className="flex flex-col items-start min-w-[100px] gap-6">
-              <h3 className={columnHeadingClass}>Thơ</h3>
-              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
-                {poetryLinks.map((label) => (
-                  <li key={label}>
-                    <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                <nav aria-label="Danh mục Thơ" className="flex flex-col items-start min-w-[100px] gap-6">
+                  <h3 className={columnHeadingClass}>Thơ</h3>
+                  <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                    {poetryLinks.map((label) => (
+                      <li key={label}>
+                        <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
 
-            <nav aria-label="Liên kết Kết nối" className="flex flex-col items-start min-w-[100px] gap-6">
-              <h3 className={columnHeadingClass}>Kết nối</h3>
-              <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
-                <li>
-                  <a
-                    href="https://forms.gle/2ENzFe3rdUhkXTP59"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-opacity hover:opacity-70"
-                  >
-                    Góp ý
-                  </a>
-                </li>
-                <li>
-                  <Link href="/ve-chung-toi" prefetch={false} className="transition-opacity hover:opacity-70">
-                    Về chúng mình
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setIsDonateOpen(true)}
-                    className="text-left transition-opacity hover:opacity-70"
-                  >
-                    Giải cứu admin
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
+                <nav aria-label="Liên kết Kết nối" className="flex flex-col items-start min-w-[100px] gap-6">
+                  <h3 className={columnHeadingClass}>Kết nối</h3>
+                  <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
+                    <li>
+                      <a
+                        href="https://forms.gle/2ENzFe3rdUhkXTP59"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-opacity hover:opacity-70"
+                      >
+                        Góp ý
+                      </a>
+                    </li>
+                    <li>
+                      <Link href="/ve-chung-toi" prefetch={false} className="transition-opacity hover:opacity-70">
+                        Về chúng mình
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => setIsDonateOpen(true)}
+                        className="text-left transition-opacity hover:opacity-70"
+                      >
+                        Giải cứu admin
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
 
-        <div className="w-full border-t-2 border-black pt-6 pb-2 mt-10 md:mt-20">
-          <p className="mx-auto max-w-7xl px-8 text-center font-be-vietnam text-[13px] md:text-[14px] font-light tracking-[0.01em] text-[#2C2B29]/50">
-            © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình <span className="text-[#2C2B29]/60">❤️</span>
-          </p>
-        </div>
-      </footer>
+            <div className="w-full border-t-2 border-black pt-6 pb-2 mt-10 md:mt-20">
+              <p className="mx-auto max-w-7xl px-8 text-center font-be-vietnam text-[13px] md:text-[14px] font-light tracking-[0.01em] text-[#2C2B29]/50">
+                © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình <span className="text-[#2C2B29]/60">❤️</span>
+              </p>
+            </div>
+          </m.footer>
+        )}
+      </AnimatePresence>
 
       {/* Love Modal */}
       <AnimatePresence>
@@ -122,20 +134,20 @@ export default function Footer() {
               onClick={() => setIsLoveOpen(false)}
               className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
             />
-            
+
             <m.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 20 }}
-              className="relative bg-white border-4 border-black p-8 rounded-xl max-w-xs w-full flex flex-col items-center text-center"
+              className="relative bg-white border-4 border-black p-8 rounded-[4px] max-w-xs w-full flex flex-col items-center text-center"
             >
               <div className="mb-4 text-4xl animate-bounce">❤️</div>
               <p className="text-2xl font-ganh font-bold text-black italic">
                 &quot;Yêu bé nhiều :33&quot;
               </p>
-              <button 
+              <button
                 onClick={() => setIsLoveOpen(false)}
-                className="mt-6 px-8 py-2 bg-black text-white font-ganh font-bold rounded-xl hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className="mt-6 px-8 py-2 bg-black text-white font-ganh font-bold rounded-[4px] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
               >
                 Đóng
               </button>
@@ -156,19 +168,19 @@ export default function Footer() {
               onClick={() => setIsDonateOpen(false)}
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
-            
+
             {/* Modal Content */}
             <m.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative bg-white p-8 rounded-xl border-4 border-black max-w-sm w-full flex flex-col items-center"
+              className="relative bg-white p-8 rounded-[4px] border-4 border-black max-w-sm w-full flex flex-col items-center"
             >
-              <button 
+              <button
                 onClick={() => setIsDonateOpen(false)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-black"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -177,8 +189,8 @@ export default function Footer() {
               <p className="text-center text-xl font-ganh font-bold text-black mb-4">
                 Cảm ơn bạn đã đồng hành cùng Đồng ngôn!
               </p>
-              
-              <div className="w-64 h-64 flex items-center justify-center border-2 border-black rounded-xl overflow-hidden">
+
+              <div className="w-64 h-64 flex items-center justify-center border-2 border-black rounded-[4px] overflow-hidden">
                 <m.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -186,7 +198,7 @@ export default function Footer() {
                   className="w-full h-full p-2 relative"
                 >
                   <Image
-                    src="/webp file/qr.webp"
+                    src="/webp/qr.webp"
                     alt="Mã QR Ủng hộ"
                     fill
                     sizes="256px"
@@ -202,3 +214,4 @@ export default function Footer() {
     </>
   );
 }
+

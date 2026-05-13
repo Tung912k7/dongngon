@@ -56,7 +56,7 @@ const ContributionContent = () => {
                 </h3>
               </div>
 
-              <div className="bg-white text-black p-3 sm:p-4 md:p-8 rounded-xl border-2 border-black transform group-hover:-rotate-1 transition-transform">
+              <div className="bg-white text-black p-3 sm:p-4 md:p-8 rounded border-2 border-black transform group-hover:-rotate-1 transition-transform">
                 <p className="font-ganh text-sm sm:text-base md:text-2xl font-bold italic tracking-tight leading-snug">
                   &ldquo;Mỗi người chỉ có thể đóng góp duy nhất một câu cho mỗi tác phẩm.&rdquo;
                 </p>
@@ -75,3 +75,4 @@ const ContributionContent = () => {
 };
 
 export default ContributionContent;
+

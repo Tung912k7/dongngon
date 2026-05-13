@@ -189,3 +189,4 @@ export async function acknowledgeWelcomeMessage() {
 export async function updateNickname(nickname: string) {
     return updateProfile(nickname);
 }
+

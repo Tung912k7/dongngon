@@ -4,22 +4,32 @@ import { notFound } from "next/navigation";
 import { sanitizeTitle } from "@/utils/sanitizer";
 import { Contribution } from "@/types/database";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-const Feed = dynamic(() => import("../../../components/Feed"));
-const Editor = dynamic(() => import("../../../components/Editor"));
-const VoteButton = dynamic(() => import("../../../components/VoteButton"));
-const WorkOwnerControls = dynamic(() => import("../../../components/WorkOwnerControls"));
 import { isReadOnlyProseSubCategory } from "@/data/workTypes";
+import ZenModeWrapper from "@/components/ZenModeWrapper";
+import { calculateAge, isOldEnough } from "@/utils/age";
+import dynamic from "next/dynamic";
+import { cache } from "react";
+
+import Feed from "../../../components/Feed";
+import Editor from "../../../components/Editor";
+import VoteButton from "../../../components/VoteButton";
+import WorkOwnerControls from "../../../components/WorkOwnerControls";
+import WorkPageLayout from "../../../components/WorkPageLayout";
+
+// Cached data fetching for deduplication between metadata and page
+const getWork = cache(async (id: string) => {
+  const supabase = await createClient();
+  return supabase
+    .from("works")
+    .select("id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description, is_test")
+    .eq("id", id)
+    .single();
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const baseUrl = "https://dongngon.vercel.app";
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: work } = await supabase
-    .from("works")
-    .select("id, title, status, sub_category, description, author_nickname, is_test")
-    .eq("id", id)
-    .single();
+  const { data: work } = await getWork(id);
 
   if (!work) return { title: "Không tìm thấy tác phẩm" };
   const sanitizedTitle = sanitizeTitle(work.title);
@@ -64,33 +74,30 @@ export default async function WorkPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Parallelize all initial data fetching
+  // Primary parallel fetch for initial critical data
   const [
     workResponse,
+    userResponse,
     contributionsResponse,
-    voteCountResponse,
-    userResponse
+    voteCountResponse
   ] = await Promise.all([
-    supabase
-      .from("works")
-      .select("id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description")
-      .eq("id", id)
-      .single(),
+    getWork(id),
+    supabase.auth.getUser(),
     supabase
       .from("contributions")
       .select("id, content, user_id, work_id, created_at, author_nickname, new_line, is_test")
       .eq("work_id", id)
-      .order("created_at", { ascending: true }),
+      .order("created_at", { ascending: true })
+      .limit(50),
     supabase
       .from("finish_votes")
       .select("*", { count: "exact", head: true })
-      .eq("work_id", id),
-    supabase.auth.getUser()
+      .eq("work_id", id)
   ]);
 
   const work = workResponse.data;
+  const user = userResponse.data.user;
 
-  // Error logging and existence check
   if (workResponse.error || !work) {
     if (workResponse.error) {
       console.error(`[WorkPage] Error fetching work ${id}:`, workResponse.error.code, workResponse.error.message);
@@ -98,19 +105,34 @@ export default async function WorkPage({
     notFound();
   }
 
-  const user = userResponse.data.user;
-
-  // Secondary parallel fetch for profile and author profile
-  const [profileResponse, authorProfileResponse] = await Promise.all([
-    user ? supabase.from("user_private_data").select("birthday, is_test_account, role").eq("id", user.id).single() : Promise.resolve({ data: null }),
-    supabase.from("profiles").select("is_hidden").eq("id", work.created_by).single()
+  // Secondary parallel fetch for user-specific and author-specific data
+  const [
+    profileResponse, 
+    authorProfileResponse, 
+    savedResponse,
+    todayContributionResponse
+  ] = await Promise.all([
+    user ? supabase.from("user_private_data").select("birthday, is_test_account, role").eq("id", user.id).single() : Promise.resolve({ data: null, error: null }),
+    supabase.from("profiles").select("is_hidden").eq("id", work.created_by).single(),
+    user ? supabase.from("saved_works").select("id").eq("user_id", user.id).eq("work_id", work.id).single() : Promise.resolve({ data: null, error: null }),
+    user ? supabase.from("contributions").select("id").eq("work_id", id).eq("user_id", user.id).gte("created_at", (function() {
+      const vnDate = new Intl.DateTimeFormat('en-CA', { 
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date());
+      return `${vnDate}T00:00:00+07:00`;
+    })()).limit(1).single() : Promise.resolve({ data: null, error: null })
   ]);
 
+  const isSaved = !!savedResponse.data;
   const profile = profileResponse.data;
   const authorProfile = authorProfileResponse.data;
   const isTester = !!profile?.is_test_account;
   const isAdmin = profile?.role === "admin";
   const isAuthorHidden = authorProfile?.is_hidden;
+  const hasContributedToday = !!todayContributionResponse.data;
 
   const contributions: Contribution[] = (contributionsResponse.data || [])
     .filter((c: any) => isTester || !c.is_test || (user && c.user_id === user.id))
@@ -127,7 +149,7 @@ export default async function WorkPage({
   if (isPrivate && (!user || user.id !== work.created_by)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
+        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
           <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -137,7 +159,7 @@ export default async function WorkPage({
           <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
             Bạn đang cố gắng truy cập địa hạt riêng tư của tác giả. Chỉ người sở hữu mới có quyền vào đây.
           </p>
-          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
             Quay lại trang chủ
           </Link>
         </div>
@@ -148,7 +170,7 @@ export default async function WorkPage({
   if (isAuthorHidden && (!user || (user.id !== work.created_by && !isAdmin))) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
+        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
           <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
               <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
@@ -158,7 +180,7 @@ export default async function WorkPage({
           <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
             Tác phẩm này không tồn tại hoặc đã bị vô hiệu hóa.
           </p>
-          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+          <Link href="/kho-tang" className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
             Quay lại trang chủ
           </Link>
         </div>
@@ -172,15 +194,15 @@ export default async function WorkPage({
     if (!user) {
       return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-          <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-xl flex flex-col items-center transition-all">
-            <div className="w-16 h-16 bg-literary-gold text-black border-2 border-black rounded-lg flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
+            <div className="w-16 h-16 bg-literary-gold text-black border-2 border-black rounded-[4px] flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <span className="text-2xl font-black">{ageRating}</span>
             </div>
             <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">Xác nhận độ tuổi</h1>
             <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
               Tác phẩm này được giới hạn cho độ tuổi {ageRating}. Vui lòng đăng nhập để tiếp tục.
             </p>
-            <Link href="/dang-nhap" className="w-full py-3 bg-black text-white border-2 border-black rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
+            <Link href="/dang-nhap" className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all">
               Đăng nhập
             </Link>
           </div>
@@ -188,22 +210,21 @@ export default async function WorkPage({
       );
     }
 
-    const { calculateAge, isOldEnough } = await import("@/utils/age");
     const age = calculateAge(profile?.birthday);
     
     // Admin bypass optionally? We can just do strictly age for everyone except maybe created_by
     if (user.id !== work.created_by && !isOldEnough(age, ageRating)) {
       return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-red-50">
-          <div className="max-w-sm w-full bg-white border-2 border-red-600 p-10 rounded-xl flex flex-col items-center transition-all shadow-[8px_8px_0px_0px_rgba(220,38,38,0.1)]">
-            <div className="w-16 h-16 bg-red-600 text-white rounded-lg flex items-center justify-center mb-6">
+          <div className="max-w-sm w-full bg-white border-2 border-red-600 p-10 rounded-[4px] flex flex-col items-center transition-all shadow-[8px_8px_0px_0px_rgba(220,38,38,0.1)]">
+            <div className="w-16 h-16 bg-red-600 text-white rounded-[4px] flex items-center justify-center mb-6">
                <span className="text-3xl font-black">{ageRating}</span>
             </div>
             <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-red-600">Dừng bước!</h1>
             <p className="text-red-950/60 font-medium mb-8 text-sm leading-relaxed">
               Bạn chưa đủ tuổi để truy cập nội dung này. Quy tắc giới hạn {ageRating}+ được thực thi nghiêm ngặt.
             </p>
-            <Link href="/kho-tang" className="w-full py-3 bg-red-600 text-white border-2 border-red-600 rounded-xl font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(220,38,38,0.4)] active:translate-x-0 active:translate-y-0 transition-all">
+            <Link href="/kho-tang" className="w-full py-3 bg-red-600 text-white border-2 border-red-600 rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(220,38,38,0.4)] active:translate-x-0 active:translate-y-0 transition-all">
               Quay lại an toàn
             </Link>
           </div>
@@ -223,36 +244,16 @@ export default async function WorkPage({
     ? "Mục này ở chế độ chỉ xem. Chỉ chủ tác phẩm mới có thể đóng góp."
     : undefined;
 
-  // Check daily limit for current user (Vietnam Timezone)
-  if (canContribute && user) {
-    const vnDate = new Intl.DateTimeFormat('en-CA', { 
-      timeZone: 'Asia/Ho_Chi_Minh',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).format(new Date());
-    
-    // startOfDay VN is vnDateT00:00:00+07:00
-    const startOfDayVN = `${vnDate}T00:00:00+07:00`;
-    
-    const { data: todayContribution } = await supabase
-      .from("contributions")
-      .select("id")
-      .eq("work_id", id)
-      .eq("user_id", user.id)
-      .gte("created_at", startOfDayVN)
-      .limit(1)
-      .single();
-
-    if (todayContribution) {
-      canContribute = false;
-      contributionBlockedMessage = "Hôm nay bạn đã tham gia vào tác phẩm này!";
-    }
+  // Check daily limit for current user
+  if (canContribute && user && hasContributedToday) {
+    canContribute = false;
+    contributionBlockedMessage = "Hôm nay bạn đã tham gia vào tác phẩm này!";
   }
 
 
   return (
-    <div className="min-h-screen max-w-2xl mx-auto p-6 flex flex-col ">
+    <ZenModeWrapper>
+      <div className="min-h-screen p-6 flex flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -314,7 +315,9 @@ export default async function WorkPage({
           }).replace(/</g, "\\u003c")
         }}
       />
-      <section className="mb-10 border-b-2 border-black pb-8">
+
+      {/* Header Section - Full Width */}
+      <section className="mb-10 border-b-2 border-black pb-8 max-w-4xl mx-auto w-full zen-hide">
         <Link
           href="/kho-tang"
           className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
@@ -350,31 +353,35 @@ export default async function WorkPage({
         </div>
       </section>
 
-      {/* Real-time Feed */}
-      <section className="flex-grow mb-12">
-        <Feed 
-          initialContributions={contributions || []} 
-          workId={work.id} 
-          limitType={work.limit_type}
-        />
-      </section>
+      {/* 3-Column Layout */}
+      <WorkPageLayout workId={work.id} initialSaved={isSaved}>
+        {/* Real-time Feed */}
+        <section className="flex-grow mb-12">
+          <Feed 
+            initialContributions={contributions || []} 
+            workId={work.id} 
+            limitType={work.limit_type}
+          />
+        </section>
 
-      {/* Editor - Sticky at bottom */}
-      {!isCompleted && (
-        <div className="sticky bottom-6">
-            <div className="bg-white p-5 rounded-xl border-2 border-black relative z-20">
-                <Editor 
-                  workId={work.id} 
-                  writingRule="1 câu"
-                  hinhThuc={work.sub_category}
-                  categoryType={work.category_type}
-                  user={user}
-                  canContribute={canContribute}
-                  blockedMessage={contributionBlockedMessage}
-                />
-            </div>
-        </div>
-      )}
-    </div>
+        {/* Editor - Sticky at bottom */}
+        {!isCompleted && (
+          <div className="sticky bottom-4 sm:bottom-6 zen-hide max-w-4xl mx-auto w-full px-2 sm:px-0">
+              <div className="bg-white py-2 px-3 sm:py-3 sm:px-5 rounded-[4px] border-2 border-black relative z-20">
+                  <Editor 
+                    workId={work.id} 
+                    writingRule="1 câu"
+                    hinhThuc={work.sub_category}
+                    categoryType={work.category_type}
+                    user={user}
+                    canContribute={canContribute}
+                    blockedMessage={contributionBlockedMessage}
+                  />
+              </div>
+          </div>
+        )}
+      </WorkPageLayout>
+      </div>
+    </ZenModeWrapper>
   );
 }

@@ -47,7 +47,7 @@ export default function ConfirmModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative z-10 w-full max-w-sm bg-white border-2 border-black rounded-xl p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="relative z-10 w-full max-w-sm bg-white border-2 border-black rounded p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             <div className="text-center">
               
@@ -65,14 +65,14 @@ export default function ConfirmModal({
                     onConfirm();
                     onClose();
                   }}
-                  className="w-full py-3 bg-black text-white text-[11px] font-bold font-ganh uppercase tracking-widest rounded-xl hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black"
+                  className="w-full py-3 bg-black text-white text-[11px] font-bold font-ganh uppercase tracking-widest rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black"
                 >
                   {confirmText}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full py-3 bg-white text-black text-[11px] font-bold font-ganh uppercase tracking-widest rounded-xl hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all border-2 border-black"
+                  className="w-full py-3 bg-white text-black text-[11px] font-bold font-ganh uppercase tracking-widest rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all border-2 border-black"
                 >
                   {cancelText}
                 </button>
@@ -85,3 +85,4 @@ export default function ConfirmModal({
     document.body
   );
 }
+

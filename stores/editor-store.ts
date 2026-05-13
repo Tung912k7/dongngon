@@ -44,3 +44,4 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({ notification: { ...state.notification, isOpen: false } })),
   reset: () => set({ content: "", error: null, warning: null }),
 }));
+

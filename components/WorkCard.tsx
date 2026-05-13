@@ -1,13 +1,8 @@
-"use client";
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
-import dynamic from "next/dynamic";
-const EditWorkModal = dynamic(() => import("./EditWorkModal"), { ssr: false });
-const WorkPreviewModal = dynamic(() => import("./WorkPreviewModal"), { ssr: false });
 import { formatDate } from "@/utils/date";
 
 interface WorkCardProps {
@@ -15,13 +10,22 @@ interface WorkCardProps {
   isOwner?: boolean;
   hideMenu?: boolean;
   variant?: 'default' | 'home';
+  initialSaved?: boolean;
+  onPreview?: (work: Work, initialSaved: boolean) => void;
+  onEdit?: (work: Work) => void;
 }
 
-export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' }: WorkCardProps) {
+const WorkCard = memo(function WorkCard({ 
+  work, 
+  isOwner, 
+  hideMenu, 
+  variant = 'default', 
+  initialSaved = false,
+  onPreview,
+  onEdit
+}: WorkCardProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [showPrivateNotice, setShowPrivateNotice] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -44,17 +48,24 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleCardClick = () => {
+    if (onPreview) {
+      onPreview(work, initialSaved);
+    }
+  };
+
   return (
     <m.div 
       initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} 
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} 
       className="w-full relative"
     >
       <div
-        onClick={() => setIsPreviewOpen(true)}
+        onClick={handleCardClick}
         className={`group relative w-full bg-white border-2 border-black p-5 sm:p-7 flex flex-col min-h-[260px] sm:h-[340px] transition-all duration-300 cursor-pointer overflow-hidden
-          ${isHome ? "rounded-xl hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]" : "hover:-translate-y-1"}
+          ${isHome ? "rounded hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]" : "hover:-translate-y-1"}
         `}
       >
         {/* Decorative Inner Border Reveal (on hover) */}
@@ -170,7 +181,7 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                className="absolute right-0 mt-1 w-36 bg-white border-2 border-black rounded-xl shadow-lg py-1 overflow-hidden"
+                className="absolute right-0 mt-1 w-36 bg-white border-2 border-black rounded shadow-lg py-1 overflow-hidden"
                 style={{ right: '0', left: 'auto' }}
               >
                 <div className="px-1 flex flex-col">
@@ -178,7 +189,7 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setIsEditOpen(true);
+                      if (onEdit) onEdit(work);
                       setIsMenuOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm font-bold text-black hover:bg-gray-50 transition-colors uppercase tracking-wider"
@@ -199,20 +210,7 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
         </div>
       )}
 
-      {/* Modals */}
-      {isOwner && (
-        <EditWorkModal 
-          work={work} 
-          isOpen={isEditOpen} 
-          onClose={() => setIsEditOpen(false)} 
-        />
-      )}
-       <WorkPreviewModal 
-          work={work} 
-          isOpen={isPreviewOpen} 
-          onClose={() => setIsPreviewOpen(false)} 
-       />
-
+      {/* Private Notice Overlay */}
       <AnimatePresence>
         {showPrivateNotice && (
           <m.div
@@ -242,4 +240,7 @@ export default function WorkCard({ work, isOwner, hideMenu, variant = 'default' 
       </AnimatePresence>
     </m.div>
   );
-}
+});
+
+export default WorkCard;
+

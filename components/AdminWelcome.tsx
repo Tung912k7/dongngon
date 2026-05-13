@@ -116,7 +116,7 @@ export default function AdminWelcome() {
             }}
             className="flex items-center gap-4 hidden lg:flex"
           >
-              <div className="bg-yellow-400 text-black px-4 py-2 rounded-xl border-2 border-black font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">
+              <div className="bg-yellow-400 text-black px-4 py-2 rounded border-2 border-black font-bold text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">
                 BẮT ĐẦU TẠI ĐÂY!
              </div>
              <svg 
@@ -132,3 +132,4 @@ export default function AdminWelcome() {
     </AnimatePresence>
   );
 }
+

@@ -22,7 +22,7 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
       {cards.map((card, idx) => (
         <div
           key={idx}
-          className="flex flex-col items-center text-center p-10 rounded-xl border-2 border-black bg-white"
+          className="flex flex-col items-center text-center p-10 rounded border-2 border-black bg-white"
         >
           {/* Icon in circle */}
           <div className="w-16 h-16 rounded-full border-2 border-black flex items-center justify-center text-black mb-6">
@@ -46,7 +46,7 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
             rel={card.ctaHref?.startsWith('http') ? "noopener noreferrer" : undefined}
             className="
               inline-block px-8 py-3 
-              rounded-xl border-2 border-black 
+              rounded border-2 border-black 
               bg-white text-black text-sm font-ganh font-bold uppercase tracking-widest
               shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
               hover:-translate-x-1 hover:-translate-y-1 
@@ -64,3 +64,4 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
 };
 
 export default HelpCenterContact;
+

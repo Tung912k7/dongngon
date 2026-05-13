@@ -6,6 +6,7 @@ import { ClientGlobalWrappers } from "@/components/ClientGlobalWrappers";
 import { CSPostHogProvider } from "./providers";
 import { Be_Vietnam_Pro, Quicksand } from "next/font/google";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 
 const quicksand = Quicksand({
   subsets: ["latin", "vietnamese"],
@@ -65,9 +66,9 @@ export const metadata: Metadata = {
     description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
   },
   icons: {
-    icon: "/webp%20file/logo.webp",
-    shortcut: "/webp%20file/logo.webp",
-    apple: "/webp%20file/logo.webp",
+    icon: "/webp/logo.webp",
+    shortcut: "/webp/logo.webp",
+    apple: "/webp/logo.webp",
   },
   verification: {
     google: "ka9n2768UYd1YIxNC96kuOCvTBP6MfVqmUyFHRxSOvw",
@@ -91,7 +92,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className="scroll-smooth relative" data-scroll-behavior="smooth">
+    <html lang="vi" className="scroll-smooth relative" data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
         <link rel="dns-prefetch" href="https://lqlobokdwcebvoitwxkt.supabase.co" />
@@ -127,8 +128,8 @@ export default function RootLayout({
                   "logo": {
                     "@type": "ImageObject",
                     "@id": "https://dongngon.vercel.app/#logo",
-                    "url": "https://dongngon.vercel.app/webp%20file/logo.webp",
-                    "contentUrl": "https://dongngon.vercel.app/webp%20file/logo.webp",
+                    "url": "https://dongngon.vercel.app/webp/logo.webp",
+                    "contentUrl": "https://dongngon.vercel.app/webp/logo.webp",
                     "caption": "Đồng ngôn",
                     "inLanguage": "vi",
                     "width": "800",
@@ -169,6 +170,7 @@ export default function RootLayout({
         className={`${ganhType.variable} ${beVietnamPro.variable} ${quicksand.variable} antialiased min-h-screen flex flex-col overflow-x-hidden relative`}
       >
         <CSPostHogProvider>
+          <Toaster position="top-right" expand={false} richColors closeButton />
           <ClientGlobalWrappers>
             <Header />
             <main className="flex-1 w-full">
@@ -181,3 +183,4 @@ export default function RootLayout({
     </html>
   );
 }
+

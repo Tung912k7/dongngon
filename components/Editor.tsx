@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { User } from "@supabase/supabase-js";
 import { submitContribution } from "@/actions/contribute";
 import { checkBlacklist } from "@/utils/blacklist";
 import { PrimaryButton } from "./PrimaryButton";
@@ -26,7 +27,7 @@ export default function Editor({
   writingRule: string; 
   hinhThuc?: string;
   categoryType?: string;
-  user: { id: string } | null;
+  user: User | null;
   canContribute?: boolean;
   blockedMessage?: string;
 }) {
@@ -217,7 +218,7 @@ export default function Editor({
 
   if (!user && !isBlocked) {
     return (
-      <div className="text-center py-6 bg-[#fcfcfc] rounded-xl border-2 border-black border-dashed">
+      <div className="text-center py-6 bg-[#fcfcfc] rounded-[4px] border-2 border-black border-dashed">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40">
           Bạn cần{" "}
           <Link href="/dang-nhap" className="text-black font-black underline hover:opacity-70 transition-opacity">
@@ -236,7 +237,7 @@ export default function Editor({
   return (
     <form onSubmit={handleSubmit} className="relative group">
       {isBlocked && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-xl transition-all duration-500">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-[4px] transition-all duration-500">
           <div className="bg-black text-white px-4 py-2 rounded-lg shadow-[4px_4px_0px_0px_rgba(212,175,55,1)] flex flex-col items-center gap-1 animate-in zoom-in-95 duration-300">
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-literary-gold/80">Quay lại sau</span>
             <span className="text-xl font-black tracking-widest tabular-nums font-mono">
@@ -249,17 +250,17 @@ export default function Editor({
         </div>
       )}
       {error && (
-        <div className="absolute -top-14 left-0 right-0 bg-red-600 border-2 border-red-600 text-white font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)] text-center animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute -top-14 left-0 right-0 bg-red-600 border-2 border-red-600 text-white font-bold text-[10px] uppercase tracking-widest p-3 rounded-[4px] shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)] text-center animate-in fade-in slide-in-from-bottom-2">
           {error}
         </div>
       )}
       {warning && !error && !isBlocked && (
-        <div className="absolute -top-14 left-0 right-0 bg-literary-gold border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute -top-14 left-0 right-0 bg-literary-gold border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-[4px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
           {warning}
         </div>
       )}
 
-      <div className={`flex items-end gap-2 sm:gap-3 transition-all duration-500 ${isBlocked ? "blur-[2px] opacity-50 select-none" : ""}`}>
+      <div className={`flex items-end gap-1.5 sm:gap-3 transition-all duration-500 ${isBlocked ? "blur-[2px] opacity-50 select-none" : ""}`}>
         <textarea
           ref={textareaRef}
           value={content}
@@ -277,7 +278,7 @@ export default function Editor({
               handleSubmit(e);
             }
           }}
-          className="flex-grow p-3 bg-[#fcfcfc] border-2 border-black rounded-xl focus:outline-none focus:bg-white transition-all resize-none min-h-[46px] h-auto font-be-vietnam text-sm placeholder:text-black/20 placeholder:font-bold placeholder:uppercase placeholder:tracking-widest"
+          className="flex-grow p-2 sm:p-3 bg-[#fcfcfc] border-2 border-black rounded-[4px] focus:outline-none focus:bg-white transition-all resize-none min-h-[46px] h-auto font-be-vietnam text-sm placeholder:text-black/20 placeholder:font-bold placeholder:uppercase placeholder:tracking-widest"
           disabled={isSubmitting || isBlocked}
           rows={1}
           onInput={(e) => {
@@ -293,7 +294,7 @@ export default function Editor({
             type="button"
             onClick={() => setNewLine(!newLine)}
             title="Xuống dòng mới"
-            className={`flex items-center justify-center w-11 h-11 rounded-xl border-2 border-black transition-all duration-200 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none ${
+            className={`flex items-center justify-center w-11 h-11 rounded-[4px] border-2 border-black transition-all duration-200 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none ${
               newLine
                 ? "bg-black text-literary-gold"
                 : "bg-white text-black/30 hover:text-black"
@@ -305,7 +306,7 @@ export default function Editor({
 
         <PrimaryButton
           type="submit"
-          className="!px-4 !h-11 rounded-xl min-w-[55px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="!px-2.5 sm:!px-4 !h-11 rounded-[4px] min-w-[45px] sm:min-w-[55px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           disabled={isSubmitting || isBlocked}
         >
           {isBlocked ? (
@@ -357,3 +358,4 @@ export default function Editor({
     </form>
   );
 }
+

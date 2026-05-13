@@ -5,7 +5,7 @@ import { m } from "framer-motion";
 export function WorkCardSkeleton() {
   return (
     <div 
-        className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded-xl relative overflow-hidden"
+        className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded relative overflow-hidden"
     >
       {/* Animated Shine Effect */}
       <m.div
@@ -54,3 +54,4 @@ export function WorkGridSkeleton({ count = 6 }: { count?: number }) {
     </div>
   );
 }
+

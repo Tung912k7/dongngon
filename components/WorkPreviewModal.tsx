@@ -2,17 +2,22 @@
 
 import { useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { Work } from "@/stores/work-store";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+
+import SaveWorkButton from "./SaveWorkButton";
 
 interface WorkPreviewModalProps {
   work: Work;
   isOpen: boolean;
   onClose: () => void;
+  isOwner?: boolean;
+  initialSaved?: boolean;
 }
 
-export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewModalProps) {
+export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initialSaved }: WorkPreviewModalProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -56,7 +61,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
             role="dialog"
             aria-modal="true"
             aria-label={`Preview of ${work.title}`}
-            className="bg-white border-2 border-black p-0 w-full max-w-lg md:max-w-4xl relative z-10 rounded-xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            className="bg-white border-2 border-black p-0 w-full max-w-lg md:max-w-4xl relative z-10 rounded-[12px] overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
           >
             {/* Sidebar: Metadata & Quick Actions */}
             <div className="hidden md:flex md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 md:flex-col bg-white">
@@ -102,6 +107,12 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
               </div>
 
               <div className="mt-8 pt-8 border-t border-black/5 flex flex-col gap-3">
+                <SaveWorkButton 
+                  workId={work.id.toString()} 
+                  initialSaved={initialSaved} 
+                  variant="full" 
+                  className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center"
+                />
                 <button
                   onClick={() => {
                     const shareUrl = `${window.location.origin}/work/${work.id}`;
@@ -113,10 +124,10 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                       }).catch(console.error);
                     } else {
                       navigator.clipboard.writeText(shareUrl);
-                      alert("Đã sao chép liên kết vào bộ nhớ tạm!");
+                      toast.success("Đã sao chép liên kết!");
                     }
                   }}
-                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
+                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform text-[10px] flex items-center justify-center gap-2"
                 >
                   SHARE
                 </button>
@@ -125,7 +136,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                     router.push(`/work/${work.id}`);
                     onClose();
                   }}
-                  className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black hover:bg-literary-gold hover:border-literary-gold hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black hover:bg-literary-gold hover:border-literary-gold hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors text-[10px] flex items-center justify-center gap-2"
                 >
                   ĐẾN TÁC PHẨM
                 </button>
@@ -140,7 +151,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                 className="absolute top-4 right-4 md:top-6 md:right-6 text-black/40 hover:text-black transition-colors p-2 rounded-full"
                 title="Đóng"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -159,7 +170,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                   </p>
                 </div>
 
-                <div className="max-h-[60vh] md:max-h-[300px] overflow-y-auto pr-6 scrollbar-hide">
+                <div className="max-h-[60vh] md:max-h-[300px] overflow-y-auto overscroll-contain pr-6 scrollbar-hide">
                   {work.description ? (
                     <p className="text-lg md:text-2xl font-medium text-gray-800 leading-relaxed font-be-vietnam italic">
                       &ldquo;{work.description}&rdquo;
@@ -175,6 +186,12 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
 
                 {/* Mobile actions (visible only on small screens) */}
                 <div className="md:hidden mt-6 flex flex-col gap-3">
+                  <SaveWorkButton 
+                    workId={work.id.toString()} 
+                    initialSaved={initialSaved} 
+                    variant="full"
+                    className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center" 
+                  />
                   <button
                     onClick={() => {
                       const shareUrl = `${window.location.origin}/work/${work.id}`;
@@ -186,7 +203,7 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
                         }).catch(console.error);
                       } else {
                         navigator.clipboard.writeText(shareUrl);
-                        alert("Đã sao chép liên kết vào bộ nhớ tạm!");
+                        toast.success("Đã sao chép liên kết!");
                       }
                     }}
                     className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white text-[12px]"
@@ -213,3 +230,4 @@ export default function WorkPreviewModal({ work, isOpen, onClose }: WorkPreviewM
 
   return createPortal(content, document.body);
 }
+

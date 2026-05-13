@@ -79,31 +79,30 @@ export default async function DongNgonPage({
 
     const supabase = await createClient();
     
-    // Parallelize data fetching
-    const [
-      userResponse,
-      hiddenProfilesResponse
-    ] = await Promise.all([
+    // 1. Initial parallel fetches (User + Hidden Profiles)
+    const [userRes, hiddenProfilesResponse] = await Promise.all([
       supabase.auth.getUser(),
-      supabase.from("profiles").select("id").eq("is_hidden", true)
+      supabase.from("profiles").select("id").eq("is_hidden", true),
     ]);
-
-    const user = userResponse.data.user;
+    
+    const user = userRes.data.user;
     const hiddenUserIds = (hiddenProfilesResponse.data || []).map(p => p.id);
 
-    // 1. IMPROVED SEARCH: Pre-search in contributions if query exists
+    // 2. Secondary parallel fetches (Saved Works + Content Matches if search query exists)
+    const [savedWorksResponse, contentMatchesResponse] = await Promise.all([
+      user 
+        ? supabase.from("saved_works").select("work_id").eq("user_id", user.id)
+        : Promise.resolve({ data: [] }),
+      q
+        ? supabase.from("contributions").select("work_id").eq('is_test', false).ilike("content", `%${q}%`).limit(100)
+        : Promise.resolve({ data: [] })
+    ]);
+
+    const savedWorkIds = new Set((savedWorksResponse.data || []).map(sw => sw.work_id));
+    
     let contentMatchedWorkIds: string[] = [];
-    if (q) {
-        const { data: contribMatches } = await supabase
-            .from("contributions")
-            .select("work_id")
-            .eq('is_test', false)
-            .ilike("content", `%${q}%`)
-            .limit(100);
-        
-        if (contribMatches) {
-            contentMatchedWorkIds = [...new Set(contribMatches.map(c => c.work_id))];
-        }
+    if (q && contentMatchesResponse.data) {
+        contentMatchedWorkIds = [...new Set(contentMatchesResponse.data.map((c: any) => c.work_id))];
     }
 
     // 3. Build server-side query on works table
@@ -256,7 +255,9 @@ export default async function DongNgonPage({
                 totalCount={totalCount}
                 totalPages={totalPages}
                 currentPage={page}
+                initialSavedWorkIds={Array.from(savedWorkIds)}
             />
         </>
     );
 }
+

@@ -84,7 +84,7 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
                   <div className="px-6 py-4 border-t-2 border-black">
                     <button
                       onClick={handleDismiss}
-                      className="w-full py-3 bg-black text-white font-bold uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-all text-sm active:scale-[0.98] cursor-pointer"
+                      className="w-full py-3 bg-black text-white font-bold uppercase tracking-widest rounded hover:bg-gray-800 transition-all text-sm active:scale-[0.98] cursor-pointer"
                     >
                       Đã hiểu, tiếp tục
                     </button>
@@ -109,3 +109,4 @@ function getUnseenEntries(lastSeenVersion: string | null): ChangelogEntry[] {
   }
   return unseen;
 }
+

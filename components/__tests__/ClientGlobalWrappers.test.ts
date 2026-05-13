@@ -48,3 +48,4 @@ describe("resolveGlobalModalQueue", () => {
     expect(visibility.shouldShowChangelog).toBe(true);
   });
 });
+

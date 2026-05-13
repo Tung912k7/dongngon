@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUserStore } from "@/stores/user-store";
+import { User } from "@supabase/supabase-js";
 import { Work } from "@/stores/work-store";
 import dynamic from "next/dynamic";
 const TableFilter = dynamic(() => import("@/components/TableFilter"), { ssr: false });
@@ -12,6 +13,9 @@ import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
 import { WorkGridSkeleton } from "@/components/WorkCardSkeleton";
 import WorkCard from "@/components/WorkCard";
+const WorkPreviewModal = dynamic(() => import("@/components/WorkPreviewModal"), { ssr: false });
+const EditWorkModal = dynamic(() => import("@/components/EditWorkModal"), { ssr: false });
+import { useState } from "react";
 
 const defaultFilters: FilterState = {
   category_type: "",
@@ -22,9 +26,7 @@ const defaultFilters: FilterState = {
   limit: "10",
 };
 
-type AuthUser = {
-  id: string;
-};
+// Removed redundant AuthUser type definition
 
 export default function DongNgonClient({
   initialWorks,
@@ -32,16 +34,24 @@ export default function DongNgonClient({
   totalCount,
   totalPages,
   currentPage,
+  initialSavedWorkIds = [],
 }: {
   initialWorks: Work[];
-  initialUser: AuthUser | null;
+  initialUser: User | null;
   totalCount: number;
   totalPages: number;
   currentPage: number;
+  initialSavedWorkIds?: string[];
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+
+  // Modal states
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [workInitialSaved, setWorkInitialSaved] = useState(false);
 
   // Zustand stores
   const { user, setUser } = useUserStore();
@@ -63,21 +73,10 @@ export default function DongNgonClient({
   useEffect(() => {
     if (isHydrated.current) return;
     if (initialUser && !user) {
-      useUserStore.setState({ user: initialUser });
+      useUserStore.setState({ user: initialUser as any });
     }
     isHydrated.current = true;
   }, [initialUser, user]);
-
-  // Keep user synced with auth state changes (login/logout)
-  useEffect(() => {
-    const syncUser = async () => {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser && !user) {
-        setUser(currentUser);
-      }
-    };
-    syncUser();
-  }, [user, setUser, supabase]);
 
   // Navigate with filters — triggers server re-fetch via URL change
   const navigateWithFilters = useCallback((
@@ -121,6 +120,17 @@ export default function DongNgonClient({
   const handleCreateSuccess = useCallback(() => {
     router.refresh();
   }, [router]);
+
+  const handlePreviewWork = useCallback((work: Work, initialSaved: boolean) => {
+    setSelectedWork(work);
+    setWorkInitialSaved(initialSaved);
+    setIsPreviewOpen(true);
+  }, []);
+
+  const handleEditWork = useCallback((work: Work) => {
+    setSelectedWork(work);
+    setIsEditOpen(true);
+  }, []);
 
   // Realtime subscription — refresh page data on changes
   useEffect(() => {
@@ -212,6 +222,9 @@ export default function DongNgonClient({
                         work={work}
                         isOwner={!!user && work.created_by === user.id}
                         hideMenu={true}
+                        initialSaved={initialSavedWorkIds.includes(work.id.toString())}
+                        onPreview={handlePreviewWork}
+                        onEdit={handleEditWork}
                         />
                     </div>
                 ))}
@@ -247,6 +260,25 @@ export default function DongNgonClient({
           )}
         </div>
       </section>
+
+      {/* Shared Modals */}
+      {selectedWork && (
+        <>
+          <WorkPreviewModal
+            work={selectedWork}
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+            isOwner={!!user && selectedWork.created_by === user.id}
+            initialSaved={workInitialSaved}
+          />
+          <EditWorkModal
+            work={selectedWork}
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 }
+

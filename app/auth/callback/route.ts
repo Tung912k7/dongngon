@@ -21,3 +21,4 @@ export async function GET(request: Request) {
   // return the user to login page with error
   return NextResponse.redirect(`${origin}/dang-nhap?error=auth-callback-failed`)
 }
+

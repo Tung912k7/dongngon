@@ -118,7 +118,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white border-2 border-black rounded-xl p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">Chỉnh sửa tác phẩm</h2>
             
@@ -133,7 +133,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                     if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: "" }));
                   }}
                   maxLength={100}
-                  className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                  className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                   placeholder="Tên tác phẩm của bạn..."
                 />
                 {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
@@ -150,7 +150,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
                     rows={3}
-                    className="w-full px-6 py-3 border-2 border-black rounded-xl font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
+                    className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
                     placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
                   />
               </div>
@@ -161,7 +161,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-black rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                    className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                   >
                     <option value="private">Riêng tư</option>
                     <option value="public">Cộng đồng</option>
@@ -175,17 +175,17 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
               <div className="pt-4 border-t-2 border-black/10">
                 <p className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">Thông tin cố định (Không thể thay đổi)</p>
                 <div className="flex flex-wrap gap-2">
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded-xl text-[11px] font-black text-black uppercase">
+                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
                     {formData.category_type}
                   </div>
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded-xl text-[11px] font-black text-black uppercase">
+                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
                     {formData.hinh_thuc}
                   </div>
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded-xl text-[11px] font-black text-black uppercase">
+                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
                     {formData.writing_rule}
                   </div>
                   {work.license === "public" && (
-                    <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded-xl text-[11px] font-black text-black uppercase">
+                    <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
                       CỘNG ĐỒNG
                     </div>
                   )}
@@ -193,7 +193,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded-xl text-sm font-bold animate-shake">
+                <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded text-sm font-bold animate-shake">
                   {error}
                 </div>
               )}
@@ -202,7 +202,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded-xl hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
+                  className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
                 >
                   HỦY
                 </button>
@@ -221,3 +221,4 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     </AnimatePresence>
   );
 }
+

@@ -8,3 +8,4 @@ export default async function AdminHDSDPage() {
     <AdminHDSDEditor initialArticles={result.success && result.data ? result.data : []} />
   );
 }
+

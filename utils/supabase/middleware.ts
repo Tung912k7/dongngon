@@ -2,9 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  let supabaseResponse = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,14 +25,46 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: DO NOT remove getUser() call
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // 1. Define routes that need auth
+  const pathname = request.nextUrl.pathname
+  const isAdminRoute = pathname.startsWith('/admin')
+  const isProtectedRoute = pathname.startsWith('/profile') || pathname.startsWith('/settings') || pathname.startsWith('/notification') || pathname.startsWith('/account')
+  const authRoutes = ['/dang-nhap', '/dang-ky', '/quen-mat-khau']
+  const isAuthRoute = authRoutes.includes(pathname)
 
-  // 1. Protect Admin Pages
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user) {
+  // 2. Only fetch user if we are on a route that needs it (Gating or Auth redirect)
+  if (isAdminRoute || isProtectedRoute || isAuthRoute) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    // Admin protection
+    if (isAdminRoute) {
+      if (!user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dang-nhap'
+        const response = NextResponse.redirect(url)
+        supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+        return response
+      }
+
+      const { data: privateData } = await supabase
+        .from('user_private_data')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (privateData?.role !== 'admin') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        const response = NextResponse.redirect(url)
+        supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+        return response
+      }
+    }
+
+    // Protected user routes
+    if (isProtectedRoute && !user) {
       const url = request.nextUrl.clone()
       url.pathname = '/dang-nhap'
       const response = NextResponse.redirect(url)
@@ -42,13 +72,8 @@ export async function updateSession(request: NextRequest) {
       return response
     }
 
-    const { data: privateData } = await supabase
-      .from('user_private_data')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (privateData?.role !== 'admin') {
+    // Auth routes (redirect if already logged in)
+    if (isAuthRoute && user) {
       const url = request.nextUrl.clone()
       url.pathname = '/'
       const response = NextResponse.redirect(url)
@@ -57,17 +82,6 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // 2. Protect Authenticated Pages
-  const pathname = request.nextUrl.pathname
-  const isProtectedPath = pathname.startsWith('/profile') || pathname.startsWith('/settings')
-  
-  if (isProtectedPath && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dang-nhap'
-    const response = NextResponse.redirect(url)
-    supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
-    return response
-  }
-
   return supabaseResponse
 }
+

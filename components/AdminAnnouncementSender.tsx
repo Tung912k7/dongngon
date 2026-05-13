@@ -87,11 +87,11 @@ export default function AdminAnnouncementSender() {
             onChange={handleTargetChange}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             placeholder="Nhập nickname (các tài khoản ngăn cách bởi dấu phẩy)..."
-            className="w-full py-3 pr-3 pl-11 rounded-xl border-2 border-slate-200 focus:border-black focus:outline-none text-sm transition-colors mb-2"
+            className="w-full py-3 pr-3 pl-11 rounded border-2 border-slate-200 focus:border-black focus:outline-none text-sm transition-colors mb-2"
             disabled={isSending}
           />
           {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute z-10 w-full bg-white border border-slate-200 mt-[-8px] rounded-xl shadow-lg max-h-48 overflow-y-auto">
+            <ul className="absolute z-10 w-full bg-white border border-slate-200 mt-[-8px] rounded shadow-lg max-h-48 overflow-y-auto">
               {suggestions.map((s, idx) => (
                 <li
                   key={`${s}-${idx}`}
@@ -113,7 +113,7 @@ export default function AdminAnnouncementSender() {
           placeholder="Nhập nội dung thông báo..."
           maxLength={500}
           rows={3}
-          className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-black focus:outline-none resize-none text-sm transition-colors"
+          className="w-full p-3 rounded border-2 border-slate-200 focus:border-black focus:outline-none resize-none text-sm transition-colors"
           disabled={isSending}
         />
 
@@ -122,7 +122,7 @@ export default function AdminAnnouncementSender() {
           <button
             type="submit"
             disabled={isSending || !message.trim()}
-            className="px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 bg-black text-white text-xs font-bold uppercase tracking-widest rounded hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isSending ? "Đang gửi..." : "Gửi thông báo"}
           </button>
@@ -130,7 +130,7 @@ export default function AdminAnnouncementSender() {
       </form>
 
       {status && (
-        <div className={`mt-3 px-4 py-2.5 rounded-xl text-sm font-medium ${
+        <div className={`mt-3 px-4 py-2.5 rounded text-sm font-medium ${
           status.type === "success"
             ? "bg-green-50 text-green-700 border border-green-200"
             : "bg-red-50 text-red-600 border border-red-200"
@@ -141,3 +141,4 @@ export default function AdminAnnouncementSender() {
     </div>
   );
 }
+

@@ -81,7 +81,7 @@ export default function WorkOwnerControls({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="flex-grow px-3 py-1 border-2 border-black rounded-xl font-bold text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="flex-grow px-3 py-1 border-2 border-black rounded font-bold text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
             autoFocus
           />
           <button 
@@ -125,3 +125,4 @@ export default function WorkOwnerControls({
     </div>
   );
 }
+

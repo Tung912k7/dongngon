@@ -30,3 +30,4 @@ export function formatCountdown(ms: number) {
     seconds.toString().padStart(2, '0')
   ].join(':');
 }
+

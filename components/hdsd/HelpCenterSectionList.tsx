@@ -36,3 +36,4 @@ const HelpCenterSectionList: React.FC<HelpCenterSectionListProps> = ({
 };
 
 export default HelpCenterSectionList;
+

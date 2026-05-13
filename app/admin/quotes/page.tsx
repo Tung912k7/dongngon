@@ -737,14 +737,14 @@ export default function AdminQuotesPage() {
                         <button
                           type="button"
                           onClick={() => handleEdit(quote)}
-                          className="px-4 py-2 rounded-xl border-2 border-black font-black uppercase tracking-[0.12em] text-xs hover:bg-black hover:text-white transition-colors"
+                          className="px-4 py-2 rounded border-2 border-black font-black uppercase tracking-[0.12em] text-xs hover:bg-black hover:text-white transition-colors"
                         >
                           Chỉnh sửa
                         </button>
                         <button
                           type="button"
                           onClick={() => handleToggleActive(quote)}
-                          className="px-4 py-2 rounded-xl border-2 border-black font-black uppercase tracking-[0.12em] text-xs hover:bg-black hover:text-white transition-colors"
+                          className="px-4 py-2 rounded border-2 border-black font-black uppercase tracking-[0.12em] text-xs hover:bg-black hover:text-white transition-colors"
                         >
                           {quote.is_active ? "Ẩn khỏi footer" : "Hiển thị ở footer"}
                         </button>
@@ -752,7 +752,7 @@ export default function AdminQuotesPage() {
                           type="button"
                           onClick={() => handleDelete(quote)}
                           disabled={removingId === quote.id}
-                          className="px-4 py-2 rounded-xl border-2 border-red-500 text-red-600 font-black uppercase tracking-[0.12em] text-xs hover:bg-red-500 hover:text-white transition-colors disabled:opacity-40"
+                          className="px-4 py-2 rounded border-2 border-red-500 text-red-600 font-black uppercase tracking-[0.12em] text-xs hover:bg-red-500 hover:text-white transition-colors disabled:opacity-40"
                         >
                           {removingId === quote.id ? "Đang xóa" : "Xóa"}
                         </button>

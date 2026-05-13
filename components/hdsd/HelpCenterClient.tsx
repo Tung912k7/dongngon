@@ -84,7 +84,7 @@ export default function HelpCenterClient({
                   <Link
                     key={article.id}
                     href={`/hdsd/${article.section_slug}/${article.slug}`}
-                    className="block p-6 bg-white border-2 border-black rounded-xl hover:bg-neutral-50 transition-all group"
+                    className="block p-6 bg-white border-2 border-black rounded hover:bg-neutral-50 transition-all group"
                   >
                     <div className="flex items-center gap-2 mb-3">
                        <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white px-2.5 py-1 rounded-sm">
@@ -103,7 +103,7 @@ export default function HelpCenterClient({
                 ))}
               </div>
             ) : (
-              <div className="py-20 text-center bg-white rounded-xl border-2 border-black border-dashed">
+              <div className="py-20 text-center bg-white rounded border-2 border-black border-dashed">
                 <p className="text-neutral-400 font-bold italic uppercase text-sm tracking-widest">Không tìm thấy bài viết nào phù hợp.</p>
               </div>
             )}
@@ -177,3 +177,4 @@ export default function HelpCenterClient({
     </div>
   );
 }
+

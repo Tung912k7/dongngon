@@ -111,14 +111,14 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
                   <button
                     onClick={() => setIsOpen(false)}
                     disabled={isDeleting}
-                    className="flex-1 py-3 border-2 border-black text-black font-bold uppercase tracking-widest rounded-xl hover:bg-gray-100 transition-all text-sm disabled:opacity-50"
+                    className="flex-1 py-3 border-2 border-black text-black font-bold uppercase tracking-widest rounded hover:bg-gray-100 transition-all text-sm disabled:opacity-50"
                   >
                     HỦY
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="flex-1 py-3 bg-red-500 text-white font-bold uppercase tracking-widest rounded-xl hover:bg-red-600 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-red-500 text-white font-bold uppercase tracking-widest rounded hover:bg-red-600 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isDeleting ? "ĐANG XÓA..." : "XÓA NGAY"}
                   </button>
@@ -132,3 +132,4 @@ export default function DeleteWorkButton({ workId, workTitle, variant = 'default
     </>
   );
 }
+

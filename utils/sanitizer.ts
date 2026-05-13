@@ -208,3 +208,4 @@ export function sanitizeMarkdownToHtml(markdown: string): string {
 
   return blocks.join("\n");
 }
+

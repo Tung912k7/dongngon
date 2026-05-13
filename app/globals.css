@@ -120,3 +120,34 @@ h1, h2, h3, h4, h5, h6 {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Zen Mode Typography & Visuals */
+.zen-mode-active {
+  transition: background-color 1s ease-in-out;
+}
+
+.zen-mode-active .content-display {
+  font-family: var(--font-serif), serif !important;
+  font-size: 1.25rem;
+  line-height: 2;
+  color: #1a1a1a;
+  transition: all 0.8s ease-in-out;
+}
+
+.zen-mode-active .work-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.zen-mode-active header,
+.zen-mode-active footer,
+.zen-mode-active .zen-hide {
+  display: none !important;
+}
+
+.zen-mode-active .zen-no-border {
+  border-left: none !important;
+  border-right: none !important;
+}
+

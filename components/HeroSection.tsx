@@ -27,14 +27,14 @@ const HeroSection = () => {
                     <div className="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full justify-center px-4 sm:px-0">
                         <LinkedButton 
                             href="/kho-tang" 
-                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-[4px] border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
                         >
                             Bắt đầu
                         </LinkedButton>
                         <LinkedButton 
                             href="/hdsd" 
                             inverse 
-                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-xl border-2 border-black hover:bg-black/5 active:scale-[0.98] transition-all"
+                            className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-[4px] border-2 border-black hover:bg-black/5 active:scale-[0.98] transition-all"
                         >
                             Hướng dẫn
                         </LinkedButton>
@@ -65,3 +65,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+

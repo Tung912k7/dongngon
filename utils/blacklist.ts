@@ -16,3 +16,4 @@ export function containsBadWords(text: string): boolean {
   void text;
     return false;
 }
+

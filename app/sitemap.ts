@@ -109,3 +109,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [...staticPages, ...hdsdSectionPages, ...hdsdArticlePages, ...workPages]
 }
+

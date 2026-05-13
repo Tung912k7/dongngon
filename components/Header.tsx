@@ -9,6 +9,8 @@ import { User } from "@supabase/supabase-js";
 import { m, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import { useNotificationStore } from "@/stores/notification-store";
+import { useUserStore } from "@/stores/user-store";
+import { useZenStore } from "@/stores/zen-store";
 
 interface HeaderProps {
   user?: User | null;
@@ -28,12 +30,11 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState<User | null>(initialUser);
-  const [nickname, setNickname] = useState<string | null>(initialNickname);
-  const [role, setRole] = useState<string | null>(initialRole);
+  const { user, setUser, nickname, setNickname, role, setRole } = useUserStore();
   const { unreadCount, fetchUnreadCount } = useNotificationStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = useMemo(() => createClient(), []);
+  const { isZenMode } = useZenStore();
 
   const loadUserProfile = useCallback(async (userOverride?: User | null) => {
     const currentUser = userOverride === undefined
@@ -80,7 +81,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
-  }, [user, fetchUnreadCount]);
+  }, [user?.id, fetchUnreadCount]);
 
   useEffect(() => {
     void loadUserProfile();
@@ -183,7 +184,15 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
   };
 
   return (
-    <header className="w-full bg-white relative sm:sticky sm:top-0 z-[45]">
+    <AnimatePresence>
+      {!isZenMode && (
+        <m.header
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full bg-white relative sm:sticky sm:top-0 z-[45]"
+        >
       <div className="mx-auto max-w-7xl py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         
         {/* Mobile Header - Only visible on small screens */}
@@ -196,11 +205,11 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
             
             <button
               onClick={() => setIsMobileMenuOpen((s) => !s)}
-              className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center text-black transition-colors group"
+              className="w-10 h-10 rounded-[4px] border-2 border-black flex items-center justify-center text-black transition-colors group"
               aria-label={isMobileMenuOpen ? "Đóng menu" : "Mở menu"}
             >
               {isMobileMenuOpen ? (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               ) : (
@@ -240,9 +249,9 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     aria-label="Đóng menu"
-                    className="w-10 h-10 rounded-xl border-2 border-black flex items-center justify-center transition-colors text-black"
+                    className="w-10 h-10 rounded-[4px] border-2 border-black flex items-center justify-center transition-colors text-black"
                   >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                   </button>
@@ -270,7 +279,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                           >
                             {link.name}
                             {isActive && (
-                              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="text-black ml-4">
+                              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="text-black ml-4" aria-hidden="true">
                                 <path d="M5 12h14m-7-7l7 7-7 7" />
                               </svg>
                             )}
@@ -298,33 +307,33 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                           <>
                            <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-blue-600 flex items-center justify-between group">
                              Hệ thống
-                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                            </Link>
                           </>
                         )}
                         <Link href={`/profile?id=${user?.id}`} onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
                            Hồ sơ cá nhân
-                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
                         <Link href="/notification" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
                            <NotificationMenuItemContent />
-                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
                         <Link href="/settings" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold py-3 text-gray-700 hover:text-black flex items-center justify-between group">
                            Cài đặt
                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-0 group-hover:opacity-100 transition-opacity"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </Link>
                         
-                        <button onClick={handleLogout} className="mt-8 w-full py-4 rounded-xl border-2 border-red-500 text-red-500 font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] transition-all hover:bg-red-500 hover:text-white">
+                        <button onClick={handleLogout} className="mt-8 w-full py-4 rounded-[4px] border-2 border-red-500 text-red-500 font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] transition-all hover:bg-red-500 hover:text-white">
                            Đăng xuất
                         </button>
                       </>
                     ) : (
                       <div className="flex flex-col gap-4 mt-auto">
-                        <Link href="/dang-nhap" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-black text-white text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black hover:opacity-90">
+                        <Link href="/dang-nhap" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-black text-white text-center rounded-[4px] font-bold uppercase tracking-[0.1em] text-sm active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black hover:opacity-90">
                            Đăng nhập
                         </Link>
-                        <Link href="/dang-ky" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-white text-black border-2 border-black text-center rounded-xl font-bold uppercase tracking-[0.1em] text-sm active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5">
+                        <Link href="/dang-ky" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-white text-black border-2 border-black text-center rounded-[4px] font-bold uppercase tracking-[0.1em] text-sm active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5">
                            Tạo tài khoản
                         </Link>
                       </div>
@@ -387,7 +396,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                   {user && (
                     <svg 
                       className={`w-4 h-4 relative z-10 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''} ${mounted && isUserSectionActive ? "text-white" : "text-black"}`} 
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -401,7 +410,7 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] py-2 z-50 overflow-hidden flex flex-col"
+                      className="absolute right-0 mt-3 w-48 bg-white border-2 border-black rounded-[4px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] py-2 z-50 overflow-hidden flex flex-col"
                     >
                       {role === "admin" && (
                         <>
@@ -465,7 +474,9 @@ const Header = ({ user: initialUser = null, nickname: initialNickname = null, ro
         </div>
 
       </div>
-    </header>
+        </m.header>
+      )}
+    </AnimatePresence>
   );
 };
 

@@ -63,7 +63,7 @@ const InputField = ({
               // Creating a synthetic event-like object to trigger the parent's generic handleChange
               onChange({ target: { name, value: val } } as React.ChangeEvent<HTMLInputElement>);
             }}
-            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded-xl`}
+            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded`}
           />
         ) : (
           <input 
@@ -74,7 +74,7 @@ const InputField = ({
             maxLength={maxLength}
             autoComplete={autoComplete}
             required={required}
-            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded-xl ${isPassword ? 'pr-12' : ''}`}
+            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded ${isPassword ? 'pr-12' : ''}`}
           />
         )}
         {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
@@ -721,7 +721,7 @@ export function SignUpForm() {
               autoComplete="new-password"
             />
             
-            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-xl border border-gray-200 mt-2">
+            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border border-gray-200 mt-2">
               <p className="font-bold text-black mb-1">Yêu cầu mật khẩu:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li className={data.password.length >= 8 ? "text-green-600 font-medium" : ""}>Ít nhất 8 ký tự (tối đa 50)</li>
@@ -789,7 +789,7 @@ export function SignUpForm() {
           <div className="absolute right-[-25%] w-[125%] aspect-square pointer-events-none translate-y-[-5%]">
             {/* Love Hand Background */}
             <Image
-              src="/webp file/lovehand.webp"
+              src="/webp/lovehand.webp"
               alt="Love Hand"
               fill
               sizes="(min-width: 1024px) 45vw, 90vw"
@@ -798,7 +798,7 @@ export function SignUpForm() {
             {/* Cow Centered in Heart */}
             <div className="absolute top-[48%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-52 h-52 flex items-center justify-center relative">
               <Image
-                src="/webp file/cow.webp"
+                src="/webp/cow.webp"
                 alt="Cow"
                 fill
                 sizes="208px"
@@ -852,3 +852,4 @@ export function SignUpForm() {
     </>
   );
 }
+

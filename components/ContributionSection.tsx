@@ -28,3 +28,4 @@ const ContributionSection = () => {
 };
 
 export default ContributionSection;
+

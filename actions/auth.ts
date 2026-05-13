@@ -109,3 +109,4 @@ export async function updatePassword(password: string) {
 
   return { success: true };
 }
+

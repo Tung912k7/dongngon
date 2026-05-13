@@ -62,10 +62,10 @@ const PopularContent = () => {
   if (isLoading) {
     return (
       <div className="w-full flex flex-col items-center justify-center gap-10 py-20 opacity-50">
-        <div className="h-10 w-64 bg-white/10 animate-pulse rounded-xl border-2 border-white/20"></div>
+        <div className="h-10 w-64 bg-white/10 animate-pulse rounded border-2 border-white/20"></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="w-full h-80 bg-white/5 animate-pulse rounded-xl border-2 border-white/10"></div>
+            <div key={i} className="w-full h-80 bg-white/5 animate-pulse rounded border-2 border-white/10"></div>
           ))}
         </div>
       </div>
@@ -145,3 +145,4 @@ const PopularContent = () => {
 };
 
 export default PopularContent;
+

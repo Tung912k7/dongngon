@@ -136,7 +136,7 @@ export default function BlacklistPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="bg-red-100 border-2 border-red-500 p-3 rounded-xl text-red-700 text-sm font-bold"
+                className="bg-red-100 border-2 border-red-500 p-3 rounded text-red-700 text-sm font-bold"
               >
                 ⚠️ Regex không hợp lệ: {regexError}
               </m.div>
@@ -203,3 +203,4 @@ export default function BlacklistPage() {
     </div>
   );
 }
+

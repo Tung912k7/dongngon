@@ -9,6 +9,8 @@ import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import { createClient } from "@/utils/supabase/client";
 import DateInput from "@/components/DateInput";
+import { toast } from "sonner";
+import { getImageUrl } from "@/utils/image";
 
 interface ProfileTabProps {
   initialNickname: string;
@@ -32,19 +34,18 @@ export default function ProfileTab({
   const router = useRouter();
   const [nickname, setNickname] = useState(initialNickname);
   const [description, setDescription] = useState(initialDescription || "");
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [avatarUrl, setAvatarUrl] = useState(getImageUrl(initialAvatarUrl));
   const [birthday, setBirthday] = useState(initialBirthday || "");
   const [isPrivate, setIsPrivate] = useState(initialIsPrivate);
   const [publicFields, setPublicFields] = useState<Record<string, boolean>>(initialPublicFields || {});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       if (file.size > 2 * 1024 * 1024) {
-        setMessage({ type: 'error', text: "Kích thước ảnh quá lớn (tối đa 2MB)." });
+        toast.error("Kích thước ảnh quá lớn (tối đa 2MB).");
         return;
       }
 
@@ -52,7 +53,6 @@ export default function ProfileTab({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      setMessage(null);
       setIsSubmitting(true);
 
       const fileName = `${user.id}-${Date.now()}.jpg`;
@@ -61,7 +61,7 @@ export default function ProfileTab({
         .upload(fileName, file, { contentType: "image/jpeg", upsert: true });
 
       if (error) {
-        setMessage({ type: 'error', text: "Lỗi tải ảnh lên." });
+        toast.error("Lỗi tải ảnh lên.");
         setIsSubmitting(false);
         return;
       }
@@ -80,12 +80,11 @@ export default function ProfileTab({
 
     // Validate birthday if it is being set for the first time
     if (!initialBirthday && !birthday) {
-      setMessage({ type: 'error', text: "Ngày sinh không được để trống." });
+      toast.error("Ngày sinh không được để trống.");
       return;
     }
 
     setIsSubmitting(true);
-    setMessage(null);
     console.log("Saving profile:", { nickname, avatarUrl, birthday, description, isPrivate });
 
     try {
@@ -102,14 +101,14 @@ export default function ProfileTab({
       console.log("Save result:", result);
 
       if (result.success) {
-        setMessage({ type: 'success', text: "Cập nhật hồ sơ thành công!" });
+        toast.success("Cập nhật hồ sơ thành công!");
         router.refresh(); // Sync props with server state
       } else {
-        setMessage({ type: 'error', text: result.error || "Có lỗi xảy ra." });
+        toast.error(result.error || "Có lỗi xảy ra.");
       }
     } catch (error) {
       console.error("Save error:", error);
-      setMessage({ type: 'error', text: "Lỗi kết nối hoặc hệ thống." });
+      toast.error("Lỗi kết nối hoặc hệ thống.");
     } finally {
       setIsSubmitting(false);
     }
@@ -125,7 +124,7 @@ export default function ProfileTab({
         >
           <div className="w-40 h-40 rounded-full border-4 border-black overflow-hidden relative shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] transition-all">
             <Image
-              src={avatarUrl || "/webp file/default_avatar.webp"}
+              src={getImageUrl(avatarUrl)}
               alt="Avatar"
               fill
               className="object-cover"
@@ -297,19 +296,6 @@ export default function ProfileTab({
           </div>
         </div>
 
-        {message && (
-          <m.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={`p-6 rounded-[1.5rem] border-2 font-black uppercase tracking-widest text-[11px] flex items-center gap-4 ${message.type === 'success'
-              ? 'bg-green-50 text-green-700 border-green-200'
-              : 'bg-red-50 text-red-700 border-red-200'
-              }`}
-          >
-            <div className={`w-2 h-2 rounded-full ${message.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`} />
-            {message.text}
-          </m.div>
-        )}
 
         <div className="pt-12 flex flex-col md:flex-row items-center justify-center md:justify-end gap-8">
           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center md:text-right max-w-[200px]">
@@ -327,3 +313,4 @@ export default function ProfileTab({
     </form>
   );
 }
+

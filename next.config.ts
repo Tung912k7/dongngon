@@ -16,7 +16,16 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    return [];
+    return [
+      {
+        source: "/webp%20file/:path*",
+        destination: "/webp/:path*",
+      },
+      {
+        source: "/png%20file/:path*",
+        destination: "/png/:path*",
+      },
+    ];
   },
   async headers() {
     const headers = [
@@ -68,7 +77,7 @@ const nextConfig: NextConfig = {
       headers.push(
         {
           // Public static files (fonts, images, webp, etc.)
-          source: "/webp%20file/(.*)",
+          source: "/webp/(.*)",
           headers: [
             {
               key: "Cache-Control",
@@ -98,3 +107,4 @@ const analyzer = withBundleAnalyzer({
 });
 
 export default analyzer(nextConfig);
+

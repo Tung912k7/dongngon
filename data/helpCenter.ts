@@ -43,3 +43,4 @@ export const HELP_CENTER_SECTIONS: HelpCenterSection[] = [
 ];
 
 export const HELP_CENTER_ARTICLES: HelpCenterArticle[] = [];
+

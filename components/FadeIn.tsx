@@ -14,3 +14,4 @@ export default function FadeIn({ children }: { children: ReactNode }) {
     </m.div>
   );
 }
+

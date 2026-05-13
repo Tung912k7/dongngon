@@ -47,3 +47,4 @@ export async function captureServerEvent(
     // Intentionally silent — analytics must never break core functionality
   }
 }
+

@@ -17,7 +17,7 @@ export default function PostHogAutoTracker() {
         import('posthog-js').then((m) => {
             const posthog = m.default;
             const posthogConfig: Partial<PostHogConfig> = {
-              api_host: '/api/event',
+              api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
               person_profiles: 'identified_only',
               capture_pageview: false,
               enable_recording_console_log: true,
@@ -52,3 +52,4 @@ export default function PostHogAutoTracker() {
 
   return null;
 }
+

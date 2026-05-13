@@ -33,7 +33,7 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
 
   if (!isEditing) {
     return (
-      <div className="flex items-center gap-4 mb-8 bg-gray-50/50 p-4 rounded-xl border-2 border-dashed border-black/10">
+      <div className="flex items-center gap-4 mb-8 bg-gray-50/50 p-4 rounded border-2 border-dashed border-black/10">
         <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Bút danh</span>
         <span className="font-ganh font-bold text-xl tracking-tight">{nickname || "Chưa đặt tên"}</span>
         <button
@@ -47,7 +47,7 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
   }
 
   return (
-    <div className="flex flex-col gap-2 mb-8 p-4 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div className="flex flex-col gap-2 mb-8 p-4 bg-white border-2 border-black rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <div className="flex items-center gap-3">
         <input
           type="text"
@@ -58,13 +58,13 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
           }}
           autoFocus
           maxLength={30}
-          className={`flex-grow px-4 py-2 border-2 ${isInvalid ? 'border-red-500 bg-red-50' : 'border-black'} rounded-xl text-lg font-ganh font-bold focus:outline-none focus:bg-gray-50 transition-all`}
+          className={`flex-grow px-4 py-2 border-2 ${isInvalid ? 'border-red-500 bg-red-50' : 'border-black'} rounded text-lg font-ganh font-bold focus:outline-none focus:bg-gray-50 transition-all`}
           placeholder="Nhập bút danh..."
         />
         <PrimaryButton
           onClick={handleSave}
           disabled={isSaving}
-          className="!px-6 !py-2 !text-[10px] !uppercase !tracking-widest !rounded-xl"
+          className="!px-6 !py-2 !text-[10px] !uppercase !tracking-widest !rounded"
         >
           {isSaving ? "LƯU..." : "LƯU"}
         </PrimaryButton>
@@ -81,3 +81,4 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
     </div>
   );
 }
+

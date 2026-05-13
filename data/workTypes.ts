@@ -29,3 +29,4 @@ export const WORK_TYPES: Record<string, { subCategories: string[] }> = {
 };
 
 export const CATEGORY_OPTIONS = Object.keys(WORK_TYPES);
+

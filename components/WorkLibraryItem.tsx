@@ -8,12 +8,15 @@ import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
 
+import SaveWorkButton from "./SaveWorkButton";
+
 interface WorkLibraryItemProps {
   work: Work;
   isOwner?: boolean;
+  initialSaved?: boolean;
 }
 
-export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps) {
+export default function WorkLibraryItem({ work, isOwner, initialSaved = false }: WorkLibraryItemProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -41,7 +44,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
     <div className="w-full relative group">
       <Link
         href={`/work/${work.id}`}
-        className="flex items-center gap-4 p-4 sm:p-5 bg-white border-2 border-black rounded-xl hover:bg-gray-50 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+        className="flex items-center gap-4 p-4 sm:p-5 bg-white border-2 border-black rounded hover:bg-gray-50 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
       >
         {/* Status indicator */}
         <div className={`w-1.5 h-12 rounded-sm flex-shrink-0 ${
@@ -117,6 +120,13 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
         )}
       </AnimatePresence>
 
+      {/* Heart Save Button - For non-owners */}
+      {!isOwner && (
+        <div className="absolute top-1/2 -translate-y-1/2 right-4 z-20">
+          <SaveWorkButton workId={work.id.toString()} initialSaved={initialSaved} />
+        </div>
+      )}
+
       {/* Actions Menu */}
       {isOwner && (
         <div className="absolute top-1/2 -translate-y-1/2 right-4 z-20" ref={menuRef}>
@@ -139,7 +149,7 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
                 initial={{ opacity: 0, scale: 0.95, x: 10 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95, x: 10 }}
-                className="absolute right-0 top-10 w-40 bg-white border-2 border-black rounded-xl shadow-lg py-1 z-30"
+                className="absolute right-0 top-10 w-40 bg-white border-2 border-black rounded shadow-lg py-1 z-30"
               >
                 <div className="px-1 flex flex-col">
                    <button
@@ -179,3 +189,4 @@ export default function WorkLibraryItem({ work, isOwner }: WorkLibraryItemProps)
     </div>
   );
 }
+

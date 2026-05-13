@@ -135,3 +135,4 @@ export async function voteEndWork(workId: string) {
   revalidatePath("/kho-tang");
   return { success: true, newCount: currentCount };
 }
+

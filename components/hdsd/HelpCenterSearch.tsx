@@ -36,7 +36,7 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
         id="help-center-search"
         className="
           w-full px-6 py-4 pl-14 pr-6
-          rounded-xl
+          rounded
           border-2 border-black
           bg-white text-neutral-900
           text-lg font-be-vietnam
@@ -55,3 +55,4 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
 };
 
 export default HelpCenterSearch;
+

@@ -185,3 +185,4 @@ export const getBrutalistQuoteTemplate = async () => {
     },
   });
 };
+

@@ -60,3 +60,4 @@ export const useWorkStore = create<WorkState>((set) => ({
   setIsLoading: (isLoading) => set({ isLoading }),
   resetFilters: () => set({ filters: defaultFilters, currentPage: 1 }),
 }));
+

@@ -26,7 +26,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     hinh_thuc: "Tùy bút",
     license: "public",
     writing_rule: "1 câu",
-    age_rating: "all",
+    age_rating: "All",
     description: "",
   });
 
@@ -39,7 +39,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
         hinh_thuc: "Tùy bút",
         license: "public",
         writing_rule: "1 câu",
-        age_rating: "all",
+        age_rating: "All",
         description: "",
       });
       setFieldErrors({});
@@ -103,7 +103,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
           hinh_thuc: "Tùy bút",
           license: "public",
           writing_rule: "1 câu",
-          age_rating: "all",
+          age_rating: "All",
           description: "",
         });
       } else {
@@ -163,7 +163,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white border-2 border-black rounded-xl p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+              className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
               <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">Tạo tác phẩm mới</h2>
               
@@ -178,7 +178,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                        if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: "" }));
                     }}
                     maxLength={100}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded-xl font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                     placeholder="Tên tác phẩm của bạn..."
                   />
                   {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
@@ -195,7 +195,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
                     rows={3}
-                    className="w-full px-6 py-3 border-2 border-black rounded-xl font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
+                    className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
                     placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     <select
                       value={formData.category_type}
                       onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                     >
                       {CATEGORY_OPTIONS.map(opt => (
                         <option key={opt}>{opt}</option>
@@ -221,7 +221,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                         setFormData({ ...formData, hinh_thuc: e.target.value });
                         if (fieldErrors.hinh_thuc) setFieldErrors(prev => ({ ...prev, hinh_thuc: "" }));
                       }}
-                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? 'border-red-500 bg-red-50' : 'border-black'} rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                     >
                       <option value="" disabled>Chọn hình thức...</option>
                       {WORK_TYPES[formData.category_type]?.subCategories.map(sub => (
@@ -238,7 +238,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     <select
                       value={formData.writing_rule}
                       onChange={(e) => setFormData({ ...formData, writing_rule: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                     >
                       <option>1 câu</option>
                     </select>
@@ -248,9 +248,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     <select
                       value={formData.age_rating}
                       onChange={(e) => setFormData({ ...formData, age_rating: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                     >
-                      <option value="all">Mọi độ tuổi</option>
+                      <option value="All">Mọi độ tuổi</option>
                       <option value="13+">13+</option>
                       <option value="16+">16+</option>
                       <option value="18+">18+</option>
@@ -263,7 +263,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-black rounded-xl font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                    className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                   >
                     <option value="public">Cộng đồng</option>
                     <option value="private">Riêng tư</option>
@@ -271,7 +271,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded-xl text-sm font-bold animate-shake">
+                  <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded text-sm font-bold animate-shake">
                     {error}
                   </div>
                 )}
@@ -280,7 +280,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded-xl hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
+                    className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
                   >
                     HỦY
                   </button>
@@ -300,3 +300,4 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     </>
   );
 }
+

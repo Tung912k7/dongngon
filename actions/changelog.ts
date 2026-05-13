@@ -20,3 +20,4 @@ export async function markChangelogSeen(version: string) {
 
   return { success: true };
 }
+
