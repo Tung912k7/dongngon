@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 
 export async function toggleSaveWork(workId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return { success: false, error: "Bạn cần đăng nhập để thực hiện chức năng này." };
@@ -31,7 +33,7 @@ export async function toggleSaveWork(workId: string) {
       .eq("id", existing.id);
 
     if (deleteError) return { success: false, error: "Không thể bỏ lưu tác phẩm." };
-    
+
     revalidatePath("/profile");
     revalidatePath(`/work/${workId}`);
     revalidatePath("/kho-tang");
@@ -53,7 +55,9 @@ export async function toggleSaveWork(workId: string) {
 
 export async function getSavedWorksStatus(workIds: string[]) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: true, savedIds: [] };
 
@@ -65,6 +69,5 @@ export async function getSavedWorksStatus(workIds: string[]) {
 
   if (error) return { success: false, error: error.message };
 
-  return { success: true, savedIds: data.map(d => d.work_id) };
+  return { success: true, savedIds: data.map((d) => d.work_id) };
 }
-

@@ -2,9 +2,9 @@
 // Accordion-style FAQ section for Help Center page.
 // Each item expands/collapses on click with a chevron indicator.
 
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 export interface FAQItem {
   question: string;
@@ -27,10 +27,7 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
       {items.map((item, idx) => {
         const isOpen = openIndex === idx;
         return (
-          <div
-            key={idx}
-            className="border-2 border-black rounded bg-white overflow-hidden"
-          >
+          <div key={idx} className="border-2 border-black rounded bg-white overflow-hidden">
             <button
               id={`faq-item-${idx}`}
               type="button"
@@ -52,7 +49,7 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={`flex-shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                className={`flex-shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               >
                 <path d="M5 7.5l5 5 5-5" />
@@ -76,4 +73,3 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
 };
 
 export default HelpCenterFAQ;
-

@@ -1,10 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 
 export async function markChangelogSeen(version: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false };
 
@@ -14,10 +17,9 @@ export async function markChangelogSeen(version: string) {
     .eq("id", user.id);
 
   if (error) {
-    console.error("[Changelog] Mark seen error:", error.message);
+    logger.error("[Changelog] Mark seen error:", error.message);
     return { success: false };
   }
 
   return { success: true };
 }
-

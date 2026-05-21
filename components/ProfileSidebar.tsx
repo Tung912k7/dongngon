@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { toast } from "sonner";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
@@ -10,7 +10,7 @@ import { createClient } from "@/utils/supabase/client";
 import { getCroppedImg } from "@/utils/imageCrop";
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
-import { PrimaryButton, LinkedButton } from "./PrimaryButton";
+import { LinkedButton, PrimaryButton } from "./PrimaryButton";
 import { formatDate } from "@/utils/date";
 import { getImageUrl } from "@/utils/image";
 
@@ -35,7 +35,11 @@ interface ProfileSidebarProps {
   currentUser: { id?: string } | null;
 }
 
-export default function ProfileSidebar({ profile: initialProfile, isOwner, currentUser }: ProfileSidebarProps) {
+export default function ProfileSidebar({
+  profile: initialProfile,
+  isOwner,
+  currentUser,
+}: ProfileSidebarProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState(initialProfile);
   const [nickname, setNickname] = useState(initialProfile.nickname || "");
@@ -75,7 +79,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
 
   const uploadAvatar = async (blob: Blob): Promise<string | null> => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return null;
 
     const fileName = `${user.id}-${Date.now()}.jpg`;
@@ -85,7 +91,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
 
     if (error) return null;
 
-    const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(data.path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("avatars").getPublicUrl(data.path);
     return publicUrl;
   };
 
@@ -121,7 +129,13 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
 
       if (result.success) {
         setAvatarUrl(finalAvatarUrl);
-        setProfile((prev) => ({ ...prev, nickname, description, avatar_url: finalAvatarUrl, hashtags }));
+        setProfile((prev) => ({
+          ...prev,
+          nickname,
+          description,
+          avatar_url: finalAvatarUrl,
+          hashtags,
+        }));
         setIsEditing(false);
         setImageSrc(null);
       } else {
@@ -149,12 +163,16 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
     <div className="w-full md:w-1/3 bg-white p-6 md:p-10 rounded border-2 border-black flex flex-col items-center relative transition-colors duration-500">
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-ganh font-bold uppercase tracking-tight mb-2">HỒ SƠ</h1>
-        <div className="text-[10px] font-bold text-black/20 uppercase tracking-[0.5em] text-center">Identity</div>
+        <div className="text-[10px] font-bold text-black/20 uppercase tracking-[0.5em] text-center">
+          Identity
+        </div>
       </div>
 
       {/* Avatar Section */}
       <div className="relative group w-48 h-48 mb-12">
-        <div className={`w-full h-full border-2 border-black flex items-center justify-center overflow-hidden bg-[#fafafa] transition-colors duration-300 ${isEditing ? 'ring-4 ring-black/5' : ''}`}>
+        <div
+          className={`w-full h-full border-2 border-black flex items-center justify-center overflow-hidden bg-[#fafafa] transition-colors duration-300 ${isEditing ? "ring-4 ring-black/5" : ""}`}
+        >
           {imageSrc && isEditing ? (
             <div className="relative w-full h-full z-20">
               <Cropper
@@ -173,7 +191,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               alt="Avatar"
               width={256}
               height={256}
-              className={`w-full h-full object-cover transition-transform duration-500 ${isEditing && !imageSrc ? 'scale-105 opacity-80' : ''} ${(!avatarUrl || avatarUrl === "/webp/default_avatar.webp" || avatarUrl.includes("default_avatar")) ? 'scale-[0.8]' : ''}`}
+              className={`w-full h-full object-cover transition-transform duration-500 ${isEditing && !imageSrc ? "scale-105 opacity-80" : ""} ${!avatarUrl || avatarUrl === "/webp/default_avatar.webp" || avatarUrl.includes("default_avatar") ? "scale-[0.8]" : ""}`}
               priority
             />
           )}
@@ -184,11 +202,29 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               onClick={() => fileInputRef.current?.click()}
               className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center cursor-pointer opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity z-10"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-white mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
-              <span className="text-white text-[10px] font-bold uppercase tracking-widest">Thay đổi ảnh</span>
+              <span className="text-white text-[10px] font-bold uppercase tracking-widest">
+                Thay đổi ảnh
+              </span>
             </button>
           )}
         </div>
@@ -205,7 +241,10 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
             />
             <button
-              onClick={() => { setImageSrc(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+              onClick={() => {
+                setImageSrc(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
               className="text-[10px] font-bold text-red-500 uppercase hover:underline"
             >
               Hủy
@@ -213,7 +252,13 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
           </div>
         )}
 
-        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
 
       {/* Info Section */}
@@ -221,7 +266,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
         {(isOwner || profile.public_fields?.id !== false) && (
           <div className="border-b-2 border-black/10 pb-4 mb-4 flex justify-between items-end">
             <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">MÃ ĐỊNH DANH</p>
+              <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+                MÃ ĐỊNH DANH
+              </p>
               <p className="text-xs font-mono text-black select-all truncate bg-gray-50 px-3 py-1.5 rounded border-2 border-black">
                 {profile.id}
               </p>
@@ -234,8 +281,19 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors group relative"
               title="Sao chép mã"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400 group-hover:text-black">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-4 h-4 text-gray-400 group-hover:text-black"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+                />
               </svg>
             </button>
           </div>
@@ -243,7 +301,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
 
         {(isOwner || profile.public_fields?.nickname !== false) && (
           <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">BÚT DANH</p>
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+              BÚT DANH
+            </p>
             {isEditing ? (
               <input
                 type="text"
@@ -255,28 +315,36 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                 aria-label="Bút danh"
               />
             ) : (
-              <p className="text-3xl font-ganh font-bold text-black tracking-wide leading-none">{profile.nickname}</p>
+              <p className="text-3xl font-ganh font-bold text-black tracking-wide leading-none">
+                {profile.nickname}
+              </p>
             )}
           </div>
         )}
 
         {(isOwner || profile.public_fields?.email !== false) && profile.email && (
           <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">EMAIL</p>
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+              EMAIL
+            </p>
             <p className="text-sm font-medium text-black/80">{profile.email}</p>
           </div>
         )}
 
         {(isOwner || profile.public_fields?.birthday !== false) && profile.birthday && (
           <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">NGÀY SINH</p>
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+              NGÀY SINH
+            </p>
             <p className="text-sm font-medium text-black/80">{formatDate(profile.birthday)}</p>
           </div>
         )}
 
         {(isOwner || profile.public_fields?.description !== false) && (
           <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">GIỚI THIỆU</p>
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+              GIỚI THIỆU
+            </p>
             {isEditing ? (
               <div className="relative">
                 <textarea
@@ -293,7 +361,10 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               </div>
             ) : (
               <p className="text-sm font-medium text-black/60 italic leading-relaxed">
-                {profile.description || (isOwner ? "Bạn chưa có lời giới thiệu nào..." : "Tác giả chưa có lời giới thiệu nào...")}
+                {profile.description ||
+                  (isOwner
+                    ? "Bạn chưa có lời giới thiệu nào..."
+                    : "Tác giả chưa có lời giới thiệu nào...")}
               </p>
             )}
           </div>
@@ -302,7 +373,9 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
         {/* HASHTAGS SECTION */}
         {(isOwner || profile.public_fields?.hashtags !== false) && (
           <div className="pb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-3">HASHTAG</p>
+            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-3">
+              HASHTAG
+            </p>
             {isEditing ? (
               <div className="space-y-3">
                 <div className="flex gap-2">
@@ -311,10 +384,10 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                     value={hashtagInput}
                     onChange={(e) => setHashtagInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         if (hashtagInput.trim() && hashtags.length < 5) {
-                          const tag = hashtagInput.trim().replace(/^#/, '');
+                          const tag = hashtagInput.trim().replace(/^#/, "");
                           if (!hashtags.includes(tag)) {
                             setHashtags([...hashtags, tag]);
                           }
@@ -331,7 +404,7 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                     type="button"
                     onClick={() => {
                       if (hashtagInput.trim() && hashtags.length < 5) {
-                        const tag = hashtagInput.trim().replace(/^#/, '');
+                        const tag = hashtagInput.trim().replace(/^#/, "");
                         if (!hashtags.includes(tag)) {
                           setHashtags([...hashtags, tag]);
                         }
@@ -345,19 +418,32 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {hashtags.map((tag, idx) => (
-                    <span key={idx} className="bg-white text-black px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight flex items-center gap-2 border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                    <span
+                      key={idx}
+                      className="bg-white text-black px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight flex items-center gap-2 border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                    >
                       #{tag}
-                      <button onClick={() => setHashtags(hashtags.filter((_, i) => i !== idx))} className="hover:text-red-500 font-bold flex items-center">×</button>
+                      <button
+                        onClick={() => setHashtags(hashtags.filter((_, i) => i !== idx))}
+                        className="hover:text-red-500 font-bold flex items-center"
+                      >
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
-                {hashtags.length >= 5 && <p className="text-[9px] text-gray-400 italic">Tối đa 5 hashtags.</p>}
+                {hashtags.length >= 5 && (
+                  <p className="text-[9px] text-gray-400 italic">Tối đa 5 hashtags.</p>
+                )}
               </div>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {profile.hashtags && profile.hashtags.length > 0 ? (
                   profile.hashtags.map((tag, idx) => (
-                    <span key={idx} className="bg-white text-black px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                    <span
+                      key={idx}
+                      className="bg-white text-black px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                    >
                       #{tag}
                     </span>
                   ))
@@ -412,17 +498,17 @@ export default function ProfileSidebar({ profile: initialProfile, isOwner, curre
               CHỈNH SỬA HỒ SƠ
             </PrimaryButton>
           )
-        ) : currentUser && (
-          <LinkedButton
-            href={`/profile?id=${currentUser.id}`}
-            className="w-full !rounded !py-3.5 !text-[10px] !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-          >
-            VỀ HỒ SƠ TÔI
-          </LinkedButton>
+        ) : (
+          currentUser && (
+            <LinkedButton
+              href={`/profile?id=${currentUser.id}`}
+              className="w-full !rounded !py-3.5 !text-[10px] !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            >
+              VỀ HỒ SƠ TÔI
+            </LinkedButton>
+          )
         )}
       </div>
-
     </div>
   );
 }
-

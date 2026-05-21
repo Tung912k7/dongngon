@@ -1,65 +1,78 @@
 export function getErrorMessage(error: unknown): string {
   if (!error) return "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
 
-  const errorObj = typeof error === "object" && error !== null ? (error as Record<string, unknown>) : null;
-  const code = typeof error === 'string' ? error : (typeof errorObj?.code === "string" ? errorObj.code : undefined);
-  const message = typeof errorObj?.message === "string" ? errorObj.message : '';
+  const errorObj =
+    typeof error === "object" && error !== null ? (error as Record<string, unknown>) : null;
+  const code =
+    typeof error === "string"
+      ? error
+      : typeof errorObj?.code === "string"
+        ? errorObj.code
+        : undefined;
+  const message = typeof errorObj?.message === "string" ? errorObj.message : "";
 
   // Handle common Postgres error codes from Supabase
   switch (code) {
-    case '23505': // unique_violation
-      if (message?.includes('nickname')) {
+    case "23505": // unique_violation
+      if (message?.includes("nickname")) {
         return "Bút danh này đã được sử dụng. Vui lòng chọn tên khác.";
       }
       return "Dữ liệu này đã tồn tại.";
-      
-    case '23514': // check_violation
-      if (message?.toLowerCase().includes('sentence')) {
+
+    case "23514": // check_violation
+      if (message?.toLowerCase().includes("sentence")) {
         return "Nội dung không tuân thủ quy tắc về số câu/kí tự của tác phẩm này.";
       }
-      if (message?.toLowerCase().includes('limit') || message?.toLowerCase().includes('rule')) {
+      if (message?.toLowerCase().includes("limit") || message?.toLowerCase().includes("rule")) {
         return "Nội dung không tuân thủ quy tắc sáng tác của tác phẩm này.";
       }
       return "Nội dung không hợp lệ hoặc vi phạm quy tắc của hệ thống.";
-      
-    case '42501': // insufficient_privilege
+
+    case "42501": // insufficient_privilege
       return "Bạn không có quyền thực hiện thao tác này.";
-      
-    case '23503': // foreign_key_violation
+
+    case "23503": // foreign_key_violation
       return "Dữ liệu liên quan không tồn tại.";
 
-    case 'P0001': // raise_exception (Custom procedural error)
-       if (message?.includes('daily limit')) {
-         return "Bạn đã đạt giới hạn đóng góp trong ngày cho tác phẩm này.";
-       }
-       return message || "Lỗi nghiệp vụ hệ thống.";
+    case "P0001": // raise_exception (Custom procedural error)
+      if (message?.includes("daily limit")) {
+        return "Bạn đã đạt giới hạn đóng góp trong ngày cho tác phẩm này.";
+      }
+      return message || "Lỗi nghiệp vụ hệ thống.";
 
     default:
       // Handle Supabase Auth specific error messages (which often come as text)
-      if (typeof error === 'string') {
+      if (typeof error === "string") {
         const msg = error.toLowerCase();
-        if (msg.includes("invalid login credentials")) return "Bút danh/Email hoặc mật khẩu không chính xác.";
-        if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
+        if (msg.includes("invalid login credentials"))
+          return "Bút danh/Email hoặc mật khẩu không chính xác.";
+        if (msg.includes("email not confirmed"))
+          return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
         if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
-        if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
-        if (msg.includes("email address is invalid")) return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
+        if (msg.includes("password should be at least 6 characters"))
+          return "Mật khẩu phải có ít nhất 6 ký tự.";
+        if (msg.includes("email address is invalid"))
+          return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
         return error;
       }
 
       if (message) {
         const msg = message.toLowerCase();
-        if (msg.includes("invalid login credentials")) return "Bút danh/Email hoặc mật khẩu không chính xác.";
-        if (msg.includes("email not confirmed")) return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
+        if (msg.includes("invalid login credentials"))
+          return "Bút danh/Email hoặc mật khẩu không chính xác.";
+        if (msg.includes("email not confirmed"))
+          return "Tài khoản của bạn chưa được xác nhận Email. Vui lòng kiểm tra hộp thư.";
         if (msg.includes("user already registered")) return "Email này đã được đăng ký.";
-        if (msg.includes("password should be at least 6 characters")) return "Mật khẩu phải có ít nhất 6 ký tự.";
-        if (msg.includes("email address is invalid")) return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
+        if (msg.includes("password should be at least 6 characters"))
+          return "Mật khẩu phải có ít nhất 6 ký tự.";
+        if (msg.includes("email address is invalid"))
+          return "Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.";
       }
 
       // If it's a known error code but not handled specifically
-      if (code && typeof code === 'string' && code.length === 5) {
+      if (code && typeof code === "string" && code.length === 5) {
         return `Lỗi hệ thống (${code}). Vui lòng thử lại sau.`;
       }
       return message || "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
   }
 }
-

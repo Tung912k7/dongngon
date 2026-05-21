@@ -1,14 +1,12 @@
 "use client";
-import { m } from 'framer-motion';
+import { m } from "framer-motion";
 
 const ContributionSection = () => {
   return (
     <section className="relative w-full min-h-[80vh] bg-black text-white flex items-center justify-center overflow-hidden py-20 z-20">
-
-
       <div className="container mx-auto px-4 sm:px-6 relative z-20 h-full flex flex-col justify-center items-start lg:pr-32">
         {/* Text Content */}
-        <m.div 
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
@@ -28,4 +26,3 @@ const ContributionSection = () => {
 };
 
 export default ContributionSection;
-

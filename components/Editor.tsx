@@ -1,5 +1,6 @@
 "use client";
 
+import { logger } from "@/lib/logger";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -12,19 +13,19 @@ import { validatePoeticForm } from "@/utils/validation";
 import { useUserStore } from "@/stores/user-store";
 import { useEditorStore } from "@/stores/editor-store";
 import ConfirmModal from "./ConfirmModal";
-import { getTimeUntilNextVN0, formatCountdown } from "@/utils/date";
+import { formatCountdown, getTimeUntilNextVN0 } from "@/utils/date";
 
-export default function Editor({ 
-  workId, 
-  writingRule, 
+export default function Editor({
+  workId,
+  writingRule,
   hinhThuc,
   categoryType,
   user: initialUser,
   canContribute = true,
-  blockedMessage
-}: { 
-  workId: string; 
-  writingRule: string; 
+  blockedMessage,
+}: {
+  workId: string;
+  writingRule: string;
   hinhThuc?: string;
   categoryType?: string;
   user: User | null;
@@ -32,7 +33,7 @@ export default function Editor({
   blockedMessage?: string;
 }) {
   const router = useRouter();
-  
+
   // Zustand Stores
   const { user } = useUserStore();
   const {
@@ -47,7 +48,7 @@ export default function Editor({
     setWarning,
     showNotification,
     closeNotification,
-    reset
+    reset,
   } = useEditorStore();
 
   const isSubmittingRef = useRef(false);
@@ -74,7 +75,9 @@ export default function Editor({
       if (content.trim()) {
         const violation = await checkBlacklist(content);
         if (violation) {
-          setWarning(`Phát hiện từ nhạy cảm (${violation}). Tác phẩm sẽ bị đưa vào trạng thái chờ duyệt nếu bạn gửi.`);
+          setWarning(
+            `Phát hiện từ nhạy cảm (${violation}). Tác phẩm sẽ bị đưa vào trạng thái chờ duyệt nếu bạn gửi.`
+          );
         } else {
           setWarning(null);
         }
@@ -102,10 +105,13 @@ export default function Editor({
     return () => clearInterval(interval);
   }, [isBlocked, blockedMessage]);
 
-  const validateContent = (content: string, limitType: string): { isValid: boolean; error?: string } => {
+  const validateContent = (
+    content: string,
+    limitType: string
+  ): { isValid: boolean; error?: string } => {
     const trimmed = content.trim();
 
-    if (limitType === '1 câu') {
+    if (limitType === "1 câu") {
       // Allow dates like 02/03/2026 or 02-03-2026 without punctuation
       const dateRegex = /^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/;
       if (dateRegex.test(trimmed)) {
@@ -114,7 +120,10 @@ export default function Editor({
 
       // 1. Must end with punctuation
       if (!/[.?!]$/.test(trimmed)) {
-        return { isValid: false, error: "Câu văn phải kết thúc bằng dấu chấm . , chấm hỏi ? hoặc chấm than !." };
+        return {
+          isValid: false,
+          error: "Câu văn phải kết thúc bằng dấu chấm . , chấm hỏi ? hoặc chấm than !.",
+        };
       }
 
       // 2. Must not have punctuation in the middle
@@ -122,7 +131,7 @@ export default function Editor({
       if (firstPunctMatch) {
         const firstPunctIndex = firstPunctMatch.index!;
         const remainingFromFirstPunct = trimmed.slice(firstPunctIndex);
-        
+
         if (!/^[.?!]+$/.test(remainingFromFirstPunct)) {
           return { isValid: false, error: "Mỗi ngày bạn chỉ được đóng góp 1 câu duy nhất." };
         }
@@ -144,7 +153,7 @@ export default function Editor({
 
     const currentContent = textareaRef.current?.value ?? content;
     const cleanContent = currentContent.trim();
-    
+
     if (!cleanContent) {
       setError("Vui lòng nhập nội dung.");
       setIsSubmitting(false);
@@ -155,7 +164,7 @@ export default function Editor({
     // Poetry (Thơ) does not require sentence-ending punctuation
     if (!isPoetry) {
       const validation = validateContent(cleanContent, writingRule);
-      
+
       if (!validation.isValid) {
         showNotification(validation.error || "Nội dung không hợp lệ.", "info", "Sai quy tắc");
         setIsSubmitting(false);
@@ -185,16 +194,16 @@ export default function Editor({
     const currentContent = textareaRef.current?.value ?? content;
     const cleanContent = currentContent.trim();
 
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 10000)
     );
 
     try {
-      const result = await Promise.race([
+      const result = (await Promise.race([
         submitContribution(workId, cleanContent, isFreeVerse ? newLine : false),
-        timeoutPromise
-      ]) as { success?: boolean; error?: string };
-      
+        timeoutPromise,
+      ])) as { success?: boolean; error?: string };
+
       if (result.error) {
         setError(result.error);
       } else {
@@ -204,7 +213,7 @@ export default function Editor({
       }
     } catch (err: unknown) {
       const e = err as Error;
-      console.error("Submit contribution error:", e);
+      logger.error("Submit contribution error:", e);
       if (e.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
@@ -221,11 +230,17 @@ export default function Editor({
       <div className="text-center py-6 bg-[#fcfcfc] rounded-[4px] border-2 border-black border-dashed">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40">
           Bạn cần{" "}
-          <Link href="/dang-nhap" className="text-black font-black underline hover:opacity-70 transition-opacity">
+          <Link
+            href="/dang-nhap"
+            className="text-black font-black underline hover:opacity-70 transition-opacity"
+          >
             đăng nhập
           </Link>{" "}
           hoặc{" "}
-          <Link href="/dang-ky" className="text-black font-black underline hover:opacity-70 transition-opacity">
+          <Link
+            href="/dang-ky"
+            className="text-black font-black underline hover:opacity-70 transition-opacity"
+          >
             ghi danh
           </Link>{" "}
           để ghi dấu ấn.
@@ -239,13 +254,15 @@ export default function Editor({
       {isBlocked && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-[4px] transition-all duration-500">
           <div className="bg-black text-white px-4 py-2 rounded-lg shadow-[4px_4px_0px_0px_rgba(212,175,55,1)] flex flex-col items-center gap-1 animate-in zoom-in-95 duration-300">
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-literary-gold/80">Quay lại sau</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-literary-gold/80">
+              Quay lại sau
+            </span>
             <span className="text-xl font-black tracking-widest tabular-nums font-mono">
               {timeLeft !== null ? formatCountdown(timeLeft) : "--:--:--"}
             </span>
           </div>
           <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-black bg-white/80 px-3 py-1 rounded-full border border-black/10">
-             {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
+            {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
           </p>
         </div>
       )}
@@ -260,7 +277,9 @@ export default function Editor({
         </div>
       )}
 
-      <div className={`flex items-end gap-1.5 sm:gap-3 transition-all duration-500 ${isBlocked ? "blur-[2px] opacity-50 select-none" : ""}`}>
+      <div
+        className={`flex items-end gap-1.5 sm:gap-3 transition-all duration-500 ${isBlocked ? "blur-[2px] opacity-50 select-none" : ""}`}
+      >
         <textarea
           ref={textareaRef}
           value={content}
@@ -273,7 +292,7 @@ export default function Editor({
             if (isBlocked) {
               return;
             }
-            if (e.key === 'Enter' && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSubmit(e);
             }
@@ -283,11 +302,11 @@ export default function Editor({
           rows={1}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;
-            target.style.height = 'auto';
-            target.style.height = target.scrollHeight + 'px';
+            target.style.height = "auto";
+            target.style.height = target.scrollHeight + "px";
           }}
         />
-        
+
         {/* Free verse new line toggle - Integrated into main row */}
         {isFreeVerse && !isBlocked && (
           <button
@@ -295,9 +314,7 @@ export default function Editor({
             onClick={() => setNewLine(!newLine)}
             title="Xuống dòng mới"
             className={`flex items-center justify-center w-11 h-11 rounded-[4px] border-2 border-black transition-all duration-200 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none ${
-              newLine
-                ? "bg-black text-literary-gold"
-                : "bg-white text-black/30 hover:text-black"
+              newLine ? "bg-black text-literary-gold" : "bg-white text-black/30 hover:text-black"
             }`}
           >
             <span className="text-xl font-bold">↵</span>
@@ -310,12 +327,23 @@ export default function Editor({
           disabled={isSubmitting || isBlocked}
         >
           {isBlocked ? (
-             <span className="text-[10px] font-bold">LỜI</span>
+            <span className="text-[10px] font-bold">LỜI</span>
           ) : isSubmitting ? (
-             <span className="animate-pulse">...</span>
+            <span className="animate-pulse">...</span>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+              />
             </svg>
           )}
         </PrimaryButton>
@@ -323,21 +351,24 @@ export default function Editor({
       {isBlocked ? null : (
         <p className="text-xs text-gray-400 mt-2 text-center pl-2">
           Mỗi ngày chỉ được đóng góp 1 câu.
-          {writingRule === "1 câu" && !isPoetry && " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
+          {writingRule === "1 câu" &&
+            !isPoetry &&
+            " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}
         </p>
       )}
       <p className="text-xs text-gray-500 mt-2 text-center pl-2">
-        Cần hướng dẫn? Xem
-        {" "}
-        <Link href="/hdsd" className="font-semibold text-black underline hover:opacity-70 transition-opacity">
+        Cần hướng dẫn? Xem{" "}
+        <Link
+          href="/hdsd"
+          className="font-semibold text-black underline hover:opacity-70 transition-opacity"
+        >
           Hướng dẫn
-        </Link>
-        {" "}
+        </Link>{" "}
         để nắm cách sử dụng đầy đủ.
       </p>
 
-      <NotificationModal 
-        isOpen={notification.isOpen} 
+      <NotificationModal
+        isOpen={notification.isOpen}
         onClose={closeNotification}
         message={notification.message}
         type={notification.type}
@@ -358,4 +389,3 @@ export default function Editor({
     </form>
   );
 }
-

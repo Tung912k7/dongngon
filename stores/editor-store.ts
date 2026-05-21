@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface EditorState {
   workId: string | null;
@@ -38,10 +38,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
   setError: (error) => set({ error }),
   setWarning: (warning) => set({ warning }),
-  showNotification: (message, type = "info", title) => 
+  showNotification: (message, type = "info", title) =>
     set({ notification: { isOpen: true, message, type, title } }),
-  closeNotification: () => 
+  closeNotification: () =>
     set((state) => ({ notification: { ...state.notification, isOpen: false } })),
   reset: () => set({ content: "", error: null, warning: null }),
 }));
-

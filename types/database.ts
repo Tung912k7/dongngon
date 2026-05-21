@@ -32,7 +32,7 @@ export type Notification = {
   created_at: string;
 };
 
-export type UserRole = 'admin' | 'mod' | 'user';
+export type UserRole = "admin" | "mod" | "user";
 
 export type Profile = {
   id: string; // UUID
@@ -60,4 +60,3 @@ export type UserPrivateData = {
   role?: UserRole;
   is_test_account?: boolean;
 };
-

@@ -5,15 +5,17 @@
 ---
 
 ## 📸 1. Cách chèn hình ảnh
+
 Cú pháp: `![Mô tả ảnh](https://url-anh.jpg)`
 
 ---
 
 ## 🛠️ 2. Các thẻ HTML được hỗ trợ
+
 Hệ thống hỗ trợ các thẻ HTML cơ bản để tùy chỉnh giao diện bài viết:
 
 - **Ngắt dòng**: Dùng thẻ `<br />` để ngắt dòng thủ công.
-- **Văn bản**: 
+- **Văn bản**:
   - `<b>Chữ đậm</b>` -> <b>Chữ đậm</b>
   - `<i>Chữ nghiêng</i>` -> <i>Chữ nghiêng</i>
   - `<u>Gạch chân</u>` -> <u>Gạch chân</u>
@@ -28,6 +30,7 @@ Hệ thống hỗ trợ các thẻ HTML cơ bản để tùy chỉnh giao diện
 ---
 
 ## 🖋️ 3. Định dạng Markdown nhanh
+
 - **Tiêu đề**: Dùng `#`, `##`, `###`
 - **Danh sách**: Dùng `-` hoặc `1.`
 - **Mẹo/Lưu ý**: Dùng blockquote Markdown (`>`)

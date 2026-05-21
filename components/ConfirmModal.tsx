@@ -1,6 +1,6 @@
 "use client";
 
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -26,8 +26,8 @@ export default function ConfirmModal({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    return () => setMounted(false);
   }, []);
 
   if (!mounted) return null;
@@ -50,14 +50,11 @@ export default function ConfirmModal({
             className="relative z-10 w-full max-w-sm bg-white border-2 border-black rounded p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
             <div className="text-center">
-              
               <h3 className="text-xl font-ganh font-bold mb-3 uppercase tracking-tight text-black">
                 {title}
               </h3>
-               <p className="text-gray-800 text-sm font-medium leading-relaxed mb-8">
-                {message}
-              </p>
-              
+              <p className="text-gray-800 text-sm font-medium leading-relaxed mb-8">{message}</p>
+
               <div className="flex flex-col gap-3">
                 <button
                   type="button"
@@ -85,4 +82,3 @@ export default function ConfirmModal({
     document.body
   );
 }
-

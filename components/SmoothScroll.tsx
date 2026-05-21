@@ -3,10 +3,9 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-const ReactLenis = dynamic(
-  () => import("lenis/react").then((mod) => mod.ReactLenis),
-  { ssr: false }
-);
+const ReactLenis = dynamic(() => import("lenis/react").then((mod) => mod.ReactLenis), {
+  ssr: false,
+});
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabled] = useState(false);
@@ -37,6 +36,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     return <>{children}</>;
   }
 
-  return <ReactLenis root options={{ lerp: 0.1, duration: 1.5 }}>{children}</ReactLenis>;
+  return (
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.5 }}>
+      {children}
+    </ReactLenis>
+  );
 }
-

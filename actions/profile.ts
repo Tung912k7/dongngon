@@ -5,52 +5,50 @@ import { revalidatePath } from "next/cache";
 import { checkBlacklist } from "@/utils/blacklist";
 import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeNickname } from "@/utils/sanitizer";
+import { logger } from "@/lib/logger";
 
 export const isNicknameAvailable = async (nickname: string, excludeUserId?: string) => {
   const supabase = await createClient();
-  
+
   const sanitizedNickname = sanitizeNickname(nickname);
-  const query = supabase
-    .from("profiles")
-    .select("id")
-    .ilike("nickname", sanitizedNickname);
-    
+  const query = supabase.from("profiles").select("id").ilike("nickname", sanitizedNickname);
+
   if (excludeUserId) {
     query.neq("id", excludeUserId);
   }
-  
+
   const { data, error } = await query.maybeSingle();
-  
+
   if (error) {
-    console.error("Error checking nickname availability:", error);
+    logger.error("Error checking nickname availability:", error);
     return false; // Assume unavailable on error as a safety measure
   }
-  
+
   return !data;
 };
 
 export const isEmailRegistered = async (email: string) => {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("profiles")
     .select("id")
     .eq("email", email.trim())
     .maybeSingle();
-    
+
   if (error) {
-    console.error("Error checking email registration:", error);
+    logger.error("Error checking email registration:", error);
     return false;
   }
-  
+
   return !!data;
 };
 
 export async function updateProfile(
-  nickname: string, 
-  avatarUrl?: string, 
-  birthday?: string, 
-  description?: string, 
+  nickname: string,
+  avatarUrl?: string,
+  birthday?: string,
+  description?: string,
   isPrivate?: boolean,
   hashtags?: string[],
   publicFields?: Record<string, boolean>
@@ -71,9 +69,9 @@ export async function updateProfile(
   if (!sanitizedNickname || sanitizedNickname.length < 2) {
     return { error: "Bút danh phải có ít nhất 2 ký tự (sau khi đã loại bỏ các thẻ HTML)." };
   }
-  
+
   if (sanitizedNickname.length > 30) {
-      return { error: "Bút danh quá dài." };
+    return { error: "Bút danh quá dài." };
   }
 
   const violation = await checkBlacklist(sanitizedNickname);
@@ -130,34 +128,30 @@ export async function updateProfile(
       .update({ birthday: finalBirthday })
       .eq("id", user.id);
     if (privateError) {
-      console.error("[Profile] Update private data error:", privateError);
+      logger.error("[Profile] Update private data error:", privateError);
     }
   }
 
-  const { error } = await supabase
-    .from("profiles")
-    .update(updatePayload)
-    .eq("id", user.id);
+  const { error } = await supabase.from("profiles").update(updatePayload).eq("id", user.id);
 
   if (error) {
-    console.error("[Profile] Update error:", error);
+    logger.error("[Profile] Update error:", error);
     return { error: getErrorMessage(error) };
   }
 
   // 6. Sync author_nickname across works and contributions
   const [worksSync, contribSync] = await Promise.all([
-    supabase
-      .from("works")
-      .update({ author_nickname: sanitizedNickname })
-      .eq("created_by", user.id),
+    supabase.from("works").update({ author_nickname: sanitizedNickname }).eq("created_by", user.id),
     supabase
       .from("contributions")
       .update({ author_nickname: sanitizedNickname })
       .eq("user_id", user.id),
   ]);
 
-  if (worksSync.error) console.error("[Profile] Works nickname sync error:", worksSync.error.message);
-  if (contribSync.error) console.error("[Profile] Contributions nickname sync error:", contribSync.error.message);
+  if (worksSync.error)
+    logger.error("[Profile] Works nickname sync error:", worksSync.error.message);
+  if (contribSync.error)
+    logger.error("[Profile] Contributions nickname sync error:", contribSync.error.message);
 
   revalidatePath("/", "layout");
   revalidatePath("/profile");
@@ -168,7 +162,9 @@ export async function updateProfile(
 
 export async function acknowledgeWelcomeMessage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Bạn chưa đăng nhập." };
 
@@ -178,7 +174,7 @@ export async function acknowledgeWelcomeMessage() {
     .eq("id", user.id);
 
   if (error) {
-    console.error("Error acknowledging welcome message:", error);
+    logger.error("Error acknowledging welcome message:", error);
     return { error: getErrorMessage(error) };
   }
 
@@ -187,6 +183,5 @@ export async function acknowledgeWelcomeMessage() {
 }
 
 export async function updateNickname(nickname: string) {
-    return updateProfile(nickname);
+  return updateProfile(nickname);
 }
-

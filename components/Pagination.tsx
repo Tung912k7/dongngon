@@ -8,17 +8,13 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export default function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const renderPageButtons = () => {
     const buttons = [];
     const maxVisiblePages = 5;
-    
+
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -55,15 +51,20 @@ export default function Pagination({
             : "bg-white text-black hover:bg-black hover:text-white hover:-translate-y-0.5"
         }`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2.5}
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
         <span>Trước</span>
       </button>
 
-      <div className="hidden sm:flex items-center gap-2">
-        {renderPageButtons()}
-      </div>
+      <div className="hidden sm:flex items-center gap-2">{renderPageButtons()}</div>
 
       <div className="flex sm:hidden items-center px-4 font-bold">
         {currentPage} / {totalPages}
@@ -79,11 +80,17 @@ export default function Pagination({
         }`}
       >
         <span>Sau</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2.5}
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
     </nav>
   );
 }
-

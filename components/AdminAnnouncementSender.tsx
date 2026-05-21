@@ -38,11 +38,11 @@ export default function AdminAnnouncementSender() {
   const handleSelectSuggestion = (nickname: string) => {
     const parts = targetNicknames.split(",");
     parts.pop(); // Remove the partial typo
-    
+
     // Build the new string, properly trimming elements
-    const newParts = parts.map(p => p.trim()).filter(Boolean);
+    const newParts = parts.map((p) => p.trim()).filter(Boolean);
     newParts.push(nickname);
-    
+
     setTargetNicknames(newParts.join(", ") + ", ");
     setShowSuggestions(false);
   };
@@ -74,12 +74,26 @@ export default function AdminAnnouncementSender() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
       <h2 className="text-lg font-bold text-slate-900 mb-1">Gửi thông báo</h2>
-      <p className="text-xs text-slate-400 mb-4">Gửi thông báo đến một nhóm người dùng (hoặc <strong>bỏ trống</strong> để gửi toàn bộ hệ thống).</p>
+      <p className="text-xs text-slate-400 mb-4">
+        Gửi thông báo đến một nhóm người dùng (hoặc <strong>bỏ trống</strong> để gửi toàn bộ hệ
+        thống).
+      </p>
 
       <form onSubmit={handleSend} className="space-y-3">
         <div className="relative">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 absolute left-3.5 top-3.5 text-slate-400 pointer-events-none">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            className="w-5 h-5 absolute left-3.5 top-3.5 text-slate-400 pointer-events-none"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
           </svg>
           <input
             type="text"
@@ -130,15 +144,16 @@ export default function AdminAnnouncementSender() {
       </form>
 
       {status && (
-        <div className={`mt-3 px-4 py-2.5 rounded text-sm font-medium ${
-          status.type === "success"
-            ? "bg-green-50 text-green-700 border border-green-200"
-            : "bg-red-50 text-red-600 border border-red-200"
-        }`}>
+        <div
+          className={`mt-3 px-4 py-2.5 rounded text-sm font-medium ${
+            status.type === "success"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-600 border border-red-200"
+          }`}
+        >
           {status.text}
         </div>
       )}
     </div>
   );
 }
-

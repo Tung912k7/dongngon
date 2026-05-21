@@ -4,9 +4,7 @@ import { m } from "framer-motion";
 
 export function WorkCardSkeleton() {
   return (
-    <div 
-        className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded relative overflow-hidden"
-    >
+    <div className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded relative overflow-hidden">
       {/* Animated Shine Effect */}
       <m.div
         animate={{
@@ -16,7 +14,7 @@ export function WorkCardSkeleton() {
           duration: 2,
           repeat: Infinity,
           ease: "linear",
-          repeatDelay: 0.5
+          repeatDelay: 0.5,
         }}
         className="absolute inset-0 bg-gradient-to-r from-transparent via-black/[0.03] to-transparent z-10"
       />
@@ -48,10 +46,9 @@ export function WorkGridSkeleton({ count = 6 }: { count?: number }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="flex justify-center sm:justify-start">
-            <WorkCardSkeleton />
+          <WorkCardSkeleton />
         </div>
       ))}
     </div>
   );
 }
-

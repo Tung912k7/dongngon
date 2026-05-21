@@ -2,14 +2,14 @@
 // Help Center article page — dynamically fetching content from database.
 // Layout: breadcrumb, article header, content body with sidebar (TOC + Related).
 
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { notFound } from 'next/navigation';
-import { getHDSDArticleBySlug, getPublishedHDSDArticles } from '@/actions/hdsd';
-import { HELP_CENTER_SECTIONS } from '@/data/helpCenter';
-import HelpCenterBreadcrumb from '@/components/hdsd/HelpCenterBreadcrumb';
-import HelpCenterArticleSidebar from '@/components/hdsd/HelpCenterArticleSidebar';
-import { Metadata } from 'next';
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import { notFound } from "next/navigation";
+import { getHDSDArticleBySlug, getPublishedHDSDArticles } from "@/actions/hdsd";
+import { HELP_CENTER_SECTIONS } from "@/data/helpCenter";
+import HelpCenterBreadcrumb from "@/components/hdsd/HelpCenterBreadcrumb";
+import HelpCenterArticleSidebar from "@/components/hdsd/HelpCenterArticleSidebar";
+import { Metadata } from "next";
 
 interface HelpCenterArticlePageProps {
   params: Promise<{
@@ -21,9 +21,9 @@ interface HelpCenterArticlePageProps {
 export async function generateMetadata({ params }: HelpCenterArticlePageProps): Promise<Metadata> {
   const { section: sectionSlug, article: articleSlug } = await params;
   const article = await getHDSDArticleBySlug(sectionSlug, articleSlug);
-  
+
   if (!article) return { title: "Không tìm thấy bài viết" };
-  
+
   return {
     title: `${article.title} | Hướng dẫn`,
     description: article.summary || `Hướng dẫn chi tiết về bài viết: ${article.title}`,
@@ -47,12 +47,12 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
 
   // Find section metadata
   const section = HELP_CENTER_SECTIONS.find((s) => s.id === sectionSlug);
-  const sectionLabel = article.section_title || section?.title || 'Chủ đề';
+  const sectionLabel = article.section_title || section?.title || "Chủ đề";
 
   // Fetch all published articles to find "Related Articles"
   const publishedResult = await getPublishedHDSDArticles();
   const allArticles = publishedResult.success ? publishedResult.data || [] : [];
-  
+
   // Related articles = same section, excluding current one
   const relatedArticles = allArticles
     .filter((a) => a.section_slug === sectionSlug && a.slug !== articleSlug)
@@ -60,9 +60,9 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
     .map((a) => ({
       title: a.title,
       href: `/hdsd/${sectionSlug}/${a.slug}`,
-      sectionIcon: section?.icon || 'question',
+      sectionIcon: section?.icon || "question",
       sectionLabel: sectionLabel,
-      readingTime: `${Math.ceil(a.content_markdown.split(' ').length / 200)} phút`,
+      readingTime: `${Math.ceil(a.content_markdown.split(" ").length / 200)} phút`,
     }));
 
   // Simple TOC generation from H2 and H3 tags in markdown
@@ -76,7 +76,8 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
     return { id, label };
   });
 
-  const TOC_ITEMS = headers.length > 0 ? headers : [{ id: 'article-root', label: 'Nội dung chính' }];
+  const TOC_ITEMS =
+    headers.length > 0 ? headers : [{ id: "article-root", label: "Nội dung chính" }];
 
   const updatedDate = new Date(article.updated_at);
   const formattedDate = `${updatedDate.getDate()} tháng ${updatedDate.getMonth() + 1}, ${updatedDate.getFullYear()}`;
@@ -93,55 +94,55 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
             "@graph": [
               {
                 "@type": "Article",
-                "headline": article.title,
-                "description": article.summary || article.title,
-                "url": `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`,
-                "dateModified": article.updated_at,
-                "inLanguage": "vi",
-                "isPartOf": {
+                headline: article.title,
+                description: article.summary || article.title,
+                url: `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`,
+                dateModified: article.updated_at,
+                inLanguage: "vi",
+                isPartOf: {
                   "@type": "WebSite",
-                  "@id": "https://dongngon.vercel.app/#website"
+                  "@id": "https://dongngon.vercel.app/#website",
                 },
-                "publisher": {
-                  "@id": "https://dongngon.vercel.app/#organization"
+                publisher: {
+                  "@id": "https://dongngon.vercel.app/#organization",
                 },
-                "mainEntityOfPage": {
+                mainEntityOfPage: {
                   "@type": "WebPage",
-                  "@id": `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`
+                  "@id": `https://dongngon.vercel.app/hdsd/${sectionSlug}/${articleSlug}`,
                 },
-                "articleSection": sectionLabel,
-                "wordCount": article.content_markdown.split(/\s+/).length
+                articleSection: sectionLabel,
+                wordCount: article.content_markdown.split(/\s+/).length,
               },
               {
                 "@type": "BreadcrumbList",
-                "itemListElement": [
+                itemListElement: [
                   {
                     "@type": "ListItem",
-                    "position": 1,
-                    "name": "Trang chủ",
-                    "item": "https://dongngon.vercel.app"
+                    position: 1,
+                    name: "Trang chủ",
+                    item: "https://dongngon.vercel.app",
                   },
                   {
                     "@type": "ListItem",
-                    "position": 2,
-                    "name": "Hướng dẫn sử dụng",
-                    "item": "https://dongngon.vercel.app/hdsd"
+                    position: 2,
+                    name: "Hướng dẫn sử dụng",
+                    item: "https://dongngon.vercel.app/hdsd",
                   },
                   {
                     "@type": "ListItem",
-                    "position": 3,
-                    "name": sectionLabel,
-                    "item": `https://dongngon.vercel.app/hdsd/${sectionSlug}`
+                    position: 3,
+                    name: sectionLabel,
+                    item: `https://dongngon.vercel.app/hdsd/${sectionSlug}`,
                   },
                   {
                     "@type": "ListItem",
-                    "position": 4,
-                    "name": article.title
-                  }
-                ]
-              }
-            ]
-          })
+                    position: 4,
+                    name: article.title,
+                  },
+                ],
+              },
+            ],
+          }),
         }}
       />
       {/* ─── Breadcrumb ─── */}
@@ -149,7 +150,12 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
         <div className="max-w-6xl mx-auto px-4 py-3">
           <HelpCenterBreadcrumb
             items={[
-              { label: 'Hướng dẫn sử dụng', href: '/hdsd', className: 'text-[#388186] font-bold underline decoration-dotted underline-offset-4' },
+              {
+                label: "Hướng dẫn sử dụng",
+                href: "/hdsd",
+                className:
+                  "text-[#388186] font-bold underline decoration-dotted underline-offset-4",
+              },
               { label: sectionLabel, href: `/hdsd/${sectionSlug}` },
               { label: article.title },
             ]}
@@ -170,7 +176,16 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                     {sectionLabel}
                   </span>
                   <span className="flex items-center gap-1.5 text-xs font-bold text-neutral-400">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <circle cx="12" cy="12" r="10" />
                       <path d="M12 6v6l4 2" />
                     </svg>
@@ -189,7 +204,8 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                 <div className="h-px w-full bg-neutral-100 mb-10" />
 
                 {/* Body Content */}
-                <div className="prose prose-neutral prose-lg max-w-none 
+                <div
+                  className="prose prose-neutral prose-lg max-w-none 
                   prose-headings:font-black prose-headings:tracking-tight prose-headings:text-neutral-900
                   prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
                   prose-p:text-neutral-600 prose-p:leading-relaxed prose-p:mb-6
@@ -198,18 +214,31 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                   prose-blockquote:not-italic prose-blockquote:bg-neutral-50 prose-blockquote:border-none prose-blockquote:p-8 prose-blockquote:rounded-[24px] prose-blockquote:relative
                   prose-pre:bg-neutral-900 prose-pre:rounded-2xl
                   prose-img:rounded-3xl prose-img:border prose-img:border-neutral-100
-                ">
+                "
+                >
                   <ReactMarkdown
                     components={{
                       h2: ({ node, children, ...props }) => {
                         const label = String(children);
-                        const idx = headers.findIndex(h => h.label === label);
-                        return <h2 id={idx !== -1 ? `header-${idx}` : undefined} className="group" {...props}>{children}</h2>;
+                        const idx = headers.findIndex((h) => h.label === label);
+                        return (
+                          <h2
+                            id={idx !== -1 ? `header-${idx}` : undefined}
+                            className="group"
+                            {...props}
+                          >
+                            {children}
+                          </h2>
+                        );
                       },
                       h3: ({ node, children, ...props }) => {
                         const label = String(children);
-                        const idx = headers.findIndex(h => h.label === label);
-                        return <h3 id={idx !== -1 ? `header-${idx}` : undefined} {...props}>{children}</h3>;
+                        const idx = headers.findIndex((h) => h.label === label);
+                        return (
+                          <h3 id={idx !== -1 ? `header-${idx}` : undefined} {...props}>
+                            {children}
+                          </h3>
+                        );
                       },
                       blockquote: ({ children }) => {
                         // Check if children contain "Mẹo:" or similar
@@ -217,7 +246,16 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                           <blockquote className="my-10 p-8 bg-neutral-50 rounded-[28px] border-none relative overflow-hidden group">
                             <div className="flex gap-4 items-start relative z-10">
                               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-amber-500 shadow-sm border border-neutral-100 flex-shrink-0">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
                                   <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
                                   <path d="M9 18h6" />
                                   <path d="M10 22h4" />
@@ -229,7 +267,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                             </div>
                           </blockquote>
                         );
-                      }
+                      },
                     }}
                   >
                     {article.content_markdown}
@@ -242,20 +280,32 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
           {/* ── Sidebar ── */}
           <div className="w-full lg:w-80 flex-shrink-0">
             <div className="lg:sticky lg:top-24 space-y-6">
-              <HelpCenterArticleSidebar
-                toc={TOC_ITEMS}
-                relatedArticles={relatedArticles}
-              />
-              
+              <HelpCenterArticleSidebar toc={TOC_ITEMS} relatedArticles={relatedArticles} />
+
               {/* Extra Help Card */}
               <div className="p-6 bg-neutral-900 text-white rounded-[24px] overflow-hidden relative group">
                 <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-teal-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                 <h4 className="font-bold mb-2 relative z-10">Vẫn chưa tìm thấy điều bạn cần?</h4>
-                <p className="text-sm text-neutral-400 mb-4 relative z-10">Chúng mình luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào.</p>
-                <a href="/lien-he" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-teal-400 hover:text-teal-300 transition-colors relative z-10">
+                <p className="text-sm text-neutral-400 mb-4 relative z-10">
+                  Chúng mình luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào.
+                </p>
+                <a
+                  href="/lien-he"
+                  className="inline-flex items-center text-xs font-black uppercase tracking-widest text-teal-400 hover:text-teal-300 transition-colors relative z-10"
+                >
                   Liên hệ ngay
-                  <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
                   </svg>
                 </a>
               </div>

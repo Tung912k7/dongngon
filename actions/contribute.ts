@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { checkBlacklist } from "@/utils/blacklist";
@@ -18,7 +19,11 @@ function isValidUuid(value: string) {
   return UUID_V4_REGEX.test(value);
 }
 
-export async function submitContribution(workId: string, content: string, newLine: boolean = false) {
+export async function submitContribution(
+  workId: string,
+  content: string,
+  newLine: boolean = false
+) {
   const supabase = await createClient();
 
   if (!isValidUuid(workId)) {
@@ -117,27 +122,27 @@ export async function submitContribution(workId: string, content: string, newLin
   if (!sanitizedContent || sanitizedContent.length === 0) {
     return { error: "Nội dung không được để trống." };
   }
-  
+
   if (sanitizedContent.length > 200) {
-       return { error: "Nội dung quá dài (tối đa 200 ký tự)." };
+    return { error: "Nội dung quá dài (tối đa 200 ký tự)." };
   }
 
   const blacklistViolation = await checkBlacklist(sanitizedContent);
   if (blacklistViolation) {
-    console.warn(`[Moderation] Blocked contribution from user ${user.id} containing blacklisted pattern: "${blacklistViolation}"`);
+    logger.warn(`Blocked contribution from user ${user.id} containing blacklisted pattern: "${blacklistViolation}"`);
     return { error: "Nội dung của bạn chứa từ khóa không phù hợp với tiêu chuẩn cộng đồng." };
   }
 
   // 3. Check Daily Limit (Vietnam Timezone)
-  const vnDate = new Intl.DateTimeFormat('en-CA', { 
-    timeZone: 'Asia/Ho_Chi_Minh',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
+  const vnDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
-  
+
   const startOfDayVN = `${vnDate}T00:00:00+07:00`;
-  
+
   const { data: recentContributions } = await supabase
     .from("contributions")
     .select("created_at")
@@ -166,7 +171,7 @@ export async function submitContribution(workId: string, content: string, newLin
 
     const { calculateAge, isOldEnough } = await import("@/utils/age");
     const age = calculateAge(privateData?.birthday);
-    
+
     if (user.id !== work.created_by && !isOldEnough(age, work.age_rating)) {
       return { error: `Bạn chưa đủ tuổi (${work.age_rating}) để đóng góp vào tác phẩm này.` };
     }
@@ -178,21 +183,19 @@ export async function submitContribution(workId: string, content: string, newLin
 
   // 5. Insert Contribution
   // Cấu trúc ĐÚNG để không còn lỗi 42703
-  const { error } = await supabase
-    .from('contributions')
-    .insert([
-      {
-        work_id: id,
-        user_id: user.id,
-        content: text,
-        author_nickname: nickname,
-        new_line: newLine
-      }
-    ]);
+  const { error } = await supabase.from("contributions").insert([
+    {
+      work_id: id,
+      user_id: user.id,
+      content: text,
+      author_nickname: nickname,
+      new_line: newLine,
+    },
+  ]);
 
   if (error) {
-    console.error("Error submitting contribution:", error);
-    if (error.code === '23505') {
+    logger.error("Error submitting contribution:", error);
+    if (error.code === "23505") {
       return { error: "Hôm nay bạn đã tham gia vào tác phẩm này!" };
     }
     return { error: getErrorMessage(error) };
@@ -205,33 +208,33 @@ export async function submitContribution(workId: string, content: string, newLin
       work_id: workId,
       type: "contribution",
       content: `${nickname} đã đóng góp tiếp nối vào tác phẩm "${work.title}".`,
-      is_read: false
+      is_read: false,
     });
   }
 
   // Track contribution event
   const isFirstContribution = !profile?.activated_at;
-  await captureServerEvent(user.id, 'contribution_submitted', {
+  await captureServerEvent(user.id, "contribution_submitted", {
     work_id: workId,
     is_first: isFirstContribution,
-    event_source: 'server_action',
+    event_source: "server_action",
     event_version: 1,
   });
 
   // Activation milestone: first ever contribution
   if (isFirstContribution) {
-    await captureServerEvent(user.id, 'user_activated', {
+    await captureServerEvent(user.id, "user_activated", {
       work_id: workId,
-      activation_type: 'first_contribution',
-      event_source: 'server_action',
+      activation_type: "first_contribution",
+      event_source: "server_action",
       event_version: 1,
     });
     // Mark activation timestamp (idempotent — only updates if still NULL)
     await supabase
-      .from('profiles')
+      .from("profiles")
       .update({ activated_at: new Date().toISOString() })
-      .eq('id', user.id)
-      .is('activated_at', null);
+      .eq("id", user.id)
+      .is("activated_at", null);
   }
 
   revalidatePath(`/work/${workId}`);
@@ -249,9 +252,8 @@ export async function getContributionsChunk(workId: string, offset: number, limi
     .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error("Error fetching contributions chunk:", error);
+    logger.error("Error fetching contributions chunk:", error);
     return { success: false, data: [] };
   }
-  return { success: true, data: data as any[] };
+  return { success: true, data: (data || []) as Contribution[] };
 }
-

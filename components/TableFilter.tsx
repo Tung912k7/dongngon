@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import WorkFilter from "./WorkFilter";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { FilterState } from "@/app/kho-tang/types";
 
 interface TableFilterProps {
@@ -35,7 +35,7 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
   return (
     <div className="relative inline-block z-20" ref={filterRef}>
       <div className="relative">
-        <button 
+        <button
           onClick={() => setIsOpen(!isOpen)}
           className="p-1 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center mr-2"
           title="Bộ lọc"
@@ -72,4 +72,3 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
     </div>
   );
 }
-

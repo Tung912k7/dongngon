@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { m, AnimatePresence } from "framer-motion";
-import { CHANGELOG, LATEST_VERSION, ChangelogEntry } from "@/data/changelog";
+import { AnimatePresence, m } from "framer-motion";
+import { CHANGELOG, ChangelogEntry, LATEST_VERSION } from "@/data/changelog";
 import { markChangelogSeen } from "@/actions/changelog";
 
 interface ChangelogModalProps {
@@ -109,4 +109,3 @@ function getUnseenEntries(lastSeenVersion: string | null): ChangelogEntry[] {
   }
   return unseen;
 }
-

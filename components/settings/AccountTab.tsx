@@ -10,7 +10,7 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
   const handlePasswordReset = async () => {
     setLoading(true);
     const supabase = createClient();
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
       redirectTo: `${window.location.origin}/auth/callback?next=/settings`,
     });
@@ -26,7 +26,9 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <h3 className="font-ganh text-2xl md:text-3xl uppercase tracking-tight font-black">Bảo mật tài khoản</h3>
+        <h3 className="font-ganh text-2xl md:text-3xl uppercase tracking-tight font-black">
+          Bảo mật tài khoản
+        </h3>
         <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
           Quản lý mật khẩu và các thiết lập an toàn cho tài khoản của bạn.
         </p>
@@ -38,9 +40,9 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
           <h4 className="font-black text-lg uppercase tracking-tight">Mật khẩu</h4>
         </div>
         <p className="text-[11px] text-black/50 font-bold uppercase tracking-widest leading-relaxed max-w-lg">
-          Để đảm bảo an toàn, chúng mình khuyên bạn nên sử dụng mật khẩu mạnh (trên 12 ký tự) và duy nhất cho tài khoản này.
+          Để đảm bảo an toàn, chúng mình khuyên bạn nên sử dụng mật khẩu mạnh (trên 12 ký tự) và duy
+          nhất cho tài khoản này.
         </p>
-        
 
         <button
           onClick={handlePasswordReset}
@@ -53,10 +55,16 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
 
       <div className="p-8 md:p-10 border-4 border-red-500 rounded-[3rem] bg-red-50 space-y-6 relative overflow-hidden group">
         <div className="flex items-center gap-4 mb-2">
-          <h4 className="font-ganh text-2xl uppercase tracking-tight text-red-600 font-black">Vùng nguy hiểm</h4>
+          <h4 className="font-ganh text-2xl uppercase tracking-tight text-red-600 font-black">
+            Vùng nguy hiểm
+          </h4>
         </div>
         <p className="text-[11px] text-red-500/70 font-bold uppercase tracking-widest leading-relaxed max-w-md">
-          Việc xóa tài khoản là <span className="text-red-600 underline underline-offset-4 decoration-2">hành động vĩnh viễn</span>. Tất cả tác phẩm, đóng góp và thông tin của bạn sẽ bị xóa khỏi hệ thống.
+          Việc xóa tài khoản là{" "}
+          <span className="text-red-600 underline underline-offset-4 decoration-2">
+            hành động vĩnh viễn
+          </span>
+          . Tất cả tác phẩm, đóng góp và thông tin của bạn sẽ bị xóa khỏi hệ thống.
         </p>
         <button className="px-10 py-5 bg-white border-2 border-red-500 text-red-600 font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-[8px_8px_0px_0px_rgba(239,68,68,0.2)] hover:bg-red-500 hover:text-white transition-all">
           Xác nhận xóa tài khoản
@@ -65,4 +73,3 @@ export default function AccountTab({ userEmail }: { userEmail: string }) {
     </div>
   );
 }
-

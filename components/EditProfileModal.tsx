@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { logger } from "@/lib/logger";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import Image from "next/image";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import { getCroppedImg } from "@/utils/imageCrop";
@@ -20,7 +21,11 @@ interface EditProfileModalProps {
 
 type UpdateProfileResult = Awaited<ReturnType<typeof updateProfile>>;
 
-export default function EditProfileModal({ initialNickname, initialAvatarUrl, initialDescription }: EditProfileModalProps) {
+export default function EditProfileModal({
+  initialNickname,
+  initialAvatarUrl,
+  initialDescription,
+}: EditProfileModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [nickname, setNickname] = useState(initialNickname);
   const [description, setDescription] = useState(initialDescription || "");
@@ -43,7 +48,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      
+
       // 2MB Limit
       if (file.size > 2 * 1024 * 1024) {
         setError("Kích thước ảnh không được vượt quá 2MB.");
@@ -60,26 +65,26 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
 
   const uploadAvatar = async (blob: Blob): Promise<string | null> => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) return null;
 
     const fileName = `${user.id}-${Date.now()}.jpg`;
-    const { data, error } = await supabase.storage
-      .from("avatars")
-      .upload(fileName, blob, {
-        contentType: "image/jpeg",
-        upsert: true,
-      });
+    const { data, error } = await supabase.storage.from("avatars").upload(fileName, blob, {
+      contentType: "image/jpeg",
+      upsert: true,
+    });
 
     if (error) {
-      console.error("Upload error:", error);
+      logger.error("Upload error:", error);
       return null;
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(data.path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("avatars").getPublicUrl(data.path);
 
     return publicUrl;
   };
@@ -88,7 +93,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
     e.preventDefault();
     const newFieldErrors: Record<string, string> = {};
     if (!nickname.trim()) newFieldErrors.nickname = "Vui lòng nhập bút danh.";
-    
+
     if (Object.keys(newFieldErrors).length > 0) {
       setFieldErrors(newFieldErrors);
       setIsSubmitting(false);
@@ -101,7 +106,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
 
     let finalAvatarUrl = avatarUrl;
 
-    const timeoutPromise = new Promise<never>((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 30000)
     );
 
@@ -113,16 +118,18 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
           if (uploadedUrl) {
             finalAvatarUrl = uploadedUrl;
           } else {
-            throw new Error("Không thể tải ảnh lên. Hãy đảm bảo bạn đã tạo bucket 'avatars' trong Supabase.");
+            throw new Error(
+              "Không thể tải ảnh lên. Hãy đảm bảo bạn đã tạo bucket 'avatars' trong Supabase."
+            );
           }
         }
       }
 
-      const result = await Promise.race([
+      const result = (await Promise.race([
         updateProfile(sanitizeNickname(nickname), finalAvatarUrl, undefined, description),
-        timeoutPromise
-      ]) as UpdateProfileResult;
-      
+        timeoutPromise,
+      ])) as UpdateProfileResult;
+
       if (result.success) {
         setIsOpen(false);
         setImageSrc(null);
@@ -130,7 +137,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
         setError(result.error || "Có lỗi xảy ra.");
       }
     } catch (err: unknown) {
-      console.error("Profile update error:", err);
+      logger.error("Profile update error:", err);
       if (err instanceof Error && err.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
@@ -177,14 +184,16 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
               className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
               aria-label="Đóng chỉnh sửa hồ sơ"
             />
-            
+
             <m.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white border-2 border-black rounded p-6 md:p-10 w-full max-w-xl relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
             >
-              <style dangerouslySetInnerHTML={{ __html: `
+              <style
+                dangerouslySetInnerHTML={{
+                  __html: `
                 .modal-scroll-container::-webkit-scrollbar {
                   width: 8px;
                 }
@@ -205,14 +214,20 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                   scrollbar-width: thin;
                   scrollbar-color: #000 #f1f1f1;
                 }
-              `}} />
-              <h2 className="text-3xl font-ganh font-bold mb-8 text-center uppercase tracking-tight">Cập nhật hồ sơ</h2>
-              
+              `,
+                }}
+              />
+              <h2 className="text-3xl font-ganh font-bold mb-8 text-center uppercase tracking-tight">
+                Cập nhật hồ sơ
+              </h2>
+
               <form onSubmit={handleSubmit} className="space-y-6 font-sans">
                 {/* Consolidated Avatar Section */}
                 <div className="space-y-4">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">ẢNH ĐẠI DIỆN</label>
-                  
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
+                    ẢNH ĐẠI DIỆN
+                  </label>
+
                   {/* Upload & Reset Buttons */}
                   <div className="flex flex-wrap items-center gap-3">
                     <PrimaryButton
@@ -222,7 +237,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     >
                       CHỌN ẢNH TỪ THIẾT BỊ
                     </PrimaryButton>
-                    
+
                     <button
                       type="button"
                       onClick={() => {
@@ -236,7 +251,9 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     </button>
 
                     {!imageSrc && (
-                      <span className="text-[10px] text-gray-400 font-bold italic ml-auto">Tối đa 2MB</span>
+                      <span className="text-[10px] text-gray-400 font-bold italic ml-auto">
+                        Tối đa 2MB
+                      </span>
                     )}
                   </div>
 
@@ -255,7 +272,9 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                         />
                         {/* Zoom Control Overlay */}
                         <div className="absolute bottom-4 left-4 right-4 bg-white p-3 rounded border-2 border-black flex items-center gap-4 z-10">
-                          <span className="text-[9px] font-black text-black uppercase tracking-widest">THU PHÓNG</span>
+                          <span className="text-[9px] font-black text-black uppercase tracking-widest">
+                            THU PHÓNG
+                          </span>
                           <input
                             type="range"
                             value={zoom}
@@ -284,10 +303,12 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                           alt="Current Avatar"
                           width={160}
                           height={160}
-                          className={`w-full h-full object-cover ${(getImageUrl(avatarUrl) === "/webp/default_avatar.webp" || !avatarUrl) ? 'scale-[1.5]' : ''}`}
+                          className={`w-full h-full object-cover ${getImageUrl(avatarUrl) === "/webp/default_avatar.webp" || !avatarUrl ? "scale-[1.5]" : ""}`}
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px]">
-                          <p className="text-[10px] text-black font-black mt-4 tracking-widest uppercase bg-white px-4 py-2 border-2 border-black">Xem trước ảnh</p>
+                          <p className="text-[10px] text-black font-black mt-4 tracking-widest uppercase bg-white px-4 py-2 border-2 border-black">
+                            Xem trước ảnh
+                          </p>
                         </div>
                       </div>
                     )}
@@ -303,23 +324,32 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                 </div>
 
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">BÚT DANH</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
+                    BÚT DANH
+                  </label>
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => {
                       setNickname(e.target.value);
-                      if (fieldErrors.nickname) setFieldErrors(prev => ({ ...prev, nickname: "" }));
+                      if (fieldErrors.nickname)
+                        setFieldErrors((prev) => ({ ...prev, nickname: "" }));
                     }}
                     maxLength={30}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold focus:outline-none focus:bg-white transition-all text-sm`}
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:bg-white transition-all text-sm`}
                     placeholder="Nhập bút danh mới..."
                   />
-                  {fieldErrors.nickname && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{fieldErrors.nickname}</p>}
+                  {fieldErrors.nickname && (
+                    <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">
+                      {fieldErrors.nickname}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">GIỚI THIỆU</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
+                    GIỚI THIỆU
+                  </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -356,11 +386,7 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
                     disabled={isSubmitting}
                     className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    {isSubmitting ? (
-                      <>ĐANG LƯU...</>
-                    ) : (
-                      <>LƯU THAY ĐỔI</>
-                    )}
+                    {isSubmitting ? <>ĐANG LƯU...</> : <>LƯU THAY ĐỔI</>}
                   </PrimaryButton>
                 </div>
               </form>
@@ -371,4 +397,3 @@ export default function EditProfileModal({ initialNickname, initialAvatarUrl, in
     </>
   );
 }
-

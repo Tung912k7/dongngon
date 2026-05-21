@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { voteEndWork } from "@/actions/vote";
 import { createClient } from "@/utils/supabase/client";
 
@@ -40,7 +40,7 @@ export default function VoteButton({
           }
           // Note: local threshold depends on contributor_count
           if (payload.new.contributor_count !== undefined) {
-             // We could sync this to state if we wanted, but props usually update via router.refresh()
+            // We could sync this to state if we wanted, but props usually update via router.refresh()
           }
           // Sync completion status
           if (payload.new.status === "finished") {
@@ -74,7 +74,7 @@ export default function VoteButton({
   const handleVote = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     // Optimistic update
     setCount((prev) => prev + 1);
     setHasVoted(true);
@@ -89,27 +89,32 @@ export default function VoteButton({
     } else if (result.newCount !== undefined) {
       setCount(result.newCount);
     }
-    
+
     setIsLoading(false);
   };
 
   return (
     <div className="flex flex-col items-end gap-2">
-       {error && <span className="text-red-600 font-bold text-[10px] uppercase tracking-tighter bg-red-50 px-2 py-0.5 border border-red-600 rounded-sm">{error}</span>}
+      {error && (
+        <span className="text-red-600 font-bold text-[10px] uppercase tracking-tighter bg-red-50 px-2 py-0.5 border border-red-600 rounded-sm">
+          {error}
+        </span>
+      )}
       <button
         onClick={handleVote}
         disabled={hasVoted || isLoading}
         className="group relative px-4 py-2 bg-white border-2 border-black rounded transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:translate-0 disabled:shadow-none flex items-center gap-2"
       >
-        <span className="font-ganh text-[10px] font-bold uppercase tracking-widest">🛑 Kết thúc</span>
+        <span className="font-ganh text-[10px] font-bold uppercase tracking-widest">
+          🛑 Kết thúc
+        </span>
         <span className="bg-black text-white rounded-md text-[9px] font-black px-1.5 py-0.5 transition-colors group-hover:bg-literary-gold group-hover:text-black">
           {count}/{threshold}
         </span>
       </button>
       <p className="text-[9px] font-bold uppercase tracking-widest text-black/70 max-w-[180px] text-right leading-tight">
-        Cần {threshold} phiếu ({Math.floor((threshold/contributorCount)*100)}%) để đóng tác phẩm
+        Cần {threshold} phiếu ({Math.floor((threshold / contributorCount) * 100)}%) để đóng tác phẩm
       </p>
     </div>
   );
 }
-

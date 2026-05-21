@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { useZenStore } from '@/stores/zen-store';
-import { m, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { useZenStore } from "@/stores/zen-store";
+import { AnimatePresence, m } from "framer-motion";
 
 const ZenToggle = () => {
   const { isZenMode, toggleZenMode } = useZenStore();
@@ -64,12 +64,9 @@ const ZenToggle = () => {
           )}
         </AnimatePresence>
       </div>
-      <span className="hidden sm:inline-block">
-        {isZenMode ? "Bình thường" : "Trầm tư"}
-      </span>
+      <span className="hidden sm:inline-block">{isZenMode ? "Bình thường" : "Trầm tư"}</span>
     </button>
   );
 };
 
 export default ZenToggle;
-

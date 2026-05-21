@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import FooterQuote from "./FooterQuote";
@@ -57,12 +57,19 @@ export default function Footer() {
               </section>
 
               <div className="flex flex-row flex-wrap sm:flex-nowrap justify-start lg:justify-end gap-12 md:gap-20 lg:gap-24">
-                <nav aria-label="Danh mục Văn" className="flex flex-col items-start min-w-[100px] gap-6">
+                <nav
+                  aria-label="Danh mục Văn"
+                  className="flex flex-col items-start min-w-[100px] gap-6"
+                >
                   <h3 className={columnHeadingClass}>Văn</h3>
                   <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
                     {proseLinks.map((label) => (
                       <li key={label}>
-                        <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                        <Link
+                          href={formHref(label)}
+                          prefetch={false}
+                          className="transition-opacity hover:opacity-70"
+                        >
                           {label}
                         </Link>
                       </li>
@@ -70,12 +77,19 @@ export default function Footer() {
                   </ul>
                 </nav>
 
-                <nav aria-label="Danh mục Thơ" className="flex flex-col items-start min-w-[100px] gap-6">
+                <nav
+                  aria-label="Danh mục Thơ"
+                  className="flex flex-col items-start min-w-[100px] gap-6"
+                >
                   <h3 className={columnHeadingClass}>Thơ</h3>
                   <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
                     {poetryLinks.map((label) => (
                       <li key={label}>
-                        <Link href={formHref(label)} prefetch={false} className="transition-opacity hover:opacity-70">
+                        <Link
+                          href={formHref(label)}
+                          prefetch={false}
+                          className="transition-opacity hover:opacity-70"
+                        >
                           {label}
                         </Link>
                       </li>
@@ -83,7 +97,10 @@ export default function Footer() {
                   </ul>
                 </nav>
 
-                <nav aria-label="Liên kết Kết nối" className="flex flex-col items-start min-w-[100px] gap-6">
+                <nav
+                  aria-label="Liên kết Kết nối"
+                  className="flex flex-col items-start min-w-[100px] gap-6"
+                >
                   <h3 className={columnHeadingClass}>Kết nối</h3>
                   <ul className={`flex flex-col items-start gap-4 ${columnLinkClass}`}>
                     <li>
@@ -97,7 +114,11 @@ export default function Footer() {
                       </a>
                     </li>
                     <li>
-                      <Link href="/ve-chung-toi" prefetch={false} className="transition-opacity hover:opacity-70">
+                      <Link
+                        href="/ve-chung-toi"
+                        prefetch={false}
+                        className="transition-opacity hover:opacity-70"
+                      >
                         Về chúng mình
                       </Link>
                     </li>
@@ -116,7 +137,8 @@ export default function Footer() {
 
             <div className="w-full border-t-2 border-black pt-6 pb-2 mt-10 md:mt-20">
               <p className="mx-auto max-w-7xl px-8 text-center font-be-vietnam text-[13px] md:text-[14px] font-light tracking-[0.01em] text-[#2C2B29]/50">
-                © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình <span className="text-[#2C2B29]/60">❤️</span>
+                © 2025 ĐỒNG NGÔN. Một dự án bởi chúng mình{" "}
+                <span className="text-[#2C2B29]/60">❤️</span>
               </p>
             </div>
           </m.footer>
@@ -180,7 +202,18 @@ export default function Footer() {
                 onClick={() => setIsDonateOpen(false)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-black"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -214,4 +247,3 @@ export default function Footer() {
     </>
   );
 }
-

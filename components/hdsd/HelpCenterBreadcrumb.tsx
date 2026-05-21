@@ -1,8 +1,8 @@
 // components/hdsd/HelpCenterBreadcrumb.tsx
 // Breadcrumb navigation for Help Center article pages.
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
 export interface BreadcrumbItem {
   label: string;
@@ -28,12 +28,14 @@ const HelpCenterBreadcrumb: React.FC<HelpCenterBreadcrumbProps> = ({ items }) =>
             {item.href ? (
               <Link
                 href={item.href}
-                className={`hover:text-neutral-800 transition-colors ${item.className || ''}`}
+                className={`hover:text-neutral-800 transition-colors ${item.className || ""}`}
               >
                 {item.label}
               </Link>
             ) : (
-              <span className={`text-neutral-800 font-medium ${item.className || ''}`}>{item.label}</span>
+              <span className={`text-neutral-800 font-medium ${item.className || ""}`}>
+                {item.label}
+              </span>
             )}
           </li>
         ))}
@@ -43,4 +45,3 @@ const HelpCenterBreadcrumb: React.FC<HelpCenterBreadcrumbProps> = ({ items }) =>
 };
 
 export default HelpCenterBreadcrumb;
-

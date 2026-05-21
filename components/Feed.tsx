@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { logger } from "@/lib/logger";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { VirtuosoHandle } from "react-virtuoso";
 import { createClient } from "@/utils/supabase/client";
 import { Virtuoso } from "react-virtuoso";
 import ContributionTooltip from "./ContributionTooltip";
@@ -29,16 +31,14 @@ export default function Feed({
 }) {
   const { onSelectContribution, selectedContributionId } = useContributionSelection();
   const { isZenMode } = useZenStore();
-  const [contributions, setContributions] = useState<FeedContribution[]>(
-    initialContributions
-  );
-  
+  const [contributions, setContributions] = useState<FeedContribution[]>(initialContributions);
+
   // Infinite scroll state
   const [hasMore, setHasMore] = useState(initialContributions.length >= 50);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  
+
   const supabase = useMemo(() => createClient(), []);
-  const virtuosoRef = useRef<any>(null);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
   const bufferRef = useRef<FeedContribution[]>([]);
   const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -53,11 +53,13 @@ export default function Feed({
         if (result.data.length < 50) {
           setHasMore(false);
         }
-        
+
         if (result.data.length > 0) {
-          setContributions(prev => {
-            const existingIds = new Set(prev.map(c => c.id));
-            const newItems = (result.data as FeedContribution[]).filter(c => !existingIds.has(c.id));
+          setContributions((prev) => {
+            const existingIds = new Set(prev.map((c) => c.id));
+            const newItems = (result.data as FeedContribution[]).filter(
+              (c) => !existingIds.has(c.id)
+            );
             return [...prev, ...newItems].sort(
               (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
             );
@@ -67,7 +69,7 @@ export default function Feed({
         setHasMore(false);
       }
     } catch (error) {
-      console.error("Failed to load more contributions:", error);
+      logger.error("Failed to load more contributions:", error);
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
@@ -75,14 +77,14 @@ export default function Feed({
   }, [workId, contributions.length, isLoadingMore, hasMore]);
 
   useEffect(() => {
-    setContributions(prev => {
-      const existingIds = new Set(initialContributions.map(c => c.id));
-      const newFromRealtime = prev.filter(p => !existingIds.has(p.id));
+    setContributions((prev) => {
+      const existingIds = new Set(initialContributions.map((c) => c.id));
+      const newFromRealtime = prev.filter((p) => !existingIds.has(p.id));
       return [...initialContributions, ...newFromRealtime].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
-    
+
     if (initialContributions.length < 50) {
       setHasMore(false);
     } else {
@@ -94,13 +96,11 @@ export default function Feed({
     if (bufferRef.current.length === 0) return;
 
     setContributions((prev) => {
-      const newItems = bufferRef.current.filter(
-        (item) => !prev.find((p) => p.id === item.id)
-      );
+      const newItems = bufferRef.current.filter((item) => !prev.find((p) => p.id === item.id));
       bufferRef.current = [];
-      
+
       if (newItems.length === 0) return prev;
-      
+
       return [...prev, ...newItems].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
@@ -122,7 +122,7 @@ export default function Feed({
         (payload) => {
           const newContrib = payload.new as FeedContribution;
           bufferRef.current.push(newContrib);
-          
+
           if (!flushTimeoutRef.current) {
             flushTimeoutRef.current = setTimeout(flushBuffer, 400);
           }
@@ -137,12 +137,12 @@ export default function Feed({
   }, [supabase, workId, flushBuffer]);
 
   const renderContribution = (index: number, contribution: FeedContribution) => {
-    const isSentenceMode = limitType === 'sentence' || limitType === '1 câu';
+    const isSentenceMode = limitType === "sentence" || limitType === "1 câu";
     const prevContribution = index > 0 ? contributions[index - 1] : null;
-    const prevEndsWithPunctuation = prevContribution 
-      ? /[.?!]$/.test(prevContribution.content.trim()) 
+    const prevEndsWithPunctuation = prevContribution
+      ? /[.?!]$/.test(prevContribution.content.trim())
       : false;
-    
+
     let displayContent = contribution.content;
     if (contribution.new_line && prevEndsWithPunctuation && displayContent.length > 0) {
       displayContent = displayContent.charAt(0).toUpperCase() + displayContent.slice(1);
@@ -159,19 +159,25 @@ export default function Feed({
 
     if (isSystem) {
       return (
-        <span className="inline animate-in fade-in slide-in-from-bottom-2 duration-500" key={contribution.id}>
+        <span
+          className="inline animate-in fade-in slide-in-from-bottom-2 duration-500"
+          key={contribution.id}
+        >
           {contribution.new_line && <br />}
           <span className="text-gray-400 italic">
-            {prevEndsWithPunctuation && !contribution.new_line && ' '}
+            {prevEndsWithPunctuation && !contribution.new_line && " "}
             {displayContent}
-            {!contribution.content.endsWith(' ') && isSentenceMode && ' '}
+            {!contribution.content.endsWith(" ") && isSentenceMode && " "}
           </span>
         </span>
       );
     }
 
     return (
-      <span className="inline animate-in fade-in slide-in-from-bottom-2 duration-500" key={contribution.id}>
+      <span
+        className="inline animate-in fade-in slide-in-from-bottom-2 duration-500"
+        key={contribution.id}
+      >
         {contribution.new_line && <br />}
         {/* Desktop: click to select for sidebar */}
         <span className="hidden lg:inline">
@@ -184,18 +190,18 @@ export default function Feed({
             `}
             title={`Bởi ${contribution.author_nickname}`}
           >
-            {prevEndsWithPunctuation && !contribution.new_line && ' '}
+            {prevEndsWithPunctuation && !contribution.new_line && " "}
             {displayContent}
-            {!contribution.content.endsWith(' ') && isSentenceMode && ' '}
+            {!contribution.content.endsWith(" ") && isSentenceMode && " "}
           </span>
         </span>
         {/* Mobile: tooltip popup */}
         <span className="lg:hidden inline">
           <ContributionTooltip contribution={contribution}>
             <span className="cursor-help">
-              {prevEndsWithPunctuation && !contribution.new_line && ' '}
+              {prevEndsWithPunctuation && !contribution.new_line && " "}
               {displayContent}
-              {!contribution.content.endsWith(' ') && isSentenceMode && ' '}
+              {!contribution.content.endsWith(" ") && isSentenceMode && " "}
             </span>
           </ContributionTooltip>
         </span>
@@ -205,8 +211,8 @@ export default function Feed({
 
   // Auto-select the first non-system contribution on initial load (desktop only)
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024 && contributions.length > 0) {
-      const first = contributions.find(c => c.author_nickname !== "Hệ thống");
+    if (typeof window !== "undefined" && window.innerWidth >= 1024 && contributions.length > 0) {
+      const first = contributions.find((c) => c.author_nickname !== "Hệ thống");
       if (first && !selectedContributionId) {
         onSelectContribution(first);
       }
@@ -215,16 +221,19 @@ export default function Feed({
 
   // Auto-update sidebar based on scroll position (desktop only)
   const lastSelectedIndex = useRef<number>(-1);
-  const handleRangeChanged = useCallback((range: { startIndex: number; endIndex: number }) => {
-    if (typeof window === 'undefined' || window.innerWidth < 1024) return;
-    if (range.startIndex === lastSelectedIndex.current) return;
-    
-    const visibleContribution = contributions[range.startIndex];
-    if (visibleContribution && visibleContribution.author_nickname !== "Hệ thống") {
-      lastSelectedIndex.current = range.startIndex;
-      onSelectContribution(visibleContribution);
-    }
-  }, [contributions, onSelectContribution]);
+  const handleRangeChanged = useCallback(
+    (range: { startIndex: number; endIndex: number }) => {
+      if (typeof window === "undefined" || window.innerWidth < 1024) return;
+      if (range.startIndex === lastSelectedIndex.current) return;
+
+      const visibleContribution = contributions[range.startIndex];
+      if (visibleContribution && visibleContribution.author_nickname !== "Hệ thống") {
+        lastSelectedIndex.current = range.startIndex;
+        onSelectContribution(visibleContribution);
+      }
+    },
+    [contributions, onSelectContribution]
+  );
 
   return (
     <div className="flex flex-col h-full min-h-[400px]">
@@ -257,14 +266,15 @@ export default function Feed({
                 </div>
               )}
             </div>
-          )
+          ),
         }}
       />
-      
+
       {contributions.length === 0 && (
-        <p className="text-gray-400 italic text-center py-10">Chưa có nội dung. Hãy trở thành người đầu tiên.</p>
+        <p className="text-gray-400 italic text-center py-10">
+          Chưa có nội dung. Hãy trở thành người đầu tiên.
+        </p>
       )}
     </div>
   );
 }
-

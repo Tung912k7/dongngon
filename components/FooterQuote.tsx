@@ -22,8 +22,7 @@ const quoteTextClass =
   "text-pretty font-be-vietnam font-light italic leading-loose tracking-[-0.012em] text-[15px] text-[#2C2B29]/90 max-w-sm";
 const quoteAuthorClass =
   "font-be-vietnam font-medium not-italic uppercase tracking-[0.15em] text-[12px] text-[#2C2B29]/50 mt-4";
-const quoteWrapperClass =
-  "relative flex flex-col items-start bg-transparent border-none p-0";
+const quoteWrapperClass = "relative flex flex-col items-start bg-transparent border-none p-0";
 
 function renderAuthorLine(author: string) {
   return (
@@ -129,7 +128,7 @@ export default function FooterQuote() {
         }
 
         const currentIndex = currentState.quotes.findIndex(
-          (quote) => quote.id === currentState.activeQuoteId,
+          (quote) => quote.id === currentState.activeQuoteId
         );
         const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % currentState.quotes.length : 0;
 
@@ -148,9 +147,11 @@ export default function FooterQuote() {
 
   const activeQuote =
     quoteState.status === "success"
-      ? quoteState.quotes.find((quote) => quote.id === quoteState.activeQuoteId) ?? quoteState.quotes[0]
+      ? (quoteState.quotes.find((quote) => quote.id === quoteState.activeQuoteId) ??
+        quoteState.quotes[0])
       : null;
-  const contentKey = quoteState.status === "success" ? activeQuote?.id ?? "success" : quoteState.status;
+  const contentKey =
+    quoteState.status === "success" ? (activeQuote?.id ?? "success") : quoteState.status;
 
   return (
     <div

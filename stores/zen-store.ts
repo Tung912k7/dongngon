@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ZenState {
   isZenMode: boolean;
@@ -15,8 +15,7 @@ export const useZenStore = create<ZenState>()(
       setZenMode: (isZen: boolean) => set({ isZenMode: isZen }),
     }),
     {
-      name: 'zen-storage',
+      name: "zen-storage",
     }
   )
 );
-

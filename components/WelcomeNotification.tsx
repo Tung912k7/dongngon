@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { m, AnimatePresence, useSpring } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, m, useSpring } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { acknowledgeWelcomeMessage } from "@/actions/profile";
 
@@ -97,7 +97,9 @@ export default function WelcomeNotification({
           </div>
 
           <h2 className="text-[28px] font-bold tracking-tight mb-4 uppercase leading-tight">
-            Chào mừng bạn đến với<br />Đồng Ngôn!
+            Chào mừng bạn đến với
+            <br />
+            Đồng Ngôn!
           </h2>
 
           <div className="space-y-2 mb-10">
@@ -128,8 +130,19 @@ export default function WelcomeNotification({
               onClick={handleOpenTutorial}
               className="w-full bg-slate-50 text-slate-900 border-2 border-slate-800 py-4 rounded-2xl font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.25} stroke="currentColor" className="h-5 w-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2.25}
+                stroke="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5"
+                />
               </svg>
               <span className="text-[#388186]">Hướng dẫn sử dụng</span>
             </m.button>
@@ -139,4 +152,3 @@ export default function WelcomeNotification({
     </AnimatePresence>
   );
 }
-

@@ -1,8 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
+import { logger } from "@/lib/logger";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { logger } from "@/lib/logger";
 
 const FORGOT_PASSWORD_IP_LIMIT = 5;
 const FORGOT_PASSWORD_EMAIL_LIMIT = 3;
@@ -65,17 +68,17 @@ export async function forgotPassword(email: string) {
     };
   }
 
-  const origin = getSafeBaseUrl(headersList.get('host'));
+  const origin = getSafeBaseUrl(headersList.get("host"));
   if (!origin) {
     return { error: "Không thể xác định domain đặt lại mật khẩu an toàn." };
   }
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
     redirectTo: `${origin}/auth/callback?next=/account/reset-password`,
   });
 
   if (error) {
-    console.error("Forgot password request failed:", getErrorMessage(error));
+    logger.error("Forgot password request failed:", getErrorMessage(error));
     return {
       success: true,
       message: "Nếu email tồn tại, chúng mình sẽ gửi hướng dẫn đặt lại mật khẩu.",
@@ -109,4 +112,3 @@ export async function updatePassword(password: string) {
 
   return { success: true };
 }
-

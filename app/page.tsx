@@ -12,24 +12,27 @@ export const metadata: Metadata = {
   },
 };
 
-import HeroSection from "@/components/HeroSection";
-import CumulativeSection from "@/components/CumulativeSection";
+import HeroSectionV2 from "@/components/HeroSectionV2";
+import AboutSection from "@/components/AboutSection";
+import ContributionShowcase from "@/components/ContributionShowcase";
+import RankingsPreview from "@/components/RankingsPreview";
 
 export default async function Home() {
-
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
-
       {/* Hero Section — no animation wrapper: must be immediately visible for LCP */}
       <div className="min-h-screen w-full flex items-center justify-center">
-        <HeroSection />
+        <HeroSectionV2 />
       </div>
 
-      {/* Cumulative Section - Main Content Flow */}
-      <CumulativeSection />
+      {/* About Section */}
+      <AboutSection />
 
+      {/* Contribution Showcase */}
+      <ContributionShowcase />
+
+      {/* Rankings Preview */}
+      <RankingsPreview />
     </div>
   );
 }
-
-

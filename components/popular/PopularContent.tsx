@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { m } from 'framer-motion';
-import { createClient } from '@/utils/supabase/client';
-import WorkCard from '@/components/WorkCard';
-import { Work } from '@/stores/work-store';
-import { formatDate } from '@/utils/date';
+import { logger } from "@/lib/logger";
+import { useEffect, useState } from "react";
+import { m } from "framer-motion";
+import { createClient } from "@/utils/supabase/client";
+import WorkCard from "@/components/WorkCard";
+import { LinkedButton } from "@/components/PrimaryButton";
+import { Work } from "@/stores/work-store";
+import { formatDate } from "@/utils/date";
 
 interface WorkWithRepoCount extends Work {
   contributor_count: number;
@@ -19,39 +21,50 @@ const PopularContent = () => {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
-          .from('works')
-          .select(`
+          .from("works")
+          .select(
+            `
             id, title, category_type, sub_category, 
             status, created_at, author_nickname, 
             created_by, age_rating,
             contributions:contributions(count)
-          `)
-          .eq('privacy', 'Public')
-          .eq('is_test', false)
+          `
+          )
+          .eq("privacy", "Public")
+          .eq("is_test", false)
           .limit(10);
 
         if (error) throw error;
 
         if (data) {
-          const mapped = data.map((work: any) => ({
-            ...work,
-            type: work.category_type,
-            hinh_thuc: work.sub_category,
-            rule: "1 câu",
-            date: formatDate(work.created_at),
-            rawDate: new Date(work.created_at),
-            status: work.status === "writing" ? "Đang viết" :
-              work.status === "finished" ? "Hoàn thành" :
-                work.status === "pending" ? "Đợi duyệt" : work.status,
-            contributor_count: work.contributions?.[0]?.count || 0
-          }))
+          const mapped = data
+            .map((work: Record<string, unknown>) => {
+              const workData = work as Work & { contributions?: Array<{ count: number }> };
+              return {
+                ...workData,
+                type: workData.category_type,
+                hinh_thuc: workData.sub_category,
+                rule: "1 câu",
+                date: formatDate(workData.created_at),
+                rawDate: new Date(workData.created_at),
+                status:
+                  workData.status === "writing"
+                    ? "Đang viết"
+                    : workData.status === "finished"
+                      ? "Hoàn thành"
+                      : workData.status === "pending"
+                        ? "Đợi duyệt"
+                        : workData.status,
+                contributor_count: workData.contributions?.[0]?.count || 0,
+              };
+            })
             .sort((a, b) => b.contributor_count - a.contributor_count)
             .slice(0, 3);
 
           setPopularWorks(mapped);
         }
       } catch (err) {
-        console.error('Error fetching popular works:', err);
+        logger.error("Error fetching popular works:", err);
       } finally {
         setIsLoading(false);
       }
@@ -64,8 +77,11 @@ const PopularContent = () => {
       <div className="w-full flex flex-col items-center justify-center gap-10 py-20 opacity-50">
         <div className="h-10 w-64 bg-white/10 animate-pulse rounded border-2 border-white/20"></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="w-full h-80 bg-white/5 animate-pulse rounded border-2 border-white/10"></div>
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="w-full h-80 bg-white/5 animate-pulse rounded border-2 border-white/10"
+            ></div>
           ))}
         </div>
       </div>
@@ -113,18 +129,17 @@ const PopularContent = () => {
               {index + 1}
             </div>
 
-            <WorkCard
-              work={work}
-              variant="home"
-              hideMenu={true}
-            />
+            <WorkCard work={work} variant="home" hideMenu={true} />
 
             {/* Contributor Count Footer for Home */}
             <div className="mt-4 flex items-center justify-between px-2">
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="w-5 h-5 rounded-full border border-white/20 bg-white/10" />
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-5 h-5 rounded-full border border-white/20 bg-white/10"
+                    />
                   ))}
                 </div>
                 <span className="font-be-vietnam text-[10px] text-white/50 uppercase tracking-widest font-bold">
@@ -140,9 +155,15 @@ const PopularContent = () => {
       {/* Background Decorative Elements */}
       <div className="absolute top-1/2 left-0 w-32 h-32 border-2 border-white/5 rounded-full -translate-x-1/2 blur-2xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-64 h-64 border-2 border-white/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl pointer-events-none" />
+
+      {/* Explore CTA */}
+      <div className="w-full flex items-center justify-center mt-8">
+        <LinkedButton href="/kho-tang" ariaLabel="Khám phá kho tàng" className="!px-12 !py-3">
+          Khám phá kho tàng
+        </LinkedButton>
+      </div>
     </div>
   );
 };
 
 export default PopularContent;
-

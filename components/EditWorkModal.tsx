@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { logger } from "@/lib/logger";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateWork } from "@/actions/work";
 import { sanitizeTitle } from "@/utils/sanitizer";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -67,22 +68,22 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
 
     setFieldErrors({});
     setError(null);
-    
+
     const updateData = {
       title: sanitizeTitle(formData.title),
       description: formData.description,
       license: formData.license,
     };
-    
-    const timeoutPromise = new Promise((_, reject) => 
+
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 15000)
     );
 
     try {
-      const result = await Promise.race([
+      const result = (await Promise.race([
         updateWork(work.id.toString(), updateData),
-        timeoutPromise
-      ]) as WorkMutationResult;
+        timeoutPromise,
+      ])) as WorkMutationResult;
 
       if (result.success) {
         onClose();
@@ -91,7 +92,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
         setError(result.error || "Có lỗi xảy ra.");
       }
     } catch (err: unknown) {
-      console.error("Update work error:", err);
+      logger.error("Update work error:", err);
       if (err instanceof Error && err.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
@@ -113,51 +114,67 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
             onClick={onClose}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
-          
+
           <m.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
           >
-            <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">Chỉnh sửa tác phẩm</h2>
-            
+            <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">
+              Chỉnh sửa tác phẩm
+            </h2>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">TIÊU ĐỀ</label>
+                <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                  TIÊU ĐỀ
+                </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => {
                     setFormData({ ...formData, title: e.target.value });
-                    if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: "" }));
+                    if (fieldErrors.title) setFieldErrors((prev) => ({ ...prev, title: "" }));
                   }}
                   maxLength={100}
-                  className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                  className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                   placeholder="Tên tác phẩm của bạn..."
                 />
-                {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
+                {fieldErrors.title && (
+                  <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                    {fieldErrors.title}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">MÔ TẢ (TÙY CHỌN)</label>
-                    <span className={`text-[10px] font-bold ${formData.description.length > 450 ? 'text-red-500' : 'text-gray-400'}`}>
-                      {formData.description.length}/500
-                    </span>
-                  </div>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
-                    rows={3}
-                    className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
-                    placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
-                  />
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
+                    MÔ TẢ (TÙY CHỌN)
+                  </label>
+                  <span
+                    className={`text-[10px] font-bold ${formData.description.length > 450 ? "text-red-500" : "text-gray-400"}`}
+                  >
+                    {formData.description.length}/500
+                  </span>
+                </div>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value.slice(0, 500) })
+                  }
+                  rows={3}
+                  className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
+                  placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
+                />
               </div>
 
               {work.license !== "public" && (
                 <div className="space-y-2 flex flex-col">
-                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">QUYỀN RIÊNG TƯ</label>
+                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                    QUYỀN RIÊNG TƯ
+                  </label>
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
@@ -173,7 +190,9 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
               )}
 
               <div className="pt-4 border-t-2 border-black/10">
-                <p className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">Thông tin cố định (Không thể thay đổi)</p>
+                <p className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">
+                  Thông tin cố định (Không thể thay đổi)
+                </p>
                 <div className="flex flex-wrap gap-2">
                   <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
                     {formData.category_type}
@@ -221,4 +240,3 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     </AnimatePresence>
   );
 }
-

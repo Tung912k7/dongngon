@@ -2,7 +2,7 @@
 // "Vẫn cần trợ giúp?" section with contact/action cards.
 // Each card: circle icon, title, description, CTA button with rounded border.
 
-import React from 'react';
+import React from "react";
 
 export interface ContactCard {
   icon: React.ReactNode;
@@ -41,9 +41,9 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
 
           {/* CTA button */}
           <a
-            href={card.ctaHref || '#'}
-            target={card.ctaHref?.startsWith('http') ? "_blank" : undefined}
-            rel={card.ctaHref?.startsWith('http') ? "noopener noreferrer" : undefined}
+            href={card.ctaHref || "#"}
+            target={card.ctaHref?.startsWith("http") ? "_blank" : undefined}
+            rel={card.ctaHref?.startsWith("http") ? "noopener noreferrer" : undefined}
             className="
               inline-block px-8 py-3 
               rounded border-2 border-black 
@@ -64,4 +64,3 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
 };
 
 export default HelpCenterContact;
-

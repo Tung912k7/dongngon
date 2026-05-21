@@ -1,10 +1,15 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
+import { logger } from "@/lib/logger";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { logger } from "@/lib/logger";
 import { captureServerEvent } from "@/utils/posthog-server";
+import { logger } from "@/lib/logger";
 
 const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VOTE_LIMIT = 10;
@@ -74,10 +79,10 @@ export async function voteEndWork(workId: string) {
 
   if (voteError) {
     // If it's a unique constraint violation, they already voted
-    if (voteError.code === '23505') {
-        return { error: "Bạn đã bình chọn rồi." };
+    if (voteError.code === "23505") {
+      return { error: "Bạn đã bình chọn rồi." };
     }
-    console.error("Vote error:", voteError);
+    logger.error("Vote error:", voteError);
     return { error: getErrorMessage(voteError) };
   }
 
@@ -94,39 +99,39 @@ export async function voteEndWork(workId: string) {
     .from("contributions")
     .select("user_id")
     .eq("work_id", workId);
-  
-  const uniqueContributors = new Set(contributions?.map(c => c.user_id) || []).size;
+
+  const uniqueContributors = new Set(contributions?.map((c) => c.user_id) || []).size;
   const threshold = Math.max(1, Math.floor(uniqueContributors / 2) + 1);
   let didTransitionToFinished = false;
 
   if (currentCount >= threshold) {
-     const { data: transitionedRow, error: updateError } = await supabase
-       .from("works")
-       .update({ status: "finished" })
-       .eq("id", workId)
-       .neq("status", "finished")
-       .select("id")
-       .maybeSingle();
-       
-     if (updateError) {
-         console.error("Critical error updating work status to finished:", updateError);
-     } else {
-         didTransitionToFinished = !!transitionedRow;
-     }
+    const { data: transitionedRow, error: updateError } = await supabase
+      .from("works")
+      .update({ status: "finished" })
+      .eq("id", workId)
+      .neq("status", "finished")
+      .select("id")
+      .maybeSingle();
+
+    if (updateError) {
+      logger.error("Critical error updating work status to finished:", updateError);
+    } else {
+      didTransitionToFinished = !!transitionedRow;
+    }
   }
 
-  await captureServerEvent(user.id, 'vote_submitted', {
+  await captureServerEvent(user.id, "vote_submitted", {
     work_id: workId,
-    event_source: 'server_action',
+    event_source: "server_action",
     event_version: 1,
   });
 
   if (didTransitionToFinished) {
-    await captureServerEvent(user.id, 'work_completed', {
+    await captureServerEvent(user.id, "work_completed", {
       work_id: workId,
       vote_count: currentCount,
       unique_contributors: uniqueContributors,
-      event_source: 'server_action',
+      event_source: "server_action",
       event_version: 1,
     });
   }
@@ -135,4 +140,3 @@ export async function voteEndWork(workId: string) {
   revalidatePath("/kho-tang");
   return { success: true, newCount: currentCount };
 }
-

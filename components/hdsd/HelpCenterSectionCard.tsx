@@ -3,22 +3,19 @@
 // Design: rounded card with border, icon top-left, title bold,
 // description below, article count at bottom — matching reference screenshot.
 
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { HelpCenterSection } from '@/types/helpCenter';
-import HelpCenterIconMap from './HelpCenterIconMap';
+import React from "react";
+import Link from "next/link";
+import { HelpCenterSection } from "@/types/helpCenter";
+import HelpCenterIconMap from "./HelpCenterIconMap";
 
 interface HelpCenterSectionCardProps {
   section: HelpCenterSection & { articleCount?: number };
   onClick?: () => void;
 }
 
-const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
-  section,
-  onClick,
-}) => {
+const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({ section, onClick }) => {
   return (
     <Link
       href={`/hdsd/${section.id}`}
@@ -51,20 +48,15 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({
 
       {/* Description */}
       {section.description && (
-        <span className="text-neutral-500 text-sm leading-relaxed mb-4">
-          {section.description}
-        </span>
+        <span className="text-neutral-500 text-sm leading-relaxed mb-4">{section.description}</span>
       )}
 
       {/* Article count */}
-      {typeof section.articleCount === 'number' && (
-        <span className="mt-auto text-sm text-neutral-400">
-          {section.articleCount} bài viết
-        </span>
+      {typeof section.articleCount === "number" && (
+        <span className="mt-auto text-sm text-neutral-400">{section.articleCount} bài viết</span>
       )}
     </Link>
   );
 };
 
 export default HelpCenterSectionCard;
-

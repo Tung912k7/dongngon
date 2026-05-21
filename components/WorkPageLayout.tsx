@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, createContext, useContext, useCallback, useMemo } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Contribution } from "@/types/database";
 import ContributionSidebar from "./ContributionSidebar";
 import InteractionPlaceholder from "./InteractionPlaceholder";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 interface FeedContribution extends Contribution {
   user_profile?: {
@@ -22,14 +22,13 @@ interface ContributionSelectionContextType {
   toggleSidebar: () => void;
 }
 
-const ContributionSelectionContext =
-  createContext<ContributionSelectionContextType>({
-    selectedContribution: null,
-    selectedContributionId: undefined,
-    onSelectContribution: () => {},
-    isSidebarOpen: false,
-    toggleSidebar: () => {},
-  });
+const ContributionSelectionContext = createContext<ContributionSelectionContextType>({
+  selectedContribution: null,
+  selectedContributionId: undefined,
+  onSelectContribution: () => {},
+  isSidebarOpen: false,
+  toggleSidebar: () => {},
+});
 
 export function useContributionSelection() {
   return useContext(ContributionSelectionContext);
@@ -44,30 +43,29 @@ export default function WorkPageLayout({
   workId?: string;
   initialSaved?: boolean;
 }) {
-  const [selectedContribution, setSelectedContribution] =
-    useState<FeedContribution | null>(null);
+  const [selectedContribution, setSelectedContribution] = useState<FeedContribution | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleSelectContribution = useCallback(
-    (contribution: FeedContribution) => {
-      setSelectedContribution(contribution);
-    },
-    []
-  );
-
-  const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen(prev => !prev);
+  const handleSelectContribution = useCallback((contribution: FeedContribution) => {
+    setSelectedContribution(contribution);
   }, []);
 
-  const contextValue = useMemo(() => ({
-    selectedContribution,
-    selectedContributionId: selectedContribution?.id,
-    onSelectContribution: handleSelectContribution,
-    isSidebarOpen,
-    toggleSidebar,
-  }), [selectedContribution, handleSelectContribution, isSidebarOpen, toggleSidebar]);
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      selectedContribution,
+      selectedContributionId: selectedContribution?.id,
+      onSelectContribution: handleSelectContribution,
+      isSidebarOpen,
+      toggleSidebar,
+    }),
+    [selectedContribution, handleSelectContribution, isSidebarOpen, toggleSidebar]
+  );
 
   return (
     <ContributionSelectionContext.Provider value={contextValue}>
@@ -75,7 +73,7 @@ export default function WorkPageLayout({
         {/* Left Sidebar - Animated */}
         <AnimatePresence initial={false}>
           {isSidebarOpen && (
-            <m.div 
+            <m.div
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 220, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
@@ -84,8 +82,8 @@ export default function WorkPageLayout({
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className={`zen-hide flex-shrink-0 ${isAnimating || !isSidebarOpen ? "overflow-hidden" : "overflow-visible"}`}
             >
-              <ContributionSidebar 
-                selectedContribution={selectedContribution} 
+              <ContributionSidebar
+                selectedContribution={selectedContribution}
                 workId={workId}
                 initialSaved={initialSaved}
               />
@@ -125,4 +123,3 @@ export default function WorkPageLayout({
     </ContributionSelectionContext.Provider>
   );
 }
-

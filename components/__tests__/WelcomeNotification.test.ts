@@ -20,4 +20,3 @@ describe("WelcomeNotification", () => {
     expect(html).toContain("Hướng dẫn sử dụng");
   });
 });
-

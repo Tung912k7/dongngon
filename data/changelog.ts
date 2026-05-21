@@ -30,4 +30,3 @@ export const CHANGELOG: ChangelogEntry[] = [
 ];
 
 export const LATEST_VERSION = CHANGELOG[0].version;
-

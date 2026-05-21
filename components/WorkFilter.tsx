@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FilterState } from "@/app/kho-tang/types";
 import { PROSE_SUBCATEGORIES } from "@/data/workTypes";
 
@@ -13,7 +13,13 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
   // Local state for filters (synced from parent on open)
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
-  const FilterApplyButton = ({ onClick, children }: { onClick: () => void; children: React.ReactNode }) => {
+  const FilterApplyButton = ({
+    onClick,
+    children,
+  }: {
+    onClick: () => void;
+    children: React.ReactNode;
+  }) => {
     const [isHovered, setIsHovered] = useState(false);
     return (
       <button
@@ -47,7 +53,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
   return (
     <div className="grid grid-cols-2 md:flex md:flex-wrap gap-4 p-5 md:p-6 bg-white border-2 border-black rounded items-end w-full">
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Loại văn bản</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">
+          Loại văn bản
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("category_type", e.target.value)}
@@ -60,7 +68,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Hình thức</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">
+          Hình thức
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("hinh_thuc", e.target.value)}
@@ -77,14 +87,18 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
           </optgroup>
           <optgroup label="Văn xuôi">
             {PROSE_SUBCATEGORIES.map((subCategory) => (
-              <option key={subCategory} value={subCategory}>{subCategory}</option>
+              <option key={subCategory} value={subCategory}>
+                {subCategory}
+              </option>
             ))}
           </optgroup>
         </select>
       </div>
 
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">Quy tắc viết</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
+          Quy tắc viết
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("writing_rule", e.target.value)}
@@ -96,7 +110,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Ngày tạo</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">
+          Ngày tạo
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("sort_date", e.target.value)}
@@ -108,7 +124,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Tiến độ</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">
+          Tiến độ
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("status", e.target.value)}
@@ -122,7 +140,9 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex flex-col gap-1.5 w-full md:w-auto">
-        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Số lượng</label>
+        <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">
+          Số lượng
+        </label>
         <select
           className="p-2.5 border-2 border-black rounded bg-white text-sm font-bold text-black focus:outline-none focus:bg-neutral-50 transition-all w-full"
           onChange={(e) => handleLocalChange("limit", e.target.value)}
@@ -136,7 +156,7 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
       </div>
 
       <div className="flex gap-2 col-span-2 md:col-span-1 w-full md:w-auto mt-4 md:mt-0">
-        <button 
+        <button
           onClick={applyFilters}
           className="w-1/2 md:w-auto px-6 py-2.5 border-2 border-black bg-black text-white rounded text-sm font-black uppercase tracking-widest transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none whitespace-nowrap"
         >
@@ -163,4 +183,3 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
     </div>
   );
 }
-

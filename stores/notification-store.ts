@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { getNotifications } from '@/actions/notification';
-import type { Notification } from '@/types/database';
+import { create } from "zustand";
+import { getNotifications } from "@/actions/notification";
+import type { Notification } from "@/types/database";
 
 interface NotificationState {
   unreadCount: number;
@@ -24,10 +24,9 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         set({ unreadCount: count });
       }
     } catch (error) {
-      console.error('[Notification Store] Fetch error:', error);
+      console.error("[Notification Store] Fetch error:", error);
     } finally {
       set({ isFetching: false });
     }
   },
 }));
-

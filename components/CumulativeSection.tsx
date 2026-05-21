@@ -1,51 +1,63 @@
 "use client";
-import React, { useRef } from 'react';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { m, useScroll, useTransform, useSpring } from 'framer-motion';
+import React, { useRef } from "react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { m, useScroll, useSpring, useTransform } from "framer-motion";
 
 // Dynamic imports — ssr: false because all three use client-only APIs
-const AboutContent = dynamic(() => import('./about/AboutContent'), { ssr: false });
-const ContributionContent = dynamic(() => import('./contribution/ContributionContent'), { ssr: false });
-const PopularContent = dynamic(() => import('./popular/PopularContent'), { ssr: false });
+const AboutContent = dynamic(() => import("./about/AboutContent"), { ssr: false });
+const ContributionContent = dynamic(() => import("./contribution/ContributionContent"), {
+  ssr: false,
+});
+const PopularContent = dynamic(() => import("./popular/PopularContent"), { ssr: false });
 
 const CumulativeSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   // Section 1: About
   const opacityAbout = useTransform(smoothProgress, [0, 0.25, 0.3], [1, 1, 0]);
   const scaleAbout = useTransform(smoothProgress, [0, 0.3], [1, 0.8]);
-  const pointerEventsAbout = useTransform(smoothProgress, (pos) => pos <= 0.3 ? "auto" : "none");
+  const pointerEventsAbout = useTransform(smoothProgress, (pos) => (pos <= 0.3 ? "auto" : "none"));
   const zIndexAbout = useTransform(smoothProgress, [0.3, 0.301], [30, 0]);
 
   // Section 2: Contribution
   const opacityContribution = useTransform(smoothProgress, [0.3, 0.35, 0.6, 0.65], [0, 1, 1, 0]);
   const scaleContribution = useTransform(smoothProgress, [0.3, 0.35, 0.6, 0.65], [0.8, 1, 1, 0.8]);
-  const pointerEventsContribution = useTransform(smoothProgress, (pos) => (pos > 0.3 && pos <= 0.65) ? "auto" : "none");
-  const zIndexContribution = useTransform(smoothProgress, [0.3, 0.301, 0.65, 0.651], [0, 30, 30, 0]);
+  const pointerEventsContribution = useTransform(smoothProgress, (pos) =>
+    pos > 0.3 && pos <= 0.65 ? "auto" : "none"
+  );
+  const zIndexContribution = useTransform(
+    smoothProgress,
+    [0.3, 0.301, 0.65, 0.651],
+    [0, 30, 30, 0]
+  );
 
   // Section 3: Popular
   const opacityPopular = useTransform(smoothProgress, [0.65, 0.7, 1], [0, 1, 1]);
   const scalePopular = useTransform(smoothProgress, [0.65, 0.7, 1], [0.8, 1, 1]);
-  const pointerEventsPopular = useTransform(smoothProgress, (pos) => pos > 0.65 ? "auto" : "none");
+  const pointerEventsPopular = useTransform(smoothProgress, (pos) =>
+    pos > 0.65 ? "auto" : "none"
+  );
   const zIndexPopular = useTransform(smoothProgress, [0.65, 0.651], [0, 30]);
 
   return (
-    <section ref={containerRef} className="relative w-full bg-black text-white h-[400vh] sm:h-[400dvh]">
+    <section
+      ref={containerRef}
+      className="relative w-full bg-black text-white h-[400vh] sm:h-[400dvh]"
+    >
       <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-white to-transparent z-20 pointer-events-none"></div>
 
       <div className="sticky top-0 h-[100dvh] min-h-[100dvh] w-full flex flex-col md:flex-row lg:overflow-hidden">
-
         <aside className="hidden md:flex flex-col w-24 lg:w-32 h-full z-30 shrink-0 border-r border-white/10 bg-black">
           <Link
             href="https://hoavandaiviet.vn"
@@ -57,9 +69,9 @@ const CumulativeSection = () => {
                 className="w-full h-full"
                 style={{
                   backgroundImage: "url('/webp/pattern1.webp')",
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover'
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
                 }}
               />
             </div>
@@ -72,7 +84,6 @@ const CumulativeSection = () => {
         </aside>
 
         <main className="relative flex-1 w-full h-full">
-
           <m.div
             style={{
               opacity: opacityAbout,
@@ -114,7 +125,6 @@ const CumulativeSection = () => {
               <PopularContent />
             </div>
           </m.div>
-
         </main>
       </div>
     </section>
@@ -122,4 +132,3 @@ const CumulativeSection = () => {
 };
 
 export default CumulativeSection;
-

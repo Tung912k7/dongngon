@@ -34,8 +34,12 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
   if (!isEditing) {
     return (
       <div className="flex items-center gap-4 mb-8 bg-gray-50/50 p-4 rounded border-2 border-dashed border-black/10">
-        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">Bút danh</span>
-        <span className="font-ganh font-bold text-xl tracking-tight">{nickname || "Chưa đặt tên"}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-black/30">
+          Bút danh
+        </span>
+        <span className="font-ganh font-bold text-xl tracking-tight">
+          {nickname || "Chưa đặt tên"}
+        </span>
         <button
           onClick={() => setIsEditing(true)}
           className="ml-auto text-[10px] font-black uppercase tracking-widest text-literary-gold hover:text-black transition-colors"
@@ -58,7 +62,7 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
           }}
           autoFocus
           maxLength={30}
-          className={`flex-grow px-4 py-2 border-2 ${isInvalid ? 'border-red-500 bg-red-50' : 'border-black'} rounded text-lg font-ganh font-bold focus:outline-none focus:bg-gray-50 transition-all`}
+          className={`flex-grow px-4 py-2 border-2 ${isInvalid ? "border-red-500 bg-red-50" : "border-black"} rounded text-lg font-ganh font-bold focus:outline-none focus:bg-gray-50 transition-all`}
           placeholder="Nhập bút danh..."
         />
         <PrimaryButton
@@ -81,4 +85,3 @@ export default function NicknameForm({ initialNickname }: { initialNickname?: st
     </div>
   );
 }
-

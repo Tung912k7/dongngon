@@ -6,20 +6,20 @@
   --font-serif: var(--font-ganh-next), ui-serif, Georgia, serif;
 
   --font-quicksand: var(--font-quicksand), sans-serif;
-  --font-ganh: var(--font-ganh-next), sans-serif;
+  --font-ganh: var(--font-be-vietnam-next), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam-next), sans-serif;
 
-  --color-literary-black: #07000B;
-  --color-literary-gold: #D4AF37;
+  --color-literary-black: #07000b;
+  --color-literary-gold: #d4af37;
   --color-paper: #f5f5f5;
-  
-  --color-black: #07000B;
+
+  --color-black: #07000b;
   --color-white: #f5f5f5;
 }
 
 :root {
   --background: #f5f5f5;
-  --foreground: #07000B;
+  --foreground: #07000b;
 }
 
 body {
@@ -27,16 +27,26 @@ body {
   color: var(--foreground);
 }
 
-body, input, button, select, textarea {
+body,
+input,
+button,
+select,
+textarea {
   font-family: var(--font-be-vietnam), sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-ganh), sans-serif;
 }
 
 /* Tag utility */
-.tag, .font-tag {
+.tag,
+.font-tag {
   font-family: var(--font-ganh), sans-serif !important;
 }
 
@@ -48,19 +58,23 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-be-vietnam), sans-serif !important;
 }
 
-
 .font-quicksand {
   font-family: var(--font-quicksand), sans-serif !important;
 }
 
-.text-white-force, .hover\:text-white-force:hover {
-  color: #F5F5F5 !important;
+.text-white-force,
+.hover\:text-white-force:hover {
+  color: #f5f5f5 !important;
 }
 
-
 @keyframes wave {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
 }
 .animate-wave {
   animation: wave 8s ease-in-out infinite;
@@ -107,10 +121,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Contribution hover underline reveal */
 .contribution-wrapper:hover > span {
-  text-decoration-color: var(--color-literary-gold, #D4AF37);
+  text-decoration-color: var(--color-literary-gold, #d4af37);
 }
-
-
 
 /* Utilities */
 .no-scrollbar::-webkit-scrollbar {
@@ -151,3 +163,29 @@ h1, h2, h3, h4, h5, h6 {
   border-right: none !important;
 }
 
+/* Accessibility: visible focus rings and minimum touch targets */
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
+/* Ensure interactive elements meet minimum touch size on mobile */
+.min-touch {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Focus-visible styling for keyboard users */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid rgba(196, 154, 75, 0.95); /* literary gold-ish */
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Reduce overly-tracked uppercase text for readability helper */
+.reduced-tracking {
+  letter-spacing: 0.02em !important;
+}

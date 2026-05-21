@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, m } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import EditWorkModal from "./EditWorkModal";
@@ -38,13 +38,17 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
           {/* Book Spine Detail */}
           <div className="absolute left-0 top-0 bottom-0 w-3 bg-black/5 border-r border-black/10" />
           <div className="absolute left-1 top-0 bottom-0 w-[1px] bg-black/10" />
-          
+
           {/* Status Indicator Bar at top */}
-          <div className={`absolute top-0 right-0 left-3 h-1 ${
-            work.status === "Hoàn thành" ? "bg-green-500" :
-            work.status === "Đang viết" ? "bg-blue-500" :
-            "bg-yellow-500"
-          }`} />
+          <div
+            className={`absolute top-0 right-0 left-3 h-1 ${
+              work.status === "Hoàn thành"
+                ? "bg-green-500"
+                : work.status === "Đang viết"
+                  ? "bg-blue-500"
+                  : "bg-yellow-500"
+            }`}
+          />
 
           {/* Type Badge */}
           <div className="mt-2 ml-2">
@@ -62,15 +66,22 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
 
           {/* Footer Info */}
           <div className="mt-auto pt-4 border-t border-black/5 ml-2">
-            <p className="text-[10px] font-bold text-black truncate mb-0.5">{work.author_nickname}</p>
-            <p className="text-[8px] text-gray-400 font-medium uppercase tracking-tighter">{work.date}</p>
+            <p className="text-[10px] font-bold text-black truncate mb-0.5">
+              {work.author_nickname}
+            </p>
+            <p className="text-[8px] text-gray-400 font-medium uppercase tracking-tighter">
+              {work.date}
+            </p>
           </div>
         </m.div>
       </Link>
 
       {/* Actions Menu (3 dots) - Only visible on hover for owner */}
       {isOwner && (
-        <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity" ref={menuRef}>
+        <div
+          className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+          ref={menuRef}
+        >
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -79,7 +90,12 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
             }}
             className="w-7 h-7 flex items-center justify-center bg-white border border-black rounded-full shadow-sm hover:bg-black hover:text-white transition-all transform active:scale-90"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-4 h-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              className="w-4 h-4"
+            >
               <path d="M12 7.5a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5zM12 13.25a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5zM12 19a1.25 1.25 0 110-1.5 1.25 1.25 0 010 1.5z" />
             </svg>
           </button>
@@ -104,9 +120,9 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
                   SỬA TÊN
                 </button>
                 <div className="h-[1px] bg-gray-100 mx-2" />
-                <DeleteWorkButton 
-                  workId={work.id.toString()} 
-                  workTitle={work.title} 
+                <DeleteWorkButton
+                  workId={work.id.toString()}
+                  workTitle={work.title}
                   variant="menuItem"
                   paddingClass="px-4 py-2"
                   onAction={() => setIsMenuOpen(false)}
@@ -119,13 +135,8 @@ export default function ProfileWorkCard({ work, isOwner }: ProfileWorkCardProps)
 
       {/* Edit Modal */}
       {isOwner && (
-        <EditWorkModal 
-          work={work} 
-          isOpen={isEditOpen} 
-          onClose={() => setIsEditOpen(false)} 
-        />
+        <EditWorkModal work={work} isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} />
       )}
     </div>
   );
 }
-

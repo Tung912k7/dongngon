@@ -1,41 +1,43 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { useZenStore } from '@/stores/zen-store';
-import { m, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from "react";
+import { useZenStore } from "@/stores/zen-store";
+import { AnimatePresence, m } from "framer-motion";
 
 const ZenModeWrapper = ({ children }: { children: React.ReactNode }) => {
   const { isZenMode, setZenMode } = useZenStore();
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isZenMode) {
+      if (e.key === "Escape" && isZenMode) {
         setZenMode(false);
       }
     };
-    window.addEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
 
     if (isZenMode) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.classList.add('zen-mode-active');
+      document.body.style.overflow = "hidden";
+      document.documentElement.classList.add("zen-mode-active");
     } else {
-      document.body.style.overflow = '';
-      document.documentElement.classList.remove('zen-mode-active');
+      document.body.style.overflow = "";
+      document.documentElement.classList.remove("zen-mode-active");
     }
 
     return () => {
-      window.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = '';
-      document.documentElement.classList.remove('zen-mode-active');
+      window.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+      document.documentElement.classList.remove("zen-mode-active");
     };
   }, [isZenMode, setZenMode]);
 
   return (
-    <div className={`transition-colors duration-1000 ${isZenMode ? 'bg-[#F5F5F3] min-h-screen' : ''}`}>
+    <div
+      className={`transition-colors duration-1000 ${isZenMode ? "bg-[#F5F5F3] min-h-screen" : ""}`}
+    >
       <m.div
         animate={{
-          paddingTop: isZenMode ? '12vh' : '0',
-          maxWidth: isZenMode ? '800px' : '100%',
+          paddingTop: isZenMode ? "12vh" : "0",
+          maxWidth: isZenMode ? "800px" : "100%",
         }}
         className="mx-auto transition-all duration-1000 ease-in-out relative z-10"
       >
@@ -54,7 +56,7 @@ const ZenModeWrapper = ({ children }: { children: React.ReactNode }) => {
                 backgroundImage: `radial-gradient(circle at 50% 50%, rgba(0,0,0,0.015) 0%, transparent 80%)`,
               }}
             />
-            
+
             <m.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -64,7 +66,9 @@ const ZenModeWrapper = ({ children }: { children: React.ReactNode }) => {
             >
               <span className="w-1.5 h-1.5 rounded-full bg-literary-gold animate-pulse" />
               TẮT CHẾ ĐỘ ĐỌC SÁCH
-              <span className="text-white/40 group-hover:text-white transition-colors text-[9px] ml-1">(ESC)</span>
+              <span className="text-white/40 group-hover:text-white transition-colors text-[9px] ml-1">
+                (ESC)
+              </span>
             </m.button>
           </>
         )}
@@ -74,4 +78,3 @@ const ZenModeWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default ZenModeWrapper;
-

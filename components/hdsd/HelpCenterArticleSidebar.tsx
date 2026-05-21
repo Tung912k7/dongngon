@@ -1,11 +1,11 @@
 // components/hdsd/HelpCenterArticleSidebar.tsx
 // Right sidebar for article page: Table of Contents + Related Articles.
 
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import HelpCenterIconMap from './HelpCenterIconMap';
+import React from "react";
+import Link from "next/link";
+import HelpCenterIconMap from "./HelpCenterIconMap";
 
 export interface TOCItem {
   id: string;
@@ -32,7 +32,7 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
   const handleScrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -92,4 +92,3 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
 };
 
 export default HelpCenterArticleSidebar;
-

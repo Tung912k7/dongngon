@@ -1,9 +1,9 @@
 // components/hdsd/HelpCenterSearch.tsx
 // Search bar for Help Center — rounded pill shape, icon right, centered layout.
 
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface HelpCenterSearchProps {
   value: string;
@@ -11,11 +11,7 @@ interface HelpCenterSearchProps {
   placeholder?: string;
 }
 
-const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
-  value,
-  onChange,
-  placeholder,
-}) => {
+const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({ value, onChange, placeholder }) => {
   return (
     <div className="relative w-full max-w-xl mx-auto">
       <span className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
@@ -47,7 +43,7 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder || 'Tìm kiếm câu hỏi...'}
+        placeholder={placeholder || "Tìm kiếm câu hỏi..."}
         aria-label="Tìm kiếm trong Hướng dẫn sử dụng"
       />
     </div>
@@ -55,4 +51,3 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({
 };
 
 export default HelpCenterSearch;
-

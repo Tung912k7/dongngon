@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
-import { sendIdeaToAdmins } from '@/actions/notification';
+import React, { useEffect, useRef, useState } from "react";
+import { sendIdeaToAdmins } from "@/actions/notification";
 
 const CardSection = ({
   index,
@@ -8,14 +8,14 @@ const CardSection = ({
   subtitle,
   children,
   decoration,
-  delay = 0
+  delay = 0,
 }: {
-  index: number,
-  title: string,
-  subtitle: string,
-  children: React.ReactNode,
-  decoration: React.ReactNode,
-  delay?: number
+  index: number;
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+  decoration: React.ReactNode;
+  delay?: number;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isEven = index % 2 === 0;
@@ -26,8 +26,8 @@ const CardSection = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
+          el.style.opacity = "1";
+          el.style.transform = "translateY(0)";
           observer.disconnect();
         }
       },
@@ -42,10 +42,11 @@ const CardSection = ({
       ref={ref}
       style={{
         opacity: 0,
-        transform: 'translateY(60px)',
-        transition: 'opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), transform 1.5s cubic-bezier(0.22, 1, 0.36, 1)',
+        transform: "translateY(60px)",
+        transition:
+          "opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), transform 1.5s cubic-bezier(0.22, 1, 0.36, 1)",
       }}
-      className={`w-full flex flex-col md:flex-row gap-8 md:gap-16 items-center mb-40 md:mb-64 ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+      className={`w-full flex flex-col md:flex-row gap-8 md:gap-16 items-center mb-40 md:mb-64 ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}
     >
       {/* Content Card */}
       <div className="w-full md:w-1/2 p-10 md:p-14 bg-white/5 border border-white/10 rounded-[40px] backdrop-blur-sm relative group">
@@ -66,7 +67,9 @@ const CardSection = ({
       </div>
 
       {/* Decoration Side */}
-      <div className={`hidden md:flex w-full md:w-1/2 items-center ${isEven ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`hidden md:flex w-full md:w-1/2 items-center ${isEven ? "justify-end" : "justify-start"}`}
+      >
         {decoration}
       </div>
     </div>
@@ -74,7 +77,7 @@ const CardSection = ({
 };
 
 const DecorationBlock = ({ content }: { content: string }) => {
-  const lines = content.split('<br/>');
+  const lines = content.split("<br/>");
 
   return (
     <div className="relative w-full max-w-sm aspect-square flex items-center justify-center border-2 border-white/5 rounded-full p-12 group overflow-hidden">
@@ -95,9 +98,9 @@ const DecorationBlock = ({ content }: { content: string }) => {
 
 const FullAboutContent = () => {
   const [formData, setFormData] = useState({
-    id: '',
-    penName: '',
-    description: ''
+    id: "",
+    penName: "",
+    description: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -117,7 +120,7 @@ const FullAboutContent = () => {
       const result = await sendIdeaToAdmins(formData.id, formData.penName, formData.description);
       if (result.success) {
         setIsSubmitted(true);
-        setFormData({ id: '', penName: '', description: '' });
+        setFormData({ id: "", penName: "", description: "" });
       } else {
         setError(result.error || "Gửi ý tưởng thất bại.");
       }
@@ -130,7 +133,6 @@ const FullAboutContent = () => {
 
   return (
     <div className="w-full flex flex-col px-4 sm:px-12 md:px-20 lg:px-32 py-20 relative z-20">
-
       {/* 🛡️ Page Header */}
       <div className="mb-40 md:mb-64 flex flex-col items-center text-center">
         <h1 className="font-ganh text-5xl sm:text-8xl md:text-[130px] font-black text-white uppercase leading-tight tracking-tighter mb-4">
@@ -147,10 +149,13 @@ const FullAboutContent = () => {
       >
         <p className="mb-6">
           Dự án chợt loé lên trong đầu của người ấy khi chúng mình đang học bài cùng nhau.
-          <span className="text-white font-bold italic ml-2">Một ý tưởng độc đáo, kì lạ và có một chút điên rồ.</span>
+          <span className="text-white font-bold italic ml-2">
+            Một ý tưởng độc đáo, kì lạ và có một chút điên rồ.
+          </span>
         </p>
         <p>
-          Thế là Đồng Ngôn ra đời từ đó, một nơi mà mọi người đều có thể chia sẻ những câu chuyện, những suy nghĩ của mình.
+          Thế là Đồng Ngôn ra đời từ đó, một nơi mà mọi người đều có thể chia sẻ những câu chuyện,
+          những suy nghĩ của mình.
         </p>
       </CardSection>
 
@@ -162,14 +167,22 @@ const FullAboutContent = () => {
         decoration={<DecorationBlock content="Tâm <br/> hồn" />}
       >
         <p className="mb-6">
-          Cái tên <span className="text-white font-bold underline decoration-white/30 decoration-offset-4">Đồng ngôn</span> thật ra rất đơn giản.
+          Cái tên{" "}
+          <span className="text-white font-bold underline decoration-white/30 decoration-offset-4">
+            Đồng ngôn
+          </span>{" "}
+          thật ra rất đơn giản.
         </p>
         <div className="grid gap-6">
           <div className="p-4 bg-white/5 rounded-2xl">
-            <p className="text-base text-white leading-relaxed">Cùng một ngôn từ, cùng một ngôn ngữ</p>
+            <p className="text-base text-white leading-relaxed">
+              Cùng một ngôn từ, cùng một ngôn ngữ
+            </p>
           </div>
           <div className="p-4 bg-white/5 rounded-2xl">
-            <p className="text-base text-white leading-relaxed">Cùng một tác phẩm, trăm triệu tâm hồn</p>
+            <p className="text-base text-white leading-relaxed">
+              Cùng một tác phẩm, trăm triệu tâm hồn
+            </p>
           </div>
         </div>
       </CardSection>
@@ -189,21 +202,25 @@ const FullAboutContent = () => {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">Mã định danh</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">
+                  Mã định danh
+                </label>
                 <input
                   type="text"
                   value={formData.id}
-                  onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, id: e.target.value }))}
                   placeholder="Mã định danh..."
                   className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">Bút danh</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">
+                  Bút danh
+                </label>
                 <input
                   type="text"
                   value={formData.penName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, penName: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, penName: e.target.value }))}
                   placeholder="Bút danh của bạn..."
                   className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-3 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam"
                 />
@@ -211,10 +228,12 @@ const FullAboutContent = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">Mô tả ý tưởng</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-white/40 pl-1">
+                Mô tả ý tưởng
+              </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                 placeholder="Mô tả ý tưởng của bạn..."
                 className="w-full bg-white/5 border-2 border-white/10 rounded px-4 py-4 text-white text-sm outline-none focus:border-white/30 transition-all font-be-vietnam min-h-[120px] resize-none"
               />
@@ -225,11 +244,17 @@ const FullAboutContent = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full border-2 border-white text-white font-ganh text-xl uppercase py-4 rounded transition-all active:scale-[0.98] mt-2 group flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-black'}`}
+              className={`w-full border-2 border-white text-white font-ganh text-xl uppercase py-4 rounded transition-all active:scale-[0.98] mt-2 group flex items-center justify-center gap-3 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-white hover:text-black"}`}
             >
-              {isSubmitting ? 'Đang gửi...' : 'Gửi ý tưởng'}
+              {isSubmitting ? "Đang gửi..." : "Gửi ý tưởng"}
               {!isSubmitting && (
-                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <svg
+                  className="w-5 h-5 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               )}
@@ -238,11 +263,19 @@ const FullAboutContent = () => {
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-500">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6">
-              <svg className="w-8 h-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+              <svg
+                className="w-8 h-8 text-black"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="4"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h4 className="text-white font-ganh text-2xl uppercase mb-2">Cảm ơn bạn! Ý tưởng của bạn,chúng mình đã nhận được!</h4>
+            <h4 className="text-white font-ganh text-2xl uppercase mb-2">
+              Cảm ơn bạn! Ý tưởng của bạn,chúng mình đã nhận được!
+            </h4>
             <p className="text-white/40 text-sm">Chúc bạn một ngày tốt lành 🫰</p>
             <button
               onClick={() => setIsSubmitted(false)}
@@ -261,10 +294,8 @@ const FullAboutContent = () => {
           Hihi 💕
         </p>
       </div>
-
     </div>
   );
 };
 
 export default FullAboutContent;
-

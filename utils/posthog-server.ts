@@ -5,7 +5,7 @@
  *
  * Events are fire-and-forget: analytics failures NEVER block the main action flow.
  */
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 
 let _client: PostHog | null = null;
 
@@ -15,7 +15,7 @@ function getClient(): PostHog | null {
 
   if (!_client) {
     _client = new PostHog(apiKey, {
-      host: 'https://us.i.posthog.com',
+      host: "https://us.i.posthog.com",
       // Flush immediately — serverless functions can terminate before a batched flush
       flushAt: 1,
       flushInterval: 0,
@@ -47,4 +47,3 @@ export async function captureServerEvent(
     // Intentionally silent — analytics must never break core functionality
   }
 }
-

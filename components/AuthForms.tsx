@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { logger } from "@/lib/logger";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { TERMS_CONTENT, REGULATIONS_CONTENT } from "../data/legalContent";
-import { isNicknameAvailable, isEmailRegistered } from "@/actions/profile";
+import { REGULATIONS_CONTENT, TERMS_CONTENT } from "../data/legalContent";
+import { isEmailRegistered, isNicknameAvailable } from "@/actions/profile";
 import dynamic from "next/dynamic";
 const NotificationModal = dynamic(() => import("./NotificationModal"), { ssr: false });
 import { PrimaryButton } from "./PrimaryButton";
@@ -27,20 +28,20 @@ const Portal = ({ children }: { children: React.ReactNode }) => {
   return mounted ? createPortal(children, document.body) : null;
 };
 
-const InputField = ({ 
-  label, 
-  value, 
-  onChange, 
-  type = "text", 
+const InputField = ({
+  label,
+  value,
+  onChange,
+  type = "text",
   name,
   maxLength,
   error,
   autoComplete,
-  required
-}: { 
-  label: string; 
-  value: string; 
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   name: string;
   maxLength?: number;
@@ -54,7 +55,9 @@ const InputField = ({
 
   return (
     <div className="mb-6 group">
-      <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">{label}</label>
+      <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+        {label}
+      </label>
       <div className="relative">
         {type === "date" ? (
           <DateInput
@@ -63,21 +66,23 @@ const InputField = ({
               // Creating a synthetic event-like object to trigger the parent's generic handleChange
               onChange({ target: { name, value: val } } as React.ChangeEvent<HTMLInputElement>);
             }}
-            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded`}
+            className={`w-full px-5 py-3 border-2 ${error ? "border-red-500 bg-red-50" : "border-black"} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded`}
           />
         ) : (
-          <input 
-            type={inputType} 
+          <input
+            type={inputType}
             name={name}
-            value={value} 
+            value={value}
             onChange={onChange}
             maxLength={maxLength}
             autoComplete={autoComplete}
             required={required}
-            className={`w-full px-5 py-3 border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded ${isPassword ? 'pr-12' : ''}`}
+            className={`w-full px-5 py-3 border-2 ${error ? "border-red-500 bg-red-50" : "border-black"} bg-white text-black text-lg focus:outline-none focus:bg-white transition-all rounded ${isPassword ? "pr-12" : ""}`}
           />
         )}
-        {error && <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">{error}</p>
+        )}
         {isPassword && (
           <button
             type="button"
@@ -85,12 +90,32 @@ const InputField = ({
             className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:opacity-70 transition-opacity p-1"
           >
             {showPassword ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                 <line x1="1" y1="1" x2="23" y2="23"></line>
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
@@ -102,28 +127,28 @@ const InputField = ({
   );
 };
 
-const Checkbox = ({ 
-  label, 
-  checked, 
+const Checkbox = ({
+  label,
+  checked,
   onChange,
   name,
-  error
-}: { 
-  label: React.ReactNode; 
-  checked: boolean; 
+  error,
+}: {
+  label: React.ReactNode;
+  checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name: string;
   error?: string;
 }) => (
   <div className="flex items-center gap-4 mb-3 group cursor-pointer">
     <div className="relative flex items-center">
-      <input 
+      <input
         id={name}
-        type="checkbox" 
+        type="checkbox"
         name={name}
-        checked={checked} 
-        onChange={onChange} 
-        className={`peer h-6 w-6 cursor-pointer appearance-none rounded-sm border-2 ${error ? 'border-red-500 bg-red-50' : 'border-black'} checked:bg-black transition-all`} 
+        checked={checked}
+        onChange={onChange}
+        className={`peer h-6 w-6 cursor-pointer appearance-none rounded-sm border-2 ${error ? "border-red-500 bg-red-50" : "border-black"} checked:bg-black transition-all`}
       />
       <svg
         className="absolute h-4 w-4 pointer-events-none hidden peer-checked:block text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -139,8 +164,15 @@ const Checkbox = ({
       </svg>
     </div>
     <div className="text-black text-sm select-none">
-      <label htmlFor={name} className="cursor-pointer font-bold uppercase tracking-tight text-[11px]">{label}</label>
-      {error && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{error}</p>}
+      <label
+        htmlFor={name}
+        className="cursor-pointer font-bold uppercase tracking-tight text-[11px]"
+      >
+        {label}
+      </label>
+      {error && (
+        <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{error}</p>
+      )}
     </div>
   </div>
 );
@@ -163,29 +195,46 @@ export function LoginForm() {
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+  const showNotification = (
+    message: string,
+    type: "error" | "success" | "info" = "info",
+    title?: string
+  ) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
-    if (fieldErrors[e.target.name]) setFieldErrors((prev: Record<string, string>) => ({ ...prev, [e.target.name]: "" }));
+    if (fieldErrors[e.target.name])
+      setFieldErrors((prev: Record<string, string>) => ({ ...prev, [e.target.name]: "" }));
   };
 
-  const isValid = useMemo(() => data.identifier.trim() !== "" && data.password.trim() !== "", [data]);
+  const isValid = useMemo(
+    () => data.identifier.trim() !== "" && data.password.trim() !== "",
+    [data]
+  );
 
   useEffect(() => {
     const error = new URLSearchParams(window.location.search).get("error");
     if (error === "auth-callback-failed") {
-      showNotification("Xác thực không thành công. Link có thể đã hết hạn hoặc không hợp lệ.", "error", "Lỗi xác thực");
+      showNotification(
+        "Xác thực không thành công. Link có thể đã hết hạn hoặc không hợp lệ.",
+        "error",
+        "Lỗi xác thực"
+      );
     }
   }, []);
 
   useEffect(() => {
     const checkUser = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user && (window.location.pathname === "/dang-nhap" || window.location.pathname === "/dang-ky")) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (
+        user &&
+        (window.location.pathname === "/dang-nhap" || window.location.pathname === "/dang-ky")
+      ) {
         router.push("/");
         router.refresh();
       }
@@ -195,7 +244,7 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newFieldErrors: Record<string, string> = {};
     if (!data.identifier.trim()) newFieldErrors.identifier = "Vui lòng nhập bút danh hoặc email.";
     if (!data.password.trim()) newFieldErrors.password = "Vui lòng nhập mật khẩu.";
@@ -208,7 +257,7 @@ export function LoginForm() {
     setFieldErrors({});
     setLoading(true);
 
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 15000)
     );
 
@@ -219,52 +268,67 @@ export function LoginForm() {
       // Handle pen name login
       if (!data.identifier.includes("@")) {
         const { data: profileData, error: profileError } = await (async () => {
-          return await Promise.race([
+          return (await Promise.race([
             supabase.from("profiles").select("email").ilike("nickname", data.identifier).single(),
-            timeoutPromise
-          ]) as { data: { email: string } | null; error: unknown };
+            timeoutPromise,
+          ])) as { data: { email: string } | null; error: unknown };
         })();
 
         if (profileError) {
           const castedProfileError = profileError as { code?: string; message?: string };
           if (castedProfileError.code === "PGRST116") {
-            showNotification(`Không tìm thấy người dùng với bút danh/email "${data.identifier}".`, "error");
+            showNotification(
+              `Không tìm thấy người dùng với bút danh/email "${data.identifier}".`,
+              "error"
+            );
           } else {
-            showNotification(castedProfileError.message || "Lỗi kiểm tra thông tin tài khoản.", "error");
+            showNotification(
+              castedProfileError.message || "Lỗi kiểm tra thông tin tài khoản.",
+              "error"
+            );
           }
           return;
         }
 
         if (!profileData?.email) {
-          showNotification("Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.", "info");
+          showNotification(
+            "Bút danh tồn tại nhưng không có email liên kết. Vui lòng sử dụng Email.",
+            "info"
+          );
           return;
         }
         emailToUse = profileData.email;
       }
 
-      const { data: { user }, error } = await (async () => {
-        return await Promise.race([
+      const {
+        data: { user },
+        error,
+      } = await (async () => {
+        return (await Promise.race([
           supabase.auth.signInWithPassword({
             email: emailToUse,
             password: data.password,
           }),
-          timeoutPromise
-        ]) as { data: { user: unknown }; error: unknown };
+          timeoutPromise,
+        ])) as { data: { user: unknown }; error: unknown };
       })();
 
       if (error) {
         const authError = error as { message: string };
-        showNotification(authError.message || "Bút danh/Email hoặc mật khẩu không chính xác.", "error");
+        showNotification(
+          authError.message || "Bút danh/Email hoặc mật khẩu không chính xác.",
+          "error"
+        );
         return;
       }
 
       if (user) {
-         router.push("/");
-         router.refresh();
+        router.push("/");
+        router.refresh();
       }
     } catch (err: unknown) {
       const error = err as Error;
-      console.error(error);
+      logger.error(error);
       if (error.message === "TIMEOUT") {
         showNotification("Yêu cầu quá hạn (Timeout). Vui lòng kiểm tra lại kết nối.", "error");
       } else {
@@ -278,32 +342,37 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">Đăng nhập</h1>
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">
+          Đăng nhập
+        </h1>
         <div className="h-1 w-16 bg-black mx-auto" />
       </div>
-      
+
       <div className="space-y-2">
-        <InputField 
-          label="Bút danh / Email" 
-          name="identifier" 
-          value={data.identifier} 
-          onChange={handleChange} 
+        <InputField
+          label="Bút danh / Email"
+          name="identifier"
+          value={data.identifier}
+          onChange={handleChange}
           maxLength={100}
           error={fieldErrors.identifier}
           autoComplete="username"
         />
-        <InputField 
-          label="Mật khẩu" 
-          name="password" 
-          type="password" 
-          value={data.password} 
-          onChange={handleChange} 
+        <InputField
+          label="Mật khẩu"
+          name="password"
+          type="password"
+          value={data.password}
+          onChange={handleChange}
           maxLength={50}
           error={fieldErrors.password}
           autoComplete="current-password"
         />
         <div className="flex justify-end -mt-4 mb-2">
-          <Link href="/quen-mat-khau" className="text-gray-400 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold">
+          <Link
+            href="/quen-mat-khau"
+            className="text-gray-400 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold"
+          >
             Quên mật khẩu?
           </Link>
         </div>
@@ -317,15 +386,18 @@ export function LoginForm() {
 
       <div className="text-center mt-8 space-y-4">
         <div>
-          <Link href="/dang-ky" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
+          <Link
+            href="/dang-ky"
+            className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold"
+          >
             Chưa có tài khoản?
           </Link>
         </div>
       </div>
-      
-      <NotificationModal 
-        isOpen={notification.isOpen} 
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification((prev) => ({ ...prev, isOpen: false }))}
         message={notification.message}
         type={notification.type}
         title={notification.title}
@@ -350,7 +422,11 @@ export function ForgotPasswordForm() {
     type: "info",
   });
 
-  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+  const showNotification = (
+    message: string,
+    type: "error" | "success" | "info" = "info",
+    title?: string
+  ) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
@@ -363,7 +439,11 @@ export function ForgotPasswordForm() {
     try {
       const result = await forgotPassword(email.trim());
       if (result.success) {
-        showNotification("Link đặt lại mật khẩu đã được gửi vào Email của bạn. Vui lòng kiểm tra (cả mục thư rác).", "success", "Đã gửi Email");
+        showNotification(
+          "Link đặt lại mật khẩu đã được gửi vào Email của bạn. Vui lòng kiểm tra (cả mục thư rác).",
+          "success",
+          "Đã gửi Email"
+        );
         setEmail("");
       } else {
         showNotification(result.error || "Có lỗi xảy ra.", "error");
@@ -379,20 +459,22 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">Quên mật khẩu</h1>
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">
+          Quên mật khẩu
+        </h1>
         <div className="h-1 w-16 bg-black mx-auto" />
       </div>
 
       <p className="text-center text-gray-500 mb-8 text-sm">
         Nhập email bạn đã đăng ký để nhận link đặt lại mật khẩu.
       </p>
-      
+
       <div className="space-y-2">
-        <InputField 
-          label="Email" 
-          name="email" 
+        <InputField
+          label="Email"
+          name="email"
           type="email"
-          value={email} 
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
           maxLength={100}
           required
@@ -406,14 +488,17 @@ export function ForgotPasswordForm() {
       </div>
 
       <div className="text-center mt-8">
-        <Link href="/dang-nhap" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
+        <Link
+          href="/dang-nhap"
+          className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold"
+        >
           Quay lại Đăng nhập
         </Link>
       </div>
-      
-      <NotificationModal 
-        isOpen={notification.isOpen} 
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification((prev) => ({ ...prev, isOpen: false }))}
         message={notification.message}
         type={notification.type}
         title={notification.title}
@@ -438,7 +523,11 @@ export function ResetPasswordForm() {
     type: "info",
   });
 
-  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+  const showNotification = (
+    message: string,
+    type: "error" | "success" | "info" = "info",
+    title?: string
+  ) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
@@ -469,38 +558,44 @@ export function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in max-w-md mx-auto -mt-6">
       <div className="text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">Đổi mật khẩu</h1>
+        <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight text-nowrap">
+          Đổi mật khẩu
+        </h1>
         <div className="h-1 w-16 bg-black mx-auto" />
       </div>
-      
+
       <div className="space-y-2">
-        <InputField 
-          label="Mật khẩu mới" 
-          name="password" 
+        <InputField
+          label="Mật khẩu mới"
+          name="password"
           type="password"
-          value={password} 
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           maxLength={50}
         />
-        <InputField 
-          label="Xác nhận mật khẩu" 
-          name="confirmPassword" 
+        <InputField
+          label="Xác nhận mật khẩu"
+          name="confirmPassword"
           type="password"
-          value={confirmPassword} 
+          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           maxLength={50}
         />
       </div>
 
       <div className="flex justify-center w-full mt-10">
-        <PrimaryButton type="submit" disabled={!password.trim() || loading} className="!text-2xl !px-10">
+        <PrimaryButton
+          type="submit"
+          disabled={!password.trim() || loading}
+          className="!text-2xl !px-10"
+        >
           {loading ? "..." : "Cập nhật"}
         </PrimaryButton>
       </div>
-      
-      <NotificationModal 
-        isOpen={notification.isOpen} 
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification((prev) => ({ ...prev, isOpen: false }))}
         message={notification.message}
         type={notification.type}
         title={notification.title}
@@ -537,30 +632,39 @@ export function SignUpForm() {
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const showNotification = (message: string, type: "error" | "success" | "info" = "info", title?: string) => {
+  const showNotification = (
+    message: string,
+    type: "error" | "success" | "info" = "info",
+    title?: string
+  ) => {
     setNotification({ isOpen: true, message, type, title });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
-    if (fieldErrors[name]) setFieldErrors((prev: Record<string, string>) => ({ ...prev, [name]: "" }));
+    setData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    if (fieldErrors[name])
+      setFieldErrors((prev: Record<string, string>) => ({ ...prev, [name]: "" }));
   };
 
-  const isValid = useMemo(() => 
-    data.fullName.trim() !== "" &&
-    data.email.trim() !== "" &&
-    data.penName.trim() !== "" &&
-    data.password.trim() !== "" &&
-    data.birthday.trim() !== "" &&
-    data.agreedToTerms &&
-    data.agreedToRegulations,
-  [data]);
+  const isValid = useMemo(
+    () =>
+      data.fullName.trim() !== "" &&
+      data.email.trim() !== "" &&
+      data.penName.trim() !== "" &&
+      data.password.trim() !== "" &&
+      data.birthday.trim() !== "" &&
+      data.agreedToTerms &&
+      data.agreedToRegulations,
+    [data]
+  );
 
   useEffect(() => {
     const checkUser = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         router.push("/");
         router.refresh();
@@ -571,7 +675,7 @@ export function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newFieldErrors: Record<string, string> = {};
     if (!data.fullName.trim()) newFieldErrors.fullName = "Họ và tên không được để trống.";
     if (!data.email.trim()) newFieldErrors.email = "Email không được để trống.";
@@ -579,7 +683,8 @@ export function SignUpForm() {
     if (!data.password.trim()) newFieldErrors.password = "Mật khẩu không được để trống.";
     if (!data.birthday.trim()) newFieldErrors.birthday = "Ngày sinh không được để trống.";
     if (!data.agreedToTerms) newFieldErrors.agreedToTerms = "Bạn cần đồng ý với điều khoản.";
-    if (!data.agreedToRegulations) newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
+    if (!data.agreedToRegulations)
+      newFieldErrors.agreedToRegulations = "Bạn cần đồng ý với quy định.";
 
     // Let browser/server handle validation or use the standardized regex
 
@@ -609,45 +714,52 @@ export function SignUpForm() {
     setLoading(true);
 
     // Timeout of 20 seconds for signup (multi-step checks)
-    const timeoutPromise = new Promise<never>((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 20000)
     );
 
     try {
       const supabase = createClient();
-      
+
       // 0. Check Blacklist for Pen Name
       const { checkBlacklist } = await import("@/utils/blacklist");
-      
-      const violation = await Promise.race([
+
+      const violation = (await Promise.race([
         checkBlacklist(sanitizeNickname(data.penName)),
-        timeoutPromise
-      ]) as string | null;
+        timeoutPromise,
+      ])) as string | null;
 
       if (violation) {
-        showNotification(`Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`, "error");
+        showNotification(
+          `Bút danh "${data.penName}" chứa từ không cho phép (${violation}). Vui lòng chọn tên khác.`,
+          "error"
+        );
         return;
       }
 
       // 0.4 Check Email Duplicate
-      const isEmailTaken = await Promise.race([
-        isEmailRegistered(data.email),
-        timeoutPromise
-      ]);
+      const isEmailTaken = await Promise.race([isEmailRegistered(data.email), timeoutPromise]);
 
       if (isEmailTaken) {
-        showNotification(`Email "${data.email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.`, "info", "Thông báo");
+        showNotification(
+          `Email "${data.email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.`,
+          "info",
+          "Thông báo"
+        );
         return;
       }
 
       // 0.5 Check Uniqueness for Pen Name
       const isAvailable = await Promise.race([
         isNicknameAvailable(sanitizeNickname(data.penName)),
-        timeoutPromise
+        timeoutPromise,
       ]);
 
       if (!isAvailable) {
-        showNotification(`Bút danh "${data.penName}" đã được sử dụng. Vui lòng chọn tên khác.`, "error");
+        showNotification(
+          `Bút danh "${data.penName}" đã được sử dụng. Vui lòng chọn tên khác.`,
+          "error"
+        );
         return;
       }
 
@@ -661,10 +773,10 @@ export function SignUpForm() {
               full_name: data.fullName,
               nickname: sanitizeNickname(data.penName),
               birthday: data.birthday,
-            }
-          }
+            },
+          },
         }),
-        timeoutPromise
+        timeoutPromise,
       ]);
 
       if (authError) {
@@ -679,11 +791,15 @@ export function SignUpForm() {
       }
 
       if (authData.user) {
-        showNotification("Đăng ký thành công! Vui lòng kiểm tra Email (kiểm tra cả mục thư rác) để xác nhận tài khoản.", "success", "Xác nhận Email");
+        showNotification(
+          "Đăng ký thành công! Vui lòng kiểm tra Email (kiểm tra cả mục thư rác) để xác nhận tài khoản.",
+          "success",
+          "Xác nhận Email"
+        );
       }
     } catch (err: unknown) {
       const error = err as Error;
-      console.error("Signup error:", error);
+      logger.error("Signup error:", error);
       if (error.message === "TIMEOUT") {
         showNotification("Yêu cầu quá hạn (Timeout). Vui lòng thử lại sau.", "error");
       } else {
@@ -701,83 +817,150 @@ export function SignUpForm() {
         <div className="w-full flex justify-center lg:justify-end">
           <form onSubmit={handleSubmit} className="w-full max-w-lg">
             <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">Ghi danh</h1>
+              <h1 className="text-4xl md:text-5xl font-ganh font-bold text-black mb-2 uppercase tracking-tight">
+                Ghi danh
+              </h1>
               <div className="h-1 w-16 bg-black mx-auto" />
             </div>
-          
-          <div className="space-y-4">
-            <InputField label="Họ và tên" name="fullName" value={data.fullName} onChange={handleChange} maxLength={100} error={fieldErrors.fullName} autoComplete="name" />
-            <InputField label="Email" name="email" type="email" value={data.email} onChange={handleChange} maxLength={100} error={fieldErrors.email} autoComplete="email" />
-            <InputField label="Bút danh" name="penName" value={data.penName} onChange={handleChange} maxLength={30} error={fieldErrors.penName} autoComplete="nickname" />
-            <InputField label="Ngày sinh" name="birthday" type="date" value={data.birthday} onChange={handleChange} error={fieldErrors.birthday} autoComplete="bday" required />
-            <InputField 
-              label="Mật khẩu" 
-              name="password" 
-              type="password" 
-              value={data.password} 
-              onChange={handleChange} 
-              maxLength={50} 
-              error={fieldErrors.password} 
-              autoComplete="new-password"
-            />
-            
-            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border border-gray-200 mt-2">
-              <p className="font-bold text-black mb-1">Yêu cầu mật khẩu:</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li className={data.password.length >= 8 ? "text-green-600 font-medium" : ""}>Ít nhất 8 ký tự (tối đa 50)</li>
-                <li className={/[A-Z]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một chữ hoa (A-Z)</li>
-                <li className={/[a-z]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một chữ thường (a-z)</li>
-                <li className={/[0-9]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một số (0-9)</li>
-                <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(data.password) ? "text-green-600 font-medium" : ""}>Chứa ít nhất một ký tự đặc biệt</li>
-              </ul>
-            </div>
-          </div>
 
-          <div className="mt-8 space-y-2">
-            <Checkbox 
-              label={
-                <>
-                  Tôi đồng ý với các{" "}
-                  <span 
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveModal("terms"); }}
-                    className="underline hover:text-gray-600 transition-colors"
+            <div className="space-y-4">
+              <InputField
+                label="Họ và tên"
+                name="fullName"
+                value={data.fullName}
+                onChange={handleChange}
+                maxLength={100}
+                error={fieldErrors.fullName}
+                autoComplete="name"
+              />
+              <InputField
+                label="Email"
+                name="email"
+                type="email"
+                value={data.email}
+                onChange={handleChange}
+                maxLength={100}
+                error={fieldErrors.email}
+                autoComplete="email"
+              />
+              <InputField
+                label="Bút danh"
+                name="penName"
+                value={data.penName}
+                onChange={handleChange}
+                maxLength={30}
+                error={fieldErrors.penName}
+                autoComplete="nickname"
+              />
+              <InputField
+                label="Ngày sinh"
+                name="birthday"
+                type="date"
+                value={data.birthday}
+                onChange={handleChange}
+                error={fieldErrors.birthday}
+                autoComplete="bday"
+                required
+              />
+              <InputField
+                label="Mật khẩu"
+                name="password"
+                type="password"
+                value={data.password}
+                onChange={handleChange}
+                maxLength={50}
+                error={fieldErrors.password}
+                autoComplete="new-password"
+              />
+
+              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded border border-gray-200 mt-2">
+                <p className="font-bold text-black mb-1">Yêu cầu mật khẩu:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li className={data.password.length >= 8 ? "text-green-600 font-medium" : ""}>
+                    Ít nhất 8 ký tự (tối đa 50)
+                  </li>
+                  <li className={/[A-Z]/.test(data.password) ? "text-green-600 font-medium" : ""}>
+                    Chứa ít nhất một chữ hoa (A-Z)
+                  </li>
+                  <li className={/[a-z]/.test(data.password) ? "text-green-600 font-medium" : ""}>
+                    Chứa ít nhất một chữ thường (a-z)
+                  </li>
+                  <li className={/[0-9]/.test(data.password) ? "text-green-600 font-medium" : ""}>
+                    Chứa ít nhất một số (0-9)
+                  </li>
+                  <li
+                    className={
+                      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(data.password)
+                        ? "text-green-600 font-medium"
+                        : ""
+                    }
                   >
-                    điều khoản
-                  </span>
-                </>
-              } 
-              name="agreedToTerms"
-              checked={data.agreedToTerms} 
-              onChange={handleChange} 
-              error={fieldErrors.agreedToTerms}
-            />
-            <Checkbox 
-              label={
-                <>
-                  Tôi đồng ý với các{" "}
-                  <span 
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveModal("regulations"); }}
-                    className="underline hover:text-gray-600 transition-colors"
-                  >
-                    quy định
-                  </span>
-                </>
-              } 
-              name="agreedToRegulations"
-              checked={data.agreedToRegulations} 
-              onChange={handleChange} 
-              error={fieldErrors.agreedToRegulations}
-            />
-          </div>
+                    Chứa ít nhất một ký tự đặc biệt
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-8 space-y-2">
+              <Checkbox
+                label={
+                  <>
+                    Tôi đồng ý với các{" "}
+                    <span
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setActiveModal("terms");
+                      }}
+                      className="underline hover:text-gray-600 transition-colors"
+                    >
+                      điều khoản
+                    </span>
+                  </>
+                }
+                name="agreedToTerms"
+                checked={data.agreedToTerms}
+                onChange={handleChange}
+                error={fieldErrors.agreedToTerms}
+              />
+              <Checkbox
+                label={
+                  <>
+                    Tôi đồng ý với các{" "}
+                    <span
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setActiveModal("regulations");
+                      }}
+                      className="underline hover:text-gray-600 transition-colors"
+                    >
+                      quy định
+                    </span>
+                  </>
+                }
+                name="agreedToRegulations"
+                checked={data.agreedToRegulations}
+                onChange={handleChange}
+                error={fieldErrors.agreedToRegulations}
+              />
+            </div>
 
             <div className="flex justify-center w-full mt-8">
-              <PrimaryButton type="submit" disabled={!isValid || loading} className="!text-2xl !px-10">
+              <PrimaryButton
+                type="submit"
+                disabled={!isValid || loading}
+                className="!text-2xl !px-10"
+              >
                 {loading ? "..." : "Đăng ký"}
               </PrimaryButton>
             </div>
 
             <div className="text-center mt-6">
-              <Link href="/dang-nhap" className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold">
+              <Link
+                href="/dang-nhap"
+                className="text-gray-400 hover:text-black transition-colors text-sm uppercase tracking-widest font-bold"
+              >
                 Đã có tài khoản?
               </Link>
             </div>
@@ -812,21 +995,32 @@ export function SignUpForm() {
       {/* Modal Overlay (Shared) - Portaled to Body */}
       {activeModal && (
         <Portal>
-          <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-6 animate-fade-in backdrop-blur-sm" onClick={() => setActiveModal(null)}>
-            <div data-lenis-prevent className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto relative border-[3px] border-black shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-6 animate-fade-in backdrop-blur-sm"
+            onClick={() => setActiveModal(null)}
+          >
+            <div
+              data-lenis-prevent
+              className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto relative border-[3px] border-black shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold text-black uppercase">
                   {activeModal === "terms" ? "Các Điều Khoản" : "Quy Định Đồng Ngôn"}
                 </h2>
                 <div className="h-0.5 w-10 bg-black mx-auto mt-2" />
               </div>
-              
+
               <div className="prose prose-sm max-w-none text-black leading-relaxed mb-8">
-                {activeModal === "terms" ? <div dangerouslySetInnerHTML={{ __html: TERMS_CONTENT }} /> : <div dangerouslySetInnerHTML={{ __html: REGULATIONS_CONTENT }} />}
+                {activeModal === "terms" ? (
+                  <div dangerouslySetInnerHTML={{ __html: TERMS_CONTENT }} />
+                ) : (
+                  <div dangerouslySetInnerHTML={{ __html: REGULATIONS_CONTENT }} />
+                )}
               </div>
-              
-              <PrimaryButton 
-                onClick={() => setActiveModal(null)} 
+
+              <PrimaryButton
+                onClick={() => setActiveModal(null)}
                 className="w-full !text-sm !tracking-[0.2em] !uppercase"
               >
                 Đã hiểu & Đóng
@@ -836,10 +1030,10 @@ export function SignUpForm() {
         </Portal>
       )}
 
-      <NotificationModal 
-        isOpen={notification.isOpen} 
+      <NotificationModal
+        isOpen={notification.isOpen}
         onClose={() => {
-          setNotification(prev => ({ ...prev, isOpen: false }));
+          setNotification((prev) => ({ ...prev, isOpen: false }));
           if (notification.type === "success") {
             router.refresh(); // Refresh to clear header/session state
             router.push("/dang-nhap");
@@ -852,4 +1046,3 @@ export function SignUpForm() {
     </>
   );
 }
-

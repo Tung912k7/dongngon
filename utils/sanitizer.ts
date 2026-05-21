@@ -79,7 +79,10 @@ function renderInlineMarkdown(input: string): string {
   let text = escapeUnsafeHtml(input);
 
   // Inline code first to avoid style parsing inside code spans.
-  text = text.replace(/`([^`]+)`/g, "<code class=\"rounded bg-slate-100 px-1.5 py-0.5 text-[0.9em]\">$1</code>");
+  text = text.replace(
+    /`([^`]+)`/g,
+    '<code class="rounded bg-slate-100 px-1.5 py-0.5 text-[0.9em]">$1</code>'
+  );
   text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
 
@@ -122,7 +125,10 @@ function flushList(items: string[], ordered: boolean): string {
  * Supported inline: links (http/https), bold, italic, inline code.
  */
 export function sanitizeMarkdownToHtml(markdown: string): string {
-  const normalized = markdown.replace(/\u0000/g, "").replace(/\r\n?/g, "\n").trim();
+  const normalized = markdown
+    .replace(/\u0000/g, "")
+    .replace(/\r\n?/g, "\n")
+    .trim();
 
   if (!normalized) {
     return "";
@@ -208,4 +214,3 @@ export function sanitizeMarkdownToHtml(markdown: string): string {
 
   return blocks.join("\n");
 }
-

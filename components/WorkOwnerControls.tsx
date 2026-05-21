@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateWork, deleteWork } from "@/actions/work";
+import { deleteWork, updateWork } from "@/actions/work";
 import NotificationModal from "./NotificationModal";
 
-export default function WorkOwnerControls({ 
-  workId, 
+export default function WorkOwnerControls({
+  workId,
   initialTitle,
-  isOwner 
-}: { 
-  workId: string; 
+  isOwner,
+}: {
+  workId: string;
   initialTitle: string;
   isOwner: boolean;
 }) {
@@ -47,7 +47,7 @@ export default function WorkOwnerControls({
       setNotification({
         isOpen: true,
         message: result.error || "Không thể cập nhật tiêu đề.",
-        type: "error"
+        type: "error",
       });
     }
   };
@@ -68,7 +68,7 @@ export default function WorkOwnerControls({
       setNotification({
         isOpen: true,
         message: result.error || "Không thể xóa tác phẩm.",
-        type: "error"
+        type: "error",
       });
     }
   };
@@ -84,15 +84,18 @@ export default function WorkOwnerControls({
             className="flex-grow px-3 py-1 border-2 border-black rounded font-bold text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
             autoFocus
           />
-          <button 
+          <button
             onClick={handleUpdate}
             disabled={isSubmitting}
             className="text-xs font-bold font-ganh uppercase tracking-widest text-green-600 hover:text-green-700 transition-colors"
           >
             Lưu
           </button>
-          <button 
-            onClick={() => { setIsEditing(false); setTitle(initialTitle); }}
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setTitle(initialTitle);
+            }}
             disabled={isSubmitting}
             className="text-xs font-bold font-ganh uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
           >
@@ -101,13 +104,13 @@ export default function WorkOwnerControls({
         </div>
       ) : (
         <>
-          <button 
+          <button
             onClick={() => setIsEditing(true)}
             className="text-[10px] font-bold font-ganh uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
           >
             Chỉnh sửa
           </button>
-          <button 
+          <button
             onClick={handleDelete}
             className="text-[10px] font-bold font-ganh uppercase tracking-widest text-red-300 hover:text-red-600 transition-colors"
           >
@@ -118,11 +121,10 @@ export default function WorkOwnerControls({
 
       <NotificationModal
         isOpen={notification.isOpen}
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setNotification((prev) => ({ ...prev, isOpen: false }))}
         message={notification.message}
         type={notification.type}
       />
     </div>
   );
 }
-

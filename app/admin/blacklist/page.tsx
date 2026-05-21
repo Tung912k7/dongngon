@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { m, AnimatePresence } from "framer-motion";
-import { getBlacklistWords, addBlacklistWord, deleteBlacklistWord } from "@/actions/blacklist";
+import { AnimatePresence, m } from "framer-motion";
+import { addBlacklistWord, deleteBlacklistWord, getBlacklistWords } from "@/actions/blacklist";
 
 type BlacklistItem = {
   id: string;
@@ -88,12 +88,23 @@ export default function BlacklistPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex items-center gap-4 mb-8">
-        <Link 
+        <Link
           href="/admin"
           className="p-2 hover:bg-slate-100 rounded-full transition-colors border-2 border-transparent hover:border-black"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            />
           </svg>
         </Link>
         <h1 className="text-4xl font-black uppercase tracking-tighter italic">Quản lý từ cấm</h1>
@@ -104,7 +115,9 @@ export default function BlacklistPage() {
         <form onSubmit={handleAddWord} className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest pl-1">Mẫu (Pattern)</label>
+              <label className="text-xs font-black uppercase tracking-widest pl-1">
+                Mẫu (Pattern)
+              </label>
               <input
                 type="text"
                 value={newWord}
@@ -112,11 +125,11 @@ export default function BlacklistPage() {
                 maxLength={100}
                 placeholder={isRegex ? "Ví dụ: [a-z0-9._%+-]+@..." : "Nhập từ khóa..."}
                 className={`w-full px-6 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-lg font-bold transition-all ${
-                  regexError ? 'border-red-500 bg-red-50' : ''
+                  regexError ? "border-red-500 bg-red-50" : ""
                 }`}
               />
             </div>
-            
+
             <div className="md:w-48 space-y-2">
               <label className="text-xs font-black uppercase tracking-widest pl-1">Loại</label>
               <select
@@ -132,7 +145,7 @@ export default function BlacklistPage() {
 
           <AnimatePresence>
             {regexError && (
-              <m.div 
+              <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -155,7 +168,9 @@ export default function BlacklistPage() {
 
       {/* List Section */}
       <h2 className="text-xl font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-        <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm">{words.length}</span>
+        <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm">
+          {words.length}
+        </span>
         Danh sách hiện tại
       </h2>
 
@@ -182,7 +197,9 @@ export default function BlacklistPage() {
               >
                 <div className="flex flex-col">
                   {item.is_regex && (
-                    <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-black italic mb-1 w-fit">REGEX</span>
+                    <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-black italic mb-1 w-fit">
+                      REGEX
+                    </span>
                   )}
                   <span className="font-bold text-lg">{item.word}</span>
                 </div>
@@ -191,7 +208,14 @@ export default function BlacklistPage() {
                   className="ml-2 p-2 rounded-lg hover:bg-red-50 hover:text-red-500 transition-colors"
                   title="Xóa"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={3}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -203,4 +227,3 @@ export default function BlacklistPage() {
     </div>
   );
 }
-

@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState, memo } from "react";
+import React, { memo, useState } from "react";
 
-export const TagButton = memo(({ 
-  children, 
-  onClick, 
-  className = "" 
-}: { 
-  children: React.ReactNode; 
-  onClick?: (e: React.MouseEvent) => void; 
-  className?: string;
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <span
-      onClick={onClick}
-      className={`
+export const TagButton = memo(
+  ({
+    children,
+    onClick,
+    className = "",
+  }: {
+    children: React.ReactNode;
+    onClick?: (e: React.MouseEvent) => void;
+    className?: string;
+  }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+      <span
+        onClick={onClick}
+        className={`
         border-2 border-black bg-white text-black
         rounded-lg px-4 py-1.5 
         text-center text-[11px] font-black uppercase tracking-wider
@@ -26,10 +27,10 @@ export const TagButton = memo(({
         active:translate-y-0
         ${className}
       `}
-    >
-      {children}
-    </span>
-  );
-});
+      >
+        {children}
+      </span>
+    );
+  }
+);
 TagButton.displayName = "TagButton";
-

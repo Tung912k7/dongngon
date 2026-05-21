@@ -43,4 +43,3 @@ export const REGULATIONS_CONTENT = `
   Nếu gặp các trường hợp vi phạm, hãy báo cáo, chúng tôi sẽ xem xét và xử lý theo đúng quy định của Đồng Ngôn và pháp luật. Nếu vi phạm nghiêm trọng, chúng tôi có quyền xóa tài khoản và/hoặc cấm sử dụng vĩnh viễn.
 </p>
 `;
-

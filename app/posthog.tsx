@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect, useRef } from "react"
-import type { PostHogConfig } from "posthog-js"
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import type { PostHogConfig } from "posthog-js";
 
 export default function PostHogAutoTracker() {
   const pathname = usePathname();
@@ -13,43 +13,42 @@ export default function PostHogAutoTracker() {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
 
     if (!initialized.current) {
-        initialized.current = true;
-        import('posthog-js').then((m) => {
-            const posthog = m.default;
-            const posthogConfig: Partial<PostHogConfig> = {
-              api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-              person_profiles: 'identified_only',
-              capture_pageview: false,
-              enable_recording_console_log: true,
-              capture_performance: true,
-              // enable_exception_autocapture is handled separately or no longer supported
-            };
-            posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, posthogConfig);
-            
-            // Capture initial pageview
-            let url = window.origin + pathname;
-            if (searchParams.toString()) {
-              url = url + `?${searchParams.toString()}`;
-            }
-            posthog.capture('$pageview', { '$current_url': url });
-        });
+      initialized.current = true;
+      import("posthog-js").then((m) => {
+        const posthog = m.default;
+        const posthogConfig: Partial<PostHogConfig> = {
+          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+          person_profiles: "identified_only",
+          capture_pageview: false,
+          enable_recording_console_log: true,
+          capture_performance: true,
+          // enable_exception_autocapture is handled separately or no longer supported
+        };
+        posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, posthogConfig);
+
+        // Capture initial pageview
+        let url = window.origin + pathname;
+        if (searchParams.toString()) {
+          url = url + `?${searchParams.toString()}`;
+        }
+        posthog.capture("$pageview", { $current_url: url });
+      });
     } else {
-        import('posthog-js').then((m) => {
-            const posthog = m.default;
-            let url = window.origin + pathname;
-            if (searchParams.toString()) {
-              url = url + `?${searchParams.toString()}`;
-            }
-            const handle = setTimeout(() => {
-              posthog.capture('$pageview', {
-                '$current_url': url,
-              });
-            }, 500);
-            return () => clearTimeout(handle);
-        });
+      import("posthog-js").then((m) => {
+        const posthog = m.default;
+        let url = window.origin + pathname;
+        if (searchParams.toString()) {
+          url = url + `?${searchParams.toString()}`;
+        }
+        const handle = setTimeout(() => {
+          posthog.capture("$pageview", {
+            $current_url: url,
+          });
+        }, 500);
+        return () => clearTimeout(handle);
+      });
     }
   }, [pathname, searchParams]);
 
   return null;
 }
-

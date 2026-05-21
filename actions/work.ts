@@ -1,11 +1,17 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
+import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
+import { logger } from "@/lib/logger";
 import { sanitizeTitle } from "@/utils/sanitizer";
+import { logger } from "@/lib/logger";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { logger } from "@/lib/logger";
 import { captureServerEvent } from "@/utils/posthog-server";
+import { logger } from "@/lib/logger";
 
 const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CREATE_WORK_LIMIT = 6;
@@ -33,7 +39,9 @@ export async function createWork(formData: {
   const supabase = await createClient();
 
   // 1. Check Authentication
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Bạn cần đăng nhập để tạo tác phẩm." };
 
   const createWorkRate = await checkRateLimitDistributed(
@@ -79,9 +87,8 @@ export async function createWork(formData: {
     return { error: "Quy tắc viết không hợp lệ." };
   }
 
-  const normalizedRule = formData.writing_rule === "1 câu" || formData.writing_rule === "sentence"
-    ? "sentence"
-    : null;
+  const normalizedRule =
+    formData.writing_rule === "1 câu" || formData.writing_rule === "sentence" ? "sentence" : null;
 
   if (!normalizedRule) {
     return { error: "Quy tắc viết không hợp lệ." };
@@ -110,39 +117,45 @@ export async function createWork(formData: {
   const mapping = {
     category: {
       "Văn xuôi": "Văn xuôi",
-      "Thơ": "Thơ",
-      "Tiểu thuyết": "Tiểu thuyết"
+      Thơ: "Thơ",
+      "Tiểu thuyết": "Tiểu thuyết",
     },
   };
 
   // 5. Insert Work
-  const { data, error } = await supabase.from("works").insert({
-    title: sanitizedTitle,
-    category_type: mapping.category[formData.category_type as keyof typeof mapping.category] || formData.category_type,
-    sub_category: sanitizedSubCategory,
-    license: formData.license,
-    privacy: formData.license === "private" ? "Private" : "Public",
-    limit_type: normalizedRule,
-    age_rating: formData.age_rating,
-    description: sanitizedDescription || null,
-    created_by: user.id,
-    author_nickname: authorNickname,
-    status: "writing"
-  }).select().single();
+  const { data, error } = await supabase
+    .from("works")
+    .insert({
+      title: sanitizedTitle,
+      category_type:
+        mapping.category[formData.category_type as keyof typeof mapping.category] ||
+        formData.category_type,
+      sub_category: sanitizedSubCategory,
+      license: formData.license,
+      privacy: formData.license === "private" ? "Private" : "Public",
+      limit_type: normalizedRule,
+      age_rating: formData.age_rating,
+      description: sanitizedDescription || null,
+      created_by: user.id,
+      author_nickname: authorNickname,
+      status: "writing",
+    })
+    .select()
+    .single();
 
   if (error) {
-    console.error("Error creating work:", error);
+    logger.error("Error creating work:", error);
     return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
   revalidatePath("/kho-tang");
 
-  await captureServerEvent(user.id, 'work_created', {
+  await captureServerEvent(user.id, "work_created", {
     work_id: data.id,
     category: formData.category_type,
     license: formData.license,
-    event_source: 'server_action',
+    event_source: "server_action",
     event_version: 1,
   });
 
@@ -157,7 +170,9 @@ export async function deleteWork(workId: string) {
   }
 
   // 1. Check Authentication
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Bạn cần đăng nhập để xóa tác phẩm." };
 
   // 2. Delete Work (RLS or explicit check)
@@ -168,21 +183,24 @@ export async function deleteWork(workId: string) {
     .eq("created_by", user.id);
 
   if (error) {
-    console.error("Error deleting work:", error);
+    logger.error("Error deleting work:", error);
     return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
   revalidatePath("/kho-tang");
-  
+
   return { success: true };
 }
 
-export async function updateWork(workId: string, formData: {
-  title: string;
-  description?: string;
-  license?: string;
-}) {
+export async function updateWork(
+  workId: string,
+  formData: {
+    title: string;
+    description?: string;
+    license?: string;
+  }
+) {
   const supabase = await createClient();
 
   if (!isValidUuid(workId)) {
@@ -190,7 +208,9 @@ export async function updateWork(workId: string, formData: {
   }
 
   // 1. Check Authentication
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Bạn cần đăng nhập để chỉnh sửa tác phẩm." };
 
   const updateWorkRate = await checkRateLimitDistributed(
@@ -229,8 +249,8 @@ export async function updateWork(workId: string, formData: {
 
   // Only allow updating license if it's changing from private to public
   if (formData.license === "public") {
-     updatePayload.license = "public";
-     updatePayload.privacy = "Public";
+    updatePayload.license = "public";
+    updatePayload.privacy = "Public";
   }
 
   const { error } = await supabase
@@ -240,14 +260,13 @@ export async function updateWork(workId: string, formData: {
     .eq("created_by", user.id);
 
   if (error) {
-    console.error("Error updating work:", error);
+    logger.error("Error updating work:", error);
     return { error: getErrorMessage(error) };
   }
 
   revalidatePath("/profile");
   revalidatePath("/kho-tang");
   revalidatePath(`/work/${workId}`);
-  
+
   return { success: true };
 }
-

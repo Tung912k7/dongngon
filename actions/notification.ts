@@ -2,10 +2,13 @@
 
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
+import { logger } from "@/lib/logger";
 
 export async function getNotifications() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -17,7 +20,7 @@ export async function getNotifications() {
     .limit(100);
 
   if (error) {
-    console.error("Error fetching notifications:", error);
+    logger.error("Error fetching notifications", error as Error);
     return { success: false, error: "Failed to fetch notifications" };
   }
 
@@ -26,7 +29,9 @@ export async function getNotifications() {
 
 export async function markAsRead(notificationId: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -37,7 +42,7 @@ export async function markAsRead(notificationId: string) {
     .eq("user_id", user.id);
 
   if (error) {
-    console.error("Error marking format as read:", error);
+    logger.error("Error marking format as read", error as Error);
     return { success: false, error: "Failed to mark as read" };
   }
 
@@ -47,7 +52,9 @@ export async function markAsRead(notificationId: string) {
 
 export async function markAllAsRead() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -58,7 +65,7 @@ export async function markAllAsRead() {
     .eq("is_read", false);
 
   if (error) {
-    console.error("Error marking all as read:", error);
+    logger.error("Error marking all as read", error as Error);
     return { success: false, error: "Failed to mark all as read" };
   }
 
@@ -67,7 +74,9 @@ export async function markAllAsRead() {
 
 export async function createAdminAnnouncement(message: string, targetNicknamesStr?: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -85,7 +94,10 @@ export async function createAdminAnnouncement(message: string, targetNicknamesSt
   let query = supabase.from("profiles").select("id, nickname");
 
   const targetNicknames = targetNicknamesStr
-    ? targetNicknamesStr.split(",").map(n => n.trim()).filter(Boolean)
+    ? targetNicknamesStr
+        .split(",")
+        .map((n) => n.trim())
+        .filter(Boolean)
     : [];
 
   if (targetNicknames.length > 0) {
@@ -103,20 +115,18 @@ export async function createAdminAnnouncement(message: string, targetNicknamesSt
     return { success: false, error: "Không tìm thấy người dùng nào với các nickname đã nhập." };
   }
 
-  const notificationsToInsert = profiles.map(p => ({
+  const notificationsToInsert = profiles.map((p) => ({
     user_id: p.id,
     type: "announcement",
     content: message,
-    is_read: false
+    is_read: false,
   }));
 
   // Batch insert all announcements
-  const { error: insertError } = await supabase
-    .from("notifications")
-    .insert(notificationsToInsert);
+  const { error: insertError } = await supabase.from("notifications").insert(notificationsToInsert);
 
   if (insertError) {
-    console.error("[Announcement] Error broadcasting:", insertError.code, insertError.message);
+    logger.error("Error broadcasting announcement", insertError as Error);
     return { success: false, error: `Lỗi hệ thống: ${insertError.message}` };
   }
 
@@ -125,7 +135,9 @@ export async function createAdminAnnouncement(message: string, targetNicknamesSt
 
 export async function searchUserNicknames(keyword: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { success: false, data: [] };
 
   const { data: privateData } = await supabase
@@ -143,12 +155,14 @@ export async function searchUserNicknames(keyword: string) {
     .limit(5);
 
   if (error || !data) return { success: false, data: [] };
-  return { success: true, data: data.map(d => d.nickname) };
+  return { success: true, data: data.map((d) => d.nickname) };
 }
 
 export async function runReactivationNudgesNow() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -163,8 +177,7 @@ export async function runReactivationNudgesNow() {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
 
   if (!supabaseUrl) {
     return {
@@ -176,8 +189,7 @@ export async function runReactivationNudgesNow() {
   if (!serviceRoleKey) {
     return {
       success: false,
-      error:
-        "Thiếu SUPABASE_SERVICE_ROLE_KEY (hoặc SUPABASE_SERVICE_ROLE) trong môi trường server",
+      error: "Thiếu SUPABASE_SERVICE_ROLE_KEY (hoặc SUPABASE_SERVICE_ROLE) trong môi trường server",
     };
   }
 
@@ -191,7 +203,7 @@ export async function runReactivationNudgesNow() {
   const { data, error } = await serviceClient.rpc("enqueue_reactivation_nudges");
 
   if (error) {
-    console.error("[ReactivationNudge] RPC error:", error.code, error.message);
+    logger.error("RPC error for reactivation nudges", error as Error);
     return { success: false, error: `Lỗi hệ thống: ${error.message}` };
   }
 
@@ -206,7 +218,9 @@ export async function reportContribution(
   reason: string
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
 
@@ -227,28 +241,24 @@ export async function reportContribution(
   if (!admins || admins.length === 0) return { success: false, error: "Không tìm thấy Admin nào" };
 
   // Lấy tên tác phẩm (nếu có, nếu không lấy mặc định)
-  const { data: work } = await supabase
-    .from("works")
-    .select("title")
-    .eq("id", workId)
-    .single();
+  const { data: work } = await supabase.from("works").select("title").eq("id", workId).single();
 
   const workTitle = work?.title || "Không rõ tác phẩm";
 
   const message = `Báo cáo vi phạm từ [${reporterName}]:\n- Câu vi phạm: "${content}"\n- Lý do: ${reason}\n- Người viết: ${authorNickname}\n- Tác phẩm: ${workTitle}`;
 
-  const notificationsToInsert = admins.map(admin => ({
+  const notificationsToInsert = admins.map((admin) => ({
     user_id: admin.id,
     type: "system",
     content: message,
     is_read: false,
-    work_id: workId
+    work_id: workId,
   }));
 
   const { error } = await supabase.from("notifications").insert(notificationsToInsert);
 
   if (error) {
-    console.error("Error creating report notification:", error);
+    logger.error("Error creating report notification", error as Error);
     return { success: false, error: "Không thể gửi báo cáo" };
   }
 
@@ -257,7 +267,9 @@ export async function reportContribution(
 
 export async function deleteNotifications(ids: string[]) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
   if (!ids || ids.length === 0) return { success: false, error: "No IDs provided" };
@@ -269,20 +281,16 @@ export async function deleteNotifications(ids: string[]) {
     .in("id", ids);
 
   if (error) {
-    console.error("Error deleting notifications:", error);
+    logger.error("Error deleting notifications", error as Error);
     return { success: false, error: "Failed to delete notifications" };
   }
 
   return { success: true };
 }
 
-export async function sendIdeaToAdmins(
-  targetId: string,
-  penName: string,
-  description: string
-) {
+export async function sendIdeaToAdmins(targetId: string, penName: string, description: string) {
   const supabase = await createClient();
-  
+
   // Lấy danh sách ID của tất cả admin
   const { data: admins } = await supabase
     .from("user_private_data")
@@ -295,20 +303,19 @@ export async function sendIdeaToAdmins(
 
   const message = `💡 Ý tưởng mới từ [${penName}] (ID: ${targetId}):\n- Mô tả: ${description}`;
 
-  const notificationsToInsert = admins.map(admin => ({
+  const notificationsToInsert = admins.map((admin) => ({
     user_id: admin.id,
     type: "system",
     content: message,
-    is_read: false
+    is_read: false,
   }));
 
   const { error } = await supabase.from("notifications").insert(notificationsToInsert);
 
   if (error) {
-    console.error("Error creating idea notification:", error);
+    logger.error("Error creating idea notification", error as Error);
     return { success: false, error: "Không thể gửi ý tưởng. Vui lòng thử lại sau." };
   }
 
   return { success: true };
 }
-

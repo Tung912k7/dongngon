@@ -12,4 +12,3 @@ export default defineConfig({
     include: ["components/**/__tests__/**/*.test.ts", "actions/**/__tests__/**/*.test.ts"],
   },
 });
-

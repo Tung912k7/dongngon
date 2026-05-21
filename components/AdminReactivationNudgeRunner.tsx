@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { runReactivationNudgesNow } from "@/actions/notification";
 
-type ActionStatus =
-  | { type: "success"; text: string }
-  | { type: "error"; text: string }
-  | null;
+type ActionStatus = { type: "success"; text: string } | { type: "error"; text: string } | null;
 
 export default function AdminReactivationNudgeRunner() {
   const [isRunning, setIsRunning] = useState(false);
@@ -67,4 +64,3 @@ export default function AdminReactivationNudgeRunner() {
     </div>
   );
 }
-

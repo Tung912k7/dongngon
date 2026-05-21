@@ -1,7 +1,10 @@
 "use client";
 
+import { logger } from "@/lib/logger";
+
+import { logger } from "@/lib/logger";
 import { useEffect } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { toast } from "sonner";
 import { Work } from "@/stores/work-store";
 import { useRouter } from "next/navigation";
@@ -17,7 +20,13 @@ interface WorkPreviewModalProps {
   initialSaved?: boolean;
 }
 
-export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initialSaved }: WorkPreviewModalProps) {
+export default function WorkPreviewModal({
+  work,
+  isOpen,
+  onClose,
+  isOwner,
+  initialSaved,
+}: WorkPreviewModalProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -67,7 +76,9 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
             <div className="hidden md:flex md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 md:flex-col bg-white">
               <div className="mb-auto space-y-8">
                 <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Phân loại</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">
+                    Phân loại
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest">
                       {work.type}
@@ -81,55 +92,65 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Thông tin</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">
+                    Thông tin
+                  </p>
                   <div className="space-y-3">
-                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                        <span className="text-black/40">Độ tuổi</span>
-                        <span>{work.age_rating?.toLowerCase() === 'all' ? 'Mọi độ tuổi' : work.age_rating}</span>
-                     </div>
-                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                        <span className="text-black/40">Quy tắc</span>
-                        <span>{work.rule || "N/A"}</span>
-                     </div>
-                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                        <span className="text-black/40">Trạng thái</span>
-                        <div className="flex items-center gap-2">
-                           <div className={`w-1.5 h-1.5 rounded-full ${
-                              work.status === "Hoàn thành" ? "bg-green-500" :
-                              work.status === "Đang viết" ? "bg-blue-500" :
-                              "bg-yellow-500"
-                           }`} />
-                           <span>{work.status}</span>
-                        </div>
-                     </div>
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                      <span className="text-black/40">Độ tuổi</span>
+                      <span>
+                        {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                      <span className="text-black/40">Quy tắc</span>
+                      <span>{work.rule || "N/A"}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
+                      <span className="text-black/40">Trạng thái</span>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            work.status === "Hoàn thành"
+                              ? "bg-green-500"
+                              : work.status === "Đang viết"
+                                ? "bg-blue-500"
+                                : "bg-yellow-500"
+                          }`}
+                        />
+                        <span>{work.status}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 pt-8 border-t border-black/5 flex flex-col gap-3">
-                <SaveWorkButton 
-                  workId={work.id.toString()} 
-                  initialSaved={initialSaved} 
-                  variant="full" 
+                <SaveWorkButton
+                  workId={work.id.toString()}
+                  initialSaved={initialSaved}
+                  variant="full"
                   className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center"
                 />
                 <button
                   onClick={() => {
                     const shareUrl = `${window.location.origin}/work/${work.id}`;
                     if (navigator.share) {
-                      navigator.share({
-                        title: work.title,
-                        text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
-                        url: shareUrl,
-                      }).catch(console.error);
+                      navigator
+                        .share({
+                          title: work.title,
+                          text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
+                          url: shareUrl,
+                        })
+                        .catch((error) => logger.error("Share failed", error as Error));
                     } else {
                       navigator.clipboard.writeText(shareUrl);
                       toast.success("Đã sao chép liên kết!");
                     }
                   }}
-                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform text-[10px] flex items-center justify-center gap-2"
+                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:bg-literary-gold hover:border-literary-gold hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
                 >
-                  SHARE
+                  CHIA SẺ
                 </button>
                 <button
                   onClick={() => {
@@ -146,12 +167,21 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
             {/* Main Content: Title & Text */}
             <div className="flex-1 p-6 md:p-14 flex flex-col relative">
               {/* Close Button */}
-              <button 
+              <button
                 onClick={onClose}
                 className="absolute top-4 right-4 md:top-6 md:right-6 text-black/40 hover:text-black transition-colors p-2 rounded-full"
                 title="Đóng"
               >
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -160,7 +190,9 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
                 <div className="mb-10 space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-[2px] bg-black" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">GIỚI THIỆU</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">
+                      GIỚI THIỆU
+                    </span>
                   </div>
                   <h2 className="text-2xl md:text-6xl font-ganh font-bold text-black leading-[1.4] tracking-tight break-words pb-2">
                     {work.title}
@@ -186,29 +218,31 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
 
                 {/* Mobile actions (visible only on small screens) */}
                 <div className="md:hidden mt-6 flex flex-col gap-3">
-                  <SaveWorkButton 
-                    workId={work.id.toString()} 
-                    initialSaved={initialSaved} 
+                  <SaveWorkButton
+                    workId={work.id.toString()}
+                    initialSaved={initialSaved}
                     variant="full"
-                    className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center" 
+                    className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center"
                   />
                   <button
                     onClick={() => {
                       const shareUrl = `${window.location.origin}/work/${work.id}`;
                       if (navigator.share) {
-                        navigator.share({
-                          title: work.title,
-                          text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
-                          url: shareUrl,
-                        }).catch(console.error);
+                        navigator
+                          .share({
+                            title: work.title,
+                            text: work.description || `Xem tác phẩm "${work.title}" trên Đồng ngôn`,
+                            url: shareUrl,
+                          })
+                          .catch((error) => logger.error("Share failed", error as Error));
                       } else {
                         navigator.clipboard.writeText(shareUrl);
                         toast.success("Đã sao chép liên kết!");
                       }
                     }}
-                    className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white text-[12px]"
+                    className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:bg-literary-gold hover:border-literary-gold hover:text-white transition-all text-[12px]"
                   >
-                    SHARE
+                    CHIA SẺ
                   </button>
                   <button
                     onClick={() => {
@@ -230,4 +264,3 @@ export default function WorkPreviewModal({ work, isOpen, onClose, isOwner, initi
 
   return createPortal(content, document.body);
 }
-

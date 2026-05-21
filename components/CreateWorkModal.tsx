@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { logger } from "@/lib/logger";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createWork } from "@/actions/work";
-import { m, AnimatePresence } from "framer-motion";
-import { WORK_TYPES, CATEGORY_OPTIONS } from "@/data/workTypes";
+import { AnimatePresence, m } from "framer-motion";
+import { CATEGORY_OPTIONS, WORK_TYPES } from "@/data/workTypes";
 import { PrimaryButton } from "./PrimaryButton";
 
 interface CreateWorkModalProps {
@@ -79,17 +80,17 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
     setFieldErrors({});
     setError(null);
-    
+
     // Timeout of 15 seconds for creation
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("TIMEOUT")), 15000)
     );
 
     try {
-      const result = await Promise.race([
-        createWork(formData),
-        timeoutPromise
-      ]) as { success: boolean; error?: string };
+      const result = (await Promise.race([createWork(formData), timeoutPromise])) as {
+        success: boolean;
+        error?: string;
+      };
 
       if (result.success) {
         setIsLoading(false);
@@ -111,7 +112,7 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       }
     } catch (err: unknown) {
       const e = err as Error;
-      console.error("Create work error:", e);
+      logger.error("Create work error:", e);
       if (e.message === "TIMEOUT") {
         setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
       } else {
@@ -135,11 +136,11 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
           className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-black hover:text-white cursor-pointer"
           title="Tạo tác phẩm mới"
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            strokeWidth="2.5" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2.5"
             stroke="currentColor"
             className="w-5 h-5 transition-colors"
           >
@@ -158,42 +159,56 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
               onClick={() => setIsOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            
+
             <m.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
             >
-              <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">Tạo tác phẩm mới</h2>
-              
+              <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">
+                Tạo tác phẩm mới
+              </h2>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">TIÊU ĐỀ</label>
+                  <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                    TIÊU ĐỀ
+                  </label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => {
-                       setFormData({ ...formData, title: e.target.value });
-                       if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: "" }));
+                      setFormData({ ...formData, title: e.target.value });
+                      if (fieldErrors.title) setFieldErrors((prev) => ({ ...prev, title: "" }));
                     }}
                     maxLength={100}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                     placeholder="Tên tác phẩm của bạn..."
                   />
-                  {fieldErrors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.title}</p>}
+                  {fieldErrors.title && (
+                    <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                      {fieldErrors.title}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">MÔ TẢ (TÙY CHỌN)</label>
-                    <span className={`text-[10px] font-bold ${formData.description.length > 450 ? 'text-red-500' : 'text-gray-400'}`}>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
+                      MÔ TẢ (TÙY CHỌN)
+                    </label>
+                    <span
+                      className={`text-[10px] font-bold ${formData.description.length > 450 ? "text-red-500" : "text-gray-400"}`}
+                    >
                       {formData.description.length}/500
                     </span>
                   </div>
                   <textarea
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value.slice(0, 500) })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value.slice(0, 500) })
+                    }
                     rows={3}
                     className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
                     placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
@@ -202,39 +217,52 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">THỂ LOẠI</label>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                      THỂ LOẠI
+                    </label>
                     <select
                       value={formData.category_type}
                       onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
                       className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
                     >
-                      {CATEGORY_OPTIONS.map(opt => (
+                      {CATEGORY_OPTIONS.map((opt) => (
                         <option key={opt}>{opt}</option>
                       ))}
                     </select>
                   </div>
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">HÌNH THỨC</label>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                      HÌNH THỨC
+                    </label>
                     <select
                       value={formData.hinh_thuc}
                       onChange={(e) => {
                         setFormData({ ...formData, hinh_thuc: e.target.value });
-                        if (fieldErrors.hinh_thuc) setFieldErrors(prev => ({ ...prev, hinh_thuc: "" }));
+                        if (fieldErrors.hinh_thuc)
+                          setFieldErrors((prev) => ({ ...prev, hinh_thuc: "" }));
                       }}
-                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? 'border-red-500 bg-red-50' : 'border-black'} rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
                     >
-                      <option value="" disabled>Chọn hình thức...</option>
-                      {WORK_TYPES[formData.category_type]?.subCategories.map(sub => (
+                      <option value="" disabled>
+                        Chọn hình thức...
+                      </option>
+                      {WORK_TYPES[formData.category_type]?.subCategories.map((sub) => (
                         <option key={sub}>{sub}</option>
                       ))}
                     </select>
-                    {fieldErrors.hinh_thuc && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{fieldErrors.hinh_thuc}</p>}
+                    {fieldErrors.hinh_thuc && (
+                      <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                        {fieldErrors.hinh_thuc}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">QUY TẮC</label>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                      QUY TẮC
+                    </label>
                     <select
                       value={formData.writing_rule}
                       onChange={(e) => setFormData({ ...formData, writing_rule: e.target.value })}
@@ -244,7 +272,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     </select>
                   </div>
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">ĐỘ TUỔI</label>
+                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                      ĐỘ TUỔI
+                    </label>
                     <select
                       value={formData.age_rating}
                       onChange={(e) => setFormData({ ...formData, age_rating: e.target.value })}
@@ -259,7 +289,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                 </div>
 
                 <div className="space-y-2 flex flex-col">
-                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">QUYỀN RIÊNG TƯ</label>
+                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
+                    QUYỀN RIÊNG TƯ
+                  </label>
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
@@ -286,7 +318,12 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   </button>
                   <PrimaryButton
                     type="submit"
-                    disabled={isLoading || isSubmitting.current || !formData.title.trim() || !formData.hinh_thuc}
+                    disabled={
+                      isLoading ||
+                      isSubmitting.current ||
+                      !formData.title.trim() ||
+                      !formData.hinh_thuc
+                    }
                     className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
                   >
                     {isLoading ? "..." : "TẠO TÁC PHẨM"}
@@ -300,4 +337,3 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     </>
   );
 }
-

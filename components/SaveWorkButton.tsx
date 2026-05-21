@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toggleSaveWork } from "@/actions/save-work";
-import { m, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { toast } from "sonner";
 
 interface SaveWorkButtonProps {
@@ -34,10 +34,10 @@ export default function SaveWorkButton({
     const nextSavedState = !isSaved;
     setIsSaved(nextSavedState);
     setIsAnimating(true);
-    
+
     try {
       const result = await toggleSaveWork(workId);
-      
+
       if (!result.success) {
         // Rollback on error
         setIsSaved(!nextSavedState);
@@ -138,4 +138,3 @@ export default function SaveWorkButton({
     </button>
   );
 }
-

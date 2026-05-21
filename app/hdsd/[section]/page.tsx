@@ -2,14 +2,14 @@
 // Section listing page — shows articles in a given Help Center section.
 // Now dynamically fetching from help_center_articles table.
 
-import React from 'react';
-import Link from 'next/link';
-import { HELP_CENTER_SECTIONS } from '@/data/helpCenter';
-import { getPublishedHDSDArticles } from '@/actions/hdsd';
-import HelpCenterBreadcrumb from '@/components/hdsd/HelpCenterBreadcrumb';
-import HelpCenterIconMap from '@/components/hdsd/HelpCenterIconMap';
-import type { HelpCenterArticleRecord } from '@/types/helpCenter';
-import { Metadata } from 'next';
+import React from "react";
+import Link from "next/link";
+import { HELP_CENTER_SECTIONS } from "@/data/helpCenter";
+import { getPublishedHDSDArticles } from "@/actions/hdsd";
+import HelpCenterBreadcrumb from "@/components/hdsd/HelpCenterBreadcrumb";
+import HelpCenterIconMap from "@/components/hdsd/HelpCenterIconMap";
+import type { HelpCenterArticleRecord } from "@/types/helpCenter";
+import { Metadata } from "next";
 
 interface HelpCenterSectionPageProps {
   params: Promise<{
@@ -20,9 +20,9 @@ interface HelpCenterSectionPageProps {
 export async function generateMetadata({ params }: HelpCenterSectionPageProps): Promise<Metadata> {
   const { section: sectionId } = await params;
   const section = HELP_CENTER_SECTIONS.find((s) => s.id === sectionId);
-  
+
   if (!section) return { title: "Không tìm thấy danh mục" };
-  
+
   return {
     title: `${section.title} | Hướng dẫn sử dụng`,
     description: section.description,
@@ -41,7 +41,7 @@ export default async function HelpCenterSectionPage({ params }: HelpCenterSectio
 
   // Find the section from static metadata (icons, titles)
   const section = HELP_CENTER_SECTIONS.find((s) => s.id === sectionId);
-  
+
   // Fetch only published articles belonging to this section from database
   const result = await getPublishedHDSDArticles();
   const allArticles = result.success ? result.data || [] : [];
@@ -62,7 +62,12 @@ export default async function HelpCenterSectionPage({ params }: HelpCenterSectio
         <div className="max-w-4xl mx-auto px-4 py-3">
           <HelpCenterBreadcrumb
             items={[
-              { label: 'Hướng dẫn sử dụng', href: '/hdsd', className: 'text-[#388186] font-bold underline decoration-dotted underline-offset-4' },
+              {
+                label: "Hướng dẫn sử dụng",
+                href: "/hdsd",
+                className:
+                  "text-[#388186] font-bold underline decoration-dotted underline-offset-4",
+              },
               { label: section.title },
             ]}
           />
@@ -72,11 +77,21 @@ export default async function HelpCenterSectionPage({ params }: HelpCenterSectio
       {/* Header */}
       <div className="max-w-4xl mx-auto px-4 pt-12 pb-8">
         <div className="flex items-center gap-4 mb-2">
-          <HelpCenterIconMap icon={section.icon ?? 'question'} size={40} className="text-neutral-800" />
-          <h1 className="text-4xl font-extrabold text-neutral-900 tracking-tight">{section.title}</h1>
+          <HelpCenterIconMap
+            icon={section.icon ?? "question"}
+            size={40}
+            className="text-neutral-800"
+          />
+          <h1 className="text-4xl font-extrabold text-neutral-900 tracking-tight">
+            {section.title}
+          </h1>
         </div>
-        <p className="text-neutral-500 text-lg ml-[56px] leading-relaxed max-w-2xl">{section.description}</p>
-        <p className="text-sm font-semibold text-neutral-400 mt-2 ml-[56px] uppercase tracking-wider">{articles.length} bài viết</p>
+        <p className="text-neutral-500 text-lg ml-[56px] leading-relaxed max-w-2xl">
+          {section.description}
+        </p>
+        <p className="text-sm font-semibold text-neutral-400 mt-2 ml-[56px] uppercase tracking-wider">
+          {articles.length} bài viết
+        </p>
       </div>
 
       {/* Article list */}
@@ -100,8 +115,18 @@ export default async function HelpCenterSectionPage({ params }: HelpCenterSectio
                   )}
                   <div className="flex items-center text-xs font-bold text-teal-600 uppercase tracking-widest group-hover:gap-2 transition-all">
                     Đọc thêm
-                    <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <svg
+                      className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
                     </svg>
                   </div>
                 </div>

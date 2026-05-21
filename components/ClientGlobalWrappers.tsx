@@ -1,15 +1,18 @@
 "use client";
 
+import { logger } from "@/lib/logger";
 import dynamic from "next/dynamic";
 import { ReactNode, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 import { LazyMotion } from "framer-motion";
 
-const WelcomeNotification = dynamic(() => import("@/components/WelcomeNotification"), { ssr: false });
+const WelcomeNotification = dynamic(() => import("@/components/WelcomeNotification"), {
+  ssr: false,
+});
 const SmoothScroll = dynamic(() => import("@/components/SmoothScroll"), { ssr: false });
 const ChangelogModal = dynamic(() => import("@/components/ChangelogModal"), { ssr: false });
-const loadFeatures = () => import("@/lib/framer-features").then(res => res.default);
+const loadFeatures = () => import("@/lib/framer-features").then((res) => res.default);
 const AUTO_LOGOUT_INACTIVE_DAYS = 30;
 const AUTO_LOGOUT_INACTIVE_MS = AUTO_LOGOUT_INACTIVE_DAYS * 24 * 60 * 60 * 1000;
 const LAST_ACTIVE_AT_KEY = "dongngon:last-active-at";
@@ -35,9 +38,7 @@ export function resolveGlobalModalQueue({
 
   if (!isUiStateLoading) {
     const shouldQueueWelcome =
-      !suppressWelcomeForSession &&
-      hasAcknowledgedWelcomeMessage === false &&
-      isWelcomeEnabled;
+      !suppressWelcomeForSession && hasAcknowledgedWelcomeMessage === false && isWelcomeEnabled;
 
     const shouldQueueChangelog = hasUser;
 
@@ -62,11 +63,7 @@ export function resolveGlobalModalQueue({
   };
 }
 
-export function ClientGlobalWrappers({ 
-  children 
-}: { 
-  children: ReactNode 
-}) {
+export function ClientGlobalWrappers({ children }: { children: ReactNode }) {
   const [hasAcknowledgedWelcomeMessage, setHasAcknowledgedWelcomeMessage] = useState(true);
   const [lastSeenChangelog, setLastSeenChangelog] = useState<string | null>(null);
   const [hasUser, setHasUser] = useState(false);
@@ -82,14 +79,17 @@ export function ClientGlobalWrappers({
   });
 
   useEffect(() => {
+    let isMounted = true;
     const supabase = createClient();
 
     const loadUiState = async (userOverride?: { id: string } | null) => {
+      if (!isMounted) return;
       setIsUiStateLoading(true);
 
-      const currentUser = userOverride === undefined
-        ? (await supabase.auth.getSession()).data.session?.user ?? null
-        : userOverride;
+      const currentUser =
+        userOverride === undefined
+          ? ((await supabase.auth.getSession()).data.session?.user ?? null)
+          : userOverride;
 
       if (!currentUser) {
         setHasUser(false);
@@ -128,13 +128,23 @@ export function ClientGlobalWrappers({
       setIsWelcomeEnabled(welcomeEnabled);
 
       if (error) {
-        console.error("[ClientGlobalWrappers] Profile fetch error:", error.code, error.message);
-        setHasAcknowledgedWelcomeMessage(true);
-        setLastSeenChangelog(null);
-        setIsUiStateLoading(false);
+        const isAbortError =
+          error.name === "AbortError" || error.message?.toLowerCase().includes("abort");
+
+        if (isAbortError) {
+          return;
+        }
+
+        logger.error("[ClientGlobalWrappers] Profile fetch error:", error.code, error.message);
+        if (isMounted) {
+          setHasAcknowledgedWelcomeMessage(true);
+          setLastSeenChangelog(null);
+          setIsUiStateLoading(false);
+        }
         return;
       }
 
+      if (!isMounted) return;
       setHasAcknowledgedWelcomeMessage(profile?.has_acknowledged_welcome_message ?? true);
       setLastSeenChangelog(profile?.last_seen_changelog ?? null);
       setIsUiStateLoading(false);
@@ -142,11 +152,14 @@ export function ClientGlobalWrappers({
 
     loadUiState();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       void loadUiState(session?.user ?? null);
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -221,4 +234,3 @@ export function ClientGlobalWrappers({
     </LazyMotion>
   );
 }
-

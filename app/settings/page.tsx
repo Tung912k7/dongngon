@@ -4,7 +4,9 @@ import SettingsClient from "@/components/settings/SettingsClient";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     redirect("/dang-nhap");
   }
@@ -25,10 +27,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <SettingsClient 
-        user={user} 
-        initialNickname={profile?.nickname || ""} 
-        initialAvatarUrl={profile?.avatar_url || ""} 
+      <SettingsClient
+        user={user}
+        initialNickname={profile?.nickname || ""}
+        initialAvatarUrl={profile?.avatar_url || ""}
         initialBirthday={privateData?.birthday || null}
         initialDescription={profile?.description || ""}
         initialIsPrivate={profile?.is_private || false}
@@ -37,4 +39,3 @@ export default async function SettingsPage() {
     </div>
   );
 }
-

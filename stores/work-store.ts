@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { FilterState } from '@/app/kho-tang/types';
+import { create } from "zustand";
+import { FilterState } from "@/app/kho-tang/types";
 
 export interface Work {
   id: string;
@@ -51,13 +51,12 @@ export const useWorkStore = create<WorkState>((set) => ({
   currentPage: 1,
   isLoading: false,
   setAllWorks: (works) => set({ allWorks: works }),
-  setFilters: (newFilters) => 
-    set((state) => ({ 
+  setFilters: (newFilters) =>
+    set((state) => ({
       filters: { ...state.filters, ...newFilters },
-      currentPage: 1 // Reset to page 1 on filter changes
+      currentPage: 1, // Reset to page 1 on filter changes
     })),
   setCurrentPage: (page) => set({ currentPage: page }),
   setIsLoading: (isLoading) => set({ isLoading }),
   resetFilters: () => set({ filters: defaultFilters, currentPage: 1 }),
 }));
-

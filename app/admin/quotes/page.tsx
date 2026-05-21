@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 
-
 import { createClient } from "@/utils/supabase/client";
 
 type QuoteItem = {
@@ -218,14 +217,14 @@ export default function AdminQuotesPage() {
       }
 
       return [quote.text, quote.author, quote.source ?? ""].some((value) =>
-        value.toLowerCase().includes(normalizedQuery),
+        value.toLowerCase().includes(normalizedQuery)
       );
     });
   }, [quotes, searchQuery, statusFilter]);
 
   const quoteIdentitySet = useMemo(() => {
     return new Set(
-      quotes.map((quote) => buildQuoteIdentityKey(quote.text, quote.author, quote.source)),
+      quotes.map((quote) => buildQuoteIdentityKey(quote.text, quote.author, quote.source))
     );
   }, [quotes]);
 
@@ -233,7 +232,10 @@ export default function AdminQuotesPage() {
     setFormState(defaultFormState);
   };
 
-  const handleInputChange = <K extends keyof QuoteFormState>(field: K, value: QuoteFormState[K]) => {
+  const handleInputChange = <K extends keyof QuoteFormState>(
+    field: K,
+    value: QuoteFormState[K]
+  ) => {
     setFormState((previous) => ({ ...previous, [field]: value }));
   };
 
@@ -332,7 +334,7 @@ export default function AdminQuotesPage() {
       }
 
       return [nextQuote, ...previous].sort(
-        (left, right) => +new Date(right.updated_at) - +new Date(left.updated_at),
+        (left, right) => +new Date(right.updated_at) - +new Date(left.updated_at)
       );
     });
 
@@ -426,7 +428,10 @@ export default function AdminQuotesPage() {
 
       if (error) {
         if (isDuplicateQuoteError(error)) {
-          setMessage({ type: "error", text: "Import thất bại. Có trích dẫn trùng lặp với dữ liệu hiện tại." });
+          setMessage({
+            type: "error",
+            text: "Import thất bại. Có trích dẫn trùng lặp với dữ liệu hiện tại.",
+          });
           return;
         }
 
@@ -443,7 +448,10 @@ export default function AdminQuotesPage() {
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? `Không thể đọc file Excel: ${error.message}` : "Không thể đọc file Excel.",
+        text:
+          error instanceof Error
+            ? `Không thể đọc file Excel: ${error.message}`
+            : "Không thể đọc file Excel.",
       });
     } finally {
       event.target.value = "";
@@ -467,9 +475,7 @@ export default function AdminQuotesPage() {
     }
 
     const nextQuote = data as QuoteItem;
-    setQuotes((previous) =>
-      previous.map((item) => (item.id === nextQuote.id ? nextQuote : item)),
-    );
+    setQuotes((previous) => previous.map((item) => (item.id === nextQuote.id ? nextQuote : item)));
   };
 
   const handleDelete = async (quote: QuoteItem) => {
@@ -502,12 +508,25 @@ export default function AdminQuotesPage() {
           href="/admin"
           className="p-2 hover:bg-slate-100 rounded-full transition-colors border-2 border-transparent hover:border-black"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            />
           </svg>
         </Link>
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tighter italic">Quản lý trích dẫn</h1>
+          <h1 className="text-4xl font-black uppercase tracking-tighter italic">
+            Quản lý trích dẫn
+          </h1>
           <p className="mt-2 text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
             Hệ thống footer quotes cho admin
           </p>
@@ -520,7 +539,9 @@ export default function AdminQuotesPage() {
           <p className="mt-3 text-4xl font-black">{stats.total}</p>
         </div>
         <div className="bg-white rounded-[1.75rem] border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6">
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500">Đang hiển thị</p>
+          <p className="text-xs font-black uppercase tracking-widest text-slate-500">
+            Đang hiển thị
+          </p>
           <p className="mt-3 text-4xl font-black">{stats.active}</p>
         </div>
         <div className="bg-white rounded-[1.75rem] border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6">
@@ -543,7 +564,9 @@ export default function AdminQuotesPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest pl-1">Nội dung</label>
+                <label className="text-xs font-black uppercase tracking-widest pl-1">
+                  Nội dung
+                </label>
                 <textarea
                   value={formState.text}
                   onChange={(event) => handleInputChange("text", event.target.value)}
@@ -555,7 +578,9 @@ export default function AdminQuotesPage() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest pl-1">Tác giả</label>
+                  <label className="text-xs font-black uppercase tracking-widest pl-1">
+                    Tác giả
+                  </label>
                   <input
                     type="text"
                     value={formState.author}
@@ -584,7 +609,9 @@ export default function AdminQuotesPage() {
                   onChange={(event) => handleInputChange("is_active", event.target.checked)}
                   className="h-5 w-5 accent-black"
                 />
-                <span className="text-sm font-bold uppercase tracking-[0.12em]">Hiển thị trong footer</span>
+                <span className="text-sm font-bold uppercase tracking-[0.12em]">
+                  Hiển thị trong footer
+                </span>
               </label>
 
               <div className="flex flex-col gap-3 pt-2 sm:flex-row">
@@ -610,10 +637,15 @@ export default function AdminQuotesPage() {
           </div>
 
           <div className="rounded-[1.75rem] border-4 border-dashed border-slate-300 bg-slate-50/70 p-6">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Import Excel</p>
-            <h3 className="mt-2 text-xl font-black uppercase tracking-tight italic">Thêm nhiều trích dẫn</h3>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+              Import Excel
+            </p>
+            <h3 className="mt-2 text-xl font-black uppercase tracking-tight italic">
+              Thêm nhiều trích dẫn
+            </h3>
             <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
-              Dùng file Excel với các cột: text, author, source, is_active. Nếu is_active để trống hệ thống sẽ tự bật hiển thị.
+              Dùng file Excel với các cột: text, author, source, is_active. Nếu is_active để trống
+              hệ thống sẽ tự bật hiển thị.
             </p>
 
             <div className="mt-5 space-y-3">
@@ -645,14 +677,19 @@ export default function AdminQuotesPage() {
           <h2 className="text-xl font-black uppercase tracking-widest mb-6">Danh sách hiện tại</h2>
 
           {message ? (
-            <div className={`mb-6 rounded-[1.25rem] border-4 p-4 font-bold ${message.type === "error" ? "border-red-500 bg-red-50 text-red-700" : "border-emerald-500 bg-emerald-50 text-emerald-700"}`}>
+            <div
+              className={`mb-6 rounded-[1.25rem] border-4 p-4 font-bold ${message.type === "error" ? "border-red-500 bg-red-50 text-red-700" : "border-emerald-500 bg-emerald-50 text-emerald-700"}`}
+            >
               {message.text}
             </div>
           ) : null}
 
           <div className="mb-6 grid gap-4 rounded-[1.5rem] border-4 border-black bg-white p-5 md:grid-cols-[minmax(0,1fr)_14rem]">
             <div className="space-y-2">
-              <label htmlFor="quote-search" className="text-xs font-black uppercase tracking-widest pl-1">
+              <label
+                htmlFor="quote-search"
+                className="text-xs font-black uppercase tracking-widest pl-1"
+              >
                 Tìm kiếm
               </label>
               <input
@@ -666,7 +703,10 @@ export default function AdminQuotesPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="quote-status-filter" className="text-xs font-black uppercase tracking-widest pl-1">
+              <label
+                htmlFor="quote-status-filter"
+                className="text-xs font-black uppercase tracking-widest pl-1"
+              >
                 Trạng thái
               </label>
               <select
@@ -710,7 +750,9 @@ export default function AdminQuotesPage() {
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-4">
                         <div className="flex flex-wrap items-center gap-3">
-                          <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-[0.14em] ${quote.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-[0.14em] ${quote.is_active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}
+                          >
                             {quote.is_active ? "Đang hiển thị" : "Đang ẩn"}
                           </span>
                           <span className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">

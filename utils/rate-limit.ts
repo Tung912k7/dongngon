@@ -54,7 +54,10 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): Ra
 }
 
 type SupabaseLike = {
-  rpc: (fn: string, params?: Record<string, unknown>) => PromiseLike<{
+  rpc: (
+    fn: string,
+    params?: Record<string, unknown>
+  ) => PromiseLike<{
     data: unknown;
     error: { message?: string } | null;
   }>;
@@ -86,7 +89,9 @@ export async function checkRateLimitDistributed(
 
     const allowed = Boolean((row as { allowed?: boolean }).allowed);
     const remaining = Number((row as { remaining?: number }).remaining ?? 0);
-    const retryAfterSeconds = Number((row as { retry_after_seconds?: number }).retry_after_seconds ?? windowSeconds);
+    const retryAfterSeconds = Number(
+      (row as { retry_after_seconds?: number }).retry_after_seconds ?? windowSeconds
+    );
 
     return {
       allowed,
@@ -100,4 +105,3 @@ export async function checkRateLimitDistributed(
     return checkRateLimit(key, limit, windowMs);
   }
 }
-

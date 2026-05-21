@@ -19,13 +19,13 @@ const config: Config = {
         "literary-gold": "#D4AF37",
       },
       keyframes: {
-        'subtle-zoom': {
-          '0%': { transform: 'scale(1.05)' },
-          '100%': { transform: 'scale(1.15)' },
-        }
+        "subtle-zoom": {
+          "0%": { transform: "scale(1.05)" },
+          "100%": { transform: "scale(1.15)" },
+        },
       },
       animation: {
-        'subtle-zoom': 'subtle-zoom 20s ease-in-out infinite alternate',
+        "subtle-zoom": "subtle-zoom 20s ease-in-out infinite alternate",
       },
       fontFamily: {
         quicksand: ["var(--font-quicksand)", "sans-serif"],
@@ -38,4 +38,3 @@ const config: Config = {
 };
 export default config;
 // Force rebuild 2026-03-01
-

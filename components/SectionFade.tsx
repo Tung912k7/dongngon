@@ -1,12 +1,12 @@
 "use client";
 
-import { m, useTransform, useScroll } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { m, useScroll, useTransform } from "framer-motion";
+import { ReactNode, useRef } from "react";
 
-export default function SectionFade({ 
-  children, 
-  className = "" 
-}: { 
+export default function SectionFade({
+  children,
+  className = "",
+}: {
   children: ReactNode;
   className?: string;
 }) {
@@ -22,13 +22,8 @@ export default function SectionFade({
   const scale = useTransform(scrollYProgress, [0, 1], [0.97, 1]);
 
   return (
-    <m.div
-      ref={ref}
-      style={{ opacity, scale }}
-      className={className}
-    >
+    <m.div ref={ref} style={{ opacity, scale }} className={className}>
       {children}
     </m.div>
   );
 }
-

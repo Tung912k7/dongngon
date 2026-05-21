@@ -23,7 +23,6 @@ const ganhType = localFont({
   preload: true,
 });
 
-
 const beVietnamPro = Be_Vietnam_Pro({
   weight: ["400", "500", "700"],
   subsets: ["latin", "vietnamese"],
@@ -36,8 +35,19 @@ export const metadata: Metadata = {
     default: "Đồng ngôn | Ngẫu hứng, Kho tàng văn học, Văn thơ, Cùng nhau sáng tạo",
     template: "%s | Đồng ngôn",
   },
-  description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
-  keywords: ["sáng tác thơ văn", "văn học cộng đồng", "viết lách", "ngẫu hứng", "đồng ngôn", "sáng tạo", "kho tàng", "sự tự do", "văn chương"],
+  description:
+    "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+  keywords: [
+    "sáng tác thơ văn",
+    "văn học cộng đồng",
+    "viết lách",
+    "ngẫu hứng",
+    "đồng ngôn",
+    "sáng tạo",
+    "kho tàng",
+    "sự tự do",
+    "văn chương",
+  ],
   authors: [{ name: "Đồng ngôn" }],
   creator: "Đồng ngôn",
   publisher: "Đồng ngôn",
@@ -54,7 +64,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Đồng ngôn - Sao còn chưa bấm vào...?",
-    description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+    description:
+      "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
     url: "https://dongngon.vercel.app",
     siteName: "Đồng ngôn",
     locale: "vi_VN",
@@ -63,7 +74,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Đồng ngôn - Sao còn chưa bấm vào...?",
-    description: "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+    description:
+      "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
   },
   icons: {
     icon: "/webp/logo.webp",
@@ -105,64 +117,67 @@ export default function RootLayout({
                 {
                   "@type": "WebSite",
                   "@id": "https://dongngon.vercel.app/#website",
-                  "url": "https://dongngon.vercel.app",
-                  "name": "Đồng ngôn",
-                  "alternateName": "Đồng ngôn",
-                  "description": "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
-                  "inLanguage": "vi",
-                  "publisher": { "@id": "https://dongngon.vercel.app/#organization" },
-                  "potentialAction": {
+                  url: "https://dongngon.vercel.app",
+                  name: "Đồng ngôn",
+                  alternateName: "Đồng ngôn",
+                  description:
+                    "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+                  inLanguage: "vi",
+                  publisher: { "@id": "https://dongngon.vercel.app/#organization" },
+                  potentialAction: {
                     "@type": "SearchAction",
-                    "target": {
+                    target: {
                       "@type": "EntryPoint",
-                      "urlTemplate": "https://dongngon.vercel.app/kho-tang?query={search_term}"
+                      urlTemplate: "https://dongngon.vercel.app/kho-tang?query={search_term}",
                     },
-                    "query-input": "required name=search_term"
-                  }
+                    "query-input": "required name=search_term",
+                  },
                 },
                 {
                   "@type": "Organization",
                   "@id": "https://dongngon.vercel.app/#organization",
-                  "name": "Đồng ngôn",
-                  "url": "https://dongngon.vercel.app",
-                  "logo": {
+                  name: "Đồng ngôn",
+                  url: "https://dongngon.vercel.app",
+                  logo: {
                     "@type": "ImageObject",
                     "@id": "https://dongngon.vercel.app/#logo",
-                    "url": "https://dongngon.vercel.app/webp/logo.webp",
-                    "contentUrl": "https://dongngon.vercel.app/webp/logo.webp",
-                    "caption": "Đồng ngôn",
-                    "inLanguage": "vi",
-                    "width": "800",
-                    "height": "600"
+                    url: "https://dongngon.vercel.app/webp/logo.webp",
+                    contentUrl: "https://dongngon.vercel.app/webp/logo.webp",
+                    caption: "Đồng ngôn",
+                    inLanguage: "vi",
+                    width: "800",
+                    height: "600",
                   },
-                  "image": { "@id": "https://dongngon.vercel.app/#logo" },
-                  "description": "Nền tảng sáng tác văn học cộng đồng — nơi nhiều người cùng viết nên một tác phẩm.",
-                  "foundingDate": "2026"
+                  image: { "@id": "https://dongngon.vercel.app/#logo" },
+                  description:
+                    "Nền tảng sáng tác văn học cộng đồng — nơi nhiều người cùng viết nên một tác phẩm.",
+                  foundingDate: "2026",
                 },
                 {
                   "@type": "WebPage",
                   "@id": "https://dongngon.vercel.app/#webpage",
-                  "url": "https://dongngon.vercel.app",
-                  "name": "Đồng ngôn | Ngẫu hứng, Kho tàng văn học, Văn thơ, Cùng nhau sáng tạo",
-                  "isPartOf": { "@id": "https://dongngon.vercel.app/#website" },
-                  "about": { "@id": "https://dongngon.vercel.app/#organization" },
-                  "description": "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
-                  "inLanguage": "vi"
+                  url: "https://dongngon.vercel.app",
+                  name: "Đồng ngôn | Ngẫu hứng, Kho tàng văn học, Văn thơ, Cùng nhau sáng tạo",
+                  isPartOf: { "@id": "https://dongngon.vercel.app/#website" },
+                  about: { "@id": "https://dongngon.vercel.app/#organization" },
+                  description:
+                    "Cùng nhau xây dựng và khám phá kho tàng văn học độc đáo và sáng tạo tại Đồng ngôn, với cơ chế nối câu kì quái cùng nhiều điều thú vị đang chờ bạn khám phá...",
+                  inLanguage: "vi",
                 },
                 {
                   "@type": "BreadcrumbList",
                   "@id": "https://dongngon.vercel.app/#breadcrumb",
-                  "itemListElement": [
+                  itemListElement: [
                     {
                       "@type": "ListItem",
-                      "position": 1,
-                      "name": "Trang chủ",
-                      "item": "https://dongngon.vercel.app"
-                    }
-                  ]
-                }
-              ]
-            })
+                      position: 1,
+                      name: "Trang chủ",
+                      item: "https://dongngon.vercel.app",
+                    },
+                  ],
+                },
+              ],
+            }),
           }}
         />
       </head>
@@ -172,8 +187,14 @@ export default function RootLayout({
         <CSPostHogProvider>
           <Toaster position="top-right" expand={false} richColors closeButton />
           <ClientGlobalWrappers>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-white focus:text-black focus:font-bold focus:border-2 focus:border-black focus:m-4 focus:rounded-[4px]"
+            >
+              Chuyển đến nội dung chính
+            </a>
             <Header />
-            <main className="flex-1 w-full">
+            <main id="main-content" className="flex-1 w-full">
               {children}
             </main>
             <Footer />
@@ -183,4 +204,3 @@ export default function RootLayout({
     </html>
   );
 }
-

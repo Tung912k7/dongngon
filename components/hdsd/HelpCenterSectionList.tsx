@@ -1,9 +1,9 @@
 // components/hdsd/HelpCenterSectionList.tsx
 // Displays a 3-column responsive grid of Help Center section cards.
 
-import React from 'react';
-import { HelpCenterSection } from '@/types/helpCenter';
-import HelpCenterSectionCard from './HelpCenterSectionCard';
+import React from "react";
+import { HelpCenterSection } from "@/types/helpCenter";
+import HelpCenterSectionCard from "./HelpCenterSectionCard";
 
 interface HelpCenterSectionListProps {
   sections: (HelpCenterSection & { articleCount?: number })[];
@@ -36,4 +36,3 @@ const HelpCenterSectionList: React.FC<HelpCenterSectionListProps> = ({
 };
 
 export default HelpCenterSectionList;
-

@@ -19,14 +19,14 @@ interface SettingsClientProps {
 
 type SettingsTabId = "profile" | "account" | "interface";
 
-export default function SettingsClient({ 
-  user, 
-  initialNickname, 
-  initialAvatarUrl, 
-  initialBirthday, 
+export default function SettingsClient({
+  user,
+  initialNickname,
+  initialAvatarUrl,
+  initialBirthday,
   initialDescription,
   initialIsPrivate,
-  initialPublicFields
+  initialPublicFields,
 }: SettingsClientProps) {
   const [activeTab, setActiveTab] = useState<SettingsTabId>("profile");
 
@@ -39,9 +39,8 @@ export default function SettingsClient({
   return (
     <div className="w-full min-h-screen bg-[#f5f5f5] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-        
         {/* Header Section */}
-        <m.div 
+        <m.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 lg:mb-16 space-y-4"
@@ -57,15 +56,19 @@ export default function SettingsClient({
           </p>
         </m.div>
 
-        <style dangerouslySetInnerHTML={{__html: `
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
           @media (min-width: 1024px) {
             .settings-sidebar {
               width: 320px !important;
               flex: none !important;
             }
           }
-        `}} />
-        
+        `,
+          }}
+        />
+
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Sidebar Tabs */}
           <div className="settings-sidebar w-full shrink-0 space-y-4">
@@ -83,18 +86,16 @@ export default function SettingsClient({
                   {tab.label}
                 </span>
                 {activeTab === tab.id && (
-                  <m.div 
-                    layoutId="activeTabIcon"
-                    className="w-2 h-2 bg-white rounded-full" 
-                  />
+                  <m.div layoutId="activeTabIcon" className="w-2 h-2 bg-white rounded-full" />
                 )}
               </button>
             ))}
-            
+
             {/* Context Card (Optional Brutalist accent) */}
             <div className="hidden lg:block p-8 border-2 border-dashed border-black/20 rounded-[2rem] bg-black/5 mt-10">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed text-black/40">
-                Hãy đảm bảo thông tin của bạn luôn chính xác để có trải nghiệm tốt nhất trên Đồng Ngôn.
+                Hãy đảm bảo thông tin của bạn luôn chính xác để có trải nghiệm tốt nhất trên Đồng
+                Ngôn.
               </p>
             </div>
           </div>
@@ -109,9 +110,9 @@ export default function SettingsClient({
               className="bg-white border-2 border-black rounded-[2.5rem] p-6 md:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,0.03)]"
             >
               {activeTab === "profile" && (
-                <ProfileTab 
-                  initialNickname={initialNickname} 
-                  initialAvatarUrl={initialAvatarUrl} 
+                <ProfileTab
+                  initialNickname={initialNickname}
+                  initialAvatarUrl={initialAvatarUrl}
                   initialBirthday={initialBirthday}
                   initialDescription={initialDescription}
                   initialIsPrivate={initialIsPrivate}
@@ -128,4 +129,3 @@ export default function SettingsClient({
     </div>
   );
 }
-
