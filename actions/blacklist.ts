@@ -1,10 +1,11 @@
 "use server";
 
+import { logger } from "@/lib/logger";
 import { createClient } from "@/utils/supabase/server";
 
 /**
  * Server Action to check if a string contains any blacklisted words.
- * This should be used on both client and server to avoid RLS issues 
+ * This should be used on both client and server to avoid RLS issues
  * and keep the blacklist logic centralized.
  */
 export async function checkBlacklist(text: string): Promise<string | null> {
@@ -12,7 +13,7 @@ export async function checkBlacklist(text: string): Promise<string | null> {
 
   try {
     const supabase = await createClient();
-    
+
     // Fetch from blacklist_words
     const { data: blacklist, error } = await supabase
       .from("blacklist_words")
@@ -20,23 +21,23 @@ export async function checkBlacklist(text: string): Promise<string | null> {
 
     if (error) {
       // Log more detail on the server, but don't crash
-      console.error("Server-side blacklist fetch error:", error.message, error.details);
+      logger.error("Server-side blacklist fetch error", error);
       return null;
     }
 
     if (!blacklist || blacklist.length === 0) return null;
 
     const textLower = text.toLowerCase();
-    
+
     for (const item of blacklist) {
       if (item.is_regex) {
         try {
-          const regex = new RegExp(item.pattern, 'i');
+          const regex = new RegExp(item.pattern, "i");
           if (regex.test(textLower)) {
             return item.pattern;
           }
         } catch {
-          console.error("Invalid regex in database:", item.pattern);
+          logger.error("Invalid regex in database", { pattern: item.pattern });
         }
       } else {
         const word = item.pattern.toLowerCase();
@@ -46,7 +47,7 @@ export async function checkBlacklist(text: string): Promise<string | null> {
       }
     }
   } catch (err) {
-    console.error("Unexpected error in checkBlacklist:", err);
+    logger.error("Unexpected error in checkBlacklist", err);
   }
 
   return null;
@@ -55,10 +56,16 @@ export async function checkBlacklist(text: string): Promise<string | null> {
 export async function getBlacklistWords() {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { success: false, data: [] };
 
-    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    const { data: privateData } = await supabase
+      .from("user_private_data")
+      .select("role")
+      .eq("id", user.id)
+      .single();
     if (privateData?.role !== "admin") return { success: false, data: [] };
 
     const { data, error } = await supabase
@@ -67,7 +74,7 @@ export async function getBlacklistWords() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("[Blacklist] Fetch error:", error);
+      logger.error("[Blacklist] Fetch error", error);
       return { success: false, data: [] };
     }
 
@@ -76,12 +83,12 @@ export async function getBlacklistWords() {
       id: item.id,
       word: item.pattern,
       is_regex: item.is_regex,
-      created_at: item.created_at
+      created_at: item.created_at,
     }));
 
     return { success: true, data: mappedData || [] };
   } catch (error) {
-    console.error("[Blacklist] Fetch error:", error);
+    logger.error("[Blacklist] Fetch error", error);
     return { success: false, data: [] };
   }
 }
@@ -89,15 +96,26 @@ export async function getBlacklistWords() {
 export async function addBlacklistWord(word: string, isRegex: boolean) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Unauthorized" };
 
-    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    const { data: privateData } = await supabase
+      .from("user_private_data")
+      .select("role")
+      .eq("id", user.id)
+      .single();
     if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
 
-    const { error } = await supabase
-      .from("blacklist_words")
-      .insert([{ pattern: word.trim(), is_regex: isRegex, created_by: user.id, type: isRegex ? 'regex' : 'word' }]);
+    const { error } = await supabase.from("blacklist_words").insert([
+      {
+        pattern: word.trim(),
+        is_regex: isRegex,
+        created_by: user.id,
+        type: isRegex ? "regex" : "word",
+      },
+    ]);
 
     if (error) {
       if (error.code === "23505") {
@@ -107,30 +125,34 @@ export async function addBlacklistWord(word: string, isRegex: boolean) {
     }
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Unknown error" };
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return { success: false, error: errorMessage };
   }
 }
 
 export async function deleteBlacklistWord(id: string) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Unauthorized" };
 
-    const { data: privateData } = await supabase.from("user_private_data").select("role").eq("id", user.id).single();
+    const { data: privateData } = await supabase
+      .from("user_private_data")
+      .select("role")
+      .eq("id", user.id)
+      .single();
     if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
 
-    const { error } = await supabase
-      .from("blacklist_words")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("blacklist_words").delete().eq("id", id);
 
     if (error) return { success: false, error: error.message };
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Unknown error" };
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return { success: false, error: errorMessage };
   }
 }
-
