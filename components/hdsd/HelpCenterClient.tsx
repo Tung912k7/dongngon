@@ -69,7 +69,7 @@ export default function HelpCenterClient({
                 Kết quả tìm kiếm
               </h2>
               <p className="text-[10px] md:text-xs text-black/40 tracking-[0.2em] uppercase font-bold">
-                Cho "{searchQuery}" — {searchResults.length} bài viết
+                Cho &quot;{searchQuery}&quot; — {searchResults.length} bài viết
               </p>
             </div>
 

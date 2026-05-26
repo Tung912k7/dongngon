@@ -19,8 +19,8 @@ export async function getOGRenderer() {
 
   return createRenderer({
     templates: {
-      "brutalist-work": brutalistWorkTemplate,
-      "brutalist-quote": brutalistQuoteTemplate,
+      "brutalist-work": brutalistWorkTemplate as never,
+      "brutalist-quote": brutalistQuoteTemplate as never,
     },
   });
 }

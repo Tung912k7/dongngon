@@ -5,7 +5,8 @@ import { useZenStore } from "@/stores/zen-store";
 import { AnimatePresence, m } from "framer-motion";
 
 const ZenModeWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { isZenMode, setZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
+  const setZenMode = useZenStore((state) => state.setZenMode);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {

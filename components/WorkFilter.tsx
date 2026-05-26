@@ -13,30 +13,6 @@ export default function WorkFilter({ filters, onApply }: WorkFilterProps) {
   // Local state for filters (synced from parent on open)
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
-  const FilterApplyButton = ({
-    onClick,
-    children,
-  }: {
-    onClick: () => void;
-    children: React.ReactNode;
-  }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    return (
-      <button
-        onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="px-4 py-2 text-sm font-medium rounded-md transition-all h-[38px] border border-gray-800 flex items-center justify-center"
-        style={{
-          backgroundColor: isHovered ? "black" : "white",
-          color: isHovered ? "white" : "black",
-        }}
-      >
-        {children}
-      </button>
-    );
-  };
-
   // Sync local state when parent filters change
   useEffect(() => {
     setLocalFilters(filters);

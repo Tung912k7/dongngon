@@ -173,14 +173,14 @@ export default async function DongNgonPage({
   const { data: rawWorks, count, error } = await query;
 
   if (error) {
-    logger.error("[KhoTang] Server fetch error:", error.code, error.message);
+    logger.error("[KhoTang] Server fetch error", error, { code: error.code, message: error.message });
   }
 
   // 4. IMPROVED RANKING (In-memory for current page)
   const sortedWorks = [...(rawWorks || [])].sort((a, b) => {
     if (!q) return 0;
 
-    const score = (w: Work) => {
+    const score = (w: WorkRow) => {
       let s = 0;
       const qLower = q.toLowerCase();
       if (w.title?.toLowerCase().includes(qLower)) s += 100;

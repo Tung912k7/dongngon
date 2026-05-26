@@ -1,13 +1,14 @@
 "use client";
 
 import { logger } from "@/lib/logger";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import Image from "next/image";
 import { AnimatePresence, m } from "framer-motion";
-import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
+import dynamic from "next/dynamic";
+import type { Area, CropperProps } from "react-easy-crop";
+const Cropper = dynamic(() => import("react-easy-crop"), { ssr: false }) as unknown as ComponentType<Partial<CropperProps>>;
 import { getCroppedImg } from "@/utils/imageCrop";
 import { createClient } from "@/utils/supabase/client";
 import { PrimaryButton } from "./PrimaryButton";

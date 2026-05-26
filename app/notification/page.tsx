@@ -26,7 +26,7 @@ export default function NotificationPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const router = useRouter();
-  const { fetchUnreadCount } = useNotificationStore();
+  const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
 
   useEffect(() => {
     const fetchNotifications = async () => {

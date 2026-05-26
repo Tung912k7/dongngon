@@ -12,6 +12,7 @@ import NotificationModal from "./NotificationModal";
 import { validatePoeticForm } from "@/utils/validation";
 import { useUserStore } from "@/stores/user-store";
 import { useEditorStore } from "@/stores/editor-store";
+import { useShallow } from "zustand/react/shallow";
 import ConfirmModal from "./ConfirmModal";
 import { formatCountdown, getTimeUntilNextVN0 } from "@/utils/date";
 
@@ -35,7 +36,7 @@ export default function Editor({
   const router = useRouter();
 
   // Zustand Stores
-  const { user } = useUserStore();
+  const user = useUserStore((state) => state.user);
   const {
     content,
     isSubmitting,
@@ -49,7 +50,22 @@ export default function Editor({
     showNotification,
     closeNotification,
     reset,
-  } = useEditorStore();
+  } = useEditorStore(
+    useShallow((state) => ({
+      content: state.content,
+      isSubmitting: state.isSubmitting,
+      error: state.error,
+      warning: state.warning,
+      notification: state.notification,
+      setContent: state.setContent,
+      setIsSubmitting: state.setIsSubmitting,
+      setError: state.setError,
+      setWarning: state.setWarning,
+      showNotification: state.showNotification,
+      closeNotification: state.closeNotification,
+      reset: state.reset,
+    }))
+  );
 
   const isSubmittingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

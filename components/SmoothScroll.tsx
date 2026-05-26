@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const ReactLenis = dynamic(() => import("lenis/react").then((mod) => mod.ReactLenis), {
   ssr: false,
@@ -9,6 +10,23 @@ const ReactLenis = dynamic(() => import("lenis/react").then((mod) => mod.ReactLe
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const timer = setTimeout(() => {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [pathname, enabled]);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;

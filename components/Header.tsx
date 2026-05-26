@@ -4,8 +4,6 @@ import { logger } from "@/lib/logger";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LinkedButton, PrimaryButton } from "./PrimaryButton";
-import CreateWorkModal from "./CreateWorkModal";
 import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
@@ -14,6 +12,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useUserStore } from "@/stores/user-store";
 import { useZenStore } from "@/stores/zen-store";
+import { useShallow } from "zustand/react/shallow";
 
 interface HeaderProps {
   user?: User | null;
@@ -27,21 +26,33 @@ interface HeaderProps {
  * Mobile: Hamburger menu + Search bar
  * Desktop: Pill navigation + Centered search bar
  */
-const Header = ({
-  user: initialUser = null,
-  nickname: initialNickname = null,
-  role: initialRole = null,
-}: HeaderProps) => {
+const Header = ({}: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { user, setUser, nickname, setNickname, role, setRole } = useUserStore();
-  const { unreadCount, fetchUnreadCount } = useNotificationStore();
+  const { user, setUser, nickname, setNickname, role, setRole } = useUserStore(
+    useShallow((state) => ({
+      user: state.user,
+      setUser: state.setUser,
+      nickname: state.nickname,
+      setNickname: state.setNickname,
+      role: state.role,
+      setRole: state.setRole,
+    }))
+  );
+
+  const { unreadCount, fetchUnreadCount } = useNotificationStore(
+    useShallow((state) => ({
+      unreadCount: state.unreadCount,
+      fetchUnreadCount: state.fetchUnreadCount,
+    }))
+  );
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = useMemo(() => createClient(), []);
-  const { isZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
 
   const loadUserProfile = useCallback(
     async (userOverride?: User | null) => {
@@ -64,7 +75,7 @@ const Header = ({
         .single();
 
       if (error) {
-        logger.error("[Header] Profile fetch error:", error.code, error.message);
+        logger.error("[Header] Profile fetch error", error, { code: error.code, message: error.message });
       }
 
       const { data: privateData } = await supabase
@@ -83,7 +94,7 @@ const Header = ({
       );
       setRole(privateData?.role || currentUser.user_metadata?.role || "user");
     },
-    [supabase]
+    [supabase, setUser, setNickname, setRole]
   );
 
   // Fetch unread notification count at Header level
@@ -92,7 +103,7 @@ const Header = ({
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
-  }, [user?.id, fetchUnreadCount]);
+  }, [user, fetchUnreadCount]);
 
   useEffect(() => {
     void loadUserProfile();
@@ -238,7 +249,7 @@ const Header = ({
             <Link
               href="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none"
+              className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none pt-1"
             >
               Đồng ngôn
               <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
@@ -295,7 +306,7 @@ const Header = ({
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none"
+                  className="font-ganh text-[28px] leading-none font-black tracking-tighter text-black flex items-center gap-1.5 focus:outline-none pt-1"
                 >
                   Đồng ngôn
                   <span className="w-2 h-2 rounded-full bg-black mb-1"></span>
@@ -500,7 +511,7 @@ const Header = ({
             <Link
               href="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="font-ganh text-2xl leading-none font-black tracking-tighter text-black flex items-center gap-2 focus:outline-none"
+              className="font-ganh text-2xl leading-none font-black tracking-tighter text-black flex items-center gap-2 focus:outline-none pt-1.5"
             >
               Đồng ngôn
             </Link>

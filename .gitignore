@@ -33,6 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
 
 # vercel
 .vercel
@@ -67,3 +73,10 @@ seo_analysis.md
 social-media-strategy.md
 admin-hide-user-feature.md
 plan-sepayIntegrationAndThankYouPopup.prompt.md
+
+# API keys and secrets
+*.key
+*.pem
+secrets.json
+config/secrets.yml
+.secrets

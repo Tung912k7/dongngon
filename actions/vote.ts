@@ -3,13 +3,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
-import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
-import { logger } from "@/lib/logger";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
-import { logger } from "@/lib/logger";
 import { captureServerEvent } from "@/utils/posthog-server";
-import { logger } from "@/lib/logger";
 
 const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VOTE_LIMIT = 10;

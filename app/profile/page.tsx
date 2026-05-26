@@ -132,7 +132,7 @@ export default async function ProfilePage({
     .single();
 
   if (profileError) {
-    logger.error("[Profile] Fetch error:", profileError.code, profileError.message);
+    logger.error("[Profile] Fetch error", profileError, { code: profileError.code, message: profileError.message });
   }
 
   // Fetch private data (role and birthday)
@@ -308,7 +308,7 @@ export default async function ProfilePage({
         const finalWork = Array.isArray(workData) ? workData[0] : workData;
 
         if (!finalWork) return null;
-        return sanitizeWork(finalWork as Work);
+        return sanitizeWork(finalWork as unknown as WorkLike);
       })
       .filter(Boolean) as Work[];
   }
@@ -347,7 +347,7 @@ export default async function ProfilePage({
                 ],
               },
             ],
-          }),
+          }).replace(/</g, "\\u003c"),
         }}
       />
       <section className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">

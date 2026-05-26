@@ -20,35 +20,23 @@ const HelpCenterSectionCard: React.FC<HelpCenterSectionCardProps> = ({ section, 
     <Link
       href={`/hdsd/${section.id}`}
       id={`help-section-${section.id}`}
-      className="
-        group flex flex-col items-start
-        p-6
-        rounded
-        border-2 border-black
-        bg-white
-        w-full
-        min-h-[200px]
-        text-left
-        cursor-pointer
-        transition-all duration-200 ease-out
-        hover:-translate-y-0.5
-        focus:outline-none focus:bg-neutral-50
-      "
+      onClick={onClick}
+      className="group flex flex-col items-start p-6 rounded border-2 border-black bg-white w-full min-h-[200px] text-left cursor-pointer transition-all duration-200 ease-out hover:-translate-y-0.5 focus:outline-none focus:bg-neutral-50"
       aria-label={`Xem chủ đề ${section.title}`}
     >
       {/* Icon */}
-      <span className="mb-5 text-neutral-700">
+      <div className="mb-5 text-neutral-700">
         <HelpCenterIconMap icon={section.icon} size={36} />
-      </span>
+      </div>
 
       {/* Title */}
-      <span className="font-ganh font-bold text-lg md:text-xl text-neutral-900 mb-1.5 leading-snug uppercase tracking-tight">
+      <h3 className="font-ganh font-bold text-lg md:text-xl text-neutral-900 mb-1.5 leading-snug uppercase tracking-tight">
         {section.title}
-      </span>
+      </h3>
 
       {/* Description */}
       {section.description && (
-        <span className="text-neutral-500 text-sm leading-relaxed mb-4">{section.description}</span>
+        <p className="text-neutral-500 text-sm leading-relaxed mb-4">{section.description}</p>
       )}
 
       {/* Article count */}

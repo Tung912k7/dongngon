@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
@@ -16,7 +16,7 @@ interface WorkLibraryItemProps {
   initialSaved?: boolean;
 }
 
-export default function WorkLibraryItem({
+const WorkLibraryItem = memo(function WorkLibraryItem({
   work,
   isOwner,
   initialSaved = false,
@@ -215,4 +215,6 @@ export default function WorkLibraryItem({
       )}
     </div>
   );
-}
+});
+
+export default WorkLibraryItem;

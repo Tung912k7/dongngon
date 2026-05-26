@@ -3,6 +3,15 @@
 import { logger } from "@/lib/logger";
 import { createClient } from "@/utils/supabase/server";
 
+interface CachedBlacklistWord {
+  pattern: string;
+  is_regex: boolean;
+}
+
+let blacklistCache: CachedBlacklistWord[] | null = null;
+let cacheExpiry = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 /**
  * Server Action to check if a string contains any blacklisted words.
  * This should be used on both client and server to avoid RLS issues
@@ -12,20 +21,29 @@ export async function checkBlacklist(text: string): Promise<string | null> {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    const supabase = await createClient();
+    const now = Date.now();
+    let blacklist = blacklistCache;
 
-    // Fetch from blacklist_words
-    const { data: blacklist, error } = await supabase
-      .from("blacklist_words")
-      .select("pattern, is_regex");
+    if (!blacklist || now >= cacheExpiry) {
+      const supabase = await createClient();
 
-    if (error) {
-      // Log more detail on the server, but don't crash
-      logger.error("Server-side blacklist fetch error", error);
-      return null;
+      // Fetch from blacklist_words
+      const { data, error } = await supabase
+        .from("blacklist_words")
+        .select("pattern, is_regex");
+
+      if (error) {
+        // Log more detail on the server, but don't crash
+        logger.error("Server-side blacklist fetch error", error);
+        return null;
+      }
+
+      blacklist = data || [];
+      blacklistCache = blacklist;
+      cacheExpiry = now + CACHE_TTL;
     }
 
-    if (!blacklist || blacklist.length === 0) return null;
+    if (blacklist.length === 0) return null;
 
     const textLower = text.toLowerCase();
 
@@ -124,6 +142,10 @@ export async function addBlacklistWord(word: string, isRegex: boolean) {
       return { success: false, error: error.message };
     }
 
+    // Invalidate the cache
+    blacklistCache = null;
+    cacheExpiry = 0;
+
     return { success: true };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -149,6 +171,10 @@ export async function deleteBlacklistWord(id: string) {
     const { error } = await supabase.from("blacklist_words").delete().eq("id", id);
 
     if (error) return { success: false, error: error.message };
+
+    // Invalidate the cache
+    blacklistCache = null;
+    cacheExpiry = 0;
 
     return { success: true };
   } catch (error: unknown) {

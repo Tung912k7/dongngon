@@ -4,7 +4,7 @@ import { logger } from "@/lib/logger";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { m } from "framer-motion";
+
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";

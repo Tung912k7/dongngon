@@ -142,7 +142,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                 ],
               },
             ],
-          }),
+          }).replace(/</g, "\\u003c"),
         }}
       />
       {/* ─── Breadcrumb ─── */}
@@ -218,7 +218,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                 >
                   <ReactMarkdown
                     components={{
-                      h2: ({ node, children, ...props }) => {
+                      h2: ({ children, ...props }) => {
                         const label = String(children);
                         const idx = headers.findIndex((h) => h.label === label);
                         return (
@@ -231,7 +231,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                           </h2>
                         );
                       },
-                      h3: ({ node, children, ...props }) => {
+                      h3: ({ children, ...props }) => {
                         const label = String(children);
                         const idx = headers.findIndex((h) => h.label === label);
                         return (

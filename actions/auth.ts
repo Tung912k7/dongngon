@@ -3,9 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
-import { logger } from "@/lib/logger";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
-import { logger } from "@/lib/logger";
 
 const FORGOT_PASSWORD_IP_LIMIT = 5;
 const FORGOT_PASSWORD_EMAIL_LIMIT = 3;

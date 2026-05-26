@@ -1,51 +1,44 @@
 "use client";
 
+import { useCallback } from "react";
 import { LinkedButton } from "@/components/PrimaryButton";
 import HowItWorks from "@/components/HowItWorks";
+import GridBackground from "./GridBackground";
+import { captureClientEvent } from "@/utils/posthog-client";
 
 const HeroSectionV2 = () => {
+  const handleStartClick = useCallback(() => {
+    void captureClientEvent("cta_click", { label: "Bắt đầu", page: "homepage" });
+  }, []);
+
   return (
     <section className="min-h-[100dvh] h-full w-screen flex flex-col justify-center items-center relative overflow-hidden bg-white text-black snap-start shrink-0 font-['Be_Vietnam_Pro']">
       {/* Brutalist Grid Background */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.2]"
-        style={{
-          backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <GridBackground opacity={0.2} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 h-full flex flex-col justify-center relative w-full z-10">
         {/* Hero Content */}
         <div className="flex flex-col items-center justify-center min-h-[70vh] md:min-h-[80vh] gap-8 md:gap-12 pb-6 md:pb-12 w-full">
-          {/* New Punchy Headline */}
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 pt-10 md:pt-16">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-black uppercase">
               Đồng ngôn
             </h1>
             <p className="text-xl md:text-3xl font-bold text-literary-gold uppercase tracking-tight">
-              Cộng tác sáng tác. Mỗi người một câu.
+              {/*Cộng tác sáng tác. Mỗi người một câu.*/}
+              [Slogan - Chúng mình đợi đề xuất của mọi người]
             </p>
           </div>
 
           <p className="text-center text-base md:text-lg text-black/80 max-w-xl px-4 sm:px-0 leading-relaxed font-medium">
-            Nơi nhiều người nối chữ — cùng viết nên tác phẩm chung. Tham gia bằng một câu, tiếp nối
-            tác phẩm, khám phá kho tàng sáng tác.
+            {/*Đồng ngôn là một không gian mở, nơi mọi người thể hiện sự sáng tạo, cá tính của bản thân qua những câu văn. Những câu văn đó rồi sẽ dẫn câu chuyện đi đến đâu?*/}
+            Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full justify-center px-4 sm:px-0">
             <LinkedButton
               href="/dang-nhap"
               ariaLabel="Bắt đầu: tạo hoặc tham gia một tác phẩm mới"
-              onClick={() => {
-                import("posthog-js").then((m) => {
-                  try {
-                    m.default.capture("cta_click", { label: "Bắt đầu", page: "homepage" });
-                  } catch (e) {
-                    // ignore analytics errors
-                  }
-                });
-              }}
+              onClick={handleStartClick}
               className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-[4px] border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 hover:!bg-literary-gold hover:!text-white hover:!border-literary-gold active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
             >
               Bắt đầu
@@ -60,7 +53,7 @@ const HeroSectionV2 = () => {
             </LinkedButton>
           </div>
 
-          <p className="mt-3 text-sm text-black/60">Tạo hoặc tham gia — mọi dòng đều góp phần.</p>
+          <p className="mt-3 text-sm text-black/60">Trải nghiệm ngay!!!</p>
 
           {/* How it works microflow */}
           <HowItWorks />

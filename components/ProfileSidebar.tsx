@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { ComponentType, useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, m } from "framer-motion";
 import { toast } from "sonner";
@@ -8,8 +8,9 @@ import { updateProfile } from "@/actions/profile";
 import { sanitizeNickname } from "@/utils/sanitizer";
 import { createClient } from "@/utils/supabase/client";
 import { getCroppedImg } from "@/utils/imageCrop";
-import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
+import dynamic from "next/dynamic";
+import type { Area, CropperProps } from "react-easy-crop";
+const Cropper = dynamic(() => import("react-easy-crop"), { ssr: false }) as unknown as ComponentType<Partial<CropperProps>>;
 import { LinkedButton, PrimaryButton } from "./PrimaryButton";
 import { formatDate } from "@/utils/date";
 import { getImageUrl } from "@/utils/image";

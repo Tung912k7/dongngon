@@ -328,7 +328,7 @@ export function LoginForm() {
       }
     } catch (err: unknown) {
       const error = err as Error;
-      logger.error(error);
+      logger.error("Error during login request", error);
       if (error.message === "TIMEOUT") {
         showNotification("Yêu cầu quá hạn (Timeout). Vui lòng kiểm tra lại kết nối.", "error");
       } else {

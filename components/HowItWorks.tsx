@@ -6,18 +6,18 @@ import { m } from "framer-motion";
 const steps = [
   {
     num: "1",
-    title: "Chọn bắt đầu",
-    desc: "Bắt đầu một câu hoặc tham gia",
+    title: "Mở bếp",
+    desc: "Nhấn nút Bắt đầu để mở ra một hành trình mới",
   },
   {
     num: "2",
-    title: "Viết một dòng",
-    desc: "Thêm câu, câu thơ, hoặc đoạn",
+    title: "Nấu ăn",
+    desc: "Tham gia vào các tác phẩm, thể hiện bản thân"
   },
   {
     num: "3",
-    title: "Xem thành phẩm",
-    desc: "Mọi người tiếp nối, tác phẩm lớn dần",
+    title: "Thưởng thức",
+    desc: "Khám phá và cảm thụ các tác phẩm khác",
   },
 ];
 

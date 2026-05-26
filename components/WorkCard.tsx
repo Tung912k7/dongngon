@@ -10,6 +10,7 @@ interface WorkCardProps {
   isOwner?: boolean;
   hideMenu?: boolean;
   variant?: "default" | "home";
+  layout?: "grid" | "list";
   initialSaved?: boolean;
   onPreview?: (work: Work, initialSaved: boolean) => void;
   onEdit?: (work: Work) => void;
@@ -20,6 +21,7 @@ const WorkCard = memo(function WorkCard({
   isOwner,
   hideMenu,
   variant = "default",
+  layout = "grid",
   initialSaved = false,
   onPreview,
   onEdit,
@@ -30,6 +32,7 @@ const WorkCard = memo(function WorkCard({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const isHome = variant === "home";
+  const isList = layout === "list";
 
   useEffect(() => {
     if (showPrivateNotice) {
@@ -62,117 +65,181 @@ const WorkCard = memo(function WorkCard({
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="w-full relative"
     >
-      <div
-        onClick={handleCardClick}
-        className={`group relative w-full bg-white border-2 border-black p-5 sm:p-7 flex flex-col min-h-[260px] sm:h-[340px] transition-all duration-300 cursor-pointer overflow-hidden
-          ${isHome ? "rounded hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]" : "hover:-translate-y-1"}
-        `}
-      >
-        {/* Decorative Inner Border Reveal (on hover) */}
-        {!isHome && (
-          <div className="absolute inset-1 border border-black/0 group-hover:border-black/10 transition-all duration-500 pointer-events-none" />
-        )}
+      {isList ? (
+        <div
+          onClick={handleCardClick}
+          className="group relative w-full pt-[36px] pb-[36px] flex flex-col transition-all duration-300 cursor-pointer overflow-hidden"
+        >
+          <div className="flex justify-between items-start w-full gap-4">
+            {/* Bên trái: Tiêu đề & Tags */}
+            <div className="flex-grow flex flex-col">
+              <h2 className="text-xl sm:text-2xl font-bold font-ganh leading-[36px] text-black hover:text-literary-gold transition-colors line-clamp-2 break-words">
+                {work.title}
+              </h2>
+              <div className="h-[36px] flex items-center gap-3 text-xs sm:text-sm flex-wrap overflow-hidden">
+                <span className="font-black uppercase tracking-[0.2em] text-black/70">
+                  {work.type}
+                </span>
+                <span className="text-black/30">•</span>
+                <span className="font-bold uppercase tracking-widest text-black/60">
+                  {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
+                </span>
+                {work.rule && (
+                  <>
+                    <span className="text-black/30">•</span>
+                    <span className="font-black uppercase tracking-tighter text-black/70">
+                      {work.rule}
+                    </span>
+                  </>
+                )}
+                <span className="text-black/30">•</span>
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-2.5 h-2.5 rounded-full ${work.status === "Hoàn thành" ? "bg-green-600" : work.status === "Đang viết" ? "bg-blue-600" : "bg-yellow-600"}`} />
+                  <span className="font-bold uppercase tracking-widest text-black/70">
+                    {work.status}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-        {/* Top Header: Metadata & Geometric Accent */}
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-black flex-shrink-0" />
-              <span
-                className={`text-[11px] uppercase tracking-[0.2em] ${isHome ? "font-bold text-black" : "font-black text-black/70"}`}
+            {/* Bên phải: Tác giả & Ngày */}
+            <div className="flex-shrink-0 flex flex-col items-end text-right min-w-[120px]">
+              <div
+                className="h-[36px] flex items-center cursor-pointer group/author"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (work.is_author_private && !isOwner) {
+                    setShowPrivateNotice(true);
+                  } else {
+                    router.push(`/profile?id=${work.created_by}`);
+                  }
+                }}
               >
-                {work.type}
+                <span className="font-ganh text-base sm:text-lg font-bold text-black hover:text-literary-gold transition-colors">
+                  {work.author_nickname}
+                </span>
+              </div>
+              {!isHome && (
+                <div className="h-[36px] flex items-center text-xs sm:text-sm font-bold text-black/60 uppercase tracking-widest">
+                  {formatDate(work.created_at || new Date().toISOString())}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          onClick={handleCardClick}
+          className={`group relative w-full bg-transparent pt-[36px] px-5 sm:px-7 pb-[36px] flex flex-col min-h-[288px] sm:h-[360px] transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1`}
+          style={{
+            backgroundImage: "linear-gradient(transparent 95%, rgba(0,0,0,0.1) 95%)",
+            backgroundSize: "100% 2.25rem",
+          }}
+        >
+          {/* Remove inner border */}
+
+          {/* Top Header: Metadata & Geometric Accent */}
+          <div className={`flex justify-between items-start mb-[36px] ${isHome ? "h-[36px]" : "h-[72px]"}`}>
+            <div className="flex flex-col">
+              <div className="h-[36px] flex items-center gap-2">
+                <div className="w-2.5 h-2.5 bg-black flex-shrink-0" />
+                <span
+                  className={`text-xs sm:text-sm uppercase tracking-[0.2em] ${isHome ? "font-bold text-black" : "font-black text-black/70"}`}
+                >
+                  {work.type}
+                </span>
+              </div>
+              {!isHome && (
+                <div className="h-[36px] flex items-center text-xs sm:text-sm font-bold text-black/60 uppercase tracking-widest pl-4.5">
+                  {formatDate(work.created_at || new Date().toISOString())}
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-end">
+              <span
+                className={`h-[36px] flex items-center text-xs sm:text-sm font-bold uppercase tracking-widest ${isHome ? "text-black" : "text-black"}`}
+              >
+                {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
+              </span>
+              {work.rule && !isHome && (
+                <span className="h-[36px] flex items-center text-xs sm:text-sm font-black uppercase tracking-tighter text-black/70">
+                  {work.rule}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Center: High-Impact Title */}
+          <div className="flex-grow">
+            <h2
+              className={`text-xl sm:text-2xl md:text-3xl font-ganh leading-[36px] tracking-tight text-black line-clamp-3 break-words
+              ${isHome ? "font-bold uppercase group-hover:text-black" : "font-bold group-hover:text-literary-gold transition-colors duration-500"}
+            `}
+            >
+              {work.title}
+            </h2>
+          </div>
+
+          {/* Bottom: Status & Author Signature */}
+          <div className="mt-auto pt-[36px] flex flex-col sm:flex-row sm:items-center justify-between gap-0">
+            <div className="h-[36px] flex items-center gap-2.5">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  work.status === "Hoàn thành"
+                    ? "bg-green-600"
+                    : work.status === "Đang viết"
+                      ? "bg-blue-600"
+                      : "bg-yellow-600"
+                }`}
+              />
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-black/70">
+                {work.status}
               </span>
             </div>
-            {!isHome && (
-              <div className="text-[11px] font-bold text-black/60 uppercase tracking-widest pl-4.5">
-                {formatDate(work.created_at || new Date().toISOString())}
-              </div>
-            )}
-          </div>
 
-          <div className="flex flex-col items-end gap-1.5">
-            <span
-              className={`text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 border border-black ${isHome ? "bg-black text-white" : "bg-transparent text-black"}`}
+            <div
+              className="h-[36px] flex items-center relative group/author self-start sm:self-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (work.is_author_private && !isOwner) {
+                  setShowPrivateNotice(true);
+                } else {
+                  router.push(`/profile?id=${work.created_by}`);
+                }
+              }}
             >
-              {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
-            </span>
-            {work.rule && !isHome && (
-              <span className="text-[11px] font-black uppercase tracking-tighter text-black/70">
-                {work.rule}
+              <span
+                className={`font-ganh text-lg sm:text-xl font-bold transition-colors duration-300
+                 ${isHome ? "group-hover/author:text-black" : "group-hover/author:text-literary-gold"}
+               `}
+              >
+                {work.author_nickname}
               </span>
-            )}
+            </div>
           </div>
+
+          {/* Decorative Random Lines (Home Variant Only) */}
+          {isHome && (
+            <div className="absolute bottom-4 right-4 flex flex-col items-end gap-1 pointer-events-none opacity-20">
+              <div
+                className="h-[2px] bg-black"
+                style={{ width: `${(parseInt(work.id.slice(-1), 16) % 30) + 10}px` }}
+              />
+              <div
+                className="h-[2px] bg-black"
+                style={{ width: `${(parseInt(work.id.slice(-2), 16) % 50) + 20}px` }}
+              />
+              <div
+                className="h-[2px] bg-black"
+                style={{ width: `${(parseInt(work.id.slice(-3), 16) % 20) + 15}px` }}
+              />
+            </div>
+          )}
         </div>
-
-        {/* Center: High-Impact Title */}
-        <div className="flex-grow flex flex-col justify-center py-4">
-          <h2
-            className={`text-xl sm:text-2xl md:text-3xl font-ganh leading-[1.3] tracking-tight text-black line-clamp-3 break-words
-            ${isHome ? "font-bold uppercase group-hover:text-black" : "font-bold group-hover:text-literary-gold transition-colors duration-500"}
-          `}
-          >
-            {work.title}
-          </h2>
-        </div>
-
-        {/* Bottom: Status & Author Signature */}
-        <div className="mt-auto pt-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-t border-black/5">
-          <div className="flex items-center gap-2.5">
-            <div
-              className={`w-2 h-2 rounded-full border border-black/10 ${
-                work.status === "Hoàn thành"
-                  ? "bg-green-600"
-                  : work.status === "Đang viết"
-                    ? "bg-blue-600"
-                    : "bg-yellow-600"
-              }`}
-            />
-            <span className="text-[11px] font-bold uppercase tracking-widest text-black/70">
-              {work.status}
-            </span>
-          </div>
-
-          <div
-            className="relative group/author self-start sm:self-auto"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (work.is_author_private && !isOwner) {
-                setShowPrivateNotice(true);
-              } else {
-                router.push(`/profile?id=${work.created_by}`);
-              }
-            }}
-          >
-            <span
-              className={`font-ganh text-base sm:text-lg font-bold border-b-2 transition-colors duration-300 pb-0.5
-               ${isHome ? "border-black group-hover/author:border-black" : "border-black group-hover/author:border-literary-gold"}
-             `}
-            >
-              {work.author_nickname}
-            </span>
-          </div>
-        </div>
-
-        {/* Decorative Random Lines (Home Variant Only) */}
-        {isHome && (
-          <div className="absolute bottom-4 right-4 flex flex-col items-end gap-1 pointer-events-none opacity-20">
-            <div
-              className="h-[2px] bg-black"
-              style={{ width: `${(parseInt(work.id.slice(-1), 16) % 30) + 10}px` }}
-            />
-            <div
-              className="h-[2px] bg-black"
-              style={{ width: `${(parseInt(work.id.slice(-2), 16) % 50) + 20}px` }}
-            />
-            <div
-              className="h-[2px] bg-black"
-              style={{ width: `${(parseInt(work.id.slice(-3), 16) % 20) + 15}px` }}
-            />
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Actions Menu Button - Floating on top */}
       {isOwner && !hideMenu && (

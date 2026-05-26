@@ -30,7 +30,7 @@ export default function Feed({
   limitType?: string;
 }) {
   const { onSelectContribution, selectedContributionId } = useContributionSelection();
-  const { isZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
   const [contributions, setContributions] = useState<FeedContribution[]>(initialContributions);
 
   // Infinite scroll state

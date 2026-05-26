@@ -135,7 +135,7 @@ export function ClientGlobalWrappers({ children }: { children: ReactNode }) {
           return;
         }
 
-        logger.error("[ClientGlobalWrappers] Profile fetch error:", error.code, error.message);
+        logger.error("[ClientGlobalWrappers] Profile fetch error", error, { code: error.code, message: error.message });
         if (isMounted) {
           setHasAcknowledgedWelcomeMessage(true);
           setLastSeenChangelog(null);

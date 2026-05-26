@@ -11,7 +11,18 @@ import { useZenStore } from "@/stores/zen-store";
 export default function Footer() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
   const [isLoveOpen, setIsLoveOpen] = useState(false);
-  const { isZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
+
+  const handleAboutUsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (window.location.pathname === "/") {
+      e.preventDefault();
+      const element = document.getElementById("about-us");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", "#about-us");
+      }
+    }
+  };
 
   const proseLinks = PROSE_SUBCATEGORIES;
   const poetryLinks = ["Tự do", "Tứ ngôn", "Ngũ ngôn", "Lục ngôn", "Thất ngôn", "Bát ngôn"];
@@ -115,8 +126,8 @@ export default function Footer() {
                     </li>
                     <li>
                       <Link
-                        href="/ve-chung-toi"
-                        prefetch={false}
+                        href="/#about-us"
+                        onClick={handleAboutUsClick}
                         className="transition-opacity hover:opacity-70"
                       >
                         Về chúng mình

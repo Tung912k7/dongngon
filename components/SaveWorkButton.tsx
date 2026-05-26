@@ -46,7 +46,7 @@ export default function SaveWorkButton({
         // Ensure state is synced with server response
         setIsSaved(result.saved!);
       }
-    } catch (error) {
+    } catch {
       // Rollback on exception
       setIsSaved(!nextSavedState);
       toast.error("Đã xảy ra lỗi khi kết nối máy chủ.");

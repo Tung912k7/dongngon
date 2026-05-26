@@ -7,7 +7,6 @@ import { AnimatePresence, m } from "framer-motion";
 import { Contribution } from "@/types/database";
 import { useZenStore } from "@/stores/zen-store";
 import { reportContribution } from "@/actions/notification";
-import { useContributionSelection } from "./WorkPageLayout";
 
 const REPORT_REASONS = [
   "Spam, quảng cáo rác",
@@ -38,7 +37,8 @@ export default function ContributionSidebar({
   workId,
   initialSaved = false,
 }: ContributionSidebarProps) {
-  const { isZenMode, toggleZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
+  const toggleZenMode = useZenStore((state) => state.toggleZenMode);
   const router = useRouter();
 
   const [copied, setCopied] = useState(false);

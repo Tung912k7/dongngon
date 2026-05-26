@@ -1,14 +1,13 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { LinkedButton } from "./PrimaryButton";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { logger } from "@/lib/logger";
 
 interface Work {
   id: string;
   title: string;
   author_nickname: string;
+  created_by?: string;
 }
 
 interface Contribution {
@@ -29,34 +28,39 @@ interface Story {
   sentences: Sentence[];
 }
 
-const ContributionShowcase = () => {
-  const [stories, setStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);
+const ContributionShowcase = async () => {
+  const supabase = await createClient();
+  let stories: Story[] = [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const supabase = createClient();
+  try {
+    // Fetch hidden profiles
+    const { data: hiddenProfiles, error: hiddenError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("is_hidden", true);
 
-      // Fetch 2 public works
-      const { data: works, error: worksError } = await supabase
-        .from("works")
-        .select("id, title, author_nickname")
-        .eq("privacy", "Public")
-        .eq("is_test", false)
-        .limit(2);
+    if (hiddenError) {
+      logger.error("Error fetching hidden profiles for showcase", hiddenError);
+    }
 
-      if (worksError) {
-        logger.error("Error fetching works for showcase", worksError);
-        setLoading(false);
-        return;
-      }
+    const hiddenUserIds = (hiddenProfiles || []).map((p) => p.id);
 
-      if (!works || works.length === 0) {
-        setStories([]);
-        setLoading(false);
-        return;
-      }
+    // Fetch 2 public works, excluding those by hidden users
+    let query = supabase
+      .from("works")
+      .select("id, title, author_nickname, created_by")
+      .eq("privacy", "Public")
+      .eq("is_test", false);
 
+    if (hiddenUserIds.length > 0) {
+      query = query.not("created_by", "in", `(${hiddenUserIds.join(",")})`);
+    }
+
+    const { data: works, error: worksError } = await query.limit(2);
+
+    if (worksError) {
+      logger.error("Error fetching works for showcase", worksError);
+    } else if (works && works.length > 0) {
       // Fetch contributions for these works
       const workIds = works.map((w: Work) => w.id);
       const { data: contributions, error: contribError } = await supabase
@@ -67,34 +71,29 @@ const ContributionShowcase = () => {
 
       if (contribError) {
         logger.error("Error fetching contributions for showcase", contribError);
-        setLoading(false);
-        return;
+      } else {
+        // Map to component structure
+        stories = works.map((work: Work) => {
+          const workContribs = contributions?.filter((c: Contribution) => c.work_id === work.id) || [];
+
+          // Count unique contributors
+          const uniqueContributors = new Set(workContribs.map((c: Contribution) => c.author_nickname)).size;
+
+          return {
+            id: work.id,
+            title: work.title,
+            contributors: uniqueContributors,
+            sentences: workContribs.map((c: Contribution) => ({
+              text: c.content,
+              author: c.author_nickname || "Vô danh",
+            })),
+          };
+        });
       }
-
-      // Map to component structure
-      const mappedStories = works.map((work: Work) => {
-        const workContribs = contributions?.filter((c: Contribution) => c.work_id === work.id) || [];
-
-        // Count unique contributors
-        const uniqueContributors = new Set(workContribs.map((c: Contribution) => c.author_nickname)).size;
-
-        return {
-          id: work.id,
-          title: work.title,
-          contributors: uniqueContributors,
-          sentences: workContribs.map((c: Contribution) => ({
-            text: c.content,
-            author: c.author_nickname || "Vô danh",
-          })),
-        };
-      });
-
-      setStories(mappedStories);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+    }
+  } catch (error) {
+    logger.error("Unexpected error in ContributionShowcase", error);
+  }
 
   return (
     <section className="py-20 md:py-32 bg-white text-black font-['Be_Vietnam_Pro'] relative overflow-hidden border-t-2 border-black">
@@ -110,24 +109,22 @@ const ContributionShowcase = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-black mb-4">
-            Những đóng góp sôi nổi
+            Lịch sử đóng góp
           </h2>
           <div className="w-24 h-2 bg-literary-gold mx-auto mb-6" />
           <p className="text-lg text-black/70 max-w-2xl mx-auto">
-            Xem cách mọi người cùng nhau dệt nên những câu chuyện
+            Quá trình hình thành của các tác phẩm
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {loading ? (
-            <div className="col-span-2 text-center text-black/50">Đang tải tác phẩm...</div>
-          ) : stories.length === 0 ? (
-            <div className="col-span-2 text-center text-black/50">Chưa có tác phẩm công khai.</div>
+          {stories.length === 0 ? (
+            <div className="col-span-2 text-center text-black/50">Chưa có tác phẩm nào :( </div>
           ) : (
             stories.map((story) => (
               <div
                 key={story.id}
-                className="border-4 border-black p-6 md:p-8 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between min-h-[350px]"
+                className="border-4 border-black p-6 md:p-8 bg-white flex flex-col justify-between min-h-[350px]"
               >
                 <div>
                   <div className="flex justify-between items-center mb-6">
@@ -148,7 +145,7 @@ const ContributionShowcase = () => {
                       >
                         <div className="absolute left-[-5px] top-1/2 transform -translate-y-1/2 w-2 h-2 bg-black rounded-full" />
                         <p className="text-base md:text-lg text-black leading-relaxed">
-                          "{sentence.text}"
+                          &quot;{sentence.text}&quot;
                         </p>
                         <p className="text-xs text-black/50 mt-1 font-bold">— {sentence.author}</p>
                       </div>
@@ -173,9 +170,9 @@ const ContributionShowcase = () => {
         <div className="text-center mt-16">
           <LinkedButton
             href="/kho-tang"
-            className="!px-10 !py-4 text-xl font-bold uppercase tracking-widest border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="!px-10 !py-4 text-xl font-bold uppercase tracking-widest border-2 border-black transition-all"
           >
-            Khám phá toàn bộ kho tàng
+            Khám phá kho tàng
           </LinkedButton>
         </div>
       </div>

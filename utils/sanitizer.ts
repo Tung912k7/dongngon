@@ -31,9 +31,8 @@ export function sanitizeInput(input: string, shouldTrim: boolean = true): string
  */
 export function escapeHTML(input: string): string {
   if (!input) return "";
-  // React and Next.js handle HTML escaping automatically for text content and metadata.
-  // Manual escaping here leads to "double-escaping" bugs in the UI.
-  return input;
+  // Strip HTML tags to prevent XSS payloads while avoiding double-escaping issues in React text nodes.
+  return input.replace(/<[^>]*>/g, "");
 }
 
 /**

@@ -11,7 +11,6 @@ const CreateWorkModal = dynamic(() => import("@/components/CreateWorkModal"), { 
 import { createClient } from "@/utils/supabase/client";
 import { FilterState } from "../app/kho-tang/types";
 import Pagination from "@/components/Pagination";
-import { WorkGridSkeleton } from "@/components/WorkCardSkeleton";
 import WorkCard from "@/components/WorkCard";
 const WorkPreviewModal = dynamic(() => import("@/components/WorkPreviewModal"), { ssr: false });
 const EditWorkModal = dynamic(() => import("@/components/EditWorkModal"), { ssr: false });
@@ -54,7 +53,7 @@ export default function DongNgonClient({
   const [workInitialSaved, setWorkInitialSaved] = useState(false);
 
   // Zustand stores
-  const { user, setUser } = useUserStore();
+  const user = useUserStore((state) => state.user);
 
   // Read filters from URL (server is the source of truth)
   const filters: FilterState = useMemo(
@@ -168,7 +167,7 @@ export default function DongNgonClient({
     filters.category_type || filters.hinh_thuc || filters.writing_rule || filters.status;
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen text-black">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 flex flex-col items-center">
         <div className="w-full max-w-6xl relative">
           <div className="flex justify-between items-center mb-6">
@@ -226,19 +225,30 @@ export default function DongNgonClient({
 
           {initialWorks.length > 0 ? (
             <div className="flex flex-col gap-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {initialWorks.map((work) => (
-                  <div key={work.id} className="flex justify-center sm:justify-start">
+              <div
+                className="relative w-full bg-[#fbfaf7] border-2 border-black rounded-lg pt-[36px] pb-[36px] pl-16 pr-5 sm:pl-24 sm:pr-8 flex flex-col overflow-hidden"
+                style={{
+                  backgroundImage: "linear-gradient(transparent 95%, rgba(0,0,0,0.06) 95%)",
+                  backgroundSize: "100% 2.25rem",
+                }}
+              >
+                {/* Đường kẻ lề đỏ của trang giấy */}
+                <div className="absolute left-10 sm:left-16 top-0 bottom-0 w-[1.5px] bg-red-300/80 pointer-events-none" />
+                
+                <div className="flex flex-col">
+                  {initialWorks.map((work) => (
                     <WorkCard
+                      key={work.id}
                       work={work}
                       isOwner={!!user && work.created_by === user.id}
                       hideMenu={true}
+                      layout="list"
                       initialSaved={initialSavedWorkIds.includes(work.id.toString())}
                       onPreview={handlePreviewWork}
                       onEdit={handleEditWork}
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               <Pagination

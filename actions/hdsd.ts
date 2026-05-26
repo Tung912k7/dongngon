@@ -3,11 +3,8 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/utils/supabase/server";
-import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
-import { logger } from "@/lib/logger";
 import type { HelpCenterArticleRecord, HelpCenterArticleUpsertInput } from "@/types/helpCenter";
-import { logger } from "@/lib/logger";
 
 function getSupabaseUrl() {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;

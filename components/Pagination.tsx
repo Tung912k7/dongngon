@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { memo } from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -8,7 +8,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+const Pagination = memo(function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const renderPageButtons = () => {
@@ -93,4 +93,6 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
       </button>
     </nav>
   );
-}
+});
+
+export default Pagination;

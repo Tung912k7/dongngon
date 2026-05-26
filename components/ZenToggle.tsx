@@ -5,7 +5,8 @@ import { useZenStore } from "@/stores/zen-store";
 import { AnimatePresence, m } from "framer-motion";
 
 const ZenToggle = () => {
-  const { isZenMode, toggleZenMode } = useZenStore();
+  const isZenMode = useZenStore((state) => state.isZenMode);
+  const toggleZenMode = useZenStore((state) => state.toggleZenMode);
 
   return (
     <button

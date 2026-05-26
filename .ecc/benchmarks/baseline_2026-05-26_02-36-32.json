@@ -1,0 +1,68 @@
+{
+  "build_cold_seconds": 20.47,
+  "tsc_check_seconds": 12.75,
+  "lint_seconds": 17.09,
+  "test_seconds": 4.43,
+  "js_total_kb": 2098.2,
+  "js_file_count": 50,
+  "css_total_kb": 130.1,
+  "css_file_count": 2,
+  "next_total_mb": 0.03,
+  "dep_count": 22,
+  "devDep_count": 14,
+  "node_version": "v25.8.1",
+  "next_version": "^16.2.6",
+  "timestamp": "2026-05-26T02:36:32.025Z",
+  "top_js_chunks": [
+    {
+      "name": "0t165lz1j0ll3.js",
+      "size_kb": 469.2
+    },
+    {
+      "name": "0yw-dxqwt64vm.js",
+      "size_kb": 222
+    },
+    {
+      "name": "0is17l7bj_rfh.js",
+      "size_kb": 178.3
+    },
+    {
+      "name": "0t29evd21pw17.js",
+      "size_kb": 167.5
+    },
+    {
+      "name": "1090kbeaa9.5g.js",
+      "size_kb": 113.7
+    },
+    {
+      "name": "03~yq9q893hmn.js",
+      "size_kb": 110
+    },
+    {
+      "name": "0wziwwq3-gl2y.js",
+      "size_kb": 107.2
+    },
+    {
+      "name": "0.vepoa~9mosw.js",
+      "size_kb": 72.7
+    },
+    {
+      "name": "0s3~y09rincin.js",
+      "size_kb": 53.4
+    },
+    {
+      "name": "07uz2g0_38qia.js",
+      "size_kb": 42.9
+    }
+  ],
+  "top_css_chunks": [
+    {
+      "name": "065~1b~ycfcoi.css",
+      "size_kb": 126.9
+    },
+    {
+      "name": "00z1l_4nue7~6.css",
+      "size_kb": 3.2
+    }
+  ]
+}

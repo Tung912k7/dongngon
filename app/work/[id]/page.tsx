@@ -8,7 +8,6 @@ import Link from "next/link";
 import { isReadOnlyProseSubCategory } from "@/data/workTypes";
 import ZenModeWrapper from "@/components/ZenModeWrapper";
 import { calculateAge, isOldEnough } from "@/utils/age";
-import dynamic from "next/dynamic";
 import { cache } from "react";
 
 import Feed from "../../../components/Feed";
@@ -23,7 +22,7 @@ const getWork = cache(async (id: string) => {
   return supabase
     .from("works")
     .select(
-      "id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description, is_test"
+      "id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description, is_test, profiles!works_created_by_fkey(is_hidden)"
     )
     .eq("id", id)
     .single();
@@ -98,16 +97,16 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   if (workResponse.error || !work) {
     if (workResponse.error) {
       logger.error(
-        `[WorkPage] Error fetching work ${id}:`,
-        workResponse.error.code,
-        workResponse.error.message
+        `[WorkPage] Error fetching work ${id}`,
+        workResponse.error,
+        { code: workResponse.error.code, message: workResponse.error.message }
       );
     }
     notFound();
   }
 
-  // Secondary parallel fetch for user-specific and author-specific data
-  const [profileResponse, authorProfileResponse, savedResponse, todayContributionResponse] =
+  // Secondary parallel fetch for user-specific and saved work data
+  const [profileResponse, savedResponse, todayContributionResponse] =
     await Promise.all([
       user
         ? supabase
@@ -116,7 +115,6 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
             .eq("id", user.id)
             .single()
         : Promise.resolve({ data: null, error: null }),
-      supabase.from("profiles").select("is_hidden").eq("id", work.created_by).single(),
       user
         ? supabase
             .from("saved_works")
@@ -150,10 +148,9 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
   const isSaved = !!savedResponse.data;
   const profile = profileResponse.data;
-  const authorProfile = authorProfileResponse.data;
   const isTester = !!profile?.is_test_account;
   const isAdmin = profile?.role === "admin";
-  const isAuthorHidden = authorProfile?.is_hidden;
+  const isAuthorHidden = (work as unknown as { profiles?: { is_hidden: boolean } | null }).profiles?.is_hidden;
   const hasContributedToday = !!todayContributionResponse.data;
 
   const contributions: Contribution[] = (contributionsResponse.data || [])

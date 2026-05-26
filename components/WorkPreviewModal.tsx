@@ -1,8 +1,6 @@
 "use client";
 
 import { logger } from "@/lib/logger";
-
-import { logger } from "@/lib/logger";
 import { useEffect } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { toast } from "sonner";
@@ -24,7 +22,6 @@ export default function WorkPreviewModal({
   work,
   isOpen,
   onClose,
-  isOwner,
   initialSaved,
 }: WorkPreviewModalProps) {
   const router = useRouter();

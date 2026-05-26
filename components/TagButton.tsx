@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 
 export const TagButton = memo(
   ({
@@ -12,8 +12,6 @@ export const TagButton = memo(
     onClick?: (e: React.MouseEvent) => void;
     className?: string;
   }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
     return (
       <span
         onClick={onClick}

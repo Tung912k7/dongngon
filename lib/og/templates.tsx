@@ -1,6 +1,4 @@
-import React from "react";
 import { defineTemplate, objectToStyle } from "@ogify/core";
-import { getLocalFont } from "./renderer";
 
 interface WorkTemplateParams {
   title: string;
@@ -34,7 +32,7 @@ export const getBrutalistWorkTemplate = async () => {
       }, */
     ],
     renderer: ({ params }: { params: WorkTemplateParams }) => {
-      const { title, subtitle, brandName = "Đồng ngôn", accentColor = "#D4A155" } = params;
+      const { title, subtitle, brandName = "Đồng ngôn" } = params;
 
       return `
         <div style="${objectToStyle({
