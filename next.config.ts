@@ -36,6 +36,23 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    const cspDirectives = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' blob: data: https://lqlobokdwcebvoitwxkt.supabase.co",
+      "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co wss://lqlobokdwcebvoitwxkt.supabase.co https://*.supabase.co wss://*.supabase.co https://app.posthog.com https://eu.posthog.com https://eu.i.posthog.com https://us.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com",
+      "font-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ];
+
+    if (process.env.NODE_ENV === "production") {
+      cspDirectives.push("upgrade-insecure-requests");
+    }
+
     const headers = [
       {
         // Security headers for ALL routes (no caching override here)
@@ -43,19 +60,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' blob: data: https://lqlobokdwcebvoitwxkt.supabase.co",
-              "connect-src 'self' https://lqlobokdwcebvoitwxkt.supabase.co wss://lqlobokdwcebvoitwxkt.supabase.co https://*.supabase.co wss://*.supabase.co https://app.posthog.com https://eu.posthog.com https://eu.i.posthog.com",
-              "font-src 'self'",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
-            ].join("; "),
+            value: cspDirectives.join("; "),
           },
           {
             key: "X-Frame-Options",
