@@ -12,17 +12,22 @@ export default function PostHogAutoTracker() {
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
 
+    let isCancelled = false;
+    let activeTimeout: NodeJS.Timeout | null = null;
+
     if (!initialized.current) {
       initialized.current = true;
       import("posthog-js").then((m) => {
+        if (isCancelled) return;
         const posthog = m.default;
         const posthogConfig: Partial<PostHogConfig> = {
-          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+          api_host: "/ingest",
+          ui_host: "https://us.i.posthog.com",
           person_profiles: "identified_only",
           capture_pageview: false,
+          capture_pageleave: true,
           enable_recording_console_log: true,
           capture_performance: true,
-          // enable_exception_autocapture is handled separately or no longer supported
         };
         posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, posthogConfig);
 
@@ -35,19 +40,26 @@ export default function PostHogAutoTracker() {
       });
     } else {
       import("posthog-js").then((m) => {
+        if (isCancelled) return;
         const posthog = m.default;
         let url = window.origin + pathname;
         if (searchParams.toString()) {
           url = url + `?${searchParams.toString()}`;
         }
-        const handle = setTimeout(() => {
+        activeTimeout = setTimeout(() => {
           posthog.capture("$pageview", {
             $current_url: url,
           });
         }, 500);
-        return () => clearTimeout(handle);
       });
     }
+
+    return () => {
+      isCancelled = true;
+      if (activeTimeout) {
+        clearTimeout(activeTimeout);
+      }
+    };
   }, [pathname, searchParams]);
 
   return null;
