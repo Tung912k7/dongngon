@@ -24,7 +24,7 @@ async function getLocalFont(fontPath: string): Promise<ArrayBuffer> {
 }
 
 export const getBrutalistWorkTemplate = async () => {
-  const ganhFont = await getLocalFont("fonts/Ganh Type - Regular.woff2");
+  const ganhFont = await getLocalFont("fonts/Ganh Type - Regular.ttf");
 
   return defineTemplate({
     fonts: [
@@ -57,6 +57,7 @@ export const getBrutalistWorkTemplate = async () => {
         })}">
           <!-- Fine Inner Border Frame -->
           <div style="${objectToStyle({
+            display: "flex",
             position: "absolute",
             top: "30px",
             left: "30px",
@@ -74,6 +75,7 @@ export const getBrutalistWorkTemplate = async () => {
             width: "100%",
           })}">
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "18px",
               fontWeight: 700,
               letterSpacing: "0.15em",
@@ -83,6 +85,7 @@ export const getBrutalistWorkTemplate = async () => {
               ${brandName}
             </div>
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "14px",
               fontWeight: 500,
               letterSpacing: "0.1em",
@@ -106,6 +109,7 @@ export const getBrutalistWorkTemplate = async () => {
               subtitle
                 ? `
               <div style="${objectToStyle({
+                display: "flex",
                 padding: "6px 14px",
                 backgroundColor: "#EDF3EC", // Pale Green Pastel
                 color: "#346538", // Deep Green text
@@ -123,6 +127,7 @@ export const getBrutalistWorkTemplate = async () => {
             }
 
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: title.length > 25 ? "72px" : "90px",
               fontWeight: 400,
               lineHeight: 1.15,
@@ -145,6 +150,7 @@ export const getBrutalistWorkTemplate = async () => {
             paddingTop: "24px",
           })}">
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "14px",
               fontFamily: "monospace",
               color: "#787774",
@@ -152,6 +158,7 @@ export const getBrutalistWorkTemplate = async () => {
               dongngon.vercel.app
             </div>
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "14px",
               fontWeight: 500,
               color: "#787774",
@@ -166,7 +173,7 @@ export const getBrutalistWorkTemplate = async () => {
 };
 
 export const getBrutalistQuoteTemplate = async () => {
-  const ganhFont = await getLocalFont("fonts/Ganh Type - Regular.woff2");
+  const ganhFont = await getLocalFont("fonts/Ganh Type - Regular.ttf");
 
   return defineTemplate({
     fonts: [
@@ -205,6 +212,7 @@ export const getBrutalistQuoteTemplate = async () => {
         })}">
           <!-- Fine Inner Border Frame -->
           <div style="${objectToStyle({
+            display: "flex",
             position: "absolute",
             top: "30px",
             left: "30px",
@@ -222,6 +230,7 @@ export const getBrutalistQuoteTemplate = async () => {
             width: "100%",
           })}">
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "18px",
               fontWeight: 700,
               letterSpacing: "0.15em",
@@ -231,6 +240,7 @@ export const getBrutalistQuoteTemplate = async () => {
               ${brandName}
             </div>
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "14px",
               fontWeight: 500,
               letterSpacing: "0.1em",
@@ -252,6 +262,7 @@ export const getBrutalistQuoteTemplate = async () => {
           })}">
             <!-- Giant Quote Mark -->
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "120px",
               fontFamily: "Ganh Type",
               color: "rgba(0, 0, 0, 0.08)",
@@ -263,6 +274,7 @@ export const getBrutalistQuoteTemplate = async () => {
             </div>
 
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: fontSize,
               fontWeight: 400,
               lineHeight: 1.35,
@@ -289,11 +301,13 @@ export const getBrutalistQuoteTemplate = async () => {
               gap: "12px",
             })}">
               <div style="${objectToStyle({
+                display: "flex",
                 width: "3px",
                 height: "20px",
                 backgroundColor: accentColor,
               })}"></div>
               <div style="${objectToStyle({
+                display: "flex",
                 fontSize: "16px",
                 fontWeight: 700,
                 color: "#111111",
@@ -305,6 +319,7 @@ export const getBrutalistQuoteTemplate = async () => {
             </div>
             
             <div style="${objectToStyle({
+              display: "flex",
               fontSize: "14px",
               fontFamily: "monospace",
               color: "#787774",
