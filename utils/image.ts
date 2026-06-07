@@ -7,7 +7,7 @@
 export function getImageUrl(url: string | null | undefined): string {
   const DEFAULT_AVATAR = "/webp/default_avatar.webp";
 
-  if (!url) return DEFAULT_AVATAR;
+  if (!url || url.includes("default_avatar")) return DEFAULT_AVATAR;
 
   // Fix legacy paths with spaces (both encoded and raw)
   let cleanUrl = url;

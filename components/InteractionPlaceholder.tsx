@@ -6,7 +6,7 @@ export default function InteractionPlaceholder() {
   return (
     <aside className="hidden lg:block w-[260px] flex-shrink-0">
       <div className="sticky top-28">
-        <div className="relative border-2 border-black/15 rounded-[4px] overflow-hidden">
+        <div className="relative border border-black/[0.08] rounded-[12px] overflow-hidden bg-white shadow-sm">
           {/* Blurred content simulation */}
           <div className="p-5 space-y-4 select-none" style={{ filter: "blur(3px)" }}>
             <div className="flex items-center gap-2">
@@ -22,8 +22,8 @@ export default function InteractionPlaceholder() {
               <div className="h-2 bg-black/8 rounded-full w-2/3" />
             </div>
             <div className="flex gap-2">
-              <div className="h-7 bg-black/8 rounded-[4px] flex-1" />
-              <div className="h-7 bg-black/8 rounded-[4px] flex-1" />
+              <div className="h-7 bg-black/8 rounded-[6px] flex-1" />
+              <div className="h-7 bg-black/8 rounded-[6px] flex-1" />
             </div>
             <div className="space-y-2 pt-2">
               <div className="h-2 bg-black/6 rounded-full w-full" />
@@ -33,7 +33,7 @@ export default function InteractionPlaceholder() {
 
           {/* Overlay message */}
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[1px] p-6">
-            <div className="w-10 h-10 rounded-[4px] bg-black/5 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-[6px] bg-black/5 flex items-center justify-center mb-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

@@ -7,8 +7,8 @@ import { getErrorMessage } from "@/utils/error-handler";
 import { sanitizeTitle } from "@/utils/sanitizer";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
 import { captureServerEvent } from "@/utils/posthog-server";
+import { isValidUuid } from "@/actions/shared";
 
-const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CREATE_WORK_LIMIT = 6;
 const CREATE_WORK_WINDOW_MS = 60 * 60 * 1000;
 const UPDATE_WORK_LIMIT = 20;
@@ -17,10 +17,6 @@ const UPDATE_WORK_WINDOW_MS = 60 * 1000;
 const ALLOWED_CATEGORIES = new Set(["Văn xuôi", "Thơ", "Tiểu thuyết"]);
 const ALLOWED_LICENSES = new Set(["public", "private"]);
 const ALLOWED_RULES = new Set(["1 câu", "sentence"]);
-
-function isValidUuid(value: string) {
-  return UUID_V4_REGEX.test(value);
-}
 
 export async function createWork(formData: {
   title: string;

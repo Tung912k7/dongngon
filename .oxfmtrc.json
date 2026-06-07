@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": false,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "ignorePatterns": [
+    "node_modules/**",
+    ".next/**",
+    "dist/**",
+    "build/**",
+    ".env",
+    ".env.local",
+    ".env.*.local",
+    "*.log",
+    ".git/**",
+    ".gitignore",
+    ".oxfmtrc.json",
+    "package-lock.json",
+    "yarn.lock",
+    ".vercel/**",
+    ".claude/**",
+    ".turbo/**"
+  ]
+}

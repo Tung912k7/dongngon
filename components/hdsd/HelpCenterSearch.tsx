@@ -32,12 +32,12 @@ const HelpCenterSearch: React.FC<HelpCenterSearchProps> = ({ value, onChange, pl
         id="help-center-search"
         className="
           w-full px-6 py-4 pl-14 pr-6
-          rounded
-          border-2 border-black
+          rounded-[6px]
+          border border-black/15
           bg-white text-neutral-900
           text-lg font-be-vietnam
           placeholder:text-neutral-400
-          focus:outline-none focus:bg-neutral-50
+          focus:outline-none focus:border-deep-teal focus:ring-1 focus:ring-deep-teal
           transition-all duration-200
         "
         type="search"

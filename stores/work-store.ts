@@ -22,6 +22,7 @@ export interface Work {
   date: string;
   rawDate: Date;
   is_author_private?: boolean;
+  contributors?: string[];
 }
 
 interface WorkState {

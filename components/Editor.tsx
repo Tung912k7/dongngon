@@ -243,7 +243,7 @@ export default function Editor({
 
   if (!user && !isBlocked) {
     return (
-      <div className="text-center py-6 bg-[#fcfcfc] rounded-[4px] border-2 border-black border-dashed">
+      <div className="text-center py-6 bg-white rounded-[6px] border border-dashed border-black/10 px-4">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40">
           Bạn cần{" "}
           <Link
@@ -268,8 +268,8 @@ export default function Editor({
   return (
     <form onSubmit={handleSubmit} className="relative group">
       {isBlocked && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-[4px] transition-all duration-500">
-          <div className="bg-black text-white px-4 py-2 rounded-lg shadow-[4px_4px_0px_0px_rgba(212,175,55,1)] flex flex-col items-center gap-1 animate-in zoom-in-95 duration-300">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/50 backdrop-blur-[2px] rounded-[12px] transition-all duration-500">
+          <div className="bg-ink-charcoal border border-literary-gold/20 text-white px-5 py-3 rounded-[6px] flex flex-col items-center gap-1 animate-in zoom-in-95 duration-300">
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-literary-gold/80">
               Quay lại sau
             </span>
@@ -277,18 +277,18 @@ export default function Editor({
               {timeLeft !== null ? formatCountdown(timeLeft) : "--:--:--"}
             </span>
           </div>
-          <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-black bg-white/80 px-3 py-1 rounded-full border border-black/10">
+          <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-ink-charcoal bg-white/90 px-3 py-1.5 rounded-[6px] border border-black/10">
             {blockedMessage || "QUYỀN ĐÓNG GÓP ĐANG BỊ KHÓA."}
           </p>
         </div>
       )}
       {error && (
-        <div className="absolute -top-14 left-0 right-0 bg-red-600 border-2 border-red-600 text-white font-bold text-[10px] uppercase tracking-widest p-3 rounded-[4px] shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)] text-center animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute -top-14 left-0 right-0 bg-[#FFF5F5] border border-red-200 text-red-700 font-bold text-[10px] uppercase tracking-widest p-3 rounded-[6px] text-center animate-in fade-in slide-in-from-bottom-2">
           {error}
         </div>
       )}
       {warning && !error && !isBlocked && (
-        <div className="absolute -top-14 left-0 right-0 bg-literary-gold border-2 border-black text-black font-bold text-[10px] uppercase tracking-widest p-3 rounded-[4px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center animate-in fade-in slide-in-from-bottom-2">
+        <div className="absolute -top-14 left-0 right-0 bg-[#FFFDF5] border border-[#E6C65C]/30 text-ink-charcoal font-bold text-[10px] uppercase tracking-widest p-3 rounded-[6px] text-center animate-in fade-in slide-in-from-bottom-2">
           {warning}
         </div>
       )}
@@ -308,12 +308,17 @@ export default function Editor({
             if (isBlocked) {
               return;
             }
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && e.shiftKey && isFreeVerse) {
+              e.preventDefault();
+              setNewLine((prev) => !prev);
+              return;
+            }
+            if (e.key === "Enter" && (!e.shiftKey || e.ctrlKey || e.metaKey)) {
               e.preventDefault();
               handleSubmit(e);
             }
           }}
-          className="flex-grow p-2 sm:p-3 bg-[#fcfcfc] border-2 border-black rounded-[4px] focus:outline-none focus:bg-white transition-all resize-none min-h-[46px] h-auto font-be-vietnam text-sm placeholder:text-black/20 placeholder:font-bold placeholder:uppercase placeholder:tracking-widest"
+          className="flex-grow p-2 sm:p-3 bg-[#fafcfb] border border-black/15 rounded-[6px] focus:outline-none focus:border-deep-teal focus:ring-1 focus:ring-deep-teal transition-all resize-none min-h-[46px] h-auto font-be-vietnam text-sm placeholder:text-black/20 placeholder:font-bold placeholder:uppercase placeholder:tracking-widest"
           disabled={isSubmitting || isBlocked}
           rows={1}
           onInput={(e) => {
@@ -329,8 +334,10 @@ export default function Editor({
             type="button"
             onClick={() => setNewLine(!newLine)}
             title="Xuống dòng mới"
-            className={`flex items-center justify-center w-11 h-11 rounded-[4px] border-2 border-black transition-all duration-200 cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none ${
-              newLine ? "bg-black text-literary-gold" : "bg-white text-black/30 hover:text-black"
+            className={`flex items-center justify-center w-11 h-11 rounded-[6px] border transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              newLine
+                ? "bg-ink-charcoal border-ink-charcoal text-literary-gold"
+                : "bg-white border-black/15 text-black/30 hover:text-black hover:bg-black/5"
             }`}
           >
             <span className="text-xl font-bold">↵</span>
@@ -339,7 +346,7 @@ export default function Editor({
 
         <PrimaryButton
           type="submit"
-          className="!px-2.5 sm:!px-4 !h-11 rounded-[4px] min-w-[45px] sm:min-w-[55px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="!px-2.5 sm:!px-4 !h-11 rounded-[6px] min-w-[45px] sm:min-w-[55px]"
           disabled={isSubmitting || isBlocked}
         >
           {isBlocked ? (
@@ -366,7 +373,21 @@ export default function Editor({
       </div>
       {isBlocked ? null : (
         <p className="text-xs text-gray-400 mt-2 text-center pl-2">
-          Mỗi ngày chỉ được đóng góp 1 câu.
+          Mỗi ngày chỉ được đóng góp 1 câu. Nhấn{" "}
+          <kbd className="bg-black/5 px-1.5 py-0.5 rounded font-mono text-[10px] border border-black/10">
+            Enter
+          </kbd>{" "}
+          để gửi.
+          {isFreeVerse && (
+            <>
+              {" "}
+              Nhấn{" "}
+              <kbd className="bg-black/5 px-1.5 py-0.5 rounded font-mono text-[10px] border border-black/10">
+                Shift + Enter
+              </kbd>{" "}
+              để xuống dòng mới.
+            </>
+          )}
           {writingRule === "1 câu" &&
             !isPoetry &&
             " Cần kết thúc bằng dấu chấm (.), chấm hỏi (?) hoặc chấm than (!)."}

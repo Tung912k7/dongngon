@@ -1,10 +1,25 @@
 "use client";
 
 import { useCallback } from "react";
+import { m } from "framer-motion";
 import { LinkedButton } from "@/components/PrimaryButton";
-import HowItWorks from "@/components/HowItWorks";
-import GridBackground from "./GridBackground";
 import { captureClientEvent } from "@/utils/posthog-client";
+
+// Reusable fade-up variant — each element uses this with its own delay.
+// Duration 400ms, ease-out curve: starts fast, feels responsive.
+const fadeUp = {
+  hidden: { opacity: 0, y: 14, filter: "blur(3px)" },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1] as const,
+      delay,
+    },
+  }),
+};
 
 const HeroSectionV2 = () => {
   const handleStartClick = useCallback(() => {
@@ -12,74 +27,90 @@ const HeroSectionV2 = () => {
   }, []);
 
   return (
-    <section className="min-h-[100dvh] h-full w-screen flex flex-col justify-center items-center relative overflow-hidden bg-white text-black snap-start shrink-0 font-['Be_Vietnam_Pro']">
-      {/* Brutalist Grid Background */}
-      <GridBackground opacity={0.2} />
+    <section className="max-w-[1440px] mx-auto px-6 md:px-16 pt-24 md:pt-32 pb-12 md:pb-16 relative overflow-hidden flex items-center min-h-[70dvh]">
+      <div className="max-w-[800px] relative z-10">
+        {/* Eyebrow Badge — delay 0ms */}
+        <m.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0}
+          className="inline-flex items-center rounded px-2.5 py-1 bg-deep-teal/[0.05] border border-deep-teal/12 text-[10px] uppercase tracking-[0.2em] font-medium text-deep-teal mb-5 md:mb-8"
+        >
+          Sinh ra từ một cuộc trò chuyện nhỏ đêm khuya
+        </m.div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 h-full flex flex-col justify-center relative w-full z-10">
-        {/* Hero Content */}
-        <div className="flex flex-col items-center justify-center min-h-[70vh] md:min-h-[80vh] gap-8 md:gap-12 pb-6 md:pb-12 w-full">
-          <div className="text-center space-y-4 pt-10 md:pt-16">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-black uppercase">
-              Đồng ngôn
-            </h1>
-            <p className="text-xl md:text-3xl font-bold text-literary-gold uppercase tracking-tight">
-              {/*Cộng tác sáng tác. Mỗi người một câu.*/}
-              [Slogan - Chúng mình đợi đề xuất của mọi người]
-            </p>
-          </div>
+        {/* Typography — staggered per line */}
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-ink-charcoal tracking-tight font-bold mb-6 leading-[1.4] text-balance break-words">
+          <m.span
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.05}
+            className="block"
+          >
+            Nhất ngôn xuất,
+          </m.span>
+          <m.span
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.1}
+            className="block text-deep-teal italic font-serif font-normal opacity-90"
+          >
+            vạn kiếp hồi thanh
+          </m.span>
+        </h1>
 
-          <p className="text-center text-base md:text-lg text-black/80 max-w-xl px-4 sm:px-0 leading-relaxed font-medium">
-            {/*Đồng ngôn là một không gian mở, nơi mọi người thể hiện sự sáng tạo, cá tính của bản thân qua những câu văn. Những câu văn đó rồi sẽ dẫn câu chuyện đi đến đâu?*/}
-            Đồng ngôn là địa hạt của những lời nói vừa của riêng mình mà không của riêng ai. Tại nơi đây, chữ chồng lên chữ, hồn chất lên hồn, sinh nghệ thuật.
-          </p>
+        {/* Paragraph — delay 150ms */}
+        <m.p
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.15}
+          className="font-sans text-[15px] md:text-[16px] leading-relaxed text-on-surface-variant/90 max-w-[600px] mb-10"
+        >
+          Nơi những ý tưởng ngẫu hứng và độc đáo hội tụ. Mang đến một trải nghiệm mới mẻ và tràn đầy cảm hứng.
+        </m.p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full justify-center px-4 sm:px-0">
+        {/* CTAs — staggered 200ms + 250ms */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <m.div variants={fadeUp} initial="hidden" animate="visible" custom={0.2}>
             <LinkedButton
-              href="/dang-nhap"
-              ariaLabel="Bắt đầu: tạo hoặc tham gia một tác phẩm mới"
+              href="/kho-tang"
+              ariaLabel="Bắt đầu khám phá kho tàng tác phẩm"
               onClick={handleStartClick}
-              className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-[4px] border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 hover:!bg-literary-gold hover:!text-white hover:!border-literary-gold active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+              className="group !bg-ink-charcoal !text-white flex items-center gap-2 hover:!bg-deep-teal !border-ink-charcoal/[0.12] hover:!border-deep-teal/30"
             >
-              Bắt đầu
-            </LinkedButton>
-            <LinkedButton
-              href="/hdsd"
-              inverse
-              ariaLabel="Hướng dẫn: cách sử dụng Đồng ngôn"
-              className="w-full sm:w-[240px] md:w-[300px] !py-4 md:!py-5 !text-xl md:!text-2xl !rounded-[4px] border-2 border-black hover:bg-literary-gold hover:border-literary-gold hover:text-white active:scale-[0.98] transition-all"
-            >
-              Hướng dẫn
-            </LinkedButton>
-          </div>
-
-          <p className="mt-3 text-sm text-black/60">Trải nghiệm ngay!!!</p>
-
-          {/* How it works microflow */}
-          <HowItWorks />
-
-          {/* Scroll Down Indicator */}
-          <div className="flex flex-col items-center gap-3 mt-8 animate-bounce cursor-pointer group">
-            <span className="text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-black/40 group-hover:text-black transition-colors">
-              Cuộn để xem thêm
-            </span>
-            <div className="w-8 h-8 flex items-center justify-center border-2 border-black rounded-full group-hover:bg-black group-hover:text-white transition-all">
+              <span>Bắt đầu</span>
               <svg
                 width="16"
                 height="16"
-                viewBox="0 0 24 24"
+                viewBox="0 0 16 16"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeWidth="1.5"
+                className="transition-transform duration-200 group-hover:translate-x-0.5"
               >
-                <path d="m7 10 5 5 5-5" />
+                <path d="M3 8h10M9 4l4 4-4 4" />
               </svg>
-            </div>
-          </div>
+            </LinkedButton>
+          </m.div>
+          <m.div variants={fadeUp} initial="hidden" animate="visible" custom={0.25}>
+            <LinkedButton
+              href="/hdsd"
+              ariaLabel="Mở sổ tay hướng dẫn sử dụng"
+              inverse
+              className="hover:!bg-deep-teal hover:!text-white hover:!border-deep-teal/30"
+            >
+              Sổ tay hướng dẫn
+            </LinkedButton>
+          </m.div>
         </div>
       </div>
+
+      {/* Soft Ambient Background Glow */}
+      <div className="absolute right-[5%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-deep-teal/4 to-accent-gold/4 blur-[140px] -z-10 hidden lg:block pointer-events-none" />
     </section>
   );
 };

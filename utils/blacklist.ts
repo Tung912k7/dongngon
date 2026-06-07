@@ -7,12 +7,3 @@ import { checkBlacklist as checkBlacklistAction } from "@/actions/blacklist";
 export async function checkBlacklist(text: string): Promise<string | null> {
   return checkBlacklistAction(text);
 }
-
-/**
- * Legacy support for synchronous-like check.
- * Still returns false by default as it cannot be truly sync with DB.
- */
-export function containsBadWords(text: string): boolean {
-  void text;
-  return false;
-}

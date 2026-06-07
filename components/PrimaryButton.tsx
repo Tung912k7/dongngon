@@ -24,19 +24,18 @@ export const PrimaryButton = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        px-10 py-3 
-        border-2 border-black 
-        bg-white text-black 
-        rounded-[4px] 
-        font-ganh font-bold text-xl uppercase tracking-widest
-        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-        transition-all duration-200
-        hover:-translate-x-1 hover:-translate-y-1 
-        hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]
-        active:translate-x-0 active:translate-y-0 
-        active:shadow-none
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2
-        disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:translate-0
+        px-8 py-3 
+        min-h-[44px]
+        border border-ink-charcoal/[0.12]
+        bg-ink-charcoal text-white
+        rounded-md
+        font-sans font-medium text-[14px] tracking-wide
+        transition-[transform,background-color,border-color,box-shadow]
+        duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
+        hover:bg-deep-teal hover:border-deep-teal/30
+        active:scale-[0.97]
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep-teal focus-visible:ring-offset-2
+        disabled:cursor-not-allowed disabled:opacity-50 disabled:scale-100
         inline-flex items-center justify-center gap-2 whitespace-nowrap
         ${className}
       `}
@@ -68,17 +67,19 @@ export const LinkedButton = ({
       onClick={onClick}
       className={`
         px-8 py-3 
-        border-2 border-black 
-        ${inverse ? "bg-black text-white hover:bg-black/90" : "bg-white text-black hover:bg-gray-50"} 
-        rounded-[4px] 
-        font-ganh font-bold text-lg uppercase tracking-widest
-        ${inverse ? "shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]" : "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"}
-        transition-all duration-200
-        hover:-translate-x-1 hover:-translate-y-1 
-        ${inverse ? "hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]" : "hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"}
-        active:translate-x-0 active:translate-y-0 
-        active:shadow-none
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2
+        min-h-[44px]
+        border
+        ${
+          inverse
+            ? "bg-white text-ink-charcoal border-ink-charcoal/[0.10] hover:bg-ink-charcoal/[0.03] hover:border-ink-charcoal/20"
+            : "bg-ink-charcoal text-white border-ink-charcoal/[0.12] hover:bg-deep-teal hover:border-deep-teal/30"
+        } 
+        rounded-md
+        font-sans font-medium text-[14px] tracking-wide
+        transition-[transform,background-color,border-color,color]
+        duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)]
+        active:scale-[0.97]
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-charcoal focus-visible:ring-offset-2
         flex items-center justify-center gap-2 whitespace-nowrap
         ${className}
       `}

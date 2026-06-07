@@ -29,3 +29,7 @@ CREATE POLICY "Authenticated users can trigger notifications"
 ON public.notifications
 FOR INSERT
 WITH CHECK (auth.role() = 'authenticated');
+
+-- Explicit API grants (Required for Supabase projects after May 30, 2026)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.notifications TO authenticated;
+GRANT ALL ON public.notifications TO service_role;

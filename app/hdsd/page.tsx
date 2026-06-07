@@ -90,15 +90,10 @@ const FAQ_ITEMS: FAQItem[] = [
     answer:
       "Có, bạn có thể chỉnh sửa tác phẩm bất cứ lúc nào. Mở tác phẩm đã đăng, nhấn biểu tượng Chỉnh sửa để cập nhật nội dung. Lịch sử chỉnh sửa sẽ được lưu lại.",
   },
-  {
-    question: "Tôi có thể chỉnh sửa tác phẩm sau khi xuất bản không?",
-    answer:
-      "Có, bạn có thể chỉnh sửa tác phẩm bất cứ lúc nào. Mở tác phẩm đã đăng, nhấn biểu tượng Chỉnh sửa để cập nhật nội dung. Lịch sử chỉnh sửa sẽ được lưu lại.",
-  },
 ];
 
 export const metadata: Metadata = {
-  title: "Hướng dẫn sử dụng | Đồng ngôn",
+  title: "Hướng dẫn sử dụng",
   description:
     "Câu hỏi thường gặp và hướng dẫn sử dụng nền tảng sáng tác văn học cộng đồng Đồng ngôn.",
   openGraph: {

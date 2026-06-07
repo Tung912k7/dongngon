@@ -23,6 +23,11 @@
 # misc
 .DS_Store
 *.pem
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
 
 # debug
 npm-debug.log*
@@ -42,6 +47,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.impeccable/
 
 # typescript
 *.tsbuildinfo
@@ -50,13 +56,13 @@ next-env.d.ts
 # Project specific ignores
 bug.md
 .agent/
+.agents/
 reports/
 tmp/
 .vscode/
 *.log
 scripts/
 build_log.md
-proxy.ts
 
 # Metadata & Documentation
 metadata.md

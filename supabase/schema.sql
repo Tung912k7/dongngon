@@ -33,3 +33,12 @@ CREATE POLICY "Authenticated users can insert works" ON public.works FOR INSERT 
 
 -- Authenticated users can insert contributions
 CREATE POLICY "Authenticated users can insert contributions" ON public.contributions FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Explicit API grants (Required for Supabase projects after May 30, 2026)
+GRANT SELECT ON public.works TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.works TO authenticated;
+GRANT ALL ON public.works TO service_role;
+
+GRANT SELECT ON public.contributions TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.contributions TO authenticated;
+GRANT ALL ON public.contributions TO service_role;

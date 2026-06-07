@@ -265,15 +265,19 @@ describe("Work Actions", () => {
         data: { user: null },
       });
 
-      const result = await updateWork(validInput.id, { title: validInput.title, description: validInput.description });
+      const result = await updateWork(validInput.id, {
+        title: validInput.title,
+        description: validInput.description,
+      });
 
       expect(result).toHaveProperty("error");
     });
 
-
-
     it("should update work if user is owner", async () => {
-      const result = await updateWork(validInput.id, { title: validInput.title, description: validInput.description });
+      const result = await updateWork(validInput.id, {
+        title: validInput.title,
+        description: validInput.description,
+      });
 
       expect(result.success).toBe(true);
     });

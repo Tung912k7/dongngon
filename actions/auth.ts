@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/utils/error-handler";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
+import { getRealIp } from "@/utils/ip";
 
 const FORGOT_PASSWORD_IP_LIMIT = 5;
 const FORGOT_PASSWORD_EMAIL_LIMIT = 3;
@@ -15,22 +16,22 @@ function getSafeBaseUrl(hostHeader: string | null) {
     try {
       return new URL(siteUrl).origin;
     } catch {
-      // Fallback to validated host below.
+      // Fallback below
     }
   }
 
+  // Without NEXT_PUBLIC_SITE_URL, only allow localhost for local dev.
+  // DO NOT trust arbitrary Host headers in production to prevent Host Header Injection.
   if (!hostHeader) {
     return null;
   }
 
   const host = hostHeader.trim().toLowerCase();
-  const isValidHost = /^[a-z0-9.-]+(?::[0-9]{2,5})?$/.test(host);
-  if (!isValidHost) {
-    return null;
+  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) {
+    return `http://${host}`;
   }
 
-  const protocol = host.includes("localhost") || host.startsWith("127.0.0.1") ? "http" : "https";
-  return `${protocol}://${host}`;
+  return null;
 }
 
 export async function forgotPassword(email: string) {
@@ -42,8 +43,7 @@ export async function forgotPassword(email: string) {
 
   const { headers } = await import("next/headers");
   const headersList = await headers();
-  const forwardedFor = headersList.get("x-forwarded-for");
-  const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";
+  const ip = getRealIp(headersList);
 
   const ipLimit = await checkRateLimitDistributed(
     supabase,

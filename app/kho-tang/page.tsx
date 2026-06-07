@@ -4,6 +4,7 @@ import { formatDate } from "@/utils/date";
 import DongNgonClient from "@/components/DongNgonClient";
 import { Metadata } from "next";
 import { sanitizeNickname, sanitizeTitle } from "@/utils/sanitizer";
+import { escapeILike } from "@/utils/validation";
 
 type WorkRow = {
   id: string;
@@ -21,11 +22,11 @@ type WorkRow = {
 };
 
 export const metadata: Metadata = {
-  title: "Đồng ngôn - Kho tàng tác phẩm",
+  title: "Kho tàng",
   description:
     "Khám phá và đóng góp vào kho tàng văn học cộng đồng tại Đồng ngôn. Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng.",
   openGraph: {
-    title: "Kho tàng tác phẩm | Đồng ngôn",
+    title: "kho tàng | Đồng ngôn",
     description:
       "Khám phá và đóng góp vào kho tàng văn học cộng đồng tại Đồng ngôn. Mỗi một tác phẩm là một hạt giống đang chờ bạn vun trồng.",
     url: "https://dongngon.vercel.app/kho-tang",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kho tàng tác phẩm | Đồng ngôn",
+    title: "kho tàng | Đồng ngôn",
     description: "Khám phá hàng ngàn tác phẩm văn học ngẫu hứng tại Đồng ngôn.",
   },
   alternates: {
@@ -101,7 +102,7 @@ export default async function DongNgonPage({
           .from("contributions")
           .select("work_id")
           .eq("is_test", false)
-          .ilike("content", `%${q}%`)
+          .ilike("content", `%${escapeILike(q)}%`)
           .limit(100)
       : Promise.resolve({ data: [] }),
   ]);
@@ -154,7 +155,8 @@ export default async function DongNgonPage({
 
   // 3. IMPROVED SEARCH SCOPE: Title, Author, Description, AND Content Matches
   if (q) {
-    let orCondition = `title.ilike.%${q}%,author_nickname.ilike.%${q}%,description.ilike.%${q}%`;
+    const safeQ = escapeILike(q);
+    let orCondition = `title.ilike.%${safeQ}%,author_nickname.ilike.%${safeQ}%,description.ilike.%${safeQ}%`;
     if (contentMatchedWorkIds.length > 0) {
       // Append content-matched IDs to the OR filter
       orCondition += `,id.in.(${contentMatchedWorkIds.join(",")})`;
@@ -173,7 +175,34 @@ export default async function DongNgonPage({
   const { data: rawWorks, count, error } = await query;
 
   if (error) {
-    logger.error("[KhoTang] Server fetch error", error, { code: error.code, message: error.message });
+    logger.error("[KhoTang] Server fetch error", error, {
+      code: error.code,
+      message: error.message,
+    });
+  }
+
+  // 3.5 Fetch contributors in a single query to solve N+1 client-side fetches
+  const contributorsMap: Record<string, string[]> = {};
+  if (rawWorks && rawWorks.length > 0) {
+    const workIds = rawWorks.map((w) => w.id);
+    const { data: contributionsData, error: contributionsError } = await supabase
+      .from("contributions")
+      .select("work_id, author_nickname")
+      .in("work_id", workIds);
+
+    if (contributionsError) {
+      logger.error("[KhoTang] Contributions fetch error", contributionsError);
+    } else if (contributionsData) {
+      contributionsData.forEach((c) => {
+        if (!c.author_nickname) return;
+        if (!contributorsMap[c.work_id]) {
+          contributorsMap[c.work_id] = [];
+        }
+        if (!contributorsMap[c.work_id].includes(c.author_nickname)) {
+          contributorsMap[c.work_id].push(c.author_nickname);
+        }
+      });
+    }
   }
 
   // 4. IMPROVED RANKING (In-memory for current page)
@@ -217,6 +246,7 @@ export default async function DongNgonPage({
     rawDate: new Date(work.created_at),
     is_author_private: false,
     description: work.description ?? undefined,
+    contributors: contributorsMap[work.id] || [],
   }));
 
   return (
@@ -254,7 +284,7 @@ export default async function DongNgonPage({
                 },
               ],
             },
-          }),
+          }).replace(/</g, "\\u003c"),
         }}
       />
       <DongNgonClient

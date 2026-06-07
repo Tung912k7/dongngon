@@ -20,11 +20,19 @@ export async function generateMetadata({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nickname, description, avatar_url")
+    .select("nickname, description, avatar_url, is_hidden, is_private")
     .eq("id", targetId)
     .single();
 
   if (!profile) return { title: "Không tìm thấy hồ sơ" };
+
+  // If the profile is hidden or private, do not index it
+  if (profile.is_hidden || profile.is_private) {
+    return {
+      title: "Hồ sơ riêng tư",
+      robots: { index: false, follow: false },
+    };
+  }
 
   const nickname = profile.nickname || "Người dùng ẩn danh";
   const userDescription =
@@ -36,7 +44,7 @@ export async function generateMetadata({
   ogImageUrl.searchParams.set("description", userDescription);
 
   return {
-    title: `${nickname} | Đồng ngôn`,
+    title: nickname,
     description: profile.description || `Xem hồ sơ và các tác phẩm của ${nickname} trên Đồng ngôn.`,
     openGraph: {
       title: `${nickname} | Hồ sơ Đồng ngôn`,
@@ -65,12 +73,11 @@ export async function generateMetadata({
   };
 }
 import { Work } from "@/stores/work-store";
-import CreateWorkModal from "@/components/CreateWorkModal";
 import { LinkedButton } from "@/components/PrimaryButton";
-import WorkLibraryItem from "@/components/WorkLibraryItem";
 import { formatDate } from "@/utils/date";
 import { sanitizeNickname, sanitizeTitle } from "@/utils/sanitizer";
 import ProfileSidebar, { SidebarProfile } from "@/components/ProfileSidebar";
+import ProfileWorksSection from "@/components/ProfileWorksSection";
 
 type WorkLike = Record<string, unknown> & {
   title: string;
@@ -132,7 +139,10 @@ export default async function ProfilePage({
     .single();
 
   if (profileError) {
-    logger.error("[Profile] Fetch error", profileError, { code: profileError.code, message: profileError.message });
+    logger.error("[Profile] Fetch error", profileError, {
+      code: profileError.code,
+      message: profileError.message,
+    });
   }
 
   // Fetch private data (role and birthday)
@@ -148,17 +158,17 @@ export default async function ProfilePage({
   const syntheticProfile =
     isOwner && currentUser
       ? {
-          id: targetId,
-          nickname:
-            currentUser.user_metadata?.nickname ||
-            currentUser.user_metadata?.full_name ||
-            currentUser.email?.split("@")[0] ||
-            "Người dùng",
-          full_name: currentUser.user_metadata?.full_name,
-          avatar_url: currentUser.user_metadata?.avatar_url,
-          is_private: false,
-          has_acknowledged_welcome_message: true,
-        }
+        id: targetId,
+        nickname:
+          currentUser.user_metadata?.nickname ||
+          currentUser.user_metadata?.full_name ||
+          currentUser.email?.split("@")[0] ||
+          "Người dùng",
+        full_name: currentUser.user_metadata?.full_name,
+        avatar_url: currentUser.user_metadata?.avatar_url,
+        is_private: false,
+        has_acknowledged_welcome_message: true,
+      }
       : null;
 
   const finalProfile = {
@@ -174,16 +184,16 @@ export default async function ProfilePage({
   // Add account privacy and hidden checks
   if (finalProfile.is_hidden && !isOwner && !isAdmin) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mx-auto shadow-xl">
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+        <div className="text-center space-y-6 max-w-md font-be-vietnam">
+          <div className="w-20 h-20 bg-[#134e4a] rounded-full flex items-center justify-center mx-auto shadow-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="white"
-              className="w-10 h-10"
+              strokeWidth={2}
+              stroke="#faf8f5"
+              className="w-8 h-8"
             >
               <path
                 strokeLinecap="round"
@@ -192,15 +202,17 @@ export default async function ProfilePage({
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-widest">Không tìm thấy hồ sơ</h1>
-          <p className="text-gray-500 font-medium">
+          <h1 className="text-2xl font-ganh font-bold text-deep-teal tracking-tight lowercase">
+            không tìm thấy hồ sơ
+          </h1>
+          <p className="text-ink-charcoal/70 font-medium">
             Hồ sơ này không tồn tại hoặc đã bị vô hiệu hóa.
           </p>
           <LinkedButton
             href="/"
-            className="mt-8 border-2 border-black px-6 py-2 rounded font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all"
+            className="mt-8 border border-[#eae6e1] bg-white text-ink-charcoal px-6 py-3 rounded-full font-bold uppercase tracking-widest text-[10px] hover:bg-[#faf8f5] hover:border-deep-teal/20 transition-all shadow-sm"
           >
-            Quay lại trang chủ
+            quay lại trang chủ
           </LinkedButton>
         </div>
       </div>
@@ -209,16 +221,16 @@ export default async function ProfilePage({
 
   if (finalProfile.is_private && !isOwner) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mx-auto shadow-xl">
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4">
+        <div className="text-center space-y-6 max-w-md font-be-vietnam">
+          <div className="w-20 h-20 bg-[#134e4a] rounded-full flex items-center justify-center mx-auto shadow-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="white"
-              className="w-10 h-10"
+              strokeWidth={2}
+              stroke="#faf8f5"
+              className="w-8 h-8"
             >
               <path
                 strokeLinecap="round"
@@ -227,17 +239,17 @@ export default async function ProfilePage({
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-black uppercase tracking-widest">
-            Người dùng đã khoá tài khoản
+          <h1 className="text-2xl font-ganh font-bold text-deep-teal tracking-tight lowercase">
+            người dùng đã khoá tài khoản
           </h1>
-          <p className="text-gray-500 font-medium">
+          <p className="text-ink-charcoal/70 font-medium">
             Hồ sơ này đã được chủ sở hữu đặt ở chế độ riêng tư.
           </p>
           <LinkedButton
             href="/"
-            className="mt-8 border-2 border-black px-6 py-2 rounded font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white transition-all"
+            className="mt-8 border border-[#eae6e1] bg-white text-ink-charcoal px-6 py-3 rounded-full font-bold uppercase tracking-widest text-[10px] hover:bg-[#faf8f5] hover:border-deep-teal/20 transition-all shadow-sm"
           >
-            Quay lại trang chủ
+            quay lại trang chủ
           </LinkedButton>
         </div>
       </div>
@@ -256,23 +268,36 @@ export default async function ProfilePage({
   }
 
   // 4. Parallel Data Fetching
-  const [worksResult, contributionsResult, savedWorksResult] = await Promise.all([
+  const [worksResult, contributionsResult, savedWorksResult, worksCountResult] = await Promise.all([
     worksQuery,
     supabase.from("contributions").select("*, works(*)").eq("user_id", targetId),
     isOwner
       ? supabase
-          .from("saved_works")
-          .select("*, work:works(*)")
-          .eq("user_id", targetId)
-          .order("created_at", { ascending: false })
+        .from("saved_works")
+        .select("*, work:works(*)")
+        .eq("user_id", targetId)
+        .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] }),
+    supabase
+      .from("works")
+      .select("id", { count: "exact", head: true })
+      .eq("created_by", targetId),
   ]);
 
   const rawCreatedWorks = worksResult.data;
   const contributions = contributionsResult.data;
   const savedWorksData = savedWorksResult.data;
+  const worksCount = worksCountResult.count || 0;
 
   const createdWorks = (rawCreatedWorks || []).map(sanitizeWork);
+
+  const contributionsCount = contributions?.length || 0;
+  const totalCopies = (contributions || []).reduce(
+    (sum, c: { copy_count?: number | null }) => sum + (c.copy_count || 0),
+    0
+  );
+  const inkPoints = contributionsCount * 10 + totalCopies * 5 + worksCount * 15;
+  const uniqueWorksCount = new Set((contributions || []).map((c) => c.work_id)).size;
 
   // 5. Filter unique works from contributions
   const contributedWorksList = Array.from(
@@ -314,7 +339,7 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 md:pb-24">
+    <div className="min-h-screen bg-[#faf8f5] p-4 md:p-8 md:pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -357,147 +382,55 @@ export default async function ProfilePage({
           profile={finalProfile}
           isOwner={isOwner}
           currentUser={currentUser}
+          inkPoints={inkPoints}
         />
 
         {/* Main Content */}
-        <div className="flex-1 w-full bg-white border-2 border-black rounded overflow-hidden">
-          {/* Created Works Section */}
-          <div className="p-6 md:p-10 pb-0">
-            <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
-              <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">
-                TÁC PHẨM ĐÃ TẠO
-              </h2>
-              {isOwner && createdWorks && createdWorks.length > 0 && <CreateWorkModal />}
+        <div className="flex-grow w-full lg:w-2/3">
+          {/* Quick Stats Block */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 font-be-vietnam">
+            <div className="bg-[#fcfaf8] rounded-2xl p-6 border border-[#eae6e1] flex flex-col justify-between min-h-[120px] transition-all duration-300 hover:border-[#134e4a]/20 shadow-sm">
+              <span className="text-xs font-semibold text-ink-charcoal/50 uppercase tracking-wider block">
+                Câu đã chắp bút
+              </span>
+              <span className="font-ganh font-bold text-4xl text-ink-charcoal mt-2">
+                {contributionsCount}
+              </span>
             </div>
-            <div className="flex flex-col gap-4">
-              {createdWorks && createdWorks.length > 0 ? (
-                createdWorks.map((work) => (
-                  <WorkLibraryItem key={work.id} work={work} isOwner={isOwner} />
-                ))
-              ) : (
-                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
-                  <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6 opacity-20"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </div>
-                  <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
-                    {isOwner ? "Bạn chưa tạo tác phẩm nào" : "Tác giả chưa có tác phẩm công khai"}
-                  </p>
-                  {isOwner && <CreateWorkModal />}
-                </div>
-              )}
-            </div>
-          </div>
 
-          <div className="p-6 md:p-10 pt-16">
-            <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
-              <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">
-                ĐÓNG GÓP CỦA TÔI
-              </h2>
-              {isOwner && contributedWorksList && contributedWorksList.length > 0 && (
-                <LinkedButton
-                  href="/kho-tang"
-                  className="!rounded !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+            <div className="bg-[#fcfaf8] rounded-2xl p-6 border border-[#eae6e1] flex flex-col justify-between min-h-[120px] transition-all duration-300 hover:border-[#134e4a]/20 shadow-sm">
+              <span className="text-xs font-semibold text-ink-charcoal/50 uppercase tracking-wider block">
+                Tác phẩm tham gia
+              </span>
+              <span className="font-ganh font-bold text-4xl text-ink-charcoal mt-2">
+                {uniqueWorksCount}
+              </span>
+            </div>
+
+            <div className="bg-[#134e4a] text-[#faf8f5] rounded-2xl p-6 border border-[#134e4a] flex flex-col justify-between min-h-[120px] transition-all duration-300 hover:bg-[#003633] shadow-sm">
+              <span className="text-xs font-semibold text-[#faf8f5]/70 uppercase tracking-wider block">
+                Số Giọt mực đã tích lũy
+              </span>
+              <span className="font-ganh font-bold text-4xl text-[#faf8f5] mt-2 flex items-center gap-2">
+                {inkPoints}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-6 h-6 text-[#faf8f5]/85 shrink-0"
                 >
-                  📖 ĐÓNG GÓP THÊM
-                </LinkedButton>
-              )}
-            </div>
-            <div className="flex flex-col gap-4">
-              {contributedWorksList && contributedWorksList.length > 0 ? (
-                contributedWorksList.map((work) => (
-                  <WorkLibraryItem key={work.id} work={work} isOwner={false} />
-                ))
-              ) : (
-                <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
-                  <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6 opacity-20"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-                      />
-                    </svg>
-                  </div>
-                  <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
-                    {isOwner ? "Bạn chưa có đóng góp nào" : "Chưa có đóng góp công khai nào"}
-                  </p>
-                  {isOwner && (
-                    <LinkedButton
-                      href="/kho-tang"
-                      className="!px-8 !py-3 !rounded !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
-                    >
-                      ĐÓNG GÓP NGAY
-                    </LinkedButton>
-                  )}
-                </div>
-              )}
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+              </span>
             </div>
           </div>
 
-          {/* Saved Works Section (Owner only) */}
-          {isOwner && (
-            <div className="p-6 md:p-10 pt-16">
-              <div className="flex justify-between items-end mb-8 border-b-2 border-black pb-4">
-                <h2 className="text-2xl md:text-3xl font-ganh font-bold uppercase tracking-tight text-nowrap">
-                  TÁC PHẨM ĐÃ LƯU
-                </h2>
-              </div>
-              <div className="flex flex-col gap-4">
-                {savedWorksList && savedWorksList.length > 0 ? (
-                  savedWorksList.map((work) => (
-                    <WorkLibraryItem
-                      key={work.id}
-                      work={work}
-                      isOwner={false}
-                      initialSaved={true}
-                    />
-                  ))
-                ) : (
-                  <div className="w-full py-16 border-2 border-dashed border-black/10 rounded flex flex-col items-center justify-center text-gray-400 gap-6 bg-gray-50/50">
-                    <div className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6 opacity-20"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                        />
-                      </svg>
-                    </div>
-                    <p className="font-bold text-black/30 uppercase tracking-[0.2em] text-[10px]">
-                      Bạn chưa lưu tác phẩm nào
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <ProfileWorksSection
+            createdWorks={createdWorks}
+            contributedWorksList={contributedWorksList}
+            savedWorksList={savedWorksList}
+            isOwner={isOwner}
+          />
         </div>
       </section>
     </div>

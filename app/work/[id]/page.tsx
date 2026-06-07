@@ -22,7 +22,7 @@ const getWork = cache(async (id: string) => {
   return supabase
     .from("works")
     .select(
-      "id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description, is_test, profiles!works_created_by_fkey(is_hidden)"
+      "id, title, status, limit_type, category_type, sub_category, privacy, created_by, age_rating, author_nickname, description, is_test"
     )
     .eq("id", id)
     .single();
@@ -96,17 +96,20 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
   if (workResponse.error || !work) {
     if (workResponse.error) {
-      logger.error(
-        `[WorkPage] Error fetching work ${id}`,
-        workResponse.error,
-        { code: workResponse.error.code, message: workResponse.error.message }
-      );
+      if (workResponse.error.code !== "PGRST116") {
+        logger.error(`[WorkPage] Error fetching work ${id}`, workResponse.error, {
+          code: workResponse.error.code,
+          message: workResponse.error.message,
+        });
+      } else {
+        logger.warn(`[WorkPage] Work ${id} not found (PGRST116)`);
+      }
     }
     notFound();
   }
 
-  // Secondary parallel fetch for user-specific and saved work data
-  const [profileResponse, savedResponse, todayContributionResponse] =
+  // Secondary parallel fetch for user-specific, saved work, and author profile data
+  const [profileResponse, savedResponse, todayContributionResponse, authorProfileResponse] =
     await Promise.all([
       user
         ? supabase
@@ -144,13 +147,14 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
             .limit(1)
             .single()
         : Promise.resolve({ data: null, error: null }),
+      supabase.from("profiles").select("is_hidden").eq("id", work.created_by).single(),
     ]);
 
   const isSaved = !!savedResponse.data;
   const profile = profileResponse.data;
   const isTester = !!profile?.is_test_account;
   const isAdmin = profile?.role === "admin";
-  const isAuthorHidden = (work as unknown as { profiles?: { is_hidden: boolean } | null }).profiles?.is_hidden;
+  const isAuthorHidden = !!authorProfileResponse.data?.is_hidden;
   const hasContributedToday = !!todayContributionResponse.data;
 
   const contributions: Contribution[] = (contributionsResponse.data || [])
@@ -167,9 +171,9 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   const isPrivate = work.privacy?.toLowerCase() === "private";
   if (isPrivate && (!user || user.id !== work.created_by)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
-          <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#faf8f5]">
+        <div className="max-w-sm w-full bg-[#fcfaf8] border border-[#eae6e1] p-10 rounded-2xl flex flex-col items-center transition-all shadow-[0_8px_32px_rgba(28,27,26,0.04)]">
+          <div className="w-16 h-16 bg-deep-teal/5 text-deep-teal border border-deep-teal/10 rounded-xl flex items-center justify-center mb-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -185,16 +189,16 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">
+          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-[#1c1b1a]">
             Tác phẩm riêng tư
           </h1>
-          <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+          <p className="text-[#1c1b1a]/60 font-medium mb-8 text-sm leading-relaxed">
             Bạn đang cố gắng truy cập địa hạt riêng tư của tác giả. Chỉ người sở hữu mới có quyền
             vào đây.
           </p>
           <Link
             href="/kho-tang"
-            className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all"
+            className="w-full py-3 bg-[#134e4a] text-[#faf8f5] hover:bg-[#003633] rounded-full font-ganh text-xs font-bold uppercase tracking-[0.2em] transition-all text-center shadow-sm"
           >
             Quay lại trang chủ
           </Link>
@@ -205,9 +209,9 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
   if (isAuthorHidden && (!user || (user.id !== work.created_by && !isAdmin))) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-        <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
-          <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-6">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#faf8f5]">
+        <div className="max-w-sm w-full bg-[#fcfaf8] border border-[#eae6e1] p-10 rounded-2xl flex flex-col items-center transition-all shadow-[0_8px_32px_rgba(28,27,26,0.04)]">
+          <div className="w-16 h-16 bg-deep-teal/5 text-deep-teal border border-deep-teal/10 rounded-xl flex items-center justify-center mb-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -223,15 +227,15 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">
+          <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-[#1c1b1a]">
             Không tìm thấy tác phẩm
           </h1>
-          <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+          <p className="text-[#1c1b1a]/60 font-medium mb-8 text-sm leading-relaxed">
             Tác phẩm này không tồn tại hoặc đã bị vô hiệu hóa.
           </p>
           <Link
             href="/kho-tang"
-            className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all"
+            className="w-full py-3 bg-[#134e4a] text-[#faf8f5] hover:bg-[#003633] rounded-full font-ganh text-xs font-bold uppercase tracking-[0.2em] transition-all text-center shadow-sm"
           >
             Quay lại trang chủ
           </Link>
@@ -245,20 +249,20 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   if (ageRating && ageRating.toLowerCase() !== "all") {
     if (!user) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#f5f5f5]">
-          <div className="max-w-sm w-full bg-white border-2 border-black p-10 rounded-[4px] flex flex-col items-center transition-all">
-            <div className="w-16 h-16 bg-literary-gold text-black border-2 border-black rounded-[4px] flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <span className="text-2xl font-black">{ageRating}</span>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#faf8f5]">
+          <div className="max-w-sm w-full bg-[#fcfaf8] border border-[#eae6e1] p-10 rounded-2xl flex flex-col items-center transition-all shadow-[0_8px_32px_rgba(28,27,26,0.04)]">
+            <div className="w-16 h-16 bg-red-50 text-red-800 border border-red-200 rounded-xl flex items-center justify-center mb-6">
+              <span className="text-2xl font-black font-ganh">{ageRating}</span>
             </div>
-            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider">
+            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-[#1c1b1a]">
               Xác nhận độ tuổi
             </h1>
-            <p className="text-black/60 font-medium mb-8 text-sm leading-relaxed">
+            <p className="text-[#1c1b1a]/60 font-medium mb-8 text-sm leading-relaxed">
               Tác phẩm này được giới hạn cho độ tuổi {ageRating}. Vui lòng đăng nhập để tiếp tục.
             </p>
             <Link
               href="/dang-nhap"
-              className="w-full py-3 bg-black text-white border-2 border-black rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all"
+              className="w-full py-3 bg-[#134e4a] text-[#faf8f5] hover:bg-[#003633] rounded-full font-ganh text-xs font-bold uppercase tracking-[0.2em] transition-all text-center shadow-sm"
             >
               Đăng nhập
             </Link>
@@ -272,12 +276,12 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
     // Admin bypass optionally? We can just do strictly age for everyone except maybe created_by
     if (user.id !== work.created_by && !isOldEnough(age, ageRating)) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-red-50">
-          <div className="max-w-sm w-full bg-white border-2 border-red-600 p-10 rounded-[4px] flex flex-col items-center transition-all shadow-[8px_8px_0px_0px_rgba(220,38,38,0.1)]">
-            <div className="w-16 h-16 bg-red-600 text-white rounded-[4px] flex items-center justify-center mb-6">
-              <span className="text-3xl font-black">{ageRating}</span>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-red-50/10">
+          <div className="max-w-sm w-full bg-[#fcfaf8] border border-red-200/50 p-10 rounded-2xl flex flex-col items-center transition-all shadow-[0_8px_32px_rgba(28,27,26,0.04)]">
+            <div className="w-16 h-16 bg-red-50 text-red-700 rounded-xl flex items-center justify-center mb-6 border border-red-100">
+              <span className="text-3xl font-black font-ganh">{ageRating}</span>
             </div>
-            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-red-600">
+            <h1 className="text-2xl font-ganh font-bold mb-4 uppercase tracking-wider text-red-650">
               Dừng bước!
             </h1>
             <p className="text-red-950/60 font-medium mb-8 text-sm leading-relaxed">
@@ -286,7 +290,7 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
             </p>
             <Link
               href="/kho-tang"
-              className="w-full py-3 bg-red-600 text-white border-2 border-red-600 rounded-[4px] font-ganh text-xs font-bold uppercase tracking-[0.2em] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(220,38,38,0.4)] active:translate-x-0 active:translate-y-0 transition-all"
+              className="w-full py-3 bg-red-650 text-white rounded-full font-ganh text-xs font-bold uppercase tracking-[0.2em] transition-all hover:bg-red-700 text-center shadow-sm"
             >
               Quay lại an toàn
             </Link>
@@ -380,50 +384,52 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
           }}
         />
 
-        {/* Header Section - Full Width */}
-        <section className="mb-10 border-b-2 border-black pb-8 max-w-4xl mx-auto w-full zen-hide">
-          <Link
-            href="/kho-tang"
-            className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
-          >
-            <span className="text-lg group-hover:-translate-x-1 transition-transform">&larr;</span>{" "}
-            QUAY LẠI KHO TÀNG
-          </Link>
-          <div className="flex justify-between items-start gap-6">
-            <div className="flex-grow space-y-4">
-              <h1 className="text-2xl md:text-3xl font-ganh font-bold leading-tight tracking-tight text-black break-words max-w-xl">
-                {work.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.1em]">
-                <div className="flex items-center gap-2">
-                  <span className="font-black tracking-[0.2em] text-literary-gold bg-black px-2 py-0.5 rounded-sm">
-                    {work.category_type}
-                  </span>
-                  <span className="text-black/60 tracking-[0.2em]">{work.sub_category}</span>
-                </div>
-                <span className="text-black/20 text-xs">•</span>
-                <div
-                  className={`flex items-center gap-2 ${isCompleted ? "text-red-700" : "text-green-700"}`}
-                >
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-red-700" : "bg-green-700 animate-pulse"}`}
-                  />
-                  <span>{isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}</span>
-                </div>
-              </div>
-              <WorkOwnerControls workId={work.id} initialTitle={work.title} isOwner={isOwner} />
-            </div>
-            <VoteButton
-              workId={work.id}
-              initialCount={voteCount || 0}
-              isCompleted={isCompleted}
-              contributorCount={uniqueContributors}
-            />
-          </div>
-        </section>
-
         {/* 3-Column Layout */}
         <WorkPageLayout workId={work.id} initialSaved={isSaved}>
+          {/* Header Section - Now inside the middle column for perfect alignment */}
+          <section className="mb-10 border-b border-[#eae6e1] pb-8 w-full zen-hide">
+            <Link
+              href="/kho-tang"
+              className="text-xs font-bold uppercase tracking-[0.3em] text-[#1c1b1a]/55 hover:text-black transition-colors mb-6 inline-flex items-center gap-2 group"
+            >
+              <span className="text-lg group-hover:-translate-x-1 transition-transform">
+                &larr;
+              </span>{" "}
+              QUAY LẠI KHO TÀNG
+            </Link>
+            <div className="flex justify-between items-start gap-6">
+              <div className="flex-grow space-y-4">
+                <h1 className="text-2xl md:text-3xl font-ganh font-bold leading-tight tracking-tight text-[#1c1b1a] break-words max-w-xl lowercase">
+                  {work.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.1em]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-deep-teal bg-deep-teal/5 border border-deep-teal/10 px-2.5 py-0.5 rounded-[4px]">
+                      {work.category_type}
+                    </span>
+                    <span className="text-[#1c1b1a]/50 tracking-[0.25em]">{work.sub_category}</span>
+                  </div>
+                  <span className="text-[#eae6e1] text-xs">•</span>
+                  <div
+                    className={`flex items-center gap-2 ${isCompleted ? "text-red-700" : "text-green-700"}`}
+                  >
+                    <div
+                      className={`w-1.5 h-1.5 rounded-sm ${isCompleted ? "bg-red-700" : "bg-green-700"}`}
+                    />
+                    <span>{isCompleted ? "HOÀN THÀNH" : "ĐANG VIẾT"}</span>
+                  </div>
+                </div>
+                <WorkOwnerControls workId={work.id} initialTitle={work.title} isOwner={isOwner} />
+              </div>
+              <VoteButton
+                workId={work.id}
+                initialCount={voteCount || 0}
+                isCompleted={isCompleted}
+                contributorCount={uniqueContributors}
+              />
+            </div>
+          </section>
+
           {/* Real-time Feed */}
           <section className="flex-grow mb-12">
             <Feed
@@ -435,8 +441,8 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
 
           {/* Editor - Sticky at bottom */}
           {!isCompleted && (
-            <div className="sticky bottom-4 sm:bottom-6 zen-hide max-w-4xl mx-auto w-full px-2 sm:px-0">
-              <div className="bg-white py-2 px-3 sm:py-3 sm:px-5 rounded-[4px] border-2 border-black relative z-20">
+            <div className="sticky bottom-4 sm:bottom-6 zen-hide w-full px-2 sm:px-0">
+              <div className="bg-[#fcfaf8]/90 border border-[#eae6e1] backdrop-blur-md py-2.5 px-3 sm:py-3.5 sm:px-5 rounded-2xl relative z-20 shadow-[0_8px_32px_rgba(28,27,26,0.06)]">
                 <Editor
                   workId={work.id}
                   writingRule="1 câu"

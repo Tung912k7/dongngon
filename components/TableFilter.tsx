@@ -37,19 +37,20 @@ export default function TableFilter({ filters, onApplyFilters }: TableFilterProp
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-1 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center mr-2"
+          className="p-2 hover:bg-black/5 rounded-[6px] transition-all duration-200 flex items-center justify-center mr-2 active:scale-[0.98]"
           title="Bộ lọc"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill={isOpen ? "black" : "none"}
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="text-black/60"
           >
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>

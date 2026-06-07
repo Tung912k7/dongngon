@@ -69,7 +69,7 @@ export default function WorkPageLayout({
 
   return (
     <ContributionSelectionContext.Provider value={contextValue}>
-      <div className="flex gap-0 max-w-7xl mx-auto px-4 lg:px-6 relative">
+      <div className="flex gap-0 max-w-[1440px] mx-auto px-6 md:px-16 relative">
         {/* Left Sidebar - Animated */}
         <AnimatePresence initial={false}>
           {isSidebarOpen && (
@@ -92,11 +92,11 @@ export default function WorkPageLayout({
         </AnimatePresence>
 
         {/* Middle Column - Feed */}
-        <div className="flex-1 min-w-0 lg:border-x-2 lg:border-black lg:px-8 zen-no-border relative">
+        <div className="flex-1 min-w-0 lg:border-x lg:border-black/[0.06] lg:px-8 zen-no-border relative">
           {/* Sidebar Toggle Arrow - Desktop Only */}
           <button
             onClick={toggleSidebar}
-            className="zen-hide hidden lg:flex absolute -left-4 top-32 w-8 h-8 bg-black text-white rounded-full items-center justify-center z-40 shadow-lg hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            className="zen-hide hidden lg:flex absolute -left-4 top-32 w-8 h-8 bg-white border border-black/10 text-gray-700 rounded-[6px] items-center justify-center z-40 hover:scale-110 active:scale-95 transition-all cursor-pointer"
             title={isSidebarOpen ? "Đóng bảng điều khiển" : "Mở bảng điều khiển"}
           >
             <m.svg

@@ -1,41 +1,46 @@
 "use client";
 
-import { m } from "framer-motion";
-
+/**
+ * WorkCardSkeleton — CSS-only shimmer animation.
+ *
+ * WHY CSS over Framer Motion here:
+ * - CSS animations run off the main thread → stays smooth during page loads.
+ * - Framer Motion uses rAF (main thread) which drops frames while content loads.
+ * - Skeleton is a decorative repeating animation — Emil's rule: use CSS for
+ *   predetermined animations, JS only for dynamic/interruptible ones.
+ *
+ * The `.skeleton` class and `@keyframes shimmer` are defined in globals.css.
+ */
 export function WorkCardSkeleton() {
   return (
-    <div className="w-full h-[360px] p-5 flex flex-col items-start gap-4 bg-white border-2 border-black rounded relative overflow-hidden">
-      {/* Animated Shine Effect */}
-      <m.div
-        animate={{
-          x: ["-100%", "200%"],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "linear",
-          repeatDelay: 0.5,
-        }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-black/[0.03] to-transparent z-10"
-      />
-
-      {/* Title Placeholder */}
-      <div className="flex flex-col gap-3 w-full">
-        <div className="h-8 w-11/12 bg-black/5 rounded-md" />
-        <div className="h-8 w-3/4 bg-black/5 rounded-md" />
+    <div className="w-full h-[360px] p-6 flex flex-col gap-4 bg-white border border-black/[0.08] rounded-[12px] relative overflow-hidden">
+      {/* Top row: badge + bookmark */}
+      <div className="flex justify-between items-center">
+        <div className="skeleton h-5 w-16 rounded-md" />
+        <div className="skeleton h-4 w-4 rounded-sm" />
       </div>
 
-      {/* Metadata Placeholder */}
-      <div className="flex flex-col gap-2 mt-2 w-full">
-        <div className="h-4 w-1/2 bg-black/5 rounded-md" />
-        <div className="h-4 w-1/3 bg-black/5 rounded-md" />
+      {/* Title lines */}
+      <div className="flex flex-col gap-2.5 flex-grow">
+        <div className="skeleton h-7 w-11/12 rounded-md" />
+        <div className="skeleton h-7 w-3/4 rounded-md" />
       </div>
 
-      {/* Tags Placeholder */}
-      <div className="mt-auto flex gap-2 pt-4 w-full">
-        <div className="h-6 w-20 bg-black/5 rounded-md" />
-        <div className="h-6 w-16 bg-black/5 rounded-md" />
-        <div className="h-6 w-24 bg-black/5 rounded-md" />
+      {/* Description lines */}
+      <div className="flex flex-col gap-2 mt-1">
+        <div className="skeleton h-4 w-full rounded-md" />
+        <div className="skeleton h-4 w-5/6 rounded-md" />
+        <div className="skeleton h-4 w-2/3 rounded-md" />
+      </div>
+
+      {/* Footer row */}
+      <div className="mt-auto pt-5 border-t border-black/5 flex justify-between items-center">
+        <div className="flex items-center gap-1.5">
+          <div className="skeleton h-6 w-6 rounded-md" />
+          <div className="skeleton h-6 w-6 rounded-md" />
+          <div className="skeleton h-6 w-6 rounded-md" />
+        </div>
+        <div className="skeleton h-4 w-16 rounded-md" />
       </div>
     </div>
   );
@@ -45,9 +50,7 @@ export function WorkGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex justify-center sm:justify-start">
-          <WorkCardSkeleton />
-        </div>
+        <WorkCardSkeleton key={i} />
       ))}
     </div>
   );

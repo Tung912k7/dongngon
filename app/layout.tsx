@@ -24,7 +24,7 @@ const ganhType = localFont({
 });
 
 const beVietnamPro = Be_Vietnam_Pro({
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin", "vietnamese"],
   variable: "--font-be-vietnam-next",
   display: "swap",

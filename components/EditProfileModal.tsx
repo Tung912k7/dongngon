@@ -8,7 +8,9 @@ import Image from "next/image";
 import { AnimatePresence, m } from "framer-motion";
 import dynamic from "next/dynamic";
 import type { Area, CropperProps } from "react-easy-crop";
-const Cropper = dynamic(() => import("react-easy-crop"), { ssr: false }) as unknown as ComponentType<Partial<CropperProps>>;
+const Cropper = dynamic(() => import("react-easy-crop"), {
+  ssr: false,
+}) as unknown as ComponentType<Partial<CropperProps>>;
 import { getCroppedImg } from "@/utils/imageCrop";
 import { createClient } from "@/utils/supabase/client";
 import { PrimaryButton } from "./PrimaryButton";
@@ -52,7 +54,7 @@ export default function EditProfileModal({
 
       // 2MB Limit
       if (file.size > 2 * 1024 * 1024) {
-        setError("Kích thước ảnh không được vượt quá 2MB.");
+        setError("kích thước ảnh vượt quá giới hạn 2MB.");
         return;
       }
 
@@ -93,7 +95,7 @@ export default function EditProfileModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newFieldErrors: Record<string, string> = {};
-    if (!nickname.trim()) newFieldErrors.nickname = "Vui lòng nhập bút danh.";
+    if (!nickname.trim()) newFieldErrors.nickname = "vui lòng nhập bút danh của bạn.";
 
     if (Object.keys(newFieldErrors).length > 0) {
       setFieldErrors(newFieldErrors);
@@ -119,9 +121,7 @@ export default function EditProfileModal({
           if (uploadedUrl) {
             finalAvatarUrl = uploadedUrl;
           } else {
-            throw new Error(
-              "Không thể tải ảnh lên. Hãy đảm bảo bạn đã tạo bucket 'avatars' trong Supabase."
-            );
+            throw new Error("không thể tải ảnh lên. vui lòng kiểm tra kết nối mạng.");
           }
         }
       }
@@ -135,14 +135,14 @@ export default function EditProfileModal({
         setIsOpen(false);
         setImageSrc(null);
       } else {
-        setError(result.error || "Có lỗi xảy ra.");
+        setError(result.error || "đã xảy ra lỗi ngoài ý muốn. vui lòng thử lại.");
       }
     } catch (err: unknown) {
       logger.error("Profile update error:", err);
       if (err instanceof Error && err.message === "TIMEOUT") {
-        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+        setError("yêu cầu phản hồi quá lâu. vui lòng thử lại sau ít phút.");
       } else {
-        setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi cập nhật hồ sơ.");
+        setError(err instanceof Error ? err.message : "đã xảy ra lỗi khi cập nhật hồ sơ.");
       }
     } finally {
       setIsSubmitting(false);
@@ -165,10 +165,10 @@ export default function EditProfileModal({
     <>
       <PrimaryButton
         onClick={() => setIsOpen(true)}
-        className="mt-12 w-full !py-3 !text-sm !uppercase !tracking-widest"
-        aria-label="Mở chỉnh sửa hồ sơ"
+        className="mt-12 w-full !py-3 !text-sm font-ganh font-bold !lowercase !tracking-wider !rounded-full !bg-[#134e4a] hover:!bg-[#003633] !text-[#faf8f5]"
+        ariaLabel="mở chỉnh sửa hồ sơ"
       >
-        CHỈNH SỬA HỒ SƠ
+        chỉnh sửa hồ sơ
       </PrimaryButton>
 
       <AnimatePresence>
@@ -190,43 +190,40 @@ export default function EditProfileModal({
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white border-2 border-black rounded p-6 md:p-10 w-full max-w-xl relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
+              className="bg-[#faf8f5] border border-[#eae6e1] rounded-2xl p-6 md:p-10 w-full max-w-xl relative z-10 shadow-sm max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll-container"
             >
               <style
                 dangerouslySetInnerHTML={{
                   __html: `
                 .modal-scroll-container::-webkit-scrollbar {
-                  width: 8px;
+                  width: 6px;
                 }
                 .modal-scroll-container::-webkit-scrollbar-track {
-                  background: #f1f1f1;
-                  border-radius: 10px;
-                  margin: 20px 0;
+                  background: #faf8f5;
                 }
                 .modal-scroll-container::-webkit-scrollbar-thumb {
-                  background: #000;
+                  background: #eae6e1;
                   border-radius: 10px;
-                  border: 2px solid #f1f1f1;
                 }
                 .modal-scroll-container::-webkit-scrollbar-thumb:hover {
-                  background: #333;
+                  background: #134e4a;
                 }
                 .modal-scroll-container {
                   scrollbar-width: thin;
-                  scrollbar-color: #000 #f1f1f1;
+                  scrollbar-color: #eae6e1 #faf8f5;
                 }
               `,
                 }}
               />
-              <h2 className="text-3xl font-ganh font-bold mb-8 text-center uppercase tracking-tight">
-                Cập nhật hồ sơ
+              <h2 className="text-3.5xl font-ganh font-bold mb-8 text-center text-deep-teal lowercase">
+                cập nhật hồ sơ
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6 font-sans">
                 {/* Consolidated Avatar Section */}
                 <div className="space-y-4">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
-                    ẢNH ĐẠI DIỆN
+                  <label className="block text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    ảnh đại diện
                   </label>
 
                   {/* Upload & Reset Buttons */}
@@ -234,9 +231,9 @@ export default function EditProfileModal({
                     <PrimaryButton
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="!px-4 !py-1.5 !text-[9px] rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      className="!px-4 !py-2 !text-xs font-medium !lowercase !tracking-wide !rounded-full !bg-[#134e4a] hover:!bg-[#003633]"
                     >
-                      CHỌN ẢNH TỪ THIẾT BỊ
+                      chọn ảnh từ thiết bị
                     </PrimaryButton>
 
                     <button
@@ -246,20 +243,20 @@ export default function EditProfileModal({
                         setImageSrc(null);
                         if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
-                      className="px-6 py-2 bg-[#F9F9F9] border-2 border-black rounded text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all text-black/30 hover:text-black"
+                      className="px-4 py-2 bg-white border border-[#eae6e1] rounded-full text-xs font-medium lowercase tracking-wide hover:bg-black/5 active:scale-[0.98] transition-all text-black/80 cursor-pointer"
                     >
-                      PHỤC HỒI MẶC ĐỊNH
+                      phục hồi mặc định
                     </button>
 
                     {!imageSrc && (
-                      <span className="text-[10px] text-gray-400 font-bold italic ml-auto">
-                        Tối đa 2MB
+                      <span className="text-[10px] text-gray-400 font-bold italic ml-auto lowercase">
+                        tối đa 2MB
                       </span>
                     )}
                   </div>
 
                   {/* Preview / Cropping Frame */}
-                  <div className="relative w-full h-[320px] bg-[#fafafa] rounded border-2 border-black overflow-hidden flex items-center justify-center group">
+                  <div className="relative w-full h-[320px] bg-[#fcfaf8] rounded-xl border border-[#eae6e1] overflow-hidden flex items-center justify-center group">
                     {imageSrc ? (
                       <div className="relative w-full h-full">
                         <Cropper
@@ -272,9 +269,9 @@ export default function EditProfileModal({
                           onZoomChange={setZoom}
                         />
                         {/* Zoom Control Overlay */}
-                        <div className="absolute bottom-4 left-4 right-4 bg-white p-3 rounded border-2 border-black flex items-center gap-4 z-10">
-                          <span className="text-[9px] font-black text-black uppercase tracking-widest">
-                            THU PHÓNG
+                        <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-[#eae6e1] flex items-center gap-4 z-10 shadow-sm">
+                          <span className="text-[10px] font-bold text-black/60 lowercase tracking-wider">
+                            thu phóng
                           </span>
                           <input
                             type="range"
@@ -291,9 +288,9 @@ export default function EditProfileModal({
                               setImageSrc(null);
                               if (fileInputRef.current) fileInputRef.current.value = "";
                             }}
-                            className="text-[10px] font-black text-red-500 hover:text-red-700 underline"
+                            className="text-[10px] font-bold text-red-500 hover:text-red-700 hover:underline lowercase"
                           >
-                            XÓA
+                            xóa
                           </button>
                         </div>
                       </div>
@@ -307,8 +304,8 @@ export default function EditProfileModal({
                           className={`w-full h-full object-cover ${getImageUrl(avatarUrl) === "/webp/default_avatar.webp" || !avatarUrl ? "scale-[1.5]" : ""}`}
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px]">
-                          <p className="text-[10px] text-black font-black mt-4 tracking-widest uppercase bg-white px-4 py-2 border-2 border-black">
-                            Xem trước ảnh
+                          <p className="text-[10px] text-black/60 font-medium mt-4 tracking-wider lowercase bg-white/90 backdrop-blur-sm px-4 py-2 border border-[#eae6e1] rounded-full">
+                            xem trước ảnh
                           </p>
                         </div>
                       </div>
@@ -325,8 +322,8 @@ export default function EditProfileModal({
                 </div>
 
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
-                    BÚT DANH
+                  <label className="block text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    bút danh
                   </label>
                   <input
                     type="text"
@@ -337,36 +334,36 @@ export default function EditProfileModal({
                         setFieldErrors((prev) => ({ ...prev, nickname: "" }));
                     }}
                     maxLength={30}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.nickname ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:bg-white transition-all text-sm`}
-                    placeholder="Nhập bút danh mới..."
+                    className={`w-full px-4 py-3 border ${fieldErrors.nickname ? "border-red-400/60 bg-[#fdebec]" : "border-[#eae6e1]"} rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black bg-[#fcfaf8]`}
+                    placeholder="nhập bút danh mới..."
                   />
                   {fieldErrors.nickname && (
-                    <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-wider">
+                    <p className="text-[#9f2f2d] text-xs font-medium mt-1 tracking-wide lowercase">
                       {fieldErrors.nickname}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#B4B4B4]">
-                    GIỚI THIỆU
+                  <label className="block text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    giới thiệu
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     maxLength={200}
-                    className="w-full px-6 py-3 border-2 border-black rounded font-bold focus:outline-none focus:bg-white transition-all text-sm min-h-[120px] resize-none"
-                    placeholder="Hãy chia sẻ một chút về bản thân bạn..."
+                    className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black bg-[#fcfaf8] min-h-[120px] resize-none"
+                    placeholder="hãy chia sẻ một chút về bản thân bạn..."
                   />
                   <div className="flex justify-end">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                    <span className="text-[10px] text-gray-400 font-bold lowercase tracking-wider">
                       {description.length}/200
                     </span>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded text-sm font-bold animate-shake">
+                  <div className="p-4 bg-[#fdebec] border border-red-200/40 text-[#9f2f2d] rounded-xl text-sm font-medium">
                     {error}
                   </div>
                 )}
@@ -378,16 +375,16 @@ export default function EditProfileModal({
                       setIsOpen(false);
                       setImageSrc(null);
                     }}
-                    className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-100 transition-all text-[10px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    className="flex-1 py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider rounded-full hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm bg-white"
                   >
-                    HỦY
+                    hủy bỏ
                   </button>
                   <PrimaryButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    className="flex-1 !py-3 !text-sm font-ganh font-bold !lowercase !tracking-wider !rounded-full !bg-[#134e4a] hover:!bg-[#003633] !text-[#faf8f5]"
                   >
-                    {isSubmitting ? <>ĐANG LƯU...</> : <>LƯU THAY ĐỔI</>}
+                    {isSubmitting ? "đang lưu..." : "lưu thay đổi"}
                   </PrimaryButton>
                 </div>
               </form>

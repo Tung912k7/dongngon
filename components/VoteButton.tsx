@@ -61,7 +61,7 @@ export default function VoteButton({
   if (isCompleted) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <div className="px-6 py-3 bg-black text-white border-2 border-black rounded font-ganh text-xs uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] opacity-70">
+        <div className="px-5 py-2.5 bg-[#134e4a]/10 text-[#134e4a] border border-[#134e4a]/10 rounded-full font-ganh text-xs font-bold uppercase tracking-widest shadow-sm">
           Tác phẩm đã hoàn thành
         </div>
         <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
@@ -96,19 +96,19 @@ export default function VoteButton({
   return (
     <div className="flex flex-col items-end gap-2">
       {error && (
-        <span className="text-red-600 font-bold text-[10px] uppercase tracking-tighter bg-red-50 px-2 py-0.5 border border-red-600 rounded-sm">
+        <span className="text-red-700 font-bold text-[10px] uppercase tracking-tighter bg-[#FFF5F5] px-2 py-0.5 border border-red-200 rounded-[4px]">
           {error}
         </span>
       )}
       <button
         onClick={handleVote}
         disabled={hasVoted || isLoading}
-        className="group relative px-4 py-2 bg-white border-2 border-black rounded transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:translate-0 disabled:shadow-none flex items-center gap-2"
+        className="group relative px-4 py-2 bg-white border border-[#eae6e1] rounded-full transition-all duration-300 hover:bg-[#134e4a]/5 hover:border-[#134e4a]/30 active:scale-[0.98] disabled:opacity-50 disabled:scale-100 flex items-center gap-2 cursor-pointer shadow-sm"
       >
-        <span className="font-ganh text-[10px] font-bold uppercase tracking-widest">
+        <span className="font-ganh text-[10px] font-bold uppercase tracking-widest text-[#1c1b1a]">
           🛑 Kết thúc
         </span>
-        <span className="bg-black text-white rounded-md text-[9px] font-black px-1.5 py-0.5 transition-colors group-hover:bg-literary-gold group-hover:text-black">
+        <span className="bg-[#1c1b1a] text-[#faf8f5] rounded-full text-[9px] font-black px-2 py-0.5 transition-colors group-hover:bg-[#134e4a]">
           {count}/{threshold}
         </span>
       </button>

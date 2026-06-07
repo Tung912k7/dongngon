@@ -11,6 +11,7 @@ type QuoteItem = {
   text: string;
   author: string;
   source: string | null;
+  author_profession?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -21,6 +22,7 @@ type QuoteFormState = {
   text: string;
   author: string;
   source: string;
+  author_profession: string;
   is_active: boolean;
 };
 
@@ -38,6 +40,7 @@ const defaultFormState: QuoteFormState = {
   text: "",
   author: "",
   source: "",
+  author_profession: "",
   is_active: true,
 };
 
@@ -170,7 +173,7 @@ export default function AdminQuotesPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from("quotes")
-      .select("id, text, author, source, is_active, created_at, updated_at")
+      .select("id, text, author, source, author_profession, is_active, created_at, updated_at")
       .order("updated_at", { ascending: false });
 
     if (error) {
@@ -245,6 +248,7 @@ export default function AdminQuotesPage() {
       text: quote.text,
       author: quote.author,
       source: quote.source ?? "",
+      author_profession: quote.author_profession ?? "",
       is_active: quote.is_active,
     });
     setMessage(null);
@@ -294,6 +298,7 @@ export default function AdminQuotesPage() {
       text,
       author,
       source: source || null,
+      author_profession: formState.author_profession.trim() || null,
       is_active: formState.is_active,
     };
 
@@ -302,12 +307,12 @@ export default function AdminQuotesPage() {
           .from("quotes")
           .update(payload)
           .eq("id", formState.id)
-          .select("id, text, author, source, is_active, created_at, updated_at")
+          .select("id, text, author, source, author_profession, is_active, created_at, updated_at")
           .single()
       : supabase
           .from("quotes")
           .insert(payload)
-          .select("id, text, author, source, is_active, created_at, updated_at")
+          .select("id, text, author, source, author_profession, is_active, created_at, updated_at")
           .single();
 
     const { data, error } = await query;
@@ -466,7 +471,7 @@ export default function AdminQuotesPage() {
       .from("quotes")
       .update({ is_active: !quote.is_active })
       .eq("id", quote.id)
-      .select("id, text, author, source, is_active, created_at, updated_at")
+      .select("id, text, author, source, author_profession, is_active, created_at, updated_at")
       .single();
 
     if (error) {
@@ -576,7 +581,7 @@ export default function AdminQuotesPage() {
                 />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-3">
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest pl-1">
                     Tác giả
@@ -586,6 +591,19 @@ export default function AdminQuotesPage() {
                     value={formState.author}
                     onChange={(event) => handleInputChange("author", event.target.value)}
                     placeholder="Ví dụ: Vô danh"
+                    className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest pl-1">
+                    Nghề nghiệp
+                  </label>
+                  <input
+                    type="text"
+                    value={formState.author_profession}
+                    onChange={(event) => handleInputChange("author_profession", event.target.value)}
+                    placeholder="Ví dụ: Nhà thơ, Triết gia..."
                     className="w-full px-5 py-4 rounded-2xl border-4 border-black focus:outline-none focus:bg-slate-50 text-base font-medium"
                   />
                 </div>
@@ -765,7 +783,8 @@ export default function AdminQuotesPage() {
                         </blockquote>
 
                         <p className="text-sm font-black uppercase tracking-[0.16em] text-slate-500">
-                          {quote.author}
+                          {quote.author}{" "}
+                          {quote.author_profession ? `(${quote.author_profession})` : ""}
                         </p>
 
                         {quote.source ? (

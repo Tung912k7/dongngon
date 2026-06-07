@@ -48,7 +48,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
     <div className="w-full relative group">
       <Link
         href={`/work/${work.id}`}
-        className="flex items-center gap-4 p-4 sm:p-5 bg-white border-2 border-black rounded hover:bg-gray-50 transition-all hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+        className="flex items-center gap-4 p-4 sm:p-5 bg-white border border-black/[0.06] rounded-[12px] hover:bg-[#FAF9F5]/50 transition-all"
       >
         {/* Status indicator */}
         <div
@@ -69,7 +69,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
               {work.title}
             </h3>
             <div className="flex flex-wrap gap-2">
-              <span className="text-[9px] font-black uppercase tracking-widest text-literary-gold bg-black px-2 py-0.5 rounded-sm">
+              <span className="text-[9px] font-black uppercase tracking-widest text-deep-teal bg-deep-teal/5 px-2 py-0.5 rounded-sm border border-deep-teal/10">
                 {work.type}
               </span>
               <span className="text-[9px] font-bold uppercase tracking-widest text-black/30">
@@ -96,7 +96,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
             <span className="opacity-20">•</span>
             <span>{work.date}</span>
             <span className="opacity-20">•</span>
-            <span className="bg-black/5 px-1.5 py-0.5 rounded-sm text-[9px]">
+            <span className="bg-gray-50 text-gray-500 border border-gray-100 px-1.5 py-0.5 rounded-sm text-[9px]">
               {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
             </span>
           </div>
@@ -116,7 +116,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
               setShowPrivateNotice(false);
             }}
           >
-            <div className="bg-black/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl border border-white/20 shadow-2xl flex items-center gap-4">
+            <div className="bg-black/95 backdrop-blur-md text-white px-6 py-4 rounded-[12px] border border-white/20 shadow-xl flex items-center gap-4">
               <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +180,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
                 initial={{ opacity: 0, scale: 0.95, x: 10 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95, x: 10 }}
-                className="absolute right-0 top-10 w-40 bg-white border-2 border-black rounded shadow-lg py-1 z-30"
+                className="absolute right-0 top-10 w-40 bg-white border border-black/10 rounded-[6px] shadow-lg py-1 z-30"
               >
                 <div className="px-1 flex flex-col">
                   <button
@@ -190,7 +190,7 @@ const WorkLibraryItem = memo(function WorkLibraryItem({
                       setIsEditOpen(true);
                       setIsMenuOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-xs font-bold text-black hover:bg-gray-50 transition-colors uppercase tracking-widest"
+                    className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors uppercase tracking-widest"
                   >
                     CHỈNH SỬA
                   </button>

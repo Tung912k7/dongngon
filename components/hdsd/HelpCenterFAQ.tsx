@@ -23,44 +23,33 @@ const HelpCenterFAQ: React.FC<HelpCenterFAQProps> = ({ items }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col border-t border-[#eae6e1]">
       {items.map((item, idx) => {
         const isOpen = openIndex === idx;
         return (
-          <div key={idx} className="border-2 border-black rounded bg-white overflow-hidden">
+          <div key={idx} className="border-b border-[#eae6e1] bg-transparent overflow-hidden">
             <button
               id={`faq-item-${idx}`}
               type="button"
               onClick={() => toggle(idx)}
-              className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer group hover:bg-neutral-50 transition-colors"
+              className="w-full flex items-center justify-between py-6 text-left cursor-pointer group transition-colors focus:outline-none"
               aria-expanded={isOpen}
               aria-controls={`faq-answer-${idx}`}
             >
-              <span className="text-lg md:text-xl font-ganh font-bold text-neutral-900 leading-tight pr-4 uppercase tracking-tight">
+              <span className="text-base md:text-lg font-be-vietnam font-semibold text-ink-charcoal group-hover:text-deep-teal transition-colors leading-snug pr-8">
                 {item.question}
               </span>
-              {/* Chevron */}
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`flex-shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                aria-hidden="true"
-              >
-                <path d="M5 7.5l5 5 5-5" />
-              </svg>
+              {/* Plus/Minus Toggle */}
+              <span className="text-xl font-mono text-ink-charcoal/40 group-hover:text-deep-teal transition-colors shrink-0 select-none w-4 text-center">
+                {isOpen ? "−" : "+"}
+              </span>
             </button>
 
             {/* Answer panel */}
             {isOpen && (
               <div
                 id={`faq-answer-${idx}`}
-                className="px-6 pb-5 text-sm text-neutral-600 leading-relaxed"
+                className="pb-6 text-sm text-ink-charcoal/60 leading-relaxed max-w-[75ch]"
               >
                 {item.answer}
               </div>

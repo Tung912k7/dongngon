@@ -82,7 +82,7 @@ export default function DateInput({
 
   return (
     <div className="relative w-full group">
-      {/* 
+      {/*
         Native Date Picker - Fully hidden but functional.
         Using visibility: hidden or display: none often breaks showPicker().
         Using zero dimensions and absolute positioning is safer.

@@ -61,3 +61,11 @@ export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
+/**
+ * Escapes ILIKE/LIKE wildcard characters in user input.
+ * Prevents wildcard injection in PostgreSQL ILIKE queries.
+ */
+export function escapeILike(input: string): string {
+  return input.replace(/%/g, "\\%").replace(/_/g, "\\_");
+}

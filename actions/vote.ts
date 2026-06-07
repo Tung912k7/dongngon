@@ -6,14 +6,10 @@ import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "@/utils/error-handler";
 import { checkRateLimitDistributed } from "@/utils/rate-limit";
 import { captureServerEvent } from "@/utils/posthog-server";
+import { isValidUuid } from "@/actions/shared";
 
-const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VOTE_LIMIT = 10;
 const VOTE_WINDOW_MS = 60 * 1000;
-
-function isValidUuid(value: string) {
-  return UUID_V4_REGEX.test(value);
-}
 
 export async function voteEndWork(workId: string) {
   const supabase = await createClient();

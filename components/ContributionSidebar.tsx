@@ -137,9 +137,9 @@ export default function ContributionSidebar({
   return (
     <aside className="hidden lg:block w-[220px] flex-shrink-0">
       <div className="sticky top-32 space-y-6">
-        <div className="border-2 border-black rounded-l-[12px] overflow-hidden bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="border border-[#eae6e1] rounded-2xl overflow-hidden bg-[#fcfaf8] shadow-[0_4px_20px_rgba(28,27,26,0.02)]">
           {/* Header Section */}
-          <div className="bg-black px-4 py-4 min-h-[64px] flex items-center justify-between gap-2.5">
+          <div className="bg-[#134e4a] px-4 py-4 min-h-[64px] flex items-center justify-between gap-2.5">
             <AnimatePresence mode="wait">
               {contribution && !isSystem ? (
                 <m.div
@@ -152,7 +152,7 @@ export default function ContributionSidebar({
                   <span className="text-[12px] font-bold text-white truncate max-w-[140px]">
                     {contribution.author_nickname}
                   </span>
-                  <span className="text-[9px] text-white/40 font-medium uppercase tracking-wider">
+                  <span className="text-[9px] text-[#faf8f5]/60 font-medium uppercase tracking-wider">
                     {new Date(contribution.created_at).toLocaleDateString("vi-VN", {
                       day: "numeric",
                       month: "short",
@@ -167,7 +167,7 @@ export default function ContributionSidebar({
                   animate={{ opacity: 1 }}
                   className="flex flex-col"
                 >
-                  <span className="text-[11px] font-bold text-white/60 uppercase tracking-[0.1em]">
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-[0.1em]">
                     Bảng điều khiển
                   </span>
                 </m.div>
@@ -177,7 +177,7 @@ export default function ContributionSidebar({
             {contribution && !isSystem && (
               <button
                 onClick={handleViewProfile}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-90 transition-colors group"
+                className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-colors group"
                 title="Thăm nhà"
                 aria-label="Thăm nhà"
               >
@@ -185,7 +185,7 @@ export default function ContributionSidebar({
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-4 h-4 text-literary-gold group-hover:scale-110 transition-transform"
+                  className="w-4 h-4 text-[#d4af37] group-hover:scale-115 transition-transform"
                   aria-hidden="true"
                 >
                   <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
@@ -196,7 +196,7 @@ export default function ContributionSidebar({
           </div>
 
           {/* Content / Placeholder Section */}
-          <div className="px-4 py-5 bg-[#fafaf8] border-b-2 border-black min-h-[100px] flex items-center">
+          <div className="px-4 py-5 bg-[#faf8f5]/50 border-b border-[#eae6e1] min-h-[100px] flex items-center">
             <AnimatePresence mode="wait">
               {contribution && !isSystem ? (
                 <m.p
@@ -204,7 +204,7 @@ export default function ContributionSidebar({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-[13px] text-black/80 italic leading-relaxed font-serif line-clamp-4"
+                  className="text-[13px] text-[#1c1b1a]/95 italic leading-relaxed font-serif line-clamp-4"
                 >
                   &ldquo;{contribution.content}&rdquo;
                 </m.p>
@@ -221,7 +221,7 @@ export default function ContributionSidebar({
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="w-6 h-6 text-black/20"
+                    className="w-6 h-6 text-[#1c1b1a]/20"
                     aria-hidden="true"
                   >
                     <path
@@ -230,7 +230,7 @@ export default function ContributionSidebar({
                       d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5"
                     />
                   </svg>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-black/30">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#1c1b1a]/30">
                     Chọn một câu để thao tác
                   </p>
                 </m.div>
@@ -239,7 +239,7 @@ export default function ContributionSidebar({
           </div>
 
           {/* Persistent Action Menu */}
-          <div className="bg-white divide-y-2 divide-black">
+          <div className="bg-white divide-y divide-[#eae6e1]">
             {/* Save Work Button (Heart) */}
             {workId && (
               <SaveWorkButton workId={workId} initialSaved={initialSaved} variant="full" />
@@ -249,8 +249,8 @@ export default function ContributionSidebar({
             <button
               onClick={handleCopy}
               disabled={!contribution}
-              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 group
-                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50" : "hover:bg-black hover:text-white active:bg-black/90 cursor-pointer"}
+              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-150 group
+                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50/50" : "hover:bg-[#134e4a]/5 hover:text-[#134e4a] active:bg-[#134e4a]/10 cursor-pointer text-[#1c1b1a]/80"}
               `}
             >
               {copied ? (
@@ -295,9 +295,9 @@ export default function ContributionSidebar({
             {/* Reading Mode Toggle (Always Enabled) */}
             <button
               onClick={toggleZenMode}
-              className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-black hover:text-white transition-colors duration-200 group"
+              className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-[#134e4a]/5 transition-colors duration-150 group text-[#1c1b1a]/80"
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 text-ink-charcoal">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -320,11 +320,11 @@ export default function ContributionSidebar({
               <div
                 role="switch"
                 aria-checked={isZenMode}
-                className={`w-9 h-5 rounded-full border-2 border-black transition-colors duration-200 relative flex items-center px-[3px] ${isZenMode ? "bg-black" : "bg-white"} group-hover:border-white`}
+                className={`w-9 h-5 rounded-full border border-[#eae6e1] transition-colors duration-200 relative flex items-center px-[2px] ${isZenMode ? "bg-[#134e4a] border-[#134e4a]" : "bg-white"}`}
               >
                 <m.div
-                  className={`w-2.5 h-2.5 rounded-full transition-colors duration-200 ${isZenMode ? "bg-white" : "bg-black"}`}
-                  animate={{ x: isZenMode ? 16 : 0 }}
+                  className={`w-3.5 h-3.5 rounded-full transition-colors duration-200 ${isZenMode ? "bg-white" : "bg-[#1c1b1a]"}`}
+                  animate={{ x: isZenMode ? 14 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               </div>
@@ -334,8 +334,8 @@ export default function ContributionSidebar({
             <button
               onClick={handleCopyLink}
               disabled={!contribution}
-              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 group
-                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50" : "hover:bg-black hover:text-white active:bg-black/90 cursor-pointer"}
+              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-150 group
+                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50/50" : "hover:bg-[#134e4a]/5 hover:text-[#134e4a] active:bg-[#134e4a]/10 cursor-pointer text-[#1c1b1a]/80"}
               `}
             >
               {linkCopied ? (
@@ -381,8 +381,8 @@ export default function ContributionSidebar({
             <button
               onClick={handleDownloadCard}
               disabled={!contribution}
-              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 group
-                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50" : "hover:bg-black hover:text-white active:bg-black/90 cursor-pointer"}
+              className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-150 group
+                ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50/50" : "hover:bg-[#134e4a]/5 hover:text-[#134e4a] active:bg-[#134e4a]/10 cursor-pointer text-[#1c1b1a]/80"}
               `}
             >
               <svg
@@ -409,8 +409,8 @@ export default function ContributionSidebar({
                 <button
                   onClick={() => setShowReportMenu(true)}
                   disabled={!contribution}
-                  className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 group
-                    ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50" : "text-black/60 hover:text-white hover:bg-red-600 cursor-pointer"}
+                  className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-150 group
+                    ${!contribution ? "opacity-30 cursor-not-allowed bg-gray-50/50" : "text-[#1c1b1a]/60 hover:text-white hover:bg-red-650 cursor-pointer"}
                   `}
                 >
                   <svg
@@ -431,12 +431,12 @@ export default function ContributionSidebar({
                   <span>Báo cáo</span>
                 </button>
               ) : (
-                <div className="p-3 space-y-2">
+                <div className="p-3 space-y-2 bg-[#faf8f5]/30">
                   {showCustomReason ? (
                     <>
                       <button
                         onClick={() => setShowCustomReason(false)}
-                        className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40 hover:text-black flex items-center gap-1 transition-colors"
+                        className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#1c1b1a]/40 hover:text-black flex items-center gap-1 transition-colors"
                         aria-label="Quay lại"
                       >
                         <svg
@@ -457,7 +457,7 @@ export default function ContributionSidebar({
                         Quay lại
                       </button>
                       {isReporting ? (
-                        <div className="py-4 text-center text-[10px] font-bold text-black/40 uppercase tracking-widest">
+                        <div className="py-4 text-center text-[10px] font-bold text-[#1c1b1a]/40 uppercase tracking-widest">
                           Đang gửi…
                         </div>
                       ) : reported ? (
@@ -473,9 +473,9 @@ export default function ContributionSidebar({
                               value={customReason}
                               onChange={(e) => setCustomReason(e.target.value)}
                               placeholder="Mô tả vi phạm…"
-                              className="w-full h-16 text-[11px] p-2 border-2 border-black/20 rounded-[4px] resize-none focus:outline-none focus:border-black transition-colors"
+                              className="w-full h-16 text-[11px] p-2 border border-[#eae6e1] rounded-xl resize-none focus:outline-none focus:border-[#134e4a] focus:ring-1 focus:ring-[#134e4a] transition-colors bg-white"
                             />
-                            <div className="absolute bottom-1 right-2 text-[8px] text-black/30">
+                            <div className="absolute bottom-1 right-2 text-[8px] text-[#1c1b1a]/30">
                               {customReason.length}/150
                             </div>
                           </div>
@@ -484,7 +484,7 @@ export default function ContributionSidebar({
                               if (customReason.trim()) handleReport(`Khác: ${customReason.trim()}`);
                             }}
                             disabled={!customReason.trim()}
-                            className="w-full bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest py-2 rounded-[4px] disabled:opacity-40 hover:bg-red-700 transition-colors"
+                            className="w-full bg-red-650 text-white text-[10px] font-bold uppercase tracking-widest py-2 rounded-full disabled:opacity-40 hover:bg-red-700 transition-colors shadow-sm"
                           >
                             Gửi báo cáo
                           </button>
@@ -495,7 +495,7 @@ export default function ContributionSidebar({
                     <div className="flex flex-col">
                       <button
                         onClick={() => setShowReportMenu(false)}
-                        className="px-1 py-1 mb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-black/40 hover:text-black flex items-center gap-1 transition-colors"
+                        className="px-1 py-1 mb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-[#1c1b1a]/40 hover:text-[#1c1b1a] flex items-center gap-1 transition-colors"
                         aria-label="Huỷ bỏ"
                       >
                         <svg
@@ -516,7 +516,7 @@ export default function ContributionSidebar({
                         Huỷ bỏ
                       </button>
                       {isReporting ? (
-                        <div className="py-4 text-center text-[10px] font-bold text-black/40 uppercase tracking-widest">
+                        <div className="py-4 text-center text-[10px] font-bold text-[#1c1b1a]/40 uppercase tracking-widest">
                           Đang gửi…
                         </div>
                       ) : reported ? (
@@ -531,7 +531,7 @@ export default function ContributionSidebar({
                               if (reason === "Lý do vi phạm khác") setShowCustomReason(true);
                               else handleReport(reason);
                             }}
-                            className="w-full text-left px-2 py-2 text-[10px] font-semibold text-black/70 hover:bg-red-50 hover:text-red-700 transition-colors border-t border-black/10"
+                            className="w-full text-left px-2 py-2 text-[10px] font-semibold text-[#1c1b1a]/70 hover:bg-red-50 hover:text-red-700 transition-colors border-t border-[#eae6e1]"
                           >
                             {reason}
                           </button>

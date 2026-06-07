@@ -21,6 +21,7 @@ export type Contribution = {
   new_line?: boolean; // When true, renders a line break before this contribution (Thơ tự do)
   created_at: string;
   is_test?: boolean;
+  copy_count?: number;
 };
 
 export type Notification = {

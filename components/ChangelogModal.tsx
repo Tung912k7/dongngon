@@ -38,10 +38,14 @@ export default function ChangelogModal({ lastSeenVersion }: ChangelogModalProps)
                 />
 
                 <m.div
-                  initial={{ scale: 0.92, opacity: 0, y: 30 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0.92, opacity: 0, y: 30 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{
+                    scale: 0.95,
+                    opacity: 0,
+                    transition: { duration: 0.15, ease: [0.32, 0.72, 0, 1] },
+                  }}
+                  transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
                   className="bg-white border-2 border-black rounded-3xl w-full max-w-lg relative z-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden max-h-[85vh] flex flex-col"
                 >
                   {/* Header */}

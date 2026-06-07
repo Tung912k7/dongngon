@@ -105,7 +105,7 @@ function parseTemplateHeader(rawText: string) {
       const value = line
         .slice(separatorIndex + 1)
         .trim()
-        .replace(/^['\"]|['\"]$/g, "");
+        .replace(/^['"]|['"]$/g, "");
 
       if (key === "slug") metadata.slug = value;
       if (key === "section_slug") metadata.section_slug = value;

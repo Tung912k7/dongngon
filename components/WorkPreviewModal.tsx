@@ -55,56 +55,65 @@ export default function WorkPreviewModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
 
-          {/* Modal Container */}
+          {/* Modal Container — center-anchored, keep transformOrigin: center */}
           <m.div
-            initial={{ scale: 0.95, opacity: 0, y: 10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            initial={{ scale: 0.96, opacity: 0 }}
+            animate={{
+              scale: 1,
+              opacity: 1,
+              transition: { duration: 0.25, ease: [0.23, 1, 0.32, 1] },
+            }}
+            exit={{
+              scale: 0.96,
+              opacity: 0,
+              transition: { duration: 0.15, ease: [0.32, 0.72, 0, 1] },
+            }}
             role="dialog"
             aria-modal="true"
             aria-label={`Preview of ${work.title}`}
-            className="bg-white border-2 border-black p-0 w-full max-w-lg md:max-w-4xl relative z-10 rounded-[12px] overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            className="bg-[#faf8f5] border border-[#eae6e1] p-0 w-full max-w-lg md:max-w-4xl relative z-10 rounded-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] shadow-lg"
           >
             {/* Sidebar: Metadata & Quick Actions */}
-            <div className="hidden md:flex md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black p-8 md:flex-col bg-white">
+            <div className="hidden md:flex md:w-80 border-b md:border-b-0 md:border-r border-[#eae6e1] p-8 md:flex-col bg-[#fcfaf8]">
               <div className="mb-auto space-y-8">
                 <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">
-                    Phân loại
+                  <p className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                    phân loại
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest">
-                      {work.type}
+                    <span className="px-3 py-1 bg-deep-teal/[0.06] text-deep-teal text-[10px] font-bold lowercase tracking-wider rounded-full border border-deep-teal/10">
+                      {work.type.toLowerCase()}
                     </span>
                     {work.hinh_thuc && (
-                      <span className="px-3 py-1 border border-black text-black text-[10px] font-black uppercase tracking-widest">
-                        {work.hinh_thuc}
+                      <span className="px-3 py-1 bg-literary-gold/[0.08] text-literary-gold text-[10px] font-bold lowercase tracking-wider rounded-full border border-literary-gold/20">
+                        {work.hinh_thuc.toLowerCase()}
                       </span>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">
-                    Thông tin
+                  <p className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                    thông tin
                   </p>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                      <span className="text-black/40">Độ tuổi</span>
+                    <div className="flex items-center justify-between text-xs font-medium tracking-wide text-black/80 lowercase">
+                      <span className="text-black/40">độ tuổi</span>
                       <span>
-                        {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
+                        {work.age_rating?.toLowerCase() === "all" ? "mọi độ tuổi" : work.age_rating}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                      <span className="text-black/40">Quy tắc</span>
-                      <span>{work.rule || "N/A"}</span>
+                    <div className="flex items-center justify-between text-xs font-medium tracking-wide text-black/80 lowercase">
+                      <span className="text-black/40">quy tắc</span>
+                      <span>{work.rule?.toLowerCase() || "n/a"}</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-black">
-                      <span className="text-black/40">Trạng thái</span>
+                    <div className="flex items-center justify-between text-xs font-medium tracking-wide text-black/80 lowercase">
+                      <span className="text-black/40">trạng thái</span>
                       <div className="flex items-center gap-2">
                         <div
                           className={`w-1.5 h-1.5 rounded-full ${
@@ -115,7 +124,7 @@ export default function WorkPreviewModal({
                                 : "bg-yellow-500"
                           }`}
                         />
-                        <span>{work.status}</span>
+                        <span>{work.status.toLowerCase()}</span>
                       </div>
                     </div>
                   </div>
@@ -127,7 +136,7 @@ export default function WorkPreviewModal({
                   workId={work.id.toString()}
                   initialSaved={initialSaved}
                   variant="full"
-                  className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center"
+                  className="w-full py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider rounded-full hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm bg-white flex items-center justify-center gap-2 cursor-pointer"
                 />
                 <button
                   onClick={() => {
@@ -145,18 +154,18 @@ export default function WorkPreviewModal({
                       toast.success("Đã sao chép liên kết!");
                     }
                   }}
-                  className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:bg-literary-gold hover:border-literary-gold hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-[10px] flex items-center justify-center gap-2"
+                  className="w-full py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider bg-white hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm flex items-center justify-center gap-2 rounded-full cursor-pointer"
                 >
-                  CHIA SẺ
+                  chia sẻ
                 </button>
                 <button
                   onClick={() => {
                     router.push(`/work/${work.id}`);
                     onClose();
                   }}
-                  className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black hover:bg-literary-gold hover:border-literary-gold hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors text-[10px] flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#134e4a] text-[#faf8f5] font-ganh font-bold lowercase tracking-wider border border-deep-teal/10 hover:bg-[#003633] active:scale-[0.98] transition-all duration-200 text-sm flex items-center justify-center gap-2 rounded-full cursor-pointer"
                 >
-                  ĐẾN TÁC PHẨM
+                  đến tác phẩm
                 </button>
               </div>
             </div>
@@ -186,16 +195,16 @@ export default function WorkPreviewModal({
               <div className="flex-grow flex flex-col justify-center">
                 <div className="mb-10 space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-[2px] bg-black" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">
-                      GIỚI THIỆU
+                    <div className="w-12 h-[1px] bg-[#134e4a]/30" />
+                    <span className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                      giới thiệu
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-6xl font-ganh font-bold text-black leading-[1.4] tracking-tight break-words pb-2">
                     {work.title}
                   </h2>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/60">
-                    Bởi {work.author_nickname}
+                  <p className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                    bởi {work.author_nickname}
                   </p>
                 </div>
 
@@ -205,9 +214,9 @@ export default function WorkPreviewModal({
                       &ldquo;{work.description}&rdquo;
                     </p>
                   ) : (
-                    <div className="py-12 border-2 border-dashed border-black/5 flex flex-col items-center justify-center text-center">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/20">
-                        Chưa có lời dẫn cho tác phẩm này.
+                    <div className="py-12 border border-dashed border-[#eae6e1] rounded-xl flex flex-col items-center justify-center text-center">
+                      <p className="text-xs font-medium text-black/40 lowercase">
+                        chưa có lời dẫn cho tác phẩm này.
                       </p>
                     </div>
                   )}
@@ -219,7 +228,7 @@ export default function WorkPreviewModal({
                     workId={work.id.toString()}
                     initialSaved={initialSaved}
                     variant="full"
-                    className="w-full border-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-transform justify-center"
+                    className="w-full py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider rounded-full hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm bg-white flex items-center justify-center gap-2 cursor-pointer"
                   />
                   <button
                     onClick={() => {
@@ -237,18 +246,18 @@ export default function WorkPreviewModal({
                         toast.success("Đã sao chép liên kết!");
                       }
                     }}
-                    className="w-full py-3 border-2 border-black text-black font-black uppercase tracking-[0.2em] bg-white hover:bg-literary-gold hover:border-literary-gold hover:text-white transition-all text-[12px]"
+                    className="w-full py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider bg-white hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm flex items-center justify-center gap-2 rounded-full cursor-pointer"
                   >
-                    CHIA SẺ
+                    chia sẻ
                   </button>
                   <button
                     onClick={() => {
                       router.push(`/work/${work.id}`);
                       onClose();
                     }}
-                    className="w-full py-3 bg-black text-white font-black uppercase tracking-[0.2em] border-2 border-black text-[12px]"
+                    className="w-full py-3 bg-[#134e4a] text-[#faf8f5] font-ganh font-bold lowercase tracking-wider border border-deep-teal/10 hover:bg-[#003633] active:scale-[0.98] transition-all duration-200 text-sm flex items-center justify-center gap-2 rounded-full cursor-pointer"
                   >
-                    ĐẾN TÁC PHẨM
+                    đến tác phẩm
                   </button>
                 </div>
               </div>

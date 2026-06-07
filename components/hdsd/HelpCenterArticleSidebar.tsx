@@ -39,8 +39,8 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
   return (
     <aside className="w-full space-y-6">
       {/* Table of Contents */}
-      <div className="border border-neutral-100 rounded-[28px] bg-white p-8">
-        <h3 className="text-[10px] font-bold text-neutral-400 tracking-[0.2em] uppercase mb-6">
+      <div className="border border-[#eae6e1] rounded-2xl bg-[#fcfaf8] p-8 shadow-sm">
+        <h3 className="text-[10px] font-bold text-ink-charcoal/30 tracking-[0.2em] uppercase mb-6 font-mono">
           Nội dung
         </h3>
         <ul className="space-y-4">
@@ -49,7 +49,7 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
               <button
                 type="button"
                 onClick={() => handleScrollTo(item.id)}
-                className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors text-left leading-relaxed cursor-pointer"
+                className="text-sm font-medium text-ink-charcoal/60 hover:text-deep-teal transition-all text-left leading-relaxed cursor-pointer focus:outline-none"
               >
                 {item.label}
               </button>
@@ -60,8 +60,8 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
 
       {/* Related Articles */}
       {relatedArticles && relatedArticles.length > 0 && (
-        <div className="border border-neutral-100 rounded-[28px] bg-white p-8">
-          <h3 className="text-[10px] font-bold text-neutral-400 tracking-[0.2em] uppercase mb-6">
+        <div className="border border-[#eae6e1] rounded-2xl bg-[#fcfaf8] p-8 shadow-sm">
+          <h3 className="text-[10px] font-bold text-ink-charcoal/30 tracking-[0.2em] uppercase mb-6 font-mono">
             Bài viết liên quan
           </h3>
           <div className="space-y-4">
@@ -69,16 +69,16 @@ const HelpCenterArticleSidebar: React.FC<HelpCenterArticleSidebarProps> = ({
               <Link
                 key={idx}
                 href={article.href}
-                className="flex items-start gap-4 p-5 rounded-[20px] border border-neutral-100 hover:border-neutral-200 hover:shadow-sm transition-all group bg-white"
+                className="flex items-start gap-4 p-5 rounded-xl border border-[#eae6e1] bg-white hover:border-deep-teal/20 hover:bg-[#faf8f5] transition-all duration-300 shadow-sm group"
               >
-                <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 mt-0.5 border border-neutral-100 flex-shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-[#faf8f5] flex items-center justify-center text-deep-teal mt-0.5 border border-[#eae6e1] flex-shrink-0 shadow-sm transition-colors group-hover:bg-white group-hover:border-deep-teal/20">
                   <HelpCenterIconMap icon={article.sectionIcon} size={18} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-neutral-900 group-hover:text-[#388186] transition-colors leading-snug mb-1">
+                  <p className="text-sm font-bold text-ink-charcoal group-hover:text-deep-teal transition-colors leading-snug mb-1 font-ganh lowercase">
                     {article.title}
                   </p>
-                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-ink-charcoal/30 uppercase tracking-wider font-mono">
                     {article.sectionLabel} • {article.readingTime}
                   </p>
                 </div>

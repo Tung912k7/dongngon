@@ -8,12 +8,12 @@
 
 ### What We Test
 
-| Layer | Priority | Tools | Coverage |
-|-------|----------|-------|----------|
-| **Server Actions** | 🔴 HIGH | Vitest + mocks | 60%+ |
-| **Utilities** | 🔴 HIGH | Vitest | 80%+ |
-| **Components** | 🟡 MEDIUM | Vitest + React Testing Library | 40%+ |
-| **E2E Flows** | 🟡 MEDIUM | Playwright (optional) | Key paths |
+| Layer              | Priority  | Tools                          | Coverage  |
+| ------------------ | --------- | ------------------------------ | --------- |
+| **Server Actions** | 🔴 HIGH   | Vitest + mocks                 | 60%+      |
+| **Utilities**      | 🔴 HIGH   | Vitest                         | 80%+      |
+| **Components**     | 🟡 MEDIUM | Vitest + React Testing Library | 40%+      |
+| **E2E Flows**      | 🟡 MEDIUM | Playwright (optional)          | Key paths |
 
 ### Success Criteria
 
@@ -81,6 +81,7 @@ cp actions/__tests__/auth.template.test.ts actions/__tests__/auth.test.ts
 ### Step 2: Customize for Your Action
 
 **Before:**
+
 ```typescript
 describe("Work Actions", () => {
   // Generic tests
@@ -88,6 +89,7 @@ describe("Work Actions", () => {
 ```
 
 **After:**
+
 ```typescript
 describe("Vote Actions", () => {
   // Your specific tests
@@ -109,7 +111,9 @@ describe("featureName", () => {
   describe("Success Cases", () => {
     it("should do X when given Y", () => {
       // Arrange: Setup data
-      const input = { /* ... */ };
+      const input = {
+        /* ... */
+      };
 
       // Act: Call the function
       const result = await myAction(input);
@@ -168,10 +172,14 @@ beforeEach(() => {
 #### Scenario 1: Successful Query
 
 ```typescript
-mockSupabase.from("works").select("*").eq("id", "work-123").single.mockResolvedValue({
-  data: { id: "work-123", title: "My Work" },
-  error: null,
-});
+mockSupabase
+  .from("works")
+  .select("*")
+  .eq("id", "work-123")
+  .single.mockResolvedValue({
+    data: { id: "work-123", title: "My Work" },
+    error: null,
+  });
 
 const result = await getWork({ id: "work-123" });
 expect(result.success).toBe(true);
@@ -312,7 +320,7 @@ vi.mock("next/cache");
 
 describe("Side Effects", () => {
   it("should revalidate cache after creation", async () => {
-    await createWork({ title: "Test", /* ... */ });
+    await createWork({ title: "Test" /* ... */ });
 
     expect(revalidatePath).toHaveBeenCalledWith("/kho-tang");
   });
@@ -320,7 +328,7 @@ describe("Side Effects", () => {
   it("should log important operations", async () => {
     const logSpy = vi.spyOn(console, "log");
 
-    await createWork({ title: "Test", /* ... */ });
+    await createWork({ title: "Test" /* ... */ });
 
     expect(logSpy).toHaveBeenCalled();
   });
@@ -335,44 +343,44 @@ describe("Side Effects", () => {
 
 ```typescript
 // ✅ Clear test names that describe behavior
-it("should return error if not authenticated")
+it("should return error if not authenticated");
 
 // ✅ Use arrange-act-assert pattern
 it("should create work", () => {
-  const input = { title: "Test" };  // Arrange
-  const result = await action(input);  // Act
-  expect(result.success).toBe(true);  // Assert
+  const input = { title: "Test" }; // Arrange
+  const result = await action(input); // Act
+  expect(result.success).toBe(true); // Assert
 });
 
 // ✅ Test one thing per test
-it("should validate title length")
+it("should validate title length");
 
 // ✅ Use realistic test data
-const work = { title: "Thơ tự do", category_type: "Thơ" }
+const work = { title: "Thơ tự do", category_type: "Thơ" };
 
 // ✅ Mock external dependencies
-vi.mock("@/utils/supabase/server")
+vi.mock("@/utils/supabase/server");
 ```
 
 ### ❌ DON'T
 
 ```typescript
 // ❌ Vague test names
-it("should work")
+it("should work");
 
 // ❌ Multiple assertions on different concerns
-it("should create and revalidate and log")
+it("should create and revalidate and log");
 
 // ❌ Test implementation details
-expect(mockSupabase.from).toHaveBeenCalledWith("works")  // Implementation detail
-expect(result.success).toBe(true)  // ✅ Result is behavior
+expect(mockSupabase.from).toHaveBeenCalledWith("works"); // Implementation detail
+expect(result.success).toBe(true); // ✅ Result is behavior
 
 // ❌ Tests that depend on other tests
-it("test 1")  // Don't rely on test 2 to set up state
-it("test 2")
+it("test 1"); // Don't rely on test 2 to set up state
+it("test 2");
 
 // ❌ Hardcoded magic numbers
-mockSupabase.single.mockResolvedValueOnce(data)  // Why is it 1?
+mockSupabase.single.mockResolvedValueOnce(data); // Why is it 1?
 // Instead: mockSupabase.from("works").select().single()
 ```
 
@@ -405,8 +413,10 @@ open coverage/index.html
 
 ```typescript
 it("should create work", async () => {
-  const result = await createWork({ /* ... */ });
-  console.log(result);  // ✅ Will print in test output
+  const result = await createWork({
+    /* ... */
+  });
+  console.log(result); // ✅ Will print in test output
   expect(result.success).toBe(true);
 });
 ```
@@ -415,7 +425,9 @@ it("should create work", async () => {
 
 ```typescript
 it("should call Supabase", async () => {
-  await createWork({ /* ... */ });
+  await createWork({
+    /* ... */
+  });
 
   // Debug: Print all calls
   console.log(mockSupabase.from.mock.calls);
@@ -527,6 +539,7 @@ npm run test:unit
 ## ❓ FAQ
 
 **Q: How do I test async functions?**
+
 ```typescript
 it("should handle async", async () => {
   const result = await myAsyncFunction();
@@ -535,6 +548,7 @@ it("should handle async", async () => {
 ```
 
 **Q: How do I mock a function that throws?**
+
 ```typescript
 mockFunction.mockRejectedValue(new Error("Failed"));
 // or
@@ -544,6 +558,7 @@ mockFunction.mockImplementation(() => {
 ```
 
 **Q: How do I run tests on CI/CD?**
+
 ```bash
 # In your CI script:
 npm run lint
@@ -553,6 +568,7 @@ npm run build
 
 **Q: Do I need to test everything?**
 No, focus on:
+
 - 🔴 Business logic (actions, validations)
 - 🔴 Security (auth, permissions)
 - 🟡 Edge cases (errors, limits)

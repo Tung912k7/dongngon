@@ -44,10 +44,18 @@ export default function ConfirmModal({
             className="absolute inset-0 bg-black/60 backdrop-blur-[4px]"
           />
           <m.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative z-10 w-full max-w-sm bg-white border-2 border-black rounded p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{
+              scale: 1,
+              opacity: 1,
+              transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
+            }}
+            exit={{
+              scale: 0.95,
+              opacity: 0,
+              transition: { duration: 0.15, ease: [0.32, 0.72, 0, 1] },
+            }}
+            className="relative z-10 w-full max-w-sm bg-white border border-black/[0.06] rounded-[12px] p-6 shadow-xl"
           >
             <div className="text-center">
               <h3 className="text-xl font-ganh font-bold mb-3 uppercase tracking-tight text-black">
@@ -62,14 +70,14 @@ export default function ConfirmModal({
                     onConfirm();
                     onClose();
                   }}
-                  className="w-full py-3 bg-black text-white text-[11px] font-bold font-ganh uppercase tracking-widest rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black"
+                  className="w-full py-3 bg-ink-charcoal text-white text-[11px] font-bold font-ganh uppercase tracking-widest rounded-[6px] hover:bg-deep-teal transition-all duration-300 border border-ink-charcoal/[0.12] active:scale-[0.98]"
                 >
                   {confirmText}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full py-3 bg-white text-black text-[11px] font-bold font-ganh uppercase tracking-widest rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all border-2 border-black"
+                  className="w-full py-3 bg-white text-ink-charcoal text-[11px] font-bold font-ganh uppercase tracking-widest rounded-[6px] hover:bg-black/5 transition-all duration-300 border border-black/10 active:scale-[0.98]"
                 >
                   {cancelText}
                 </button>

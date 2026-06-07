@@ -34,7 +34,17 @@ export const logger = {
   },
 
   error: (message: string, error?: Error | unknown, context?: LogContext): void => {
-    const errorInfo = error instanceof Error ? error.message : String(error);
+    let errorInfo = "";
+    if (error instanceof Error) {
+      errorInfo = error.message;
+    } else if (error && typeof error === "object") {
+      const errObj = error as Record<string, unknown>;
+      const msg = errObj.message ? String(errObj.message) : "";
+      const details = errObj.details ? String(errObj.details) : "";
+      errorInfo = msg || details || JSON.stringify(error);
+    } else {
+      errorInfo = String(error);
+    }
     if (typeof window === "undefined") {
       console.error(`[ERROR] ${message}:`, errorInfo, context || "");
     } else {

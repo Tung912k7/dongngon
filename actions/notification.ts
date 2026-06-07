@@ -3,6 +3,10 @@
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { logger } from "@/lib/logger";
+import { requireAdmin, isValidUuid } from "@/actions/shared";
+import { escapeILike } from "@/utils/validation";
+import { sanitizeInput } from "@/utils/sanitizer";
+import { checkRateLimitDistributed } from "@/utils/rate-limit";
 
 export async function getNotifications() {
   const supabase = await createClient();
@@ -73,23 +77,9 @@ export async function markAllAsRead() {
 }
 
 export async function createAdminAnnouncement(message: string, targetNicknamesStr?: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { success: false, error: "Unauthorized" };
-
-  // Verify if it's an admin (Role check based on your user_private_data table)
-  const { data: privateData } = await supabase
-    .from("user_private_data")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (privateData?.role !== "admin") {
-    return { success: false, error: "Forbidden: Admins only" };
-  }
+  const adminResult = await requireAdmin();
+  if (adminResult.error) return { success: false, error: adminResult.error };
+  const { supabase } = adminResult;
 
   let query = supabase.from("profiles").select("id, nickname");
 
@@ -134,24 +124,14 @@ export async function createAdminAnnouncement(message: string, targetNicknamesSt
 }
 
 export async function searchUserNicknames(keyword: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, data: [] };
-
-  const { data: privateData } = await supabase
-    .from("user_private_data")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (privateData?.role !== "admin") return { success: false, data: [] };
+  const adminResult = await requireAdmin();
+  if (adminResult.error) return { success: false, data: [] };
+  const { supabase } = adminResult;
 
   const { data, error } = await supabase
     .from("profiles")
     .select("nickname")
-    .ilike("nickname", `%${keyword}%`)
+    .ilike("nickname", `%${escapeILike(keyword)}%`)
     .limit(5);
 
   if (error || !data) return { success: false, data: [] };
@@ -159,22 +139,8 @@ export async function searchUserNicknames(keyword: string) {
 }
 
 export async function runReactivationNudgesNow() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { success: false, error: "Unauthorized" };
-
-  const { data: privateData } = await supabase
-    .from("user_private_data")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (privateData?.role !== "admin") {
-    return { success: false, error: "Forbidden: Admins only" };
-  }
+  const adminResult = await requireAdmin();
+  if (adminResult.error) return { success: false, error: adminResult.error };
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE;
@@ -217,12 +183,44 @@ export async function reportContribution(
   workId: string,
   reason: string
 ) {
+  // Validate UUIDs
+  if (!isValidUuid(contributionId) || !isValidUuid(workId)) {
+    return { success: false, error: "ID không hợp lệ." };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) return { success: false, error: "Unauthorized" };
+
+  // Rate limit: 5 reports per hour per user
+  const reportRate = await checkRateLimitDistributed(
+    supabase,
+    `report:user:${user.id}`,
+    5,
+    60 * 60 * 1000
+  );
+  if (!reportRate.allowed) {
+    return { success: false, error: "Bạn gửi báo cáo quá nhanh. Vui lòng thử lại sau." };
+  }
+
+  const { data: realContribution } = await supabase
+    .from("contributions")
+    .select("content, author_nickname, work_id")
+    .eq("id", contributionId)
+    .single();
+
+  if (!realContribution) {
+    return { success: false, error: "Đóng góp không tồn tại." };
+  }
+
+  // Sanitize inputs and use real DB data
+  const safeContent = sanitizeInput(realContribution.content).slice(0, 200);
+  const safeNickname = sanitizeInput(realContribution.author_nickname).slice(0, 50);
+  const safeReason = sanitizeInput(reason).slice(0, 500);
+  const actualWorkId = realContribution.work_id;
 
   const { data: reporterProfile } = await supabase
     .from("profiles")
@@ -241,18 +239,18 @@ export async function reportContribution(
   if (!admins || admins.length === 0) return { success: false, error: "Không tìm thấy Admin nào" };
 
   // Lấy tên tác phẩm (nếu có, nếu không lấy mặc định)
-  const { data: work } = await supabase.from("works").select("title").eq("id", workId).single();
+  const { data: work } = await supabase.from("works").select("title").eq("id", actualWorkId).single();
 
   const workTitle = work?.title || "Không rõ tác phẩm";
 
-  const message = `Báo cáo vi phạm từ [${reporterName}]:\n- Câu vi phạm: "${content}"\n- Lý do: ${reason}\n- Người viết: ${authorNickname}\n- Tác phẩm: ${workTitle}`;
+  const message = `Báo cáo vi phạm từ [${reporterName}]:\n- Câu vi phạm: "${safeContent}"\n- Lý do: ${safeReason}\n- Người viết: ${safeNickname}\n- Tác phẩm: ${workTitle}`;
 
   const notificationsToInsert = admins.map((admin) => ({
     user_id: admin.id,
     type: "system",
     content: message,
     is_read: false,
-    work_id: workId,
+    work_id: actualWorkId,
   }));
 
   const { error } = await supabase.from("notifications").insert(notificationsToInsert);
@@ -291,6 +289,31 @@ export async function deleteNotifications(ids: string[]) {
 export async function sendIdeaToAdmins(targetId: string, penName: string, description: string) {
   const supabase = await createClient();
 
+  // Auth check — require login to send ideas
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Bạn cần đăng nhập để gửi ý tưởng." };
+
+  // Rate limit: 3 ideas per hour per user
+  const ideaRate = await checkRateLimitDistributed(
+    supabase,
+    `send-idea:user:${user.id}`,
+    3,
+    60 * 60 * 1000
+  );
+  if (!ideaRate.allowed) {
+    return { success: false, error: "Bạn gửi ý tưởng quá nhanh. Vui lòng thử lại sau." };
+  }
+
+  // Fetch actual nickname from profile
+  const { data: profile } = await supabase.from("profiles").select("nickname").eq("id", user.id).single();
+  const safePenName = profile?.nickname ? sanitizeInput(profile.nickname).slice(0, 100) : "Một cộng đồng viên";
+  const safeDescription = sanitizeInput(description).slice(0, 1000);
+  if (!safeDescription) {
+    return { success: false, error: "Mô tả không được để trống." };
+  }
+
   // Lấy danh sách ID của tất cả admin
   const { data: admins } = await supabase
     .from("user_private_data")
@@ -301,7 +324,7 @@ export async function sendIdeaToAdmins(targetId: string, penName: string, descri
     return { success: false, error: "Không tìm thấy Admin nào để tiếp nhận ý tưởng." };
   }
 
-  const message = `💡 Ý tưởng mới từ [${penName}] (ID: ${targetId}):\n- Mô tả: ${description}`;
+  const message = `💡 Ý tưởng mới từ [${safePenName}] (ID: ${targetId}):\n- Mô tả: ${safeDescription}`;
 
   const notificationsToInsert = admins.map((admin) => ({
     user_id: admin.id,

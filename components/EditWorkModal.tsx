@@ -35,7 +35,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
   const [formData, setFormData] = useState({
     title: work.title,
     description: work.description || "",
-    category_type: work.category_type,
+    category_type: work.category_type || "",
     hinh_thuc: work.sub_category || "",
     license: work.license || "public",
     writing_rule: REVERSE_MAPPING.rule(),
@@ -45,7 +45,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     setFormData({
       title: work.title,
       description: work.description || "",
-      category_type: work.category_type,
+      category_type: work.category_type || "",
       hinh_thuc: work.sub_category || "",
       license: work.license || "public",
       writing_rule: REVERSE_MAPPING.rule(),
@@ -58,7 +58,7 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
     setIsLoading(true);
 
     const newFieldErrors: Record<string, string> = {};
-    if (!formData.title.trim()) newFieldErrors.title = "Tiêu đề không được để trống.";
+    if (!formData.title.trim()) newFieldErrors.title = "vui lòng nhập tiêu đề cho tác phẩm.";
 
     if (Object.keys(newFieldErrors).length > 0) {
       setFieldErrors(newFieldErrors);
@@ -89,14 +89,14 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
         onClose();
         router.refresh();
       } else {
-        setError(result.error || "Có lỗi xảy ra.");
+        setError(result.error || "đã xảy ra lỗi ngoài ý muốn. vui lòng thử lại.");
       }
     } catch (err: unknown) {
       logger.error("Update work error:", err);
       if (err instanceof Error && err.message === "TIMEOUT") {
-        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+        setError("yêu cầu phản hồi quá lâu. vui lòng thử lại sau ít phút.");
       } else {
-        setError("Có lỗi xảy ra khi cập nhật tác phẩm.");
+        setError("đã xảy ra lỗi khi cập nhật tác phẩm.");
       }
     } finally {
       setIsLoading(false);
@@ -119,16 +119,16 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            className="bg-[#faf8f5] border border-[#eae6e1] rounded-2xl p-8 md:p-10 w-full max-w-lg relative z-10 shadow-sm"
           >
-            <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">
-              Chỉnh sửa tác phẩm
+            <h2 className="text-3.5xl font-ganh font-bold mb-8 text-center text-deep-teal lowercase">
+              chỉnh sửa tác phẩm
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                  TIÊU ĐỀ
+                <label className="block text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                  tiêu đề tác phẩm
                 </label>
                 <input
                   type="text"
@@ -138,11 +138,11 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                     if (fieldErrors.title) setFieldErrors((prev) => ({ ...prev, title: "" }));
                   }}
                   maxLength={100}
-                  className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
-                  placeholder="Tên tác phẩm của bạn..."
+                  className={`w-full px-4 py-3 border ${fieldErrors.title ? "border-red-400/60 bg-[#fdebec]" : "border-[#eae6e1]"} rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black bg-[#fcfaf8]`}
+                  placeholder="tên tác phẩm của bạn..."
                 />
                 {fieldErrors.title && (
-                  <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                  <p className="text-[#9f2f2d] text-xs font-medium mt-1 tracking-wide lowercase">
                     {fieldErrors.title}
                   </p>
                 )}
@@ -150,8 +150,8 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
-                    MÔ TẢ (TÙY CHỌN)
+                  <label className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                    mô tả (tùy chọn)
                   </label>
                   <span
                     className={`text-[10px] font-bold ${formData.description.length > 450 ? "text-red-500" : "text-gray-400"}`}
@@ -165,54 +165,56 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                     setFormData({ ...formData, description: e.target.value.slice(0, 500) })
                   }
                   rows={3}
-                  className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
-                  placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
+                  className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black resize-none bg-[#fcfaf8]"
+                  placeholder="một chút lời dẫn cho tác phẩm của bạn..."
                 />
               </div>
 
               {work.license !== "public" && (
                 <div className="space-y-2 flex flex-col">
-                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                    QUYỀN RIÊNG TƯ
+                  <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    quyền riêng tư
                   </label>
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                    className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer"
                   >
-                    <option value="private">Riêng tư</option>
-                    <option value="public">Cộng đồng</option>
+                    <option value="private">riêng tư</option>
+                    <option value="public">cộng đồng</option>
                   </select>
-                  <p className="text-[10px] font-medium text-gray-400 italic tracking-tight">
-                    * Bạn có thể chuyển từ riêng tư sang cộng đồng, nhưng không thể làm ngược lại.
+                  <p className="text-xs font-medium text-black/40 italic tracking-tight lowercase">
+                    * bạn có thể chuyển từ riêng tư sang cộng đồng, nhưng không thể làm ngược lại.
                   </p>
                 </div>
               )}
 
-              <div className="pt-4 border-t-2 border-black/10">
-                <p className="text-[10px] font-black text-black/40 uppercase tracking-[0.2em] mb-4">
-                  Thông tin cố định (Không thể thay đổi)
+              <div className="pt-4 border-t border-[#eae6e1]">
+                <p className="text-xs font-medium text-black/40 tracking-wider mb-4 lowercase">
+                  thông tin cố định (không thể thay đổi)
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
-                    {formData.category_type}
+                  {formData.category_type && (
+                    <div className="px-4 py-2 bg-[#fcfaf8] border border-[#eae6e1] rounded-full text-xs font-medium text-black/60 lowercase">
+                      {formData.category_type.toLowerCase()}
+                    </div>
+                  )}
+                  <div className="px-4 py-2 bg-[#fcfaf8] border border-[#eae6e1] rounded-full text-xs font-medium text-black/60 lowercase">
+                    {formData.hinh_thuc.toLowerCase()}
                   </div>
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
-                    {formData.hinh_thuc}
-                  </div>
-                  <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
-                    {formData.writing_rule}
+                  <div className="px-4 py-2 bg-[#fcfaf8] border border-[#eae6e1] rounded-full text-xs font-medium text-black/60 lowercase">
+                    {formData.writing_rule.toLowerCase()}
                   </div>
                   {work.license === "public" && (
-                    <div className="px-4 py-2 bg-gray-50 border-2 border-black rounded text-[11px] font-black text-black uppercase">
-                      CỘNG ĐỒNG
+                    <div className="px-4 py-2 bg-[#fcfaf8] border border-[#eae6e1] rounded-full text-xs font-medium text-black/60 lowercase">
+                      cộng đồng
                     </div>
                   )}
                 </div>
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded text-sm font-bold animate-shake">
+                <div className="p-4 bg-[#fdebec] border border-red-200/40 text-[#9f2f2d] rounded-xl text-sm font-medium">
                   {error}
                 </div>
               )}
@@ -221,16 +223,16 @@ export default function EditWorkModal({ work, isOpen, onClose }: EditWorkModalPr
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
+                  className="flex-1 py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider rounded-full hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm bg-white"
                 >
-                  HỦY
+                  hủy bỏ
                 </button>
                 <PrimaryButton
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
+                  className="flex-1 !py-3 !text-sm font-ganh font-bold !lowercase !tracking-wider !rounded-full !bg-[#134e4a] hover:!bg-[#003633] !text-[#faf8f5]"
                 >
-                  {isLoading ? "ĐANG LƯU..." : "CẬP NHẬT"}
+                  {isLoading ? "đang lưu..." : "cập nhật"}
                 </PrimaryButton>
               </div>
             </form>

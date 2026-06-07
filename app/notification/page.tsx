@@ -31,7 +31,10 @@ export default function NotificationPage() {
   useEffect(() => {
     const fetchNotifications = async () => {
       setLoading(true);
-      const result = await getNotifications();
+      const [result] = await Promise.all([
+        getNotifications(),
+        new Promise((resolve) => setTimeout(resolve, 600)),
+      ]);
       if (result.success && result.notifications) {
         setNotifications(result.notifications);
         const unread = result.notifications.filter((n) => !n.is_read).length;
@@ -99,30 +102,32 @@ export default function NotificationPage() {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <div className="container mx-auto px-4 max-w-4xl py-12 animate-fade-in min-h-[60vh] flex flex-col">
+    <div className="container mx-auto px-4 max-w-4xl py-12 animate-fade-in min-h-[60vh] flex flex-col font-be-vietnam">
       {/* Title */}
       <div className="mb-14 text-center">
-        <h1 className="text-5xl font-ganh font-bold uppercase tracking-tight mb-3">THÔNG BÁO</h1>
-        <div className="w-16 h-1 bg-black mx-auto"></div>
-        <p className="text-gray-500 mt-6 font-bold uppercase tracking-widest text-xs">
+        <h1 className="text-5xl font-ganh font-bold text-deep-teal tracking-tight mb-3 lowercase">
+          thông báo
+        </h1>
+        <div className="w-12 h-[1px] bg-[#eae6e1] mx-auto"></div>
+        <p className="text-ink-charcoal/50 mt-6 font-medium tracking-wide text-xs">
           Tất cả hoạt động và thông báo liên quan đến bạn
         </p>
       </div>
 
-      <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <div>
           {isEditing && (
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleSelectAll}
-                className="px-4 py-2 border-2 border-black bg-white rounded font-ganh font-bold uppercase tracking-widest text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className="px-4 py-2 border border-[#eae6e1] bg-white rounded-full font-bold uppercase tracking-wider text-[10px] transition-all hover:bg-[#faf8f5] hover:border-deep-teal/20 cursor-pointer text-ink-charcoal"
               >
                 {selectedIds.size === notifications.length ? "Bỏ chọn tất" : "Chọn tất cả"}
               </button>
               <button
                 onClick={handleDeleteSelected}
                 disabled={selectedIds.size === 0 || isDeleting}
-                className="text-white bg-red-600 disabled:opacity-50 px-6 py-2 border-2 border-black rounded font-ganh font-bold uppercase tracking-widest text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className="text-white bg-red-650 disabled:opacity-50 px-5 py-2 border border-red-650/10 rounded-full font-bold uppercase tracking-wider text-[10px] transition-all hover:bg-red-700 cursor-pointer"
               >
                 {isDeleting ? "Đang xoá..." : `Xoá (${selectedIds.size})`}
               </button>
@@ -134,7 +139,7 @@ export default function NotificationPage() {
           {!isEditing && unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="text-white bg-black border-2 border-black px-6 py-2 rounded font-ganh font-bold uppercase tracking-widest text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+              className="text-[#faf8f5] bg-[#134e4a] border border-[#134e4a] px-5 py-2 rounded-full font-bold uppercase tracking-wider text-[10px] transition-all hover:bg-[#003633] cursor-pointer"
             >
               Đánh dấu tất cả là đã đọc
             </button>
@@ -145,7 +150,7 @@ export default function NotificationPage() {
               onClick={() => setIsEditing(true)}
               disabled={notifications.length === 0}
               title="Xoá thông báo"
-              className="p-2 border-2 border-black bg-white rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-red-50 hover:text-red-700 hover:border-red-600 disabled:opacity-50 text-gray-800"
+              className="p-2.5 border border-[#eae6e1] bg-white rounded-full transition-all hover:bg-red-50/50 hover:text-red-650 hover:border-red-200 disabled:opacity-50 text-ink-charcoal/80 cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +175,7 @@ export default function NotificationPage() {
                 setIsEditing(false);
                 setSelectedIds(new Set());
               }}
-              className="px-6 py-2 text-white bg-black border-2 border-black rounded font-ganh font-bold uppercase tracking-widest text-xs hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+              className="px-5 py-2 text-[#faf8f5] bg-[#134e4a] border border-[#134e4a] rounded-full font-bold uppercase tracking-wider text-[10px] transition-all hover:bg-[#003633] cursor-pointer"
             >
               Xong
             </button>
@@ -178,16 +183,29 @@ export default function NotificationPage() {
         </div>
       </div>
 
-      <div className="bg-white border-[3px] border-black rounded overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+      <div className="bg-[#fcfaf8] border border-[#eae6e1] rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
-          <div className="p-12 text-center">
-            <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="font-bold uppercase tracking-widest text-gray-400 text-sm">Đang tải...</p>
+          <div className="divide-y divide-[#eae6e1]/60 flex flex-col animate-pulse">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="p-6 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 flex-grow">
+                  {/* Icon/Avatar Placeholder */}
+                  <div className="w-8 h-8 rounded-md bg-black/10 flex-shrink-0" />
+                  {/* Content Placeholder */}
+                  <div className="flex-grow space-y-2">
+                    <div className="h-3.5 w-3/4 bg-black/10 rounded-sm" />
+                    <div className="h-3 w-1/2 bg-black/10 rounded-sm" />
+                  </div>
+                </div>
+                {/* Time Placeholder */}
+                <div className="h-3 w-16 bg-black/10 rounded-sm flex-shrink-0" />
+              </div>
+            ))}
           </div>
         ) : notifications.length === 0 ? (
-          <div className="p-16 text-center text-gray-400">
+          <div className="p-16 text-center text-ink-charcoal/40">
             <svg
-              className="w-16 h-16 mx-auto mb-4 stroke-gray-300"
+              className="w-16 h-16 mx-auto mb-4 stroke-[#eae6e1]"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -198,10 +216,10 @@ export default function NotificationPage() {
               <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
               <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
             </svg>
-            <p className="font-bold uppercase tracking-widest">Không có thông báo nào</p>
+            <p className="font-bold uppercase tracking-widest text-xs">Không có thông báo nào</p>
           </div>
         ) : (
-          <div className="divide-y-2 divide-gray-100 flex flex-col">
+          <div className="divide-y divide-[#eae6e1]/60 flex flex-col">
             {notifications.map((notif) => {
               const isReport = notif.content.startsWith("Báo cáo vi phạm từ [");
 
@@ -209,21 +227,21 @@ export default function NotificationPage() {
                 <div
                   key={notif.id}
                   onClick={() => handleNotificationClick(notif)}
-                  className={`p-6 cursor-pointer hover:bg-gray-50/50 transition-colors flex gap-4 sm:gap-6 sm:items-center items-start group ${!notif.is_read ? "bg-blue-50/20" : ""}`}
+                  className={`p-6 cursor-pointer hover:bg-[#faf8f5] transition-colors flex gap-4 sm:gap-6 sm:items-center items-start group ${!notif.is_read ? "bg-[#134e4a]/[0.02]" : ""}`}
                 >
                   {/* Checkbox (Editing Mode) */}
                   {isEditing && (
                     <div className="flex-shrink-0 flex items-center justify-center pt-2 sm:pt-0">
                       <div
-                        className={`w-6 h-6 rounded-sm border-2 flex items-center justify-center transition-colors ${selectedIds.has(notif.id) ? "bg-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" : "border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"}`}
+                        className={`w-5 h-5 rounded-[4px] border flex items-center justify-center transition-colors ${selectedIds.has(notif.id) ? "bg-[#134e4a] border-[#134e4a] text-white" : "border-[#eae6e1] bg-white group-hover:border-[#134e4a]/30"}`}
                       >
                         {selectedIds.has(notif.id) && (
                           <svg
-                            className="w-4 h-4 text-white"
+                            className="w-3.5 h-3.5 text-white"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
-                            strokeWidth={3}
+                            strokeWidth={3.5}
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
@@ -234,16 +252,16 @@ export default function NotificationPage() {
 
                   {/* Icon Marker */}
                   <div
-                    className={`flex-shrink-0 w-12 h-12 rounded flex items-center justify-center border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover:scale-105 ${!notif.is_read ? "border-black bg-white shadow-black" : "border-gray-200 bg-gray-50 shadow-gray-200/50"}`}
+                    className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${!notif.is_read ? "border-[#134e4a]/20 bg-[#134e4a]/5 text-deep-teal" : "border-[#eae6e1] bg-[#faf8f5] text-ink-charcoal/40"}`}
                   >
                     {notif.type === "announcement" ? (
                       <svg
-                        className={`w-6 h-6 ${!notif.is_read ? "text-red-500" : "text-gray-400"}`}
+                        className="w-5 h-5"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -252,12 +270,12 @@ export default function NotificationPage() {
                       </svg>
                     ) : notif.type === "contribution" ? (
                       <svg
-                        className={`w-6 h-6 ${!notif.is_read ? "text-black" : "text-gray-400"}`}
+                        className="w-5 h-5"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -267,12 +285,12 @@ export default function NotificationPage() {
                       </svg>
                     ) : (
                       <svg
-                        className={`w-6 h-6 ${!notif.is_read ? "text-blue-500" : "text-gray-400"}`}
+                        className="w-5 h-5"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -286,7 +304,7 @@ export default function NotificationPage() {
                   {/* Content */}
                   <div className="flex-1">
                     <p
-                      className={`text-lg transition-colors ${!notif.is_read ? "font-bold text-black" : "text-gray-600"}`}
+                      className={`text-base transition-colors ${!notif.is_read ? "font-semibold text-[#1c1b1a]" : "text-ink-charcoal/75"}`}
                     >
                       {isReport ? "Báo cáo vi phạm từ cộng đồng" : notif.content}
                     </p>
@@ -309,13 +327,13 @@ export default function NotificationPage() {
                             fetchUnreadCount();
                           }
                         }}
-                        className="mt-1 text-sm font-bold text-blue-600 hover:text-blue-800 underline uppercase tracking-wider font-ganh disabled:opacity-50 disabled:no-underline"
+                        className="mt-1 text-xs font-bold text-deep-teal hover:text-[#003633] underline lowercase tracking-wider font-ganh disabled:opacity-50 disabled:no-underline cursor-pointer"
                       >
                         Xem chi tiết
                       </button>
                     )}
 
-                    <p className="text-[11px] text-gray-500 mt-2 uppercase tracking-widest font-bold">
+                    <p className="text-[10px] text-ink-charcoal/40 mt-2 font-medium tracking-wide">
                       {formatDistanceToNow(new Date(notif.created_at), {
                         addSuffix: true,
                         locale: vi,
@@ -326,9 +344,9 @@ export default function NotificationPage() {
                   {/* Actions / Status */}
                   <div className="flex-shrink-0 flex sm:flex-col items-center justify-center gap-2">
                     {!notif.is_read ? (
-                      <div className="w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-sm" />
+                      <div className="w-1.5 h-1.5 bg-red-650 rounded-full" />
                     ) : (
-                      <div className="w-3 h-3 bg-transparent rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-transparent rounded-full" />
                     )}
                   </div>
                 </div>

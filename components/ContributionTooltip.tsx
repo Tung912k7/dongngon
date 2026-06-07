@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Contribution } from "@/types/database";
 import { reportContribution } from "@/actions/notification";
+import { incrementCopyCount } from "@/actions/copyTracking";
 
 const REPORT_REASONS = [
   "Spam, quảng cáo rác",
@@ -76,11 +77,14 @@ export default function ContributionTooltip({ contribution, children }: Contribu
       document.body.removeChild(ta);
     }
     setCopied(true);
+    if (contribution.id) {
+      void incrementCopyCount(contribution.id);
+    }
     setTimeout(() => {
       setCopied(false);
       setIsOpen(false);
     }, 1200);
-  }, [contribution.content]);
+  }, [contribution.content, contribution.id]);
 
   const handleViewProfile = useCallback(() => {
     setIsOpen(false);
@@ -222,37 +226,29 @@ export default function ContributionTooltip({ contribution, children }: Contribu
             }`}
           >
             <div
-              className={`bg-white rounded-2xl overflow-hidden ${
+              className={`bg-white rounded-lg overflow-hidden border border-gray-150 ${
                 isMobile ? "w-full max-w-full" : "min-w-[160px] max-w-[220px]"
               }`}
               style={{
                 animation: isMobile
                   ? "none"
                   : "contribution-tooltip-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-                border: "2px solid #171717",
-                boxShadow: isMobile ? "0px -4px 20px rgba(0,0,0,0.1)" : "3px 3px 0px 0px #171717",
+                boxShadow: isMobile
+                  ? "0px -4px 24px rgba(19,78,74,0.08)"
+                  : "0px 12px 32px rgba(19,78,74,0.08)",
               }}
             >
               {view === "main" ? (
                 <>
                   {/* Author header */}
-                  <div
-                    className="px-3.5 py-2.5 flex items-center justify-between"
-                    style={{ backgroundColor: "#171717" }}
-                  >
+                  <div className="px-3.5 py-2.5 flex items-center justify-between bg-[#EAF2F1]">
                     <div className="flex items-center gap-2">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{
-                          backgroundColor: "rgba(212, 175, 55, 0.15)",
-                          border: "1.5px solid rgba(212, 175, 55, 0.4)",
-                        }}
-                      >
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-primary/10 border border-primary/20">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
-                          fill="#D4AF37"
-                          className="w-3 h-3"
+                          fill="var(--color-primary)"
+                          className="w-3.5 h-3.5 text-primary"
                         >
                           <path
                             fillRule="evenodd"
@@ -261,14 +257,14 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                           />
                         </svg>
                       </div>
-                      <span className="text-[11.5px] font-semibold text-white truncate max-w-[160px]">
+                      <span className="text-[11.5px] font-bold font-ganh text-primary truncate max-w-[160px]">
                         {contribution.author_nickname}
                       </span>
                     </div>
                     {isMobile && (
                       <button
                         onClick={() => setIsOpen(false)}
-                        className="text-white/40 hover:text-white"
+                        className="text-primary/60 hover:text-primary"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -288,7 +284,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                     )}
                   </div>
 
-                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                  <div className="h-[1px] bg-gray-100" />
 
                   {/* Action buttons stack */}
                   <div className="flex flex-col">
@@ -298,7 +294,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         e.stopPropagation();
                         handleCopy();
                       }}
-                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-primary/5 hover:text-primary active:bg-primary/10 cursor-pointer"
                     >
                       {copied ? (
                         <>
@@ -337,7 +333,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                       )}
                     </button>
 
-                    <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                    <div className="h-[1px] bg-gray-100" />
 
                     {/* Profile */}
                     <button
@@ -345,7 +341,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         e.stopPropagation();
                         handleViewProfile();
                       }}
-                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-primary/5 hover:text-primary active:bg-primary/10 cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -364,7 +360,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                       <span>Thăm nhà</span>
                     </button>
 
-                    <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                    <div className="h-[1px] bg-gray-100" />
 
                     {/* Share Menu */}
                     <button
@@ -372,7 +368,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         e.stopPropagation();
                         setView("share");
                       }}
-                      className="w-full flex items-center justify-between gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer group"
+                      className="w-full flex items-center justify-between gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-primary/5 hover:text-primary active:bg-primary/10 cursor-pointer group"
                     >
                       <div className="flex items-center gap-2.5">
                         <svg
@@ -407,7 +403,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                       </svg>
                     </button>
 
-                    <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                    <div className="h-[1px] bg-gray-100" />
 
                     {/* Open Report Reasons Submenu */}
                     <button
@@ -434,7 +430,6 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         </svg>
                         <span>Báo cáo</span>
                       </div>
-                      {/* Tiny arrow pointing right to indicate submenu */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -453,11 +448,9 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                   </div>
                 </>
               ) : view === "share" ? (
-                // Share Submenu View
                 <>
                   <div
-                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors"
-                    style={{ backgroundColor: "#171717" }}
+                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors bg-[#EAF2F1]"
                     onClick={(e) => {
                       e.stopPropagation();
                       setView("main");
@@ -468,8 +461,8 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                       fill="none"
                       viewBox="0 0 24 24"
                       strokeWidth={3}
-                      stroke="white"
-                      className="w-3 h-3 hover:text-gray-300"
+                      stroke="var(--color-primary)"
+                      className="w-3 h-3 text-primary"
                     >
                       <path
                         strokeLinecap="round"
@@ -477,12 +470,12 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         d="M15.75 19.5 8.25 12l7.5-7.5"
                       />
                     </svg>
-                    <span className="text-[11px] font-bold text-white uppercase tracking-widest pl-1">
+                    <span className="text-[11px] font-bold font-ganh text-primary uppercase tracking-widest pl-1">
                       Chia sẻ
                     </span>
                   </div>
 
-                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                  <div className="h-[1px] bg-gray-100" />
 
                   <div className="flex flex-col">
                     {/* Copy Link */}
@@ -491,7 +484,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         e.stopPropagation();
                         handleCopyLink();
                       }}
-                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-primary/5 hover:text-primary active:bg-primary/10 cursor-pointer"
                     >
                       {copied ? (
                         <>
@@ -530,7 +523,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                       )}
                     </button>
 
-                    <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                    <div className="h-[1px] bg-gray-100" />
 
                     {/* Download Social Card */}
                     <button
@@ -538,7 +531,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         e.stopPropagation();
                         handleDownloadCard();
                       }}
-                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                      className="w-full flex items-center justify-start gap-2.5 px-3.5 py-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-150 hover:bg-primary/5 hover:text-primary active:bg-primary/10 cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -559,12 +552,10 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                   </div>
                 </>
               ) : view === "report" ? (
-                // Report Submenu View
                 <>
                   <div
-                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors"
+                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors bg-[#EAF2F1]"
                     style={{
-                      backgroundColor: "#171717",
                       cursor: reported || isReporting ? "default" : "pointer",
                     }}
                     onClick={(e) => {
@@ -578,8 +569,8 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={3}
-                        stroke="white"
-                        className="w-3 h-3 hover:text-gray-300"
+                        stroke="var(--color-primary)"
+                        className="w-3 h-3 text-primary"
                       >
                         <path
                           strokeLinecap="round"
@@ -588,12 +579,12 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         />
                       </svg>
                     )}
-                    <span className="text-[11px] font-bold text-white uppercase tracking-widest pl-1">
+                    <span className="text-[11px] font-bold font-ganh text-primary uppercase tracking-widest pl-1">
                       Lý do báo cáo
                     </span>
                   </div>
 
-                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                  <div className="h-[1px] bg-gray-100" />
 
                   <div className="flex flex-col">
                     {isReporting ? (
@@ -625,7 +616,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                             if (reason === "Lý do vi phạm khác") setView("custom_reason");
                             else handleReport(reason);
                           }}
-                          className={`w-full text-left px-3.5 py-2.5 text-[11px] font-semibold text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors ${idx !== REPORT_REASONS.length - 1 ? "border-b-2 border-gray-100" : ""}`}
+                          className={`w-full text-left px-3.5 py-2.5 text-[11px] font-semibold text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors ${idx !== REPORT_REASONS.length - 1 ? "border-b border-gray-100" : ""}`}
                         >
                           {reason}
                         </button>
@@ -634,12 +625,10 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                   </div>
                 </>
               ) : view === "custom_reason" ? (
-                // Custom Reason View
                 <>
                   <div
-                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors"
+                    className="px-3.5 py-2.5 flex items-center gap-2 cursor-pointer transition-colors bg-[#EAF2F1]"
                     style={{
-                      backgroundColor: "#171717",
                       cursor: reported || isReporting ? "default" : "pointer",
                     }}
                     onClick={(e) => {
@@ -653,8 +642,8 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={3}
-                        stroke="white"
-                        className="w-3 h-3 hover:text-gray-300"
+                        stroke="var(--color-primary)"
+                        className="w-3 h-3 text-primary"
                       >
                         <path
                           strokeLinecap="round"
@@ -663,12 +652,12 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                         />
                       </svg>
                     )}
-                    <span className="text-[11px] font-bold text-white uppercase tracking-widest pl-1">
+                    <span className="text-[11px] font-bold font-ganh text-primary uppercase tracking-widest pl-1">
                       Nhập lý do
                     </span>
                   </div>
 
-                  <div style={{ height: "2px", backgroundColor: "#171717" }} />
+                  <div className="h-[1px] bg-gray-100" />
 
                   <div className="flex flex-col p-3.5 gap-3">
                     {isReporting ? (
@@ -701,7 +690,7 @@ export default function ContributionTooltip({ contribution, children }: Contribu
                             onChange={(e) => setCustomReason(e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                             placeholder="Mô tả vi phạm..."
-                            className="w-full h-20 text-[11px] p-2.5 pb-5 border-2 border-gray-200 rounded-lg resize-none focus:outline-none focus:border-red-500 transition-colors"
+                            className="w-full h-20 text-[11px] p-2.5 pb-5 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-red-500 transition-colors"
                           />
                           <div className="absolute bottom-2 right-2 text-[9px] font-medium text-gray-400 pointer-events-none">
                             {customReason.length}/150

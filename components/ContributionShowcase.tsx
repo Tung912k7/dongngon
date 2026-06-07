@@ -74,10 +74,13 @@ const ContributionShowcase = async () => {
       } else {
         // Map to component structure
         stories = works.map((work: Work) => {
-          const workContribs = contributions?.filter((c: Contribution) => c.work_id === work.id) || [];
+          const workContribs =
+            contributions?.filter((c: Contribution) => c.work_id === work.id) || [];
 
           // Count unique contributors
-          const uniqueContributors = new Set(workContribs.map((c: Contribution) => c.author_nickname)).size;
+          const uniqueContributors = new Set(
+            workContribs.map((c: Contribution) => c.author_nickname)
+          ).size;
 
           return {
             id: work.id,
@@ -96,70 +99,76 @@ const ContributionShowcase = async () => {
   }
 
   return (
-    <section className="py-20 md:py-32 bg-white text-black font-['Be_Vietnam_Pro'] relative overflow-hidden border-t-2 border-black">
+    <section className="pt-16 md:pt-24 pb-24 md:pb-32 bg-[#FAF8F5] relative overflow-hidden border-t border-ink-charcoal/[0.04]">
       {/* Subtle grid line to match theme */}
       <div
-        className="absolute inset-0 z-0 opacity-[0.1]"
+        className="absolute inset-0 z-0 opacity-[0.015] pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
+          backgroundImage: `linear-gradient(to right, var(--color-primary) 1px, transparent 1px), linear-gradient(to bottom, var(--color-primary) 1px, transparent 1px)`,
+          backgroundSize: "48px 48px",
         }}
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-16 relative z-10 font-sans">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-black mb-4">
-            Lịch sử đóng góp
+          {/* Crisp rectangle badge — no rounded-full */}
+          <div className="inline-flex items-center rounded px-2.5 py-1 bg-deep-teal/[0.05] border border-deep-teal/12 text-[10px] uppercase tracking-[0.2em] font-medium text-deep-teal mb-3">
+            Theo dòng thời gian
+          </div>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-ink-charcoal tracking-tight mb-4">
+            Những đóng góp gần đây
           </h2>
-          <div className="w-24 h-2 bg-literary-gold mx-auto mb-6" />
-          <p className="text-lg text-black/70 max-w-2xl mx-auto">
-            Quá trình hình thành của các tác phẩm
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {stories.length === 0 ? (
-            <div className="col-span-2 text-center text-black/50">Chưa có tác phẩm nào :( </div>
+            <div className="col-span-2 text-center text-on-surface-variant/80 py-16 font-sans text-[15px] bg-ink-charcoal/[0.02] rounded-xl border border-dashed border-ink-charcoal/15">
+              Chưa có tác phẩm nào nổi bật.
+            </div>
           ) : (
             stories.map((story) => (
               <div
                 key={story.id}
-                className="border-4 border-black p-6 md:p-8 bg-white flex flex-col justify-between min-h-[350px]"
+                className="group relative bg-[#fcfaf8] border border-ink-charcoal/[0.06] rounded-xl p-6 md:p-8 flex flex-col justify-between min-h-[350px] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-[1.01] hover:border-deep-teal/20 shadow-[0_4px_20px_rgba(19,78,74,0.02)] hover:shadow-[0_4px_20px_rgba(19,78,74,0.05)] active:scale-[0.995] active:opacity-95"
               >
                 <div>
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold uppercase tracking-tight text-black">
+                    <h3 className="font-serif font-bold text-xl md:text-2xl text-ink-charcoal leading-snug">
                       {story.title}
                     </h3>
-                    <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 border-2 border-black bg-black text-white">
+                    {/* Contributor count — soft teal tag, crisp rounded-md */}
+                    <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 bg-[#134E4A]/[0.05] text-[#134E4A] border border-[#134E4A]/10 rounded-md font-sans whitespace-nowrap">
                       {story.contributors} người viết
                     </span>
                   </div>
 
-                  {/* Story Chain */}
+                  {/* Story Chain — rounded bullets */}
                   <div className="space-y-4 mb-6">
                     {story.sentences.map((sentence: Sentence, index: number) => (
                       <div
                         key={index}
-                        className="relative pl-6 border-l-2 border-black/20 hover:border-literary-gold transition-colors py-1"
+                        className="relative pl-6 border-l border-ink-charcoal/[0.06] hover:border-deep-teal/30 transition-all py-1 group/item active:bg-deep-teal/[0.02] active:pl-7 duration-150 rounded-r-md cursor-default select-text"
                       >
-                        <div className="absolute left-[-5px] top-1/2 transform -translate-y-1/2 w-2 h-2 bg-black rounded-full" />
-                        <p className="text-base md:text-lg text-black leading-relaxed">
+                        {/* Rounded bullet — desaturated teal */}
+                        <div className="absolute left-[-3.5px] top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 bg-deep-teal/40 rounded-full transition-transform group-hover/item:scale-125" />
+                        <p className="text-[16px] text-ink-charcoal/80 italic leading-relaxed font-serif">
                           &quot;{sentence.text}&quot;
                         </p>
-                        <p className="text-xs text-black/50 mt-1 font-bold">— {sentence.author}</p>
+                        <p className="text-[11px] text-on-surface-variant/60 mt-1 font-semibold font-sans">
+                          — {sentence.author}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-auto">
+                <div className="mt-auto pt-5 border-t border-ink-charcoal/[0.06]">
                   <LinkedButton
                     href={`/work/${story.id}`}
                     inverse
-                    className="w-full !py-3 font-bold uppercase tracking-widest text-sm border-2 border-black hover:bg-black hover:text-white transition-all"
+                    className="w-full font-sans font-medium text-[13px] tracking-wide hover:!bg-deep-teal hover:!text-white hover:!border-deep-teal/30 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
                   >
-                    Xem chi tiết & Tiếp nối
+                    Xem chi tiết & Tham gia
                   </LinkedButton>
                 </div>
               </div>
@@ -168,11 +177,23 @@ const ContributionShowcase = async () => {
         </div>
 
         <div className="text-center mt-16">
+          {/* CTA — crisp rounded-md, no rounded-full pill */}
           <LinkedButton
             href="/kho-tang"
-            className="!px-10 !py-4 text-xl font-bold uppercase tracking-widest border-2 border-black transition-all"
+            className="group inline-flex items-center gap-2.5 px-8 py-3 !bg-ink-charcoal !text-white hover:!bg-deep-teal active:!scale-[0.98] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] !border-ink-charcoal/[0.12] hover:!border-deep-teal/30 font-sans font-medium text-[14px] tracking-wide"
           >
-            Khám phá kho tàng
+            <span>Khám phá kho tàng</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="transition-transform duration-300 group-hover:translate-x-0.5"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
           </LinkedButton>
         </div>
       </div>

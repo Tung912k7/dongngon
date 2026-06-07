@@ -1,6 +1,7 @@
 import { logger } from "@/lib/logger";
 import { getOGRenderer } from "@/lib/og/renderer";
 import { NextRequest } from "next/server";
+import { escapeUnsafeHtml } from "@/utils/sanitizer";
 
 export const runtime = "nodejs";
 
@@ -8,13 +9,13 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const title = searchParams.get("title") || "Đồng ngôn";
-    const author = searchParams.get("author") || "Nghiên bút";
-    const text = searchParams.get("text") || "";
-    const category = searchParams.get("category") || "Văn chương";
-    const status = searchParams.get("status") || "";
+    const title = escapeUnsafeHtml(searchParams.get("title") || "Đồng ngôn");
+    const author = escapeUnsafeHtml(searchParams.get("author") || "Nghiên bút");
+    const text = escapeUnsafeHtml(searchParams.get("text") || "");
+    const category = escapeUnsafeHtml(searchParams.get("category") || "Văn chương");
+    const status = escapeUnsafeHtml(searchParams.get("status") || "");
     const type = searchParams.get("type") || "work";
-    const description = searchParams.get("description") || "";
+    const description = escapeUnsafeHtml(searchParams.get("description") || "");
 
     const renderer = await getOGRenderer();
 

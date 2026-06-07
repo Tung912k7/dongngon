@@ -11,14 +11,10 @@ import { checkRateLimitDistributed } from "@/utils/rate-limit";
 import { captureServerEvent } from "@/utils/posthog-server";
 import { getReadOnlyProseContributionError } from "@/actions/contribute-policy";
 import type { Contribution } from "@/types/database";
+import { isValidUuid } from "@/actions/shared";
 
-const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CONTRIBUTION_LIMIT = 15;
 const CONTRIBUTION_WINDOW_MS = 60 * 1000;
-
-function isValidUuid(value: string) {
-  return UUID_V4_REGEX.test(value);
-}
 
 export async function submitContribution(
   workId: string,
@@ -56,7 +52,8 @@ export async function submitContribution(
   let ip = "unknown";
   try {
     const headerList = await headers();
-    ip = headerList.get("x-forwarded-for")?.split(",")[0] || "unknown";
+    const { getRealIp } = await import("@/utils/ip");
+    ip = getRealIp(headerList);
   } catch {
     // Falls back to unknown in environments where headers() is unavailable (like Vitest)
   }
@@ -130,7 +127,9 @@ export async function submitContribution(
 
   const blacklistViolation = await checkBlacklist(sanitizedContent);
   if (blacklistViolation) {
-    logger.warn(`Blocked contribution from user ${user.id} containing blacklisted pattern: "${blacklistViolation}"`);
+    logger.warn(
+      `Blocked contribution from user ${user.id} containing blacklisted pattern: "${blacklistViolation}"`
+    );
     return { error: "Nội dung của bạn chứa từ khóa không phù hợp với tiêu chuẩn cộng đồng." };
   }
 

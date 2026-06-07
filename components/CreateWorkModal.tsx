@@ -11,11 +11,16 @@ import { PrimaryButton } from "./PrimaryButton";
 interface CreateWorkModalProps {
   customTrigger?: React.ReactNode;
   onSuccess?: () => void;
+  defaultOpen?: boolean;
 }
 
-export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWorkModalProps) {
+export default function CreateWorkModal({
+  customTrigger,
+  onSuccess,
+  defaultOpen = false,
+}: CreateWorkModalProps) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -48,6 +53,24 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     }
   }, [isOpen]);
 
+  // Synchronize defaultOpen when it changes
+  useEffect(() => {
+    if (defaultOpen) {
+      setIsOpen(true);
+    }
+  }, [defaultOpen]);
+
+  // Clean up URL parameters when modal closes
+  useEffect(() => {
+    if (!isOpen && typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("create")) {
+        url.searchParams.delete("create");
+        window.history.replaceState({}, "", url.pathname + url.search);
+      }
+    }
+  }, [isOpen]);
+
   // Automatically validate sub-category when category changes
   useEffect(() => {
     if (!isOpen) return;
@@ -68,8 +91,8 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
     setIsLoading(true);
 
     const newFieldErrors: Record<string, string> = {};
-    if (!formData.title.trim()) newFieldErrors.title = "Vui lòng nhập tiêu đề.";
-    if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "Vui lòng chọn hình thức.";
+    if (!formData.title.trim()) newFieldErrors.title = "vui lòng nhập tiêu đề cho tác phẩm.";
+    if (!formData.hinh_thuc) newFieldErrors.hinh_thuc = "vui lòng chọn hình thức thể hiện.";
 
     if (Object.keys(newFieldErrors).length > 0) {
       setFieldErrors(newFieldErrors);
@@ -108,15 +131,15 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
           description: "",
         });
       } else {
-        setError(result.error || "Có lỗi xảy ra.");
+        setError(result.error || "đã xảy ra lỗi ngoài ý muốn. vui lòng thử lại.");
       }
     } catch (err: unknown) {
       const e = err as Error;
       logger.error("Create work error:", e);
       if (e.message === "TIMEOUT") {
-        setError("Yêu cầu quá hạn (Timeout). Vui lòng thử lại.");
+        setError("yêu cầu phản hồi quá lâu. vui lòng thử lại sau ít phút.");
       } else {
-        setError("Có lỗi xảy ra khi tạo tác phẩm.");
+        setError("đã xảy ra lỗi khi tạo tác phẩm mới.");
       }
     } finally {
       setIsLoading(false);
@@ -133,8 +156,8 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-10 h-10 rounded-full border-2 border-black flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 bg-white text-black hover:bg-black hover:text-white cursor-pointer"
-          title="Tạo tác phẩm mới"
+          className="w-10 h-10 rounded-full border border-[#eae6e1] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-[0.98] bg-white text-black/60 hover:bg-black/5 hover:text-black cursor-pointer"
+          title="tạo tác phẩm mới"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -157,23 +180,23 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
 
             <m.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white border-2 border-black rounded p-8 md:p-10 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+              className="bg-[#faf8f5] border border-[#eae6e1] rounded-2xl p-8 md:p-10 w-full max-w-lg relative z-10"
             >
-              <h2 className="text-4xl font-ganh font-bold mb-8 text-center uppercase tracking-tight text-black">
-                Tạo tác phẩm mới
+              <h2 className="text-3.5xl font-ganh font-bold mb-8 text-center text-deep-teal lowercase">
+                khởi tạo tác phẩm mới
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                    TIÊU ĐỀ
+                  <label className="block text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    tiêu đề tác phẩm
                   </label>
                   <input
                     type="text"
@@ -183,11 +206,11 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                       if (fieldErrors.title) setFieldErrors((prev) => ({ ...prev, title: "" }));
                     }}
                     maxLength={100}
-                    className={`w-full px-6 py-3 border-2 ${fieldErrors.title ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
-                    placeholder="Tên tác phẩm của bạn..."
+                    className={`w-full px-4 py-3 border ${fieldErrors.title ? "border-red-400/60 bg-[#fdebec]" : "border-[#eae6e1]"} rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black bg-[#fcfaf8]`}
+                    placeholder="tên tác phẩm của bạn..."
                   />
                   {fieldErrors.title && (
-                    <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                    <p className="text-[#9f2f2d] text-xs font-medium mt-1 tracking-wide lowercase">
                       {fieldErrors.title}
                     </p>
                   )}
@@ -195,8 +218,8 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
-                      MÔ TẢ (TÙY CHỌN)
+                    <label className="text-xs font-medium text-black/60 tracking-wider lowercase">
+                      mô tả (tùy chọn)
                     </label>
                     <span
                       className={`text-[10px] font-bold ${formData.description.length > 450 ? "text-red-500" : "text-gray-400"}`}
@@ -210,20 +233,20 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                       setFormData({ ...formData, description: e.target.value.slice(0, 500) })
                     }
                     rows={3}
-                    className="w-full px-6 py-3 border-2 border-black rounded font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black resize-none"
-                    placeholder="Một chút lời dẫn cho tác phẩm của bạn..."
+                    className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black resize-none bg-[#fcfaf8]"
+                    placeholder="một chút lời dẫn cho tác phẩm của bạn..."
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                      THỂ LOẠI
+                    <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                      thể loại
                     </label>
                     <select
                       value={formData.category_type}
                       onChange={(e) => setFormData({ ...formData, category_type: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer"
                     >
                       {CATEGORY_OPTIONS.map((opt) => (
                         <option key={opt}>{opt}</option>
@@ -231,8 +254,8 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                     </select>
                   </div>
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                      HÌNH THỨC
+                    <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                      hình thức
                     </label>
                     <select
                       value={formData.hinh_thuc}
@@ -241,17 +264,17 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                         if (fieldErrors.hinh_thuc)
                           setFieldErrors((prev) => ({ ...prev, hinh_thuc: "" }));
                       }}
-                      className={`w-full px-4 py-3 border-2 ${fieldErrors.hinh_thuc ? "border-red-500 bg-red-50" : "border-black"} rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black`}
+                      className={`w-full px-4 py-3 border ${fieldErrors.hinh_thuc ? "border-red-400/60 bg-[#fdebec]" : "border-[#eae6e1]"} rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer`}
                     >
                       <option value="" disabled>
-                        Chọn hình thức...
+                        chọn hình thức...
                       </option>
                       {WORK_TYPES[formData.category_type]?.subCategories.map((sub) => (
                         <option key={sub}>{sub}</option>
                       ))}
                     </select>
                     {fieldErrors.hinh_thuc && (
-                      <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                      <p className="text-[#9f2f2d] text-xs font-medium mt-1 tracking-wide lowercase">
                         {fieldErrors.hinh_thuc}
                       </p>
                     )}
@@ -260,27 +283,27 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                      QUY TẮC
+                    <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                      quy tắc
                     </label>
                     <select
                       value={formData.writing_rule}
                       onChange={(e) => setFormData({ ...formData, writing_rule: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer"
                     >
                       <option>1 câu</option>
                     </select>
                   </div>
                   <div className="space-y-2 flex flex-col">
-                    <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                      ĐỘ TUỔI
+                    <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                      độ tuổi
                     </label>
                     <select
                       value={formData.age_rating}
                       onChange={(e) => setFormData({ ...formData, age_rating: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                      className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer"
                     >
-                      <option value="All">Mọi độ tuổi</option>
+                      <option value="All">mọi độ tuổi</option>
                       <option value="13+">13+</option>
                       <option value="16+">16+</option>
                       <option value="18+">18+</option>
@@ -289,21 +312,21 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                 </div>
 
                 <div className="space-y-2 flex flex-col">
-                  <label className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-1.5">
-                    QUYỀN RIÊNG TƯ
+                  <label className="text-xs font-medium text-black/60 tracking-wider mb-1.5 lowercase">
+                    quyền riêng tư
                   </label>
                   <select
                     value={formData.license}
                     onChange={(e) => setFormData({ ...formData, license: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-black rounded font-bold bg-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm text-black"
+                    className="w-full px-4 py-3 border border-[#eae6e1] rounded-xl font-medium bg-[#fcfaf8] focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all duration-200 text-sm text-black cursor-pointer"
                   >
-                    <option value="public">Cộng đồng</option>
-                    <option value="private">Riêng tư</option>
+                    <option value="public">cộng đồng</option>
+                    <option value="private">riêng tư</option>
                   </select>
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded text-sm font-bold animate-shake">
+                  <div className="p-4 bg-[#fdebec] border border-red-200/40 text-[#9f2f2d] rounded-xl text-sm font-medium">
                     {error}
                   </div>
                 )}
@@ -312,9 +335,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-100 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm"
+                    className="flex-1 py-3 border border-[#eae6e1] text-black/80 font-ganh font-bold lowercase tracking-wider rounded-full hover:bg-black/5 active:scale-[0.98] transition-all duration-200 text-sm bg-white"
                   >
-                    HỦY
+                    hủy bỏ
                   </button>
                   <PrimaryButton
                     type="submit"
@@ -324,9 +347,9 @@ export default function CreateWorkModal({ customTrigger, onSuccess }: CreateWork
                       !formData.title.trim() ||
                       !formData.hinh_thuc
                     }
-                    className="flex-1 !py-2 !text-xs !uppercase !tracking-widest"
+                    className="flex-1 !py-3 !text-sm font-ganh font-bold !lowercase !tracking-wider !rounded-full !bg-[#134e4a] hover:!bg-[#003633] !text-[#faf8f5]"
                   >
-                    {isLoading ? "..." : "TẠO TÁC PHẨM"}
+                    {isLoading ? "..." : "tạo tác phẩm"}
                   </PrimaryButton>
                 </div>
               </form>

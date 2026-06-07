@@ -4,6 +4,24 @@ import { AnimatePresence, m } from "framer-motion";
 import { Work } from "@/stores/work-store";
 import DeleteWorkButton from "./DeleteWorkButton";
 import { formatDate } from "@/utils/date";
+import { toast } from "sonner";
+
+function formatTimeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 60) {
+    return `${diffMins || 1}m trước`;
+  } else if (diffHours < 24) {
+    return `${diffHours}h trước`;
+  } else {
+    return `${diffDays}n trước`;
+  }
+}
 
 interface WorkCardProps {
   work: Work;
@@ -14,6 +32,7 @@ interface WorkCardProps {
   initialSaved?: boolean;
   onPreview?: (work: Work, initialSaved: boolean) => void;
   onEdit?: (work: Work) => void;
+  index?: number;
 }
 
 const WorkCard = memo(function WorkCard({
@@ -25,6 +44,7 @@ const WorkCard = memo(function WorkCard({
   initialSaved = false,
   onPreview,
   onEdit,
+  index,
 }: WorkCardProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,6 +53,76 @@ const WorkCard = memo(function WorkCard({
 
   const isHome = variant === "home";
   const isList = layout === "list";
+
+  const category = work.category_type || work.type || "";
+  const isPoetry = category === "Thơ";
+  const isProse = category === "Văn xuôi" || category === "Văn";
+
+  const badgeStyles = isProse
+    ? "bg-[#EDF3EC] text-[#346538] border border-[#D4E5D5]/40"
+    : isPoetry
+      ? "bg-[#E1F3FE] text-[#1F6C9F] border border-[#C7E3F7]/40"
+      : "bg-[#FBF3DB] text-[#956400] border border-[#F0E4C0]/40";
+
+  const [isSaved, setIsSaved] = useState(initialSaved);
+  const [isSaving, setIsSaving] = useState(false);
+  const [contributors, setContributors] = useState<string[]>(work.contributors || []);
+
+  useEffect(() => {
+    setIsSaved(initialSaved);
+  }, [initialSaved]);
+
+  useEffect(() => {
+    if (work.contributors) {
+      setContributors(work.contributors);
+      return;
+    }
+
+    const fetchContributors = async () => {
+      try {
+        const { createClient } = await import("@/utils/supabase/client");
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("contributions")
+          .select("author_nickname")
+          .eq("work_id", work.id);
+
+        if (!error && data) {
+          const unique = Array.from(
+            new Set(
+              data.map((c: { author_nickname: string | null }) => c.author_nickname).filter(Boolean)
+            )
+          ) as string[];
+          setContributors(unique);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchContributors();
+  }, [work.id, work.contributors]);
+
+  const handleBookmarkClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      const { toggleSaveWork } = await import("@/actions/save-work");
+      const res = await toggleSaveWork(work.id.toString());
+      if (res.success) {
+        setIsSaved(res.saved ?? false);
+        toast.success(res.saved ? "Đã lưu tác phẩm" : "Đã bỏ lưu tác phẩm");
+      } else {
+        toast.error(res.error || "Không thể thực hiện tác vụ");
+      }
+    } catch {
+      toast.error("Đã xảy ra lỗi");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (showPrivateNotice) {
@@ -62,40 +152,46 @@ const WorkCard = memo(function WorkCard({
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+        delay: index ? Math.min(index * 0.05, 0.3) : 0,
+      }}
       className="w-full relative"
     >
       {isList ? (
         <div
           onClick={handleCardClick}
-          className="group relative w-full pt-[36px] pb-[36px] flex flex-col transition-all duration-300 cursor-pointer overflow-hidden"
+          className="group relative w-full py-6 border-b border-black/[0.06] hover:bg-black/[0.01] px-2 flex flex-col transition-all duration-200 cursor-pointer overflow-hidden"
         >
           <div className="flex justify-between items-start w-full gap-4">
             {/* Bên trái: Tiêu đề & Tags */}
             <div className="flex-grow flex flex-col">
-              <h2 className="text-xl sm:text-2xl font-bold font-ganh leading-[36px] text-black hover:text-literary-gold transition-colors line-clamp-2 break-words">
+              <h2 className="text-xl sm:text-2xl font-bold font-ganh leading-[36px] text-black group-hover:text-literary-gold underline decoration-transparent group-hover:decoration-literary-gold/35 decoration-[1.5px] underline-offset-4 transition-all duration-300 line-clamp-2 break-words">
                 {work.title}
               </h2>
               <div className="h-[36px] flex items-center gap-3 text-xs sm:text-sm flex-wrap overflow-hidden">
-                <span className="font-black uppercase tracking-[0.2em] text-black/70">
+                <span className="font-black uppercase tracking-[0.2em] text-black/60">
                   {work.type}
                 </span>
-                <span className="text-black/30">•</span>
-                <span className="font-bold uppercase tracking-widest text-black/60">
+                <span className="text-black/20">•</span>
+                <span className="font-bold uppercase tracking-widest text-black/50">
                   {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
                 </span>
                 {work.rule && (
                   <>
-                    <span className="text-black/30">•</span>
-                    <span className="font-black uppercase tracking-tighter text-black/70">
+                    <span className="text-black/20">•</span>
+                    <span className="font-black uppercase tracking-tighter text-black/60">
                       {work.rule}
                     </span>
                   </>
                 )}
-                <span className="text-black/30">•</span>
+                <span className="text-black/20">•</span>
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-2.5 h-2.5 rounded-full ${work.status === "Hoàn thành" ? "bg-green-600" : work.status === "Đang viết" ? "bg-blue-600" : "bg-yellow-600"}`} />
-                  <span className="font-bold uppercase tracking-widest text-black/70">
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full ${work.status === "Hoàn thành" ? "bg-green-600" : work.status === "Đang viết" ? "bg-blue-600" : "bg-yellow-600"}`}
+                  />
+                  <span className="font-bold uppercase tracking-widest text-black/60">
                     {work.status}
                   </span>
                 </div>
@@ -121,7 +217,7 @@ const WorkCard = memo(function WorkCard({
                 </span>
               </div>
               {!isHome && (
-                <div className="h-[36px] flex items-center text-xs sm:text-sm font-bold text-black/60 uppercase tracking-widest">
+                <div className="h-[36px] flex items-center text-xs sm:text-sm font-bold text-black/50 uppercase tracking-widest">
                   {formatDate(work.created_at || new Date().toISOString())}
                 </div>
               )}
@@ -131,113 +227,83 @@ const WorkCard = memo(function WorkCard({
       ) : (
         <div
           onClick={handleCardClick}
-          className={`group relative w-full bg-transparent pt-[36px] px-5 sm:px-7 pb-[36px] flex flex-col min-h-[288px] sm:h-[360px] transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1`}
-          style={{
-            backgroundImage: "linear-gradient(transparent 95%, rgba(0,0,0,0.1) 95%)",
-            backgroundSize: "100% 2.25rem",
-          }}
+          className="group relative w-full bg-white rounded-[12px] p-6 sm:p-8 flex flex-col justify-between min-h-[300px] border border-black/[0.10] cursor-pointer overflow-hidden font-be-vietnam transition-[border-color,box-shadow] duration-[200ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-black/25 hover:shadow-[0_6px_24px_rgba(0,0,0,0.05)]"
         >
-          {/* Remove inner border */}
+          {/* Top Header: Metadata & Bookmark icon */}
+          <div className="flex justify-between items-center mb-6">
+            <span
+              className={`text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-[4px] ${badgeStyles}`}
+            >
+              {work.hinh_thuc || work.type}
+            </span>
 
-          {/* Top Header: Metadata & Geometric Accent */}
-          <div className={`flex justify-between items-start mb-[36px] ${isHome ? "h-[36px]" : "h-[72px]"}`}>
-            <div className="flex flex-col">
-              <div className="h-[36px] flex items-center gap-2">
-                <div className="w-2.5 h-2.5 bg-black flex-shrink-0" />
-                <span
-                  className={`text-xs sm:text-sm uppercase tracking-[0.2em] ${isHome ? "font-bold text-black" : "font-black text-black/70"}`}
-                >
-                  {work.type}
-                </span>
-              </div>
-              {!isHome && (
-                <div className="h-[36px] flex items-center text-xs sm:text-sm font-bold text-black/60 uppercase tracking-widest pl-4.5">
-                  {formatDate(work.created_at || new Date().toISOString())}
+            <button
+              onClick={handleBookmarkClick}
+              disabled={isSaving}
+              aria-label={isSaved ? "Bỏ lưu tác phẩm" : "Lưu tác phẩm"}
+              className={`text-gray-400 hover:text-black transition-colors ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill={isSaved ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={isSaved ? "text-black" : ""}
+              >
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Center: Title & Description */}
+          <div className="flex-grow">
+            <h2 className="text-xl sm:text-2xl font-bold font-ganh text-black mb-3 leading-snug group-hover:text-literary-gold underline decoration-transparent group-hover:decoration-literary-gold/35 decoration-[1.5px] underline-offset-4 transition-all duration-300 line-clamp-2">
+              {work.title}
+            </h2>
+            <p className="font-be-vietnam italic text-gray-600 text-sm mb-6 line-clamp-3">
+              {work.description || "Chưa có mô tả cho tác phẩm này."}
+            </p>
+          </div>
+
+          {/* Bottom: Contributors & Updated Time */}
+          <div className="mt-auto pt-5 border-t border-black/5 flex justify-between items-center">
+            <div className="flex items-center gap-1.5">
+              {(contributors.length > 0 ? contributors : [work.author_nickname])
+                .slice(0, 3)
+                .map((name: string, i: number) => (
+                  <div key={i} className="relative group/avatar">
+                    <div className="h-6 w-6 rounded-[4px] border border-black/[0.08] bg-black/[0.03] text-black/70 flex items-center justify-center text-[10px] font-bold select-none transition-colors duration-200 hover:bg-black/[0.06] hover:text-black">
+                      {name.substring(0, 1).toUpperCase()}
+                    </div>
+                    {/* CSS Tooltip */}
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-black text-white text-[9px] uppercase tracking-widest font-semibold rounded-[4px] opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-30 shadow-md before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-black">
+                      {name}
+                    </span>
+                  </div>
+                ))}
+              {(contributors.length > 0 ? contributors : [work.author_nickname]).length > 3 && (
+                <div className="relative group/avatar">
+                  <div className="h-6 w-6 rounded-[4px] border border-black/[0.08] bg-black/[0.03] text-black/50 flex items-center justify-center text-[9px] font-bold select-none">
+                    +{(contributors.length > 0 ? contributors : [work.author_nickname]).length - 3}
+                  </div>
+                  {/* Tooltip listing remaining contributors */}
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-black text-white text-[9px] uppercase tracking-widest font-semibold rounded-[4px] opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-30 shadow-md before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-black">
+                    {(contributors.length > 0 ? contributors : [work.author_nickname])
+                      .slice(3)
+                      .join(", ")}
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="flex flex-col items-end">
-              <span
-                className={`h-[36px] flex items-center text-xs sm:text-sm font-bold uppercase tracking-widest ${isHome ? "text-black" : "text-black"}`}
-              >
-                {work.age_rating?.toLowerCase() === "all" ? "Mọi độ tuổi" : work.age_rating}
-              </span>
-              {work.rule && !isHome && (
-                <span className="h-[36px] flex items-center text-xs sm:text-sm font-black uppercase tracking-tighter text-black/70">
-                  {work.rule}
-                </span>
-              )}
-            </div>
+            <span className="text-[11px] text-black/40 font-medium">
+              {formatTimeAgo(work.created_at || new Date().toISOString())}
+            </span>
           </div>
-
-          {/* Center: High-Impact Title */}
-          <div className="flex-grow">
-            <h2
-              className={`text-xl sm:text-2xl md:text-3xl font-ganh leading-[36px] tracking-tight text-black line-clamp-3 break-words
-              ${isHome ? "font-bold uppercase group-hover:text-black" : "font-bold group-hover:text-literary-gold transition-colors duration-500"}
-            `}
-            >
-              {work.title}
-            </h2>
-          </div>
-
-          {/* Bottom: Status & Author Signature */}
-          <div className="mt-auto pt-[36px] flex flex-col sm:flex-row sm:items-center justify-between gap-0">
-            <div className="h-[36px] flex items-center gap-2.5">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  work.status === "Hoàn thành"
-                    ? "bg-green-600"
-                    : work.status === "Đang viết"
-                      ? "bg-blue-600"
-                      : "bg-yellow-600"
-                }`}
-              />
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-black/70">
-                {work.status}
-              </span>
-            </div>
-
-            <div
-              className="h-[36px] flex items-center relative group/author self-start sm:self-auto"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (work.is_author_private && !isOwner) {
-                  setShowPrivateNotice(true);
-                } else {
-                  router.push(`/profile?id=${work.created_by}`);
-                }
-              }}
-            >
-              <span
-                className={`font-ganh text-lg sm:text-xl font-bold transition-colors duration-300
-                 ${isHome ? "group-hover/author:text-black" : "group-hover/author:text-literary-gold"}
-               `}
-              >
-                {work.author_nickname}
-              </span>
-            </div>
-          </div>
-
-          {/* Decorative Random Lines (Home Variant Only) */}
-          {isHome && (
-            <div className="absolute bottom-4 right-4 flex flex-col items-end gap-1 pointer-events-none opacity-20">
-              <div
-                className="h-[2px] bg-black"
-                style={{ width: `${(parseInt(work.id.slice(-1), 16) % 30) + 10}px` }}
-              />
-              <div
-                className="h-[2px] bg-black"
-                style={{ width: `${(parseInt(work.id.slice(-2), 16) % 50) + 20}px` }}
-              />
-              <div
-                className="h-[2px] bg-black"
-                style={{ width: `${(parseInt(work.id.slice(-3), 16) % 20) + 15}px` }}
-              />
-            </div>
-          )}
         </div>
       )}
 
@@ -266,11 +332,12 @@ const WorkCard = memo(function WorkCard({
           <AnimatePresence>
             {isMenuOpen && (
               <m.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                initial={{ opacity: 0, y: -6, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
                 className="absolute right-0 mt-1 w-36 bg-white border-2 border-black rounded shadow-lg py-1 overflow-hidden"
-                style={{ right: "0", left: "auto" }}
+                style={{ right: "0", left: "auto", transformOrigin: "top right" }}
               >
                 <div className="px-1 flex flex-col">
                   <button
@@ -302,9 +369,10 @@ const WorkCard = memo(function WorkCard({
       <AnimatePresence>
         {showPrivateNotice && (
           <m.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
             className="absolute inset-0 z-50 flex items-center justify-center p-6"
             onClick={(e) => {
               e.preventDefault();

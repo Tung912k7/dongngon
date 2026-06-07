@@ -15,7 +15,7 @@ export function sanitizeInput(input: string, shouldTrim: boolean = true): string
   let sanitized = cleanEscapedQuotes(input);
 
   // 2. Escape HTML symbols securely (Converts < to &lt;, > to &gt;)
-  sanitized = escapeHTML(sanitized);
+  sanitized = stripHtmlTags(sanitized);
 
   // 3. Trim if required
   if (shouldTrim) {
@@ -26,10 +26,10 @@ export function sanitizeInput(input: string, shouldTrim: boolean = true): string
 }
 
 /**
- * Encodes special characters into HTML entities.
- * Use for labels and attributes that might not be handled by React.
+ * Strips HTML tags from input to prevent XSS payloads.
+ * NOTE: This does NOT encode entities — use escapeUnsafeHtml() for that.
  */
-export function escapeHTML(input: string): string {
+export function stripHtmlTags(input: string): string {
   if (!input) return "";
   // Strip HTML tags to prevent XSS payloads while avoiding double-escaping issues in React text nodes.
   return input.replace(/<[^>]*>/g, "");
@@ -41,7 +41,7 @@ export function escapeHTML(input: string): string {
 export function sanitizeTitle(input: string): string {
   if (!input) return "";
   const cleaned = cleanEscapedQuotes(input).trim();
-  return escapeHTML(cleaned);
+  return stripHtmlTags(cleaned);
 }
 
 /**
@@ -50,15 +50,15 @@ export function sanitizeTitle(input: string): string {
 export function sanitizeNickname(input: string): string {
   if (!input) return "";
   const cleaned = cleanEscapedQuotes(input).trim();
-  return escapeHTML(cleaned);
+  return stripHtmlTags(cleaned);
 }
 
-function escapeUnsafeHtml(input: string): string {
+export function escapeUnsafeHtml(input: string): string {
   return input
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -91,7 +91,7 @@ function renderInlineMarkdown(input: string): string {
       return label;
     }
 
-    return `<a href=\"${escapeUnsafeHtml(safeUrl)}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\" class=\"underline decoration-2 underline-offset-2\">${label}</a>`;
+    return `<a href="${escapeUnsafeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer nofollow" class="underline decoration-2 underline-offset-2">${label}</a>`;
   });
 
   return text;
@@ -115,7 +115,7 @@ function flushList(items: string[], ordered: boolean): string {
   const itemHtml = items.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("");
   const className = ordered ? "list-decimal" : "list-disc";
 
-  return `<${tag} class=\"${className} ml-6 space-y-1\">${itemHtml}</${tag}>`;
+  return `<${tag} class="${className} ml-6 space-y-1">${itemHtml}</${tag}>`;
 }
 
 /**
@@ -125,6 +125,7 @@ function flushList(items: string[], ordered: boolean): string {
  */
 export function sanitizeMarkdownToHtml(markdown: string): string {
   const normalized = markdown
+    // eslint-disable-next-line no-control-regex
     .replace(/\u0000/g, "")
     .replace(/\r\n?/g, "\n")
     .trim();

@@ -10,10 +10,13 @@ import { createClient } from "@/utils/supabase/client";
 import { getCroppedImg } from "@/utils/imageCrop";
 import dynamic from "next/dynamic";
 import type { Area, CropperProps } from "react-easy-crop";
-const Cropper = dynamic(() => import("react-easy-crop"), { ssr: false }) as unknown as ComponentType<Partial<CropperProps>>;
+const Cropper = dynamic(() => import("react-easy-crop"), {
+  ssr: false,
+}) as unknown as ComponentType<Partial<CropperProps>>;
 import { LinkedButton, PrimaryButton } from "./PrimaryButton";
 import { formatDate } from "@/utils/date";
 import { getImageUrl } from "@/utils/image";
+import { getLevelInfo } from "@/utils/levels";
 
 export type SidebarProfile = {
   id: string;
@@ -34,13 +37,16 @@ interface ProfileSidebarProps {
   profile: SidebarProfile;
   isOwner: boolean;
   currentUser: { id?: string } | null;
+  inkPoints?: number;
 }
 
 export default function ProfileSidebar({
   profile: initialProfile,
   isOwner,
   currentUser,
+  inkPoints = 0,
 }: ProfileSidebarProps) {
+  const { currentLevel } = getLevelInfo(inkPoints);
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState(initialProfile);
   const [nickname, setNickname] = useState(initialProfile.nickname || "");
@@ -161,18 +167,20 @@ export default function ProfileSidebar({
   };
 
   return (
-    <div className="w-full md:w-1/3 bg-white p-6 md:p-10 rounded border-2 border-black flex flex-col items-center relative transition-colors duration-500">
+    <div className="w-full lg:w-1/3 bg-[#fcfaf8] p-6 lg:p-10 rounded-2xl border border-[#eae6e1] flex flex-col items-center relative transition-colors duration-500 shadow-sm font-be-vietnam">
       <div className="mb-10 text-center">
-        <h1 className="text-4xl font-ganh font-bold uppercase tracking-tight mb-2">HỒ SƠ</h1>
-        <div className="text-[10px] font-bold text-black/20 uppercase tracking-[0.5em] text-center">
-          Identity
+        <h1 className="text-4xl font-ganh font-bold text-deep-teal tracking-tight mb-2 lowercase">
+          hồ sơ
+        </h1>
+        <div className="text-[10px] font-bold text-ink-charcoal/20 uppercase tracking-[0.5em] text-center">
+          identity
         </div>
       </div>
 
       {/* Avatar Section */}
       <div className="relative group w-48 h-48 mb-12">
         <div
-          className={`w-full h-full border-2 border-black flex items-center justify-center overflow-hidden bg-[#fafafa] transition-colors duration-300 ${isEditing ? "ring-4 ring-black/5" : ""}`}
+          className={`w-full h-full border border-[#eae6e1] rounded-2xl flex items-center justify-center overflow-hidden bg-[#faf8f5] transition-colors duration-300 ${isEditing ? "ring-4 ring-[#134e4a]/5" : ""}`}
         >
           {imageSrc && isEditing ? (
             <div className="relative w-full h-full z-20">
@@ -231,7 +239,7 @@ export default function ProfileSidebar({
         </div>
 
         {isEditing && imageSrc && (
-          <div className="absolute -bottom-12 left-0 right-0 flex items-center gap-2 bg-white p-2 border-2 border-black rounded z-30 shadow-lg">
+          <div className="absolute -bottom-12 left-0 right-0 flex items-center gap-2 bg-white p-2.5 border border-[#eae6e1] rounded-xl z-30 shadow-md">
             <input
               type="range"
               value={zoom}
@@ -239,14 +247,14 @@ export default function ProfileSidebar({
               max={3}
               step={0.1}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+              className="flex-1 h-1 bg-[#eae6e1] rounded-full appearance-none cursor-pointer accent-[#134e4a]"
             />
             <button
               onClick={() => {
                 setImageSrc(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }}
-              className="text-[10px] font-bold text-red-500 uppercase hover:underline"
+              className="text-[10px] font-bold text-red-650 uppercase hover:underline"
             >
               Hủy
             </button>
@@ -264,45 +272,11 @@ export default function ProfileSidebar({
 
       {/* Info Section */}
       <div className="w-full space-y-8 text-left px-2 mb-12">
-        {(isOwner || profile.public_fields?.id !== false) && (
-          <div className="border-b-2 border-black/10 pb-4 mb-4 flex justify-between items-end">
-            <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
-                MÃ ĐỊNH DANH
-              </p>
-              <p className="text-xs font-mono text-black select-all truncate bg-gray-50 px-3 py-1.5 rounded border-2 border-black">
-                {profile.id}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(profile.id);
-                toast.success("Đã sao chép mã định danh thành công!");
-              }}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors group relative"
-              title="Sao chép mã"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-4 h-4 text-gray-400 group-hover:text-black"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
-                />
-              </svg>
-            </button>
-          </div>
-        )}
+
 
         {(isOwner || profile.public_fields?.nickname !== false) && (
-          <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+          <div className="border-b border-[#eae6e1] pb-4 mb-4">
+            <p className="text-[10px] text-ink-charcoal/40 font-bold uppercase tracking-wider mb-2">
               BÚT DANH
             </p>
             {isEditing ? (
@@ -310,40 +284,49 @@ export default function ProfileSidebar({
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="text-xl font-ganh font-bold text-black tracking-tight w-full bg-white border-2 border-black px-3 py-2 rounded focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
+                className="text-xl font-ganh font-bold text-ink-charcoal tracking-tight w-full bg-white border border-[#eae6e1] px-4 py-2.5 rounded-xl focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all"
                 placeholder="Nhập bút danh..."
                 maxLength={30}
                 aria-label="Bút danh"
               />
             ) : (
-              <p className="text-3xl font-ganh font-bold text-black tracking-wide leading-none">
-                {profile.nickname}
-              </p>
+              <div className="flex flex-col gap-2">
+                <p className="text-3xl font-ganh font-bold text-ink-charcoal tracking-wide leading-none">
+                  {profile.nickname}
+                </p>
+                <div>
+                  <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border ${currentLevel.bgClass} ${currentLevel.textClass} ${currentLevel.borderClass}`}>
+                    {currentLevel.name}
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         )}
 
         {(isOwner || profile.public_fields?.email !== false) && profile.email && (
-          <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+          <div className="border-b border-[#eae6e1] pb-4 mb-4">
+            <p className="text-[10px] text-ink-charcoal/40 font-bold uppercase tracking-wider mb-2">
               EMAIL
             </p>
-            <p className="text-sm font-medium text-black/80">{profile.email}</p>
+            <p className="text-sm font-medium text-ink-charcoal/80">{profile.email}</p>
           </div>
         )}
 
         {(isOwner || profile.public_fields?.birthday !== false) && profile.birthday && (
-          <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+          <div className="border-b border-[#eae6e1] pb-4 mb-4">
+            <p className="text-[10px] text-ink-charcoal/40 font-bold uppercase tracking-wider mb-2">
               NGÀY SINH
             </p>
-            <p className="text-sm font-medium text-black/80">{formatDate(profile.birthday)}</p>
+            <p className="text-sm font-medium text-ink-charcoal/80">
+              {formatDate(profile.birthday)}
+            </p>
           </div>
         )}
 
         {(isOwner || profile.public_fields?.description !== false) && (
-          <div className="border-b-2 border-black/10 pb-4 mb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-2">
+          <div className="border-b border-[#eae6e1] pb-4 mb-4">
+            <p className="text-[10px] text-ink-charcoal/40 font-bold uppercase tracking-wider mb-2">
               GIỚI THIỆU
             </p>
             {isEditing ? (
@@ -351,17 +334,17 @@ export default function ProfileSidebar({
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="text-sm font-medium text-black/80 w-full bg-white border-2 border-black p-4 rounded focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow min-h-[120px] resize-none"
+                  className="text-sm font-medium text-ink-charcoal/80 w-full bg-white border border-[#eae6e1] p-4 rounded-xl focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all min-h-[120px] resize-none"
                   placeholder="Lời giới thiệu của bạn..."
                   maxLength={200}
                   aria-label="Giới thiệu bản thân"
                 />
-                <span className="absolute bottom-3 right-4 text-[9px] text-gray-400 font-bold uppercase tracking-widest bg-white/80 px-2 py-0.5 rounded-full">
+                <span className="absolute bottom-3 right-4 text-[9px] text-ink-charcoal/40 font-bold uppercase tracking-widest bg-white/80 px-2 py-0.5 rounded-full border border-[#eae6e1]">
                   {description.length}/200
                 </span>
               </div>
             ) : (
-              <p className="text-sm font-medium text-black/60 italic leading-relaxed">
+              <p className="text-sm font-medium text-ink-charcoal/60 italic leading-relaxed max-w-[60ch]">
                 {profile.description ||
                   (isOwner
                     ? "Bạn chưa có lời giới thiệu nào..."
@@ -374,7 +357,7 @@ export default function ProfileSidebar({
         {/* HASHTAGS SECTION */}
         {(isOwner || profile.public_fields?.hashtags !== false) && (
           <div className="pb-4">
-            <p className="text-[10px] text-black/40 font-black uppercase tracking-[0.2em] mb-3">
+            <p className="text-[10px] text-ink-charcoal/40 font-bold uppercase tracking-wider mb-3">
               HASHTAG
             </p>
             {isEditing ? (
@@ -396,7 +379,7 @@ export default function ProfileSidebar({
                         }
                       }
                     }}
-                    className="flex-1 text-sm font-bold text-black bg-gray-50 border-2 border-black px-4 py-2 rounded focus:outline-none"
+                    className="flex-1 text-sm font-bold text-ink-charcoal bg-white border border-[#eae6e1] px-4 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal transition-all"
                     placeholder="Thêm hashtag..."
                     maxLength={15}
                     aria-label="Thêm hashtag"
@@ -412,7 +395,7 @@ export default function ProfileSidebar({
                         setHashtagInput("");
                       }
                     }}
-                    className="px-4 py-2 bg-black text-white rounded font-bold text-xs"
+                    className="px-4 py-2 bg-deep-teal hover:bg-[#003633] text-white rounded-xl font-bold text-xs transition-colors"
                   >
                     +
                   </button>
@@ -421,12 +404,12 @@ export default function ProfileSidebar({
                   {hashtags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="bg-white text-black px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-tight flex items-center gap-2 border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                      className="bg-white text-ink-charcoal/80 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight flex items-center gap-2 border border-[#eae6e1] transition-all hover:border-[#134e4a]/20"
                     >
                       #{tag}
                       <button
                         onClick={() => setHashtags(hashtags.filter((_, i) => i !== idx))}
-                        className="hover:text-red-500 font-bold flex items-center"
+                        className="hover:text-red-650 font-bold flex items-center"
                       >
                         ×
                       </button>
@@ -434,7 +417,7 @@ export default function ProfileSidebar({
                   ))}
                 </div>
                 {hashtags.length >= 5 && (
-                  <p className="text-[9px] text-gray-400 italic">Tối đa 5 hashtags.</p>
+                  <p className="text-[9px] text-ink-charcoal/40 italic">Tối đa 5 hashtags.</p>
                 )}
               </div>
             ) : (
@@ -443,13 +426,13 @@ export default function ProfileSidebar({
                   profile.hashtags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="bg-white text-black px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border-2 border-black transform transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                      className="bg-white text-ink-charcoal/80 px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-[#eae6e1] transition-all hover:border-[#134e4a]/20"
                     >
                       #{tag}
                     </span>
                   ))
                 ) : (
-                  <p className="text-xs italic text-gray-300">Chưa có hashtags</p>
+                  <p className="text-xs italic text-ink-charcoal/30">Chưa có hashtags</p>
                 )}
               </div>
             )}
@@ -464,14 +447,13 @@ export default function ProfileSidebar({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="w-full p-4 bg-red-50 border-2 border-red-200 text-red-600 rounded-2xl text-xs font-bold mb-6 text-center uppercase tracking-wide"
+            className="w-full p-4 bg-red-50/50 border border-red-200 text-red-600 rounded-xl text-xs font-bold mb-6 text-center uppercase tracking-wide"
           >
             {error}
           </m.div>
         )}
       </AnimatePresence>
 
-      {/* Action Buttons */}
       <div className="w-full space-y-4">
         {isOwner ? (
           isEditing ? (
@@ -479,14 +461,14 @@ export default function ProfileSidebar({
               <button
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="flex-1 py-3 border-2 border-black text-black font-ganh font-bold uppercase tracking-widest rounded hover:bg-gray-50 active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform text-[10px] disabled:opacity-50"
+                className="flex-1 py-3 border border-[#eae6e1] text-ink-charcoal font-ganh font-bold uppercase tracking-widest rounded-full hover:bg-white hover:border-[#134e4a]/20 transition-all text-[10px] disabled:opacity-50"
               >
                 HỦY
               </button>
               <PrimaryButton
                 onClick={handleSave}
                 disabled={isSubmitting}
-                className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                className="flex-1 !py-3 !text-[10px] !uppercase !tracking-widest shadow-none !rounded-full"
               >
                 {isSubmitting ? "ĐANG LƯU..." : "LƯU LẠI"}
               </PrimaryButton>
@@ -494,20 +476,28 @@ export default function ProfileSidebar({
           ) : (
             <PrimaryButton
               onClick={() => setIsEditing(true)}
-              className="w-full !py-3.5 !text-xs !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              className="w-full !py-3.5 !text-xs !uppercase !tracking-widest shadow-none !rounded-full"
             >
               CHỈNH SỬA HỒ SƠ
             </PrimaryButton>
           )
         ) : (
-          currentUser && (
-            <LinkedButton
-              href={`/profile?id=${currentUser.id}`}
-              className="w-full !rounded !py-3.5 !text-[10px] !uppercase !tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+          <div className="w-full flex flex-col gap-3 font-ganh font-bold">
+            <button
+              onClick={() => toast("Tính năng đang phát triển")}
+              className="w-full py-3.5 bg-deep-teal text-white hover:bg-[#003633] transition-all text-xs uppercase tracking-widest rounded-full cursor-pointer"
             >
-              VỀ HỒ SƠ TÔI
-            </LinkedButton>
-          )
+              Theo Dõi
+            </button>
+            {currentUser && (
+              <LinkedButton
+                href={`/profile?id=${currentUser.id}`}
+                className="w-full !rounded-full !py-3.5 !text-xs !uppercase !tracking-widest shadow-none border border-[#eae6e1] !bg-white !text-ink-charcoal hover:!bg-[#faf8f5] hover:!border-[#134e4a]/20 transition-all"
+              >
+                VỀ HỒ SƠ TÔI
+              </LinkedButton>
+            )}
+          </div>
         )}
       </div>
     </div>

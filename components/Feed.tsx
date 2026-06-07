@@ -236,7 +236,7 @@ export default function Feed({
   );
 
   return (
-    <div className="flex flex-col h-full min-h-[400px]">
+    <div className="flex flex-col h-full min-h-[400px] max-w-[720px] mx-auto w-full px-4 sm:px-6 md:px-0">
       <Virtuoso
         ref={virtuosoRef}
         useWindowScroll
@@ -244,7 +244,7 @@ export default function Feed({
         rangeChanged={handleRangeChanged}
         endReached={loadMore}
         itemContent={(index, contribution) => (
-          <div className="text-xl md:text-2xl leading-[1.8] text-black font-medium font-be-vietnam content-display italic inline">
+          <div className="text-lg md:text-xl leading-[1.9] text-gray-900 font-be-vietnam content-display inline">
             {renderContribution(index, contribution)}
           </div>
         )}
@@ -259,8 +259,8 @@ export default function Feed({
                 </div>
               )}
               {!hasMore && contributions.length > 50 && (
-                <div className="flex items-center justify-center gap-4 border-t-2 border-black/5 w-full pt-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/30">
+                <div className="flex items-center justify-center gap-4 border-t border-black/[0.06] w-full pt-6">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     {contributions.length} dòng • Đã tải tất cả
                   </span>
                 </div>
@@ -271,7 +271,7 @@ export default function Feed({
       />
 
       {contributions.length === 0 && (
-        <p className="text-gray-400 italic text-center py-10">
+        <p className="text-gray-400 italic text-center py-10 font-be-vietnam">
           Chưa có nội dung. Hãy trở thành người đầu tiên.
         </p>
       )}

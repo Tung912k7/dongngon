@@ -89,9 +89,7 @@ describe("Vote Actions", () => {
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
-              limit: vi
-                .fn()
-                .mockResolvedValue({ data: [], error: null }),
+              limit: vi.fn().mockResolvedValue({ data: [], error: null }),
             }),
           }),
         }),
@@ -119,12 +117,10 @@ describe("Vote Actions", () => {
               select: vi.fn().mockReturnValue({
                 eq: vi.fn().mockReturnValue({
                   eq: vi.fn().mockReturnValue({
-                    limit: vi
-                      .fn()
-                      .mockResolvedValue({
-                        data: [{ id: "contrib-1" }],
-                        error: null,
-                      }),
+                    limit: vi.fn().mockResolvedValue({
+                      data: [{ id: "contrib-1" }],
+                      error: null,
+                    }),
                   }),
                 }),
               }),

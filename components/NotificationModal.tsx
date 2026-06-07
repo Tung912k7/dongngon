@@ -21,7 +21,11 @@ export default function NotificationModal({
 }: NotificationModalProps) {
   const bgColor = type === "error" ? "bg-red-50" : type === "success" ? "bg-green-50" : "bg-white";
   const borderColor =
-    type === "error" ? "border-red-500" : type === "success" ? "border-green-500" : "border-black";
+    type === "error"
+      ? "border-red-500/25"
+      : type === "success"
+        ? "border-green-500/25"
+        : "border-black/[0.06]";
   const iconColor =
     type === "error" ? "text-red-500" : type === "success" ? "text-green-500" : "text-black";
   const [mounted, setMounted] = useState(false);
@@ -49,11 +53,11 @@ export default function NotificationModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className={`relative z-10 w-full max-w-sm ${bgColor} border-2 ${borderColor} rounded p-6`}
+            className={`relative z-10 w-full max-w-sm ${bgColor} border ${borderColor} rounded-[12px] p-6 shadow-xl`}
           >
             <div className="text-center">
               {type === "error" && (
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-500">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
                   <svg
                     className="w-6 h-6 text-red-600"
                     fill="none"
@@ -70,7 +74,7 @@ export default function NotificationModal({
                 </div>
               )}
               {type === "success" && (
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-500">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30">
                   <svg
                     className="w-6 h-6 text-green-600"
                     fill="none"
@@ -100,7 +104,7 @@ export default function NotificationModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-6 w-full py-3 bg-black text-white text-xs font-bold font-ganh uppercase tracking-widest rounded hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all border-2 border-black"
+                className="mt-6 w-full py-3 bg-ink-charcoal text-white text-xs font-bold font-ganh uppercase tracking-widest rounded-[6px] hover:bg-deep-teal transition-all duration-300 border border-ink-charcoal/[0.12] active:scale-[0.98]"
               >
                 ĐÃ HIỂU
               </button>

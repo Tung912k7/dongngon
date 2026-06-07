@@ -7,6 +7,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.8.0",
+    date: "07/06/2026",
+    title: "Nâng cấp giao diện, điều hướng & bảo mật",
+    changes: [
+      "Thiết kế lại toàn bộ giao diện, nâng cao trải nghiệm cho người dùng",
+      "Thêm mục Thành tích",
+    ],
+  },
+  {
     version: "1.7.0",
     date: "26/05/2026",
     title: "Tối ưu hóa Sidebar & Sửa lỗi hiển thị",

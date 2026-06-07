@@ -18,24 +18,24 @@ interface HelpCenterContactProps {
 
 const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-5 w-full`}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
       {cards.map((card, idx) => (
         <div
           key={idx}
-          className="flex flex-col items-center text-center p-10 rounded border-2 border-black bg-white"
+          className="flex flex-col items-center text-center p-10 rounded-2xl border border-[#eae6e1] bg-[#fcfaf8] hover:border-deep-teal/20 transition-all duration-300 shadow-sm"
         >
-          {/* Icon in circle */}
-          <div className="w-16 h-16 rounded-full border-2 border-black flex items-center justify-center text-black mb-6">
+          {/* Icon in squircle */}
+          <div className="w-14 h-14 rounded-xl border border-[#eae6e1] flex items-center justify-center text-deep-teal mb-6 bg-white shadow-sm">
             {card.icon}
           </div>
 
           {/* Title */}
-          <h3 className="font-ganh font-bold text-xl md:text-2xl text-black mb-2 uppercase tracking-tight">
+          <h3 className="font-ganh font-bold text-xl md:text-2xl text-ink-charcoal mb-2 lowercase tracking-tight">
             {card.title}
           </h3>
 
           {/* Description */}
-          <p className="text-sm font-medium text-black/50 mb-8 max-w-[240px] leading-relaxed">
+          <p className="text-sm font-medium text-ink-charcoal/50 mb-8 max-w-[260px] leading-relaxed">
             {card.description}
           </p>
 
@@ -45,14 +45,9 @@ const HelpCenterContact: React.FC<HelpCenterContactProps> = ({ cards }) => {
             target={card.ctaHref?.startsWith("http") ? "_blank" : undefined}
             rel={card.ctaHref?.startsWith("http") ? "noopener noreferrer" : undefined}
             className="
-              inline-block px-8 py-3 
-              rounded border-2 border-black 
-              bg-white text-black text-sm font-ganh font-bold uppercase tracking-widest
-              shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-              hover:-translate-x-1 hover:-translate-y-1 
-              hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
-              active:translate-x-0 active:translate-y-0
-              transition-all duration-200
+              inline-flex items-center justify-center px-8 py-3 
+              rounded-full border border-[#eae6e1] bg-white text-ink-charcoal text-xs font-bold uppercase tracking-wider
+              transition-all duration-300 hover:bg-[#faf8f5] hover:border-deep-teal/20 hover:text-deep-teal active:scale-[0.98] shadow-sm cursor-pointer
             "
           >
             {card.ctaLabel}

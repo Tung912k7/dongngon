@@ -34,6 +34,7 @@ NEXT_PUBLIC_POSTHOG_HOST          # ✅ Required
 ```
 
 **Verification:**
+
 - [ ] Log into Vercel dashboard → Project Settings → Environment Variables
 - [ ] Confirm all 5 vars are present
 - [ ] No typos in variable names
@@ -54,9 +55,10 @@ Before deploying code that modifies the database:
 - [ ] No blocked/suspicious queries in PostgREST logs
 
 **Check command** (in Supabase dashboard):
+
 ```sql
 -- Verify main tables exist
-SELECT table_name FROM information_schema.tables 
+SELECT table_name FROM information_schema.tables
 WHERE table_schema = 'public';
 
 -- Should include: users, works, votes, notifications, etc.
@@ -98,6 +100,7 @@ If deploying major changes, test on staging first:
 ### On Vercel (Automatic)
 
 **Trigger deployment:**
+
 ```bash
 # Merge PR to main branch
 git checkout main
@@ -110,6 +113,7 @@ git push origin main
 ```
 
 **Wait for:**
+
 - [ ] Build succeeds (green checkmark)
 - [ ] Preview deployed successfully
 - [ ] Production deployment starts (usually 2-5 min)
@@ -175,14 +179,14 @@ Check these dashboards:
 -- Run in Supabase SQL Editor
 
 -- Check recent errors
-SELECT * FROM your_error_logs 
+SELECT * FROM your_error_logs
 WHERE created_at > now() - interval '30 minutes'
 ORDER BY created_at DESC
 LIMIT 10;
 
 -- Check if any tables have issues
-SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) 
-FROM pg_tables 
+SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename))
+FROM pg_tables
 WHERE schemaname = 'public';
 ```
 
@@ -193,6 +197,7 @@ WHERE schemaname = 'public';
 If production deployment has critical errors:
 
 ### Option 1: Revert Last Commit (Fastest)
+
 ```bash
 git revert HEAD
 git push origin main
@@ -200,18 +205,21 @@ git push origin main
 ```
 
 ### Option 2: Deploy Previous Working Build
+
 1. Go to Vercel dashboard
 2. Find the last working deployment
 3. Click "..." → Redeploy
 4. Wait for build to complete
 
 ### Option 3: Manual Database Rollback (If needed)
+
 1. Log into Supabase
 2. Go to Database → Backups
 3. Restore to pre-deployment backup
 4. Notify team of downtime
 
 **Notify immediately:**
+
 - [ ] Post in team chat
 - [ ] Update status page
 - [ ] Document what went wrong
@@ -250,11 +258,13 @@ git push origin main
 ### Issue: 500 Error After Deployment
 
 **Diagnosis:**
+
 1. Check Vercel logs for build errors
 2. Check browser console for client-side errors
 3. Check Supabase dashboard for connection issues
 
 **Fix:**
+
 ```bash
 # Option A: Rollback
 git revert HEAD && git push origin main
@@ -270,11 +280,13 @@ git revert HEAD && git push origin main
 ### Issue: Slow Performance After Deployment
 
 **Diagnosis:**
+
 1. Check bundle size (build logs show this)
 2. Check database query times
 3. Check image optimization
 
 **Fix:**
+
 ```bash
 # Run bundle analyzer
 npm run build -- --analyze
@@ -286,15 +298,17 @@ npm run build -- --analyze
 ### Issue: Database Connection Timeout
 
 **Diagnosis:**
+
 1. Check Supabase status page
 2. Verify connection pooling settings
 3. Check if query is stuck
 
 **Fix:**
+
 ```sql
 -- Kill stuck queries
-SELECT pg_terminate_backend(pid) 
-FROM pg_stat_activity 
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
 WHERE state = 'active' AND query_start < now() - interval '10 minutes';
 ```
 

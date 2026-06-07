@@ -21,6 +21,7 @@ interface ProfileTabProps {
   initialIsPrivate: boolean;
   initialPublicFields: Record<string, boolean>;
   userEmail: string;
+  userId: string;
 }
 
 export default function ProfileTab({
@@ -31,6 +32,7 @@ export default function ProfileTab({
   initialIsPrivate,
   initialPublicFields,
   userEmail,
+  userId,
 }: ProfileTabProps) {
   const router = useRouter();
   const [nickname, setNickname] = useState(initialNickname);
@@ -122,14 +124,14 @@ export default function ProfileTab({
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-8">
+    <form onSubmit={handleSave} className="space-y-8 font-be-vietnam">
       {/* Avatar Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-10 pb-12 border-b-2 border-black/5">
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-10 pb-12 border-b border-[#eae6e1]">
         <div
           className="relative group cursor-pointer shrink-0"
           onClick={() => fileInputRef.current?.click()}
         >
-          <div className="w-40 h-40 rounded-full border-4 border-black overflow-hidden relative shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] transition-all">
+          <div className="w-40 h-40 rounded-2xl border border-[#eae6e1] overflow-hidden relative transition-all">
             <Image src={getImageUrl(avatarUrl)} alt="Avatar" fill className="object-cover" />
             <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <svg
@@ -166,20 +168,20 @@ export default function ProfileTab({
           />
         </div>
 
-        <div className="flex-1 space-y-4 pt-4 text-center md:text-left">
-          <h3 className="font-ganh text-2xl md:text-3xl uppercase tracking-tighter font-black">
-            Ảnh đại diện
+        <div className="flex-grow space-y-4 pt-4 text-center md:text-left">
+          <h3 className="font-ganh text-2xl md:text-3xl tracking-tighter font-bold text-deep-teal lowercase">
+            ảnh đại diện
           </h3>
           <div className="space-y-2">
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-[11px] leading-relaxed max-w-md">
+            <p className="text-ink-charcoal/50 font-medium tracking-wide text-[11px] leading-relaxed max-w-md">
               Sử dụng ảnh chân dung hoặc ảnh đại diện yêu thích của bạn. Kích thước tối đa cho phép
               là 2MB.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-2 pt-2">
-              <span className="px-3 py-1 bg-black/5 text-[9px] font-black uppercase tracking-widest rounded-full opacity-60">
+              <span className="px-3 py-1 bg-[#faf8f5] text-[9px] font-bold uppercase tracking-widest rounded-lg border border-[#eae6e1] text-ink-charcoal/60">
                 JPEG / PNG
               </span>
-              <span className="px-3 py-1 bg-black/5 text-[9px] font-black uppercase tracking-widest rounded-full opacity-60">
+              <span className="px-3 py-1 bg-[#faf8f5] text-[9px] font-bold uppercase tracking-widest rounded-lg border border-[#eae6e1] text-ink-charcoal/60">
                 Max 2048x2048px
               </span>
             </div>
@@ -191,73 +193,97 @@ export default function ProfileTab({
         {/* Form Fields Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
-            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-black pb-1 block">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-ink-charcoal/40 pb-1 block">
               Bút danh (Hiển thị công khai)
             </label>
             <input
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              className="w-full px-6 py-4 border-2 border-black rounded-2xl font-bold focus:outline-none focus:ring-8 focus:ring-black/5 bg-[#fcfcfc] transition-all"
+              className="w-full px-5 py-3.5 border border-[#eae6e1] rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal bg-white transition-all text-ink-charcoal text-sm"
               placeholder="Nhập bút danh..."
             />
           </div>
 
           <div className="space-y-3">
-            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-black pb-1 block">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-ink-charcoal/40 pb-1 block">
               Ngày sinh (Không thể thay đổi)
             </label>
             <DateInput
               value={birthday}
               onChange={(val) => setBirthday(val)}
               disabled={!!initialBirthday}
-              className={`w-full px-6 py-4 border-2 rounded-2xl font-bold focus:outline-none transition-all ${
-                !!initialBirthday
-                  ? "bg-black/5 border-black/10 text-black/30 cursor-not-allowed"
-                  : "border-black focus:ring-8 focus:ring-black/5 bg-[#fcfcfc]"
+              className={`w-full px-5 py-3.5 border rounded-xl font-medium focus:outline-none transition-all text-sm ${
+                initialBirthday
+                  ? "bg-[#faf8f5]/80 border-[#eae6e1] text-ink-charcoal/30 cursor-not-allowed"
+                  : "border-[#eae6e1] bg-white focus:ring-1 focus:ring-deep-teal focus:border-deep-teal"
               }`}
             />
           </div>
         </div>
 
         <div className="space-y-3">
-          <label className="text-[11px] font-black uppercase tracking-[0.2em] text-black pb-1 block">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-ink-charcoal/40 pb-1 block">
             Giới thiệu bản thân
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={200}
-            className="w-full px-6 py-5 border-2 border-black rounded-3xl font-bold focus:outline-none focus:ring-8 focus:ring-black/5 min-h-[160px] resize-none bg-[#fcfcfc] transition-all leading-relaxed"
+            className="w-full px-5 py-4 border border-[#eae6e1] rounded-xl font-medium focus:outline-none focus:ring-1 focus:ring-deep-teal focus:border-deep-teal min-h-[160px] resize-none bg-white transition-all leading-relaxed text-ink-charcoal text-sm"
             placeholder="Hãy chia sẻ một chút về bản thân bạn..."
           />
           <div className="flex justify-end">
-            <span className="text-[10px] text-black/30 font-black uppercase tracking-widest pt-1 px-2">
+            <span className="text-[10px] text-ink-charcoal/30 font-bold uppercase tracking-widest pt-1 px-2">
               {description.length}/200
             </span>
           </div>
         </div>
 
         <div className="space-y-3 opacity-60">
-          <label className="text-[11px] font-black uppercase tracking-[0.2em] text-black pb-1 block">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-ink-charcoal/40 pb-1 block">
             Email (Không thể thay đổi)
           </label>
           <input
             type="text"
             value={userEmail}
             disabled
-            className="w-full px-6 py-4 border-2 border-black/10 bg-black/5 rounded-2xl font-bold text-black/40 cursor-not-allowed"
+            className="w-full px-5 py-3.5 border border-[#eae6e1] bg-[#faf8f5]/80 rounded-xl font-medium text-ink-charcoal/30 cursor-not-allowed text-sm"
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-ink-charcoal/40 pb-1 block opacity-60">
+              Mã định danh (Không thể thay đổi)
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(userId);
+                toast.success("Đã sao chép mã định danh thành công!");
+              }}
+              className="text-[10px] font-bold text-deep-teal hover:underline cursor-pointer lowercase focus:outline-none"
+            >
+              sao chép mã
+            </button>
+          </div>
+          <input
+            type="text"
+            value={userId}
+            disabled
+            className="w-full px-5 py-3.5 border border-[#eae6e1] bg-[#faf8f5]/80 rounded-xl font-medium text-ink-charcoal/50 cursor-not-allowed text-sm font-mono"
           />
         </div>
 
         {/* CUSTOM VISIBILITY SETTINGS */}
         <div className="pt-10 space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-black border-dashed pb-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-dashed border-[#eae6e1] pb-4">
             <div className="space-y-1">
-              <h4 className="font-ganh text-2xl uppercase tracking-tight font-black">
-                Thiết lập hiển thị
+              <h4 className="font-ganh text-2xl tracking-tight font-bold text-deep-teal lowercase">
+                thiết lập hiển thị
               </h4>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+              <p className="text-[10px] text-ink-charcoal/50 font-bold uppercase tracking-wider">
                 Chọn thông tin công khai trên hồ sơ của bạn
               </p>
             </div>
@@ -270,14 +296,13 @@ export default function ProfileTab({
               { key: "birthday", label: "Ngày sinh" },
               { key: "description", label: "Giới thiệu" },
               { key: "hashtags", label: "Hashtag" },
-              { key: "id", label: "Mã định danh" },
             ].map(({ key, label }) => (
               <label
                 key={key}
-                className={`group flex flex-col items-center justify-center p-6 border-2 border-black rounded-3xl cursor-pointer transition-all ${
+                className={`group flex flex-col items-center justify-center p-5 border rounded-xl cursor-pointer transition-all duration-200 ${
                   publicFields[key] !== false
-                    ? "bg-black text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)]"
-                    : "bg-white text-black hover:bg-gray-50 shadow-none"
+                    ? "bg-[#134e4a]/10 text-[#134e4a] border-[#134e4a]/30 shadow-sm"
+                    : "bg-white text-ink-charcoal/70 border-[#eae6e1] hover:border-[#134e4a]/20"
                 }`}
               >
                 <input
@@ -292,13 +317,13 @@ export default function ProfileTab({
                   className="sr-only"
                 />
                 <span
-                  className={`text-[10px] font-black uppercase tracking-widest mb-3 transition-colors ${
-                    publicFields[key] !== false ? "text-white/40" : "text-black/40"
+                  className={`text-[10px] font-bold uppercase tracking-wider mb-2 transition-colors ${
+                    publicFields[key] !== false ? "text-[#134e4a]/50" : "text-ink-charcoal/40"
                   }`}
                 >
-                  {publicFields[key] !== false ? "Đang hiện" : "Đang ẩn"}
+                  {publicFields[key] !== false ? "đang hiện" : "đang ẩn"}
                 </span>
-                <span className="font-ganh text-lg md:text-xl uppercase tracking-tight group-active:scale-95 transition-transform">
+                <span className="font-ganh text-lg md:text-xl lowercase tracking-tight group-active:scale-95 transition-transform">
                   {label}
                 </span>
               </label>
@@ -310,38 +335,34 @@ export default function ProfileTab({
         <div className="pt-10">
           <div
             onClick={() => setIsPrivate(!isPrivate)}
-            className={`flex flex-col md:flex-row items-center justify-between p-8 md:p-12 border-4 rounded-[3rem] relative overflow-hidden group cursor-pointer transition-all duration-500 ${
+            className={`flex flex-col md:flex-row items-center justify-between p-6 md:p-8 border rounded-2xl relative overflow-hidden group cursor-pointer transition-all duration-300 ${
               isPrivate
-                ? "bg-black border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,0.1)]"
-                : "bg-white border-black/10 hover:border-black shadow-none"
+                ? "bg-[#134e4a]/5 border-[#134e4a]/30 text-black"
+                : "bg-white border-[#eae6e1] hover:border-[#134e4a]/20"
             }`}
           >
             <div className="relative z-10 flex-1 text-center md:text-left mb-8 md:mb-0">
               <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-                <h4
-                  className={`font-ganh text-2xl md:text-3xl uppercase tracking-tight font-black select-none transition-colors ${isPrivate ? "text-white" : "text-black"}`}
-                >
-                  Chế độ riêng tư
+                <h4 className="font-ganh text-2xl md:text-3xl tracking-tight font-bold text-deep-teal select-none lowercase">
+                  chế độ riêng tư
                 </h4>
                 {isPrivate !== initialIsPrivate && (
-                  <span className="text-[10px] bg-red-500 text-white px-4 py-1.5 rounded-full font-black uppercase tracking-widest animate-pulse">
-                    Chưa cập nhật
+                  <span className="text-[10px] bg-red-650 text-white px-3 py-1 rounded-full font-bold uppercase tracking-widest animate-pulse">
+                    chưa lưu
                   </span>
                 )}
               </div>
-              <p
-                className={`text-[11px] font-bold uppercase tracking-widest leading-relaxed select-none transition-colors max-w-lg ${isPrivate ? "text-white/60" : "text-black/40"}`}
-              >
+              <p className="text-[11px] font-medium leading-relaxed select-none transition-colors max-w-lg text-ink-charcoal/60">
                 Khi kích hoạt, thông tin của bạn sẽ được ẩn hoàn toàn. Người dùng khác sẽ nhận được
                 thông báo &ldquo;Người dùng đã khoá tài khoản&rdquo; khi truy cập hồ sơ của bạn.
               </p>
             </div>
 
             <div
-              className={`relative shrink-0 w-24 h-24 flex items-center justify-center rounded-3xl transition-all duration-500 border-2 ${
+              className={`relative shrink-0 w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-300 border ${
                 isPrivate
-                  ? "bg-white border-white rotate-12 scale-110"
-                  : "bg-black/5 border-black/10 rotate-0 scale-100"
+                  ? "bg-[#134e4a] border-[#134e4a] text-white rotate-6 scale-105 shadow-sm"
+                  : "bg-[#faf8f5] border-[#eae6e1] rotate-0 scale-100"
               }`}
             >
               {isPrivate ? (
@@ -351,7 +372,7 @@ export default function ProfileTab({
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                   stroke="currentColor"
-                  className="w-12 h-12 text-black"
+                  className="w-8 h-8 text-white"
                 >
                   <path
                     strokeLinecap="round"
@@ -366,7 +387,7 @@ export default function ProfileTab({
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                   stroke="currentColor"
-                  className="w-12 h-12 text-black/20"
+                  className="w-8 h-8 text-ink-charcoal/30"
                 >
                   <path
                     strokeLinecap="round"
@@ -380,13 +401,13 @@ export default function ProfileTab({
         </div>
 
         <div className="pt-12 flex flex-col md:flex-row items-center justify-center md:justify-end gap-8">
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center md:text-right max-w-[200px]">
+          <p className="text-[10px] text-ink-charcoal/40 font-medium uppercase tracking-widest text-center md:text-right max-w-[200px]">
             Hệ thống sẽ đồng bộ thông tin của bạn sau khi lưu thành công.
           </p>
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            className="!w-full md:!w-auto !px-12 !py-6 !text-lg !rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
+            className="!w-full md:!w-auto !px-8 !py-3.5 !text-sm !rounded-full transition-all bg-[#134e4a] hover:bg-[#003633] text-white shadow-none font-ganh lowercase tracking-wider"
           >
             {isSubmitting ? "Đang xử lý..." : "Lưu hồ sơ ngay"}
           </PrimaryButton>

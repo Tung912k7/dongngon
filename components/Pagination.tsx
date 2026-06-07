@@ -8,7 +8,11 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination = memo(function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+const Pagination = memo(function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const renderPageButtons = () => {

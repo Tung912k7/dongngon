@@ -59,9 +59,9 @@ export default function SaveWorkButton({
     return (
       <button
         onClick={handleToggle}
-        aria-label={isSaved ? "Bỏ lưu tác phẩm" : "Lưu tác phẩm"}
-        className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 group
-          ${isSaved ? "bg-red-50 text-red-600 hover:bg-red-100" : "hover:bg-black hover:text-white active:bg-black/90"}
+        aria-label={isSaved ? "bỏ lưu tác phẩm" : "lưu tác phẩm"}
+        className={`w-full flex items-center gap-2.5 px-4 py-3.5 text-xs font-bold lowercase tracking-wider transition-colors duration-200 group
+          ${isSaved ? "bg-red-50 text-red-600 hover:bg-red-100" : "hover:bg-black/5 text-black/80"}
           ${className}
         `}
       >
@@ -92,7 +92,7 @@ export default function SaveWorkButton({
             )}
           </AnimatePresence>
         </div>
-        <span>{isSaved ? "Đã lưu tác phẩm" : "Lưu tác phẩm"}</span>
+        <span>{isSaved ? "đã lưu tác phẩm" : "lưu tác phẩm"}</span>
       </button>
     );
   }

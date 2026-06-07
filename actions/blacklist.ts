@@ -2,6 +2,7 @@
 
 import { logger } from "@/lib/logger";
 import { createClient } from "@/utils/supabase/server";
+import { requireAdmin } from "@/actions/shared";
 
 interface CachedBlacklistWord {
   pattern: string;
@@ -28,9 +29,7 @@ export async function checkBlacklist(text: string): Promise<string | null> {
       const supabase = await createClient();
 
       // Fetch from blacklist_words
-      const { data, error } = await supabase
-        .from("blacklist_words")
-        .select("pattern, is_regex");
+      const { data, error } = await supabase.from("blacklist_words").select("pattern, is_regex");
 
       if (error) {
         // Log more detail on the server, but don't crash
@@ -73,18 +72,9 @@ export async function checkBlacklist(text: string): Promise<string | null> {
 
 export async function getBlacklistWords() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, data: [] };
-
-    const { data: privateData } = await supabase
-      .from("user_private_data")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    if (privateData?.role !== "admin") return { success: false, data: [] };
+    const adminResult = await requireAdmin();
+    if (adminResult.error) return { success: false, data: [] };
+    const { supabase } = adminResult;
 
     const { data, error } = await supabase
       .from("blacklist_words")
@@ -113,18 +103,9 @@ export async function getBlacklistWords() {
 
 export async function addBlacklistWord(word: string, isRegex: boolean) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Unauthorized" };
-
-    const { data: privateData } = await supabase
-      .from("user_private_data")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
+    const adminResult = await requireAdmin();
+    if (adminResult.error) return { success: false, error: adminResult.error };
+    const { supabase, user } = adminResult;
 
     const { error } = await supabase.from("blacklist_words").insert([
       {
@@ -155,18 +136,9 @@ export async function addBlacklistWord(word: string, isRegex: boolean) {
 
 export async function deleteBlacklistWord(id: string) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Unauthorized" };
-
-    const { data: privateData } = await supabase
-      .from("user_private_data")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    if (privateData?.role !== "admin") return { success: false, error: "Forbidden" };
+    const adminResult = await requireAdmin();
+    if (adminResult.error) return { success: false, error: adminResult.error };
+    const { supabase } = adminResult;
 
     const { error } = await supabase.from("blacklist_words").delete().eq("id", id);
 

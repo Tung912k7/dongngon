@@ -88,7 +88,10 @@ export function ClientGlobalWrappers({ children }: { children: ReactNode }) {
 
       const currentUser =
         userOverride === undefined
-          ? ((await supabase.auth.getSession()).data.session?.user ?? null)
+          ? // NOTE: getSession() is intentionally used here for client-side UI only.
+            // It reads from local storage without server verification — acceptable for
+            // determining modal display. All mutating operations use getUser() in server actions.
+            ((await supabase.auth.getSession()).data.session?.user ?? null)
           : userOverride;
 
       if (!currentUser) {
@@ -135,7 +138,10 @@ export function ClientGlobalWrappers({ children }: { children: ReactNode }) {
           return;
         }
 
-        logger.error("[ClientGlobalWrappers] Profile fetch error", error, { code: error.code, message: error.message });
+        logger.error("[ClientGlobalWrappers] Profile fetch error", error, {
+          code: error.code,
+          message: error.message,
+        });
         if (isMounted) {
           setHasAcknowledgedWelcomeMessage(true);
           setLastSeenChangelog(null);

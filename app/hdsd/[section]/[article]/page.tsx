@@ -85,7 +85,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
   const readingTime = `${Math.ceil(article.content_markdown.split(/\s+/).length / 200)} phút đọc`;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-[#FAF8F5]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -146,7 +146,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
         }}
       />
       {/* ─── Breadcrumb ─── */}
-      <div className="w-full bg-white border-b border-neutral-100">
+      <div className="w-full bg-white/60 backdrop-blur-sm border-b border-[#eae6e1]">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <HelpCenterBreadcrumb
             items={[
@@ -154,7 +154,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                 label: "Hướng dẫn sử dụng",
                 href: "/hdsd",
                 className:
-                  "text-[#388186] font-bold underline decoration-dotted underline-offset-4",
+                  "text-deep-teal font-bold underline decoration-dotted underline-offset-4",
               },
               { label: sectionLabel, href: `/hdsd/${sectionSlug}` },
               { label: article.title },
@@ -169,13 +169,13 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
           {/* ── Article Content ── */}
           <article className="flex-1 min-w-0">
             {/* Header Area */}
-            <div className="bg-white rounded-[32px] border border-neutral-100 shadow-sm overflow-hidden mb-6">
+            <div className="bg-[#fcfaf8] rounded-2xl border border-[#eae6e1] overflow-hidden mb-6 shadow-sm">
               <div className="p-8 pb-4">
                 <div className="flex items-center gap-4 mb-6">
-                  <span className="inline-block px-3 py-1.5 bg-black text-white text-[10px] font-bold uppercase tracking-wider rounded-full">
+                  <span className="inline-block px-2.5 py-1 bg-deep-teal/5 text-deep-teal border border-deep-teal/10 text-[10px] font-bold uppercase tracking-wider rounded-lg">
                     {sectionLabel}
                   </span>
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-neutral-400">
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-ink-charcoal/40">
                     <svg
                       width="14"
                       height="14"
@@ -193,27 +193,27 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl font-black text-neutral-900 leading-tight mb-4 tracking-tight">
+                <h1 className="text-3xl sm:text-4xl font-ganh font-bold text-deep-teal leading-tight mb-4 tracking-tight lowercase">
                   {article.title}
                 </h1>
 
-                <p className="text-sm font-bold text-neutral-400 mb-8">
+                <p className="text-[10px] font-bold text-ink-charcoal/30 mb-8 font-mono uppercase tracking-wider">
                   Cập nhật lần cuối: {formattedDate}
                 </p>
 
-                <div className="h-px w-full bg-neutral-100 mb-10" />
+                <div className="h-px w-full bg-[#eae6e1] mb-10" />
 
                 {/* Body Content */}
                 <div
                   className="prose prose-neutral prose-lg max-w-none 
-                  prose-headings:font-black prose-headings:tracking-tight prose-headings:text-neutral-900
-                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-6
-                  prose-p:text-neutral-600 prose-p:leading-relaxed prose-p:mb-6
-                  prose-strong:text-neutral-900 prose-strong:font-bold
-                  prose-a:text-[#388186] prose-a:font-bold prose-a:no-underline hover:prose-a:underline
-                  prose-blockquote:not-italic prose-blockquote:bg-neutral-50 prose-blockquote:border-none prose-blockquote:p-8 prose-blockquote:rounded-[24px] prose-blockquote:relative
-                  prose-pre:bg-neutral-900 prose-pre:rounded-2xl
-                  prose-img:rounded-3xl prose-img:border prose-img:border-neutral-100
+                  prose-headings:font-ganh prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-deep-teal prose-headings:lowercase
+                  prose-h2:text-xl md:text-2xl prose-h2:mt-10 prose-h2:mb-6
+                  prose-p:text-ink-charcoal/70 prose-p:leading-relaxed prose-p:mb-6
+                  prose-strong:text-ink-charcoal prose-strong:font-bold
+                  prose-a:text-deep-teal prose-a:font-bold prose-a:no-underline hover:prose-a:underline
+                  prose-blockquote:not-italic prose-blockquote:bg-[#fcfaf8] prose-blockquote:border-l-2 prose-blockquote:border-deep-teal prose-blockquote:rounded-r-xl
+                  prose-pre:bg-neutral-900 prose-pre:rounded-xl
+                  prose-img:rounded-2xl prose-img:border prose-img:border-[#eae6e1]
                 "
                 >
                   <ReactMarkdown
@@ -241,11 +241,10 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                         );
                       },
                       blockquote: ({ children }) => {
-                        // Check if children contain "Mẹo:" or similar
                         return (
-                          <blockquote className="my-10 p-8 bg-neutral-50 rounded-[28px] border-none relative overflow-hidden group">
+                          <blockquote className="my-10 p-8 bg-[#fcfaf8] rounded-r-2xl border-l-2 border-deep-teal border-t border-r border-b border-[#eae6e1] relative overflow-hidden group">
                             <div className="flex gap-4 items-start relative z-10">
-                              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-amber-500 shadow-sm border border-neutral-100 flex-shrink-0">
+                              <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-amber-500 border border-[#eae6e1] flex-shrink-0 shadow-sm">
                                 <svg
                                   width="20"
                                   height="20"
@@ -261,7 +260,7 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
                                   <path d="M10 22h4" />
                                 </svg>
                               </div>
-                              <div className="flex-1 text-neutral-600 prose-p:mb-0 prose-strong:text-neutral-900">
+                              <div className="flex-1 text-ink-charcoal/70 prose-p:mb-0 prose-strong:text-ink-charcoal">
                                 {children}
                               </div>
                             </div>
@@ -283,19 +282,22 @@ export default async function HelpCenterArticlePage({ params }: HelpCenterArticl
               <HelpCenterArticleSidebar toc={TOC_ITEMS} relatedArticles={relatedArticles} />
 
               {/* Extra Help Card */}
-              <div className="p-6 bg-neutral-900 text-white rounded-[24px] overflow-hidden relative group">
-                <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-teal-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                <h4 className="font-bold mb-2 relative z-10">Vẫn chưa tìm thấy điều bạn cần?</h4>
-                <p className="text-sm text-neutral-400 mb-4 relative z-10">
+              <div className="p-6 bg-[#134e4a] text-[#faf8f5] rounded-2xl overflow-hidden relative group shadow-sm">
+                <h4 className="font-ganh font-bold mb-2 relative z-10 text-lg lowercase tracking-tight">
+                  vẫn chưa tìm thấy điều bạn cần?
+                </h4>
+                <p className="text-sm text-[#faf8f5]/70 mb-4 relative z-10">
                   Chúng mình luôn sẵn sàng hỗ trợ bạn bất cứ lúc nào.
                 </p>
                 <a
-                  href="/lien-he"
-                  className="inline-flex items-center text-xs font-black uppercase tracking-widest text-teal-400 hover:text-teal-300 transition-colors relative z-10"
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSfRTalgsKarNe4OgmxFg1XRkoZnmu_nmofaZZ8s3BOHbN5xYw/viewform"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-[#faf8f5] hover:underline transition-all relative z-10 cursor-pointer"
                 >
                   Liên hệ ngay
                   <svg
-                    className="w-4 h-4 ml-1"
+                    className="w-4 h-4 ml-1.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

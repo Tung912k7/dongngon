@@ -13,26 +13,26 @@ export const metadata: Metadata = {
 };
 
 import HeroSectionV2 from "@/components/HeroSectionV2";
-import AboutSection from "@/components/AboutSection";
+import InspirationFlow from "@/components/InspirationFlow";
+import OpenProjects from "@/components/OpenProjects";
 import ContributionShowcase from "@/components/ContributionShowcase";
-import RankingsPreview from "@/components/RankingsPreview";
 
-export default async function Home() {
+export default function Home() {
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col">
-      {/* Hero Section — no animation wrapper: must be immediately visible for LCP */}
-      <div className="min-h-screen w-full flex items-center justify-center">
+    <div className="bg-[#FAF8F5] text-ink-charcoal min-h-screen flex flex-col font-['Be_Vietnam_Pro']">
+      {/* Hero Section */}
+      <div className="w-full flex items-center justify-center">
         <HeroSectionV2 />
       </div>
 
-      {/* About Section */}
-      <AboutSection />
+      {/* Open Projects / Trending Stories */}
+      <OpenProjects />
 
-      {/* Contribution Showcase */}
+      {/* Inspiration Flow (Retained) */}
+      <InspirationFlow />
+
+      {/* Contribution Showcase (Retained) */}
       <ContributionShowcase />
-
-      {/* Rankings Preview */}
-      <RankingsPreview />
     </div>
   );
 }
